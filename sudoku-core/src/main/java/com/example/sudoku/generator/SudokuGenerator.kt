@@ -5,6 +5,6 @@ import kotlin.random.Random
 
 interface SudokuGenerator {
     suspend fun createSudoku(cellsToRemove: Int, seed: Long = Random.nextLong()): SudokuGrid
-    fun generateFullSudokuGrid(seed: Long = Random.nextLong()): SudokuGrid
-    suspend fun removeCells(grid: SudokuGrid, cellsToRemove: Int): SudokuGrid
+    suspend fun generateFullSudokuGrid(seed: Long = Random.nextLong()): SudokuGrid
+    suspend fun removeNumbers(grid: SudokuGrid, cellsToRemove: Int): SudokuGrid
 }

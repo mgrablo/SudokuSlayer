@@ -1,8 +1,8 @@
-
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import com.example.sudoku.solver.ClassicSudokuSolver
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -20,9 +20,9 @@ class SudokuGeneratorTest {
 
     @Test
     @DisplayName("Should generate valid full Sudoku grid")
-    fun generateValidFullGrid() {
+    fun generateValidFullGrid() = runBlocking {
         val grid = generator.generateFullSudokuGrid(12345L)
-        
+        println(grid)
         assertEquals(
             true,
             ClassicSudokuSolver.isValidSolution(grid),
@@ -54,11 +54,35 @@ class SudokuGeneratorTest {
         
         val grid1 = generator.createSudoku(cellsToRemove, seed)
         val grid2 = generator.createSudoku(cellsToRemove, seed)
-        
+
         assertEquals(
             grid1.toString(),
             grid2.toString(),
             "Grids generated with same seed should be identical"
         )
+    }
+
+    @Test
+    @DisplayName("Should generate valid Sudoku grids of different sizes")
+    fun generateDifferentSizes() = runBlocking {
+        val testCases = listOf(
+            Pair(4, 2),  // 4x4 grid with 2x2 subgrids
+            Pair(9, 3),  // 9x9 grid with 3x3 subgrids
+            Pair(16, 4)  // 16x16 grid with 4x4 subgrids
+        )
+        
+        for ((gridSize, subgridSize) in testCases) {
+            val generator = ClassicSudokuGenerator(gridSize)
+            val grid = generator.generateFullSudokuGrid(12345L)
+            
+            // Verify grid dimensions
+            assertEquals(gridSize, grid.gridSize)
+            
+            // Verify valid solution
+            val solver = ClassicSudokuSolver
+            assertTrue(solver.checkGrid(grid))
+            println(grid)
+            assertTrue(solver.isValidSolution(grid))
+        }
     }
 }

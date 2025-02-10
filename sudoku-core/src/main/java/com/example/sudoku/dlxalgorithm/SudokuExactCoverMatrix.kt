@@ -1,6 +1,9 @@
 package com.example.sudoku.dlxalgorithm
 
-class SudokuExactCoverMatrix private constructor(val gridSize: Int, val subgridSize: Int) : ExactCoverMatrix {
+class SudokuExactCoverMatrix private constructor(
+	val gridSize: Int,
+	val subgridSize: Int
+) : ExactCoverMatrix {
 	override val totalOptions = gridSize * gridSize * gridSize
 	override val totalConstraints = gridSize * gridSize * 4
 	private val exactCoverMatrix = BaseExactCoverMatrix(totalOptions, totalConstraints)
@@ -38,7 +41,7 @@ class SudokuExactCoverMatrix private constructor(val gridSize: Int, val subgridS
 	}
 
 	private fun cellToRowIndex(row: Int, col: Int, digit: Int): Int {
-		return row * 81 + col * 9 + (digit - 1)
+		return row * (gridSize * gridSize) + col * gridSize + (digit - 1)
 	}
 
 	private fun createConstraints(row: Int, col: Int, num: Int): List<Int> {

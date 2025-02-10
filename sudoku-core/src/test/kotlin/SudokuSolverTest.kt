@@ -144,7 +144,7 @@ class SudokuSolverTest {
 	inner class GridFilling {
 		@Test
 		@DisplayName("Should correctly fill partially complete grid")
-		fun fillPartialGrid() {
+		fun fillPartialGrid() = runBlocking {
 			val grid = SudokuGrid.fromIntArray(
 				arrayOf(
 					intArrayOf(5, 3, 0, 0, 7, 0, 0, 0, 0),
@@ -217,7 +217,7 @@ class SudokuSolverTest {
 	inner class EdgeCases {
 		@Test
 		@DisplayName("Should handle empty grid")
-		fun handleEmptyGrid() {
+		fun handleEmptyGrid() = runBlocking {
 			val grid = SudokuGrid()
 			assertEquals(true, ClassicSudokuSolver.fillGrid(grid))
 			assertEquals(true, ClassicSudokuSolver.isValidSolution(grid))
@@ -225,7 +225,7 @@ class SudokuSolverTest {
 
 		@Test
 		@DisplayName("Should handle nearly complete grid")
-		fun handleNearlyCompleteGrid() {
+		fun handleNearlyCompleteGrid() = runBlocking {
 			val grid = SudokuGrid.fromIntArray(
 				arrayOf(
 					intArrayOf(5, 3, 4, 6, 7, 8, 9, 1, 2),
@@ -249,7 +249,7 @@ class SudokuSolverTest {
 
 		@Test
 		@DisplayName("Should detect unsolvable grid")
-		fun detectUnsolvableGrid() {
+		fun detectUnsolvableGrid() = runBlocking {
 			val grid = SudokuGrid.fromIntArray(
 				arrayOf(
 					intArrayOf(5, 5, 0, 0, 0, 0, 0, 0, 0), // Two 5s in first row makes it unsolvable
@@ -263,8 +263,9 @@ class SudokuSolverTest {
 					intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
 				)
 			)
-
-			assertEquals(false, ClassicSudokuSolver.fillGrid(grid))
+			val result = ClassicSudokuSolver.fillGrid(grid)
+			println(grid)
+			assertEquals(false, result)
 		}
 	}
 
@@ -317,7 +318,7 @@ class SudokuSolverTest {
 	inner class UnsolvableGrids {
 		@Test
 		@DisplayName("Should detect grid with no valid moves for a cell")
-		fun detectNoValidMovesGrid() {
+		fun detectNoValidMovesGrid() = runBlocking {
 			val grid = SudokuGrid.fromIntArray(
 				arrayOf(
 					intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 0),
@@ -331,13 +332,16 @@ class SudokuSolverTest {
 					intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 9)
 				)
 			)
-
+			for (i in 0..8) {
+				ClassicSudokuSolver.checkRow(grid.getRow(i).map { it.number }.toIntArray()).also { println("row $i: $it") }
+				ClassicSudokuSolver.checkColumn(grid.getCol(i).map { it.number }.toIntArray()).also { println("col $i: $it") }
+			}
 			assertEquals(false, ClassicSudokuSolver.fillGrid(grid))
 		}
 
 		@Test
 		@DisplayName("Should detect grid with invalid initial state")
-		fun detectInvalidInitialState() {
+		fun detectInvalidInitialState() = runBlocking {
 			val grid = SudokuGrid.fromIntArray(
 				arrayOf(
 					intArrayOf(1, 1, 0, 0, 0, 0, 0, 0, 0), // Duplicate 1s in first row
@@ -360,7 +364,7 @@ class SudokuSolverTest {
 	inner class PerformanceTests {
 		@Test
 		@DisplayName("Should solve anti-brute-force puzzle")
-		fun solveAntiBruteForceGrid() {
+		fun solveAntiBruteForceGrid()  = runBlocking {
 			// This is the puzzle designed to be hard for brute force algorithms
 			// from https://en.wikipedia.org/wiki/Sudoku_solving_algorithms
 			val grid = SudokuGrid.fromIntArray(

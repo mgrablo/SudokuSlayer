@@ -15,7 +15,7 @@ interface SudokuSolver {
     fun checkGrid(sudoku: SudokuGrid): Boolean
     fun isValidSolution(sudokuGrid: SudokuGrid): Boolean
     suspend fun hasUniqueSolution(sudokuGrid: SudokuGrid): Boolean
-    fun fillGrid(sudokuGrid: SudokuGrid) : Boolean
+    suspend fun fillGrid(sudokuGrid: SudokuGrid) : Boolean
 }
 
 fun Collection<Int>.toSudokuGrid(inputGrid: SudokuGrid = SudokuGrid()): SudokuGrid {
@@ -23,10 +23,11 @@ fun Collection<Int>.toSudokuGrid(inputGrid: SudokuGrid = SudokuGrid()): SudokuGr
         return inputGrid
     }
     val resultGrid = inputGrid.clone()
+    val gridSize = resultGrid.gridSize
     for (pos in this) {
-        val row = pos / 81
-        val col = (pos % 81) / 9
-        val num = pos % 9 + 1
+        val row = pos / ( gridSize * gridSize)
+        val col = (pos % ( gridSize * gridSize)) / gridSize
+        val num = pos % gridSize + 1
         if (inputGrid[row, col].number == 0) {
             resultGrid[row, col] = num
         }
@@ -38,7 +39,7 @@ fun Collection<Int>.toSudokuGrid(inputGrid: SudokuGrid = SudokuGrid()): SudokuGr
 fun DancingLinksMatrix.Companion.fromSudoku(sudoku: SudokuGrid): DancingLinksMatrix {
     // Convert existing numbers in the Sudoku grid to constraints
     val filledCells = getFilledCells( sudoku.getArray() )
-    val exactCoverMatrix = SudokuExactCoverMatrix.createClassic().apply {
+    val exactCoverMatrix = SudokuExactCoverMatrix.create(sudoku.gridSize, sudoku.subgridSize).apply {
         coverAll(filledCells)
     }
     val dancingLinksMatrix = exactCoverMatrix.toDancingLinksMatrix()
