@@ -3,29 +3,28 @@ package com.example.sudokuslayer.presentation.screen.game.components.keypadparts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
+import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.presentation.ui.theme.extendedColorScheme
+import kotlin.math.sqrt
 
 @Composable
 fun NumberPad(
+	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
-	inputMode: InputMode
+	inputMode: InputMode,
+	modifier: Modifier = Modifier
 ) {
-	val keyboardNumbers = listOf(
-		listOf(1, 2, 3),
-		listOf(4, 5, 6),
-		listOf(7, 8, 9),
-	)
+	val numbers = (1..gridSize).toList()
+	val keyboardRows = numbers.chunked(sqrt(gridSize.toDouble()).toInt())
 
 	val keyColor = when(inputMode) {
 		InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.colorContainer
@@ -40,11 +39,14 @@ fun NumberPad(
 	}
 
 	Column(
-		modifier = Modifier.padding(8.dp)
+		modifier = modifier
+			.padding(8.dp),
+		verticalArrangement = Arrangement.spacedBy(8.dp),
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		for (row in keyboardNumbers) {
+		keyboardRows.forEach { row ->
 			Row(
-				horizontalArrangement = Arrangement.SpaceEvenly,
+				horizontalArrangement = Arrangement.spacedBy(8.dp),
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				for (number in row) {
@@ -52,21 +54,47 @@ fun NumberPad(
 						text = number.toString(),
 						onClick = { onButtonClick(number) },
 						bgColor = keyColor,
-						textColor = textColor
+						textColor = textColor,
+						modifier = Modifier.weight(1f)
 					)
-					Spacer(modifier = Modifier.width(8.dp))
 				}
 			}
-			Spacer(modifier = Modifier.height(8.dp))
 		}
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun NumberPadNineItemsPreview() {
+	SudokuSlayerTheme {
+		NumberPad(
+			onButtonClick = { },
+			inputMode = InputMode.NUMBER,
+			gridSize = 9
+		)
 	}
 }
 
 @Preview
 @Composable
-private fun NumberPadPreview() {
-	NumberPad(
-		onButtonClick = { },
-		inputMode = InputMode.NUMBER
-	)
+private fun NumberPadFourItemsPreview() {
+	SudokuSlayerTheme {
+		NumberPad(
+			onButtonClick = { },
+			inputMode = InputMode.NUMBER,
+			gridSize = 4
+		)
+	}
+}
+@Preview
+@Composable
+private fun NumberPadSixteenItemsPreview() {
+	SudokuSlayerTheme {
+		NumberPad(
+			onButtonClick = { },
+			inputMode = InputMode.NUMBER,
+			gridSize = 16
+		)
+	}
+	
 }

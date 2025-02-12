@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
@@ -73,6 +75,7 @@ fun SudokuBoard(
 	) {
 		LazyVerticalGrid(
 			columns = GridCells.Fixed(sudoku.gridSize),
+			modifier = Modifier.fillMaxSize(),
 			userScrollEnabled = false,
 		) {
 			items(sudoku.getArray(), key = { "r${it.row}c${it.col}" }) { cell ->
@@ -100,7 +103,6 @@ fun ContentDrawScope.drawGridLines(
 	colors: SudokuBoardColors,
 	modifier: Modifier = Modifier
 ) {
-
 	drawContent()
 	repeat(gridSize - 1) { index ->
 		val color = if ((index + 1) % blockSize == 0) colors.blockBorder else colors.cellBorder
@@ -127,9 +129,7 @@ data class SudokuBoardColors(
 	val blockBorder: Color
 )
 
-@Preview(
-	showBackground = true
-)
+@PreviewLightDark
 @Composable
 private fun SudokuBoardPreview() {
 	SudokuSlayerTheme {

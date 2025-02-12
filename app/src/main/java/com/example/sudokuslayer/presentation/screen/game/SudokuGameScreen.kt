@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.composables.core.rememberDialogState
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import com.example.sudokuslayer.data.datastore.sudokuGridDataStore
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameViewModel.Event
@@ -59,7 +58,7 @@ fun SudokuGameScreen(
 		factory = TimerViewModelFactory(
 			SudokuDataStoreRepository(context.sudokuGridDataStore)
 		)
-	)
+	),
 ) {
 	val lifecycleOwner = LocalLifecycleOwner.current
 	val scope = rememberCoroutineScope()
@@ -74,9 +73,9 @@ fun SudokuGameScreen(
 	val uiState by viewModel.uiState.collectAsState()
 	val elapsedTime by timerViewModel.elapsedTime.collectAsState()
 
-	val loading = viewModel.isLoading.collectAsState()
-	var resetDialogVisible by remember { mutableStateOf(false) }
-	var hintsDialogState = rememberDialogState(false)
+	val loadingState by viewModel.isLoading.collectAsState()
+	var resetDialogState by remember { mutableStateOf(false) }
+	var hintsDialogState by remember { mutableStateOf(false)}
 
 	val scaffoldState = rememberBottomSheetScaffoldState(
 		bottomSheetState = rememberStandardBottomSheetState(
@@ -92,35 +91,35 @@ fun SudokuGameScreen(
 	)
 
 	ResetDialog(
-		isVisible = resetDialogVisible,
+		isVisible = resetDialogState,
 		onConfirmClick = {
 			viewModel.onEvent(Event.ResetGame)
 			timerViewModel.resetTimer()
-			resetDialogVisible = false
+			resetDialogState = false
 		},
-		onDismissClick = { resetDialogVisible = false },
+		onDismissClick = { resetDialogState = false },
 		onClearNotesClick = {
 			viewModel.onEvent(Event.ResetNotes)
-			resetDialogVisible = false
+			resetDialogState = false
 		}
 	)
 
 	HintsDialog(
-		dialogState = hintsDialogState,
-		onDismissRequest = { hintsDialogState.visible = false },
+		isVisible = hintsDialogState,
+		onDismissRequest = { hintsDialogState = false },
 		onHintClick = {
 			viewModel.onEvent(Event.ProvideHint)
-			hintsDialogState.visible = false
+			hintsDialogState = false
 			scope.launch {
 				scaffoldState.bottomSheetState.expand()
 			}
 		},
 		onFillNotesClick = {
 			viewModel.onEvent(Event.HintFillNotes)
-			hintsDialogState.visible = false
+			hintsDialogState = false
 		},
 		onShowLogsClick = {
-			hintsDialogState.visible = false
+			hintsDialogState = false
 			scope.launch {
 				scaffoldState.bottomSheetState.expand()
 			}
@@ -143,11 +142,11 @@ fun SudokuGameScreen(
 					IconButton(onClick = { openDrawer() }) {
 						Icon(Icons.Default.Menu, "")
 					}
-				}
+				},
 			)
 		},
 	) { innerPadding ->
-		if (loading.value) {
+		if (loadingState) {
 			CircularProgressIndicator()
 		} else {
 			Column(
@@ -155,7 +154,7 @@ fun SudokuGameScreen(
 					.fillMaxSize(),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				TimerDisplay( elapsedTime = { elapsedTime } )
+				TimerDisplay(elapsedTime = { elapsedTime })
 				SudokuBoard(
 					sudoku = uiState.sudoku,
 					onCellClick = { row, col -> viewModel.onEvent(Event.SelectCell(row, col)) },
@@ -168,10 +167,11 @@ fun SudokuGameScreen(
 					onNumberSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.NUMBER)) },
 					onNoteSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.NOTE)) },
 					onColorSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.COLOR)) },
-					onHintClick = { hintsDialogState.visible = true },
+					onHintClick = { hintsDialogState = true },
 					onShowMistakesClick = { viewModel.onEvent(Event.ShowMistakes) },
-					onResetClick = { resetDialogVisible = true },
-					inputMode = uiState.inputMode
+					onResetClick = { resetDialogState = true },
+					inputMode = uiState.inputMode,
+					gridSize = uiState.sudoku.gridSize
 				)
 			}
 		}
