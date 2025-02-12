@@ -8,10 +8,10 @@ class SudokuGrid(
 	val gridSize: Int = 9,
 	private val data: Array<SudokuCellData> = createEmptyGrid(gridSize)
 ) {
-	private val cellManager = CellManager(data)
 	var seed: Long? = null
 	var random: Random = Random.Default
 	val subgridSize: Int = sqrt(gridSize.toDouble()).toInt()
+	private val cellManager = CellManager(data, gridSize, subgridSize)
 
 	operator fun get(row: Int, col: Int): SudokuCellData {
 		requireValidIndex(row, col)

@@ -355,7 +355,7 @@ class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			val updatedSudoku = _uiState.value.sudoku.clone()
-			val hintProvider = HintProvider()
+			val hintProvider = HintProvider(updatedSudoku.gridSize)
 			// Fill candidates once
 			val filledCandidatesGrid = hintProvider.fillCandidates(updatedSudoku.getArray())
 

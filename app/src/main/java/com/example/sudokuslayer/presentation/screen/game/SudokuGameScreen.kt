@@ -3,7 +3,6 @@ package com.example.sudokuslayer.presentation.screen.game
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -13,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
@@ -39,7 +39,7 @@ import com.example.sudokuslayer.presentation.screen.game.components.HintsDialog
 import com.example.sudokuslayer.presentation.screen.game.components.KeyPad
 import com.example.sudokuslayer.presentation.screen.game.components.ResetDialog
 import com.example.sudokuslayer.presentation.screen.game.components.SudokuBoard
-import com.example.sudokuslayer.presentation.screen.game.components.Timer
+import com.example.sudokuslayer.presentation.screen.game.components.TimerDisplay
 import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialog
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
@@ -71,9 +71,8 @@ fun SudokuGameScreen(
 		}
 	}
 
-	val uiState = viewModel.uiState.collectAsState().value
-	val elapsedTime = timerViewModel.elapsedTime.collectAsState().value
-	val sudoku = uiState.sudoku
+	val uiState by viewModel.uiState.collectAsState()
+	val elapsedTime by timerViewModel.elapsedTime.collectAsState()
 
 	val loading = viewModel.isLoading.collectAsState()
 	var resetDialogVisible by remember { mutableStateOf(false) }
@@ -136,12 +135,12 @@ fun SudokuGameScreen(
 		nextHintClick = { viewModel.onEvent(Event.ProvideHint) },
 		topBar = {
 			CenterAlignedTopAppBar(
-				title = { Timer(elapsedTime) },
+				title = { Text("Sudoku Slayer") },
 				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
 					containerColor = MaterialTheme.colorScheme.surfaceContainer
 				),
 				navigationIcon = {
-					IconButton(onClick = openDrawer) {
+					IconButton(onClick = { openDrawer() }) {
 						Icon(Icons.Default.Menu, "")
 					}
 				}
@@ -153,12 +152,12 @@ fun SudokuGameScreen(
 		} else {
 			Column(
 				modifier = Modifier
-					.fillMaxSize()
-					.padding(innerPadding),
+					.fillMaxSize(),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
+				TimerDisplay( elapsedTime = { elapsedTime } )
 				SudokuBoard(
-					sudoku = sudoku,
+					sudoku = uiState.sudoku,
 					onCellClick = { row, col -> viewModel.onEvent(Event.SelectCell(row, col)) },
 				)
 				KeyPad(

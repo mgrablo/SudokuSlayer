@@ -24,7 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +42,13 @@ import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorViewModel.Event
 import com.example.sudokuslayer.presentation.screen.sudokucreator.components.HorizontalSelect
 
+private val PreviewBoxSize = 200.dp
+private const val SelectsMaxWidth = 0.8f
+private val SpacerHeight = 50.dp
+
+private val GRID_OPTIONS = listOf("4x4", "9x9", "16x16")
+private val DIFFICULTY_OPTIONS = listOf("Easy", "Medium", "Hard", "Expert")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuCreatorScreen(
@@ -51,16 +61,45 @@ fun SudokuCreatorScreen(
 		)
 	),
 ) {
-	val uiState = viewModel.uiState.collectAsState().value
+	val uiState by viewModel.uiState.collectAsState()
+
+	SudokuCreatorContent(
+		screenState = uiState.loadingState,
+		savedGameData = uiState.savedGameData,
+		onGridSizeChange = { viewModel.onEvent(Event.ChangeGridSize(it)) },
+		onDifficultyChange = { viewModel.onEvent(Event.ChangeDifficulty(it)) },
+		onNewGame = { viewModel.onEvent(Event.NewGame) },
+		onLoadSudoku = { viewModel.onEvent(Event.LoadSudoku) },
+		openDrawer = openDrawer,
+		onNavigateToGame = { navController.navigate(Destination.SudokuGame) }
+	)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SudokuCreatorContent(
+	screenState: ScreenState,
+	savedGameData: SavedGameData?,
+	onGridSizeChange: (Int) -> Unit,
+	onDifficultyChange: (Int) -> Unit,
+	onNewGame: () -> Unit,
+	onLoadSudoku: () -> Unit,
+	openDrawer: () -> Unit,
+	onNavigateToGame: () -> Unit,
+	modifier: Modifier = Modifier
+) {
+	val (gridOptions, difficultyOptions) = remember {
+		GRID_OPTIONS to DIFFICULTY_OPTIONS
+	}
 
 	Scaffold(
-		modifier = Modifier.fillMaxSize(),
+		modifier = modifier.fillMaxSize(),
 		topBar = {
 			CenterAlignedTopAppBar(
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
-						Icon(Icons.Default.Menu, "")
+						Icon(Icons.Default.Menu, contentDescription = "Open menu")
 					}
 				}
 			)
@@ -73,65 +112,125 @@ fun SudokuCreatorScreen(
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
-			Box(
-				contentAlignment = Alignment.Center,
-				modifier = Modifier
-					.size(200.dp)
-					.background(color = MaterialTheme.colorScheme.error)
+			PreviewBox()
+			Spacer(Modifier.height(SpacerHeight))
+
+			Selects(
+				gridSizeOptions = gridOptions,
+				difficultyOptions = difficultyOptions,
+				onGridSizeChange = onGridSizeChange,
+				onDifficultyChange = onDifficultyChange,
+				modifier = Modifier.fillMaxWidth(SelectsMaxWidth)
 			)
-			{
-				Text(
-					"PREVIEW",
-					style = MaterialTheme.typography.displayMedium
+
+			GameControls(
+				screenState = screenState,
+				savedGameData = savedGameData,
+				onNewGame = onNewGame,
+				onLoadSudoku = onLoadSudoku,
+				onNavigateToGame = onNavigateToGame
+			)
+		}
+	}
+}
+
+@Composable
+private fun PreviewBox() {
+	Box(
+		contentAlignment = Alignment.Center,
+		modifier = Modifier
+			.size(PreviewBoxSize)
+			.background(color = MaterialTheme.colorScheme.error)
+	) {
+		Text(
+			"PREVIEW",
+			style = MaterialTheme.typography.displayMedium
+		)
+	}
+}
+
+@Composable
+private fun GameControls(
+	screenState: ScreenState,
+	savedGameData: SavedGameData?,
+	onNewGame: () -> Unit,
+	onLoadSudoku: () -> Unit,
+	onNavigateToGame: () -> Unit,
+) {
+	when (screenState) {
+		ScreenState.INITIAL -> {
+			if (savedGameData != null) {
+				GameButton(
+					onClick = onLoadSudoku,
+					text = "Continue ${savedGameData.difficulty}"
 				)
 			}
-			Spacer(Modifier.height(50.dp))
-			HorizontalSelect(
-				text = uiState.difficulty.name.lowercase().replaceFirstChar { it.uppercase() },
-				onLeftClick = { viewModel.onEvent(Event.ChangeDifficulty(-1)) },
-				onRightClick = { viewModel.onEvent(Event.ChangeDifficulty(1)) },
-				modifier = Modifier.fillMaxWidth(0.8f)
+			GameButton(
+				onClick = onNewGame,
+				text = "New game"
 			)
-			when (uiState.screenState) {
-				ScreenState.INITIAL -> {
-					if (uiState.hasSavedData) {
-						Button(
-							onClick = { viewModel.onEvent(Event.LoadSudoku) },
-							colors = ButtonDefaults.buttonColors(
-								containerColor = MaterialTheme.colorScheme.primaryContainer
-							)
-						) {
-							Text(
-								text = "Continue ${uiState.savedDifficulty}",
-								color = MaterialTheme.colorScheme.onPrimaryContainer,
-							)
-
-						}
-					}
-					Button(
-						onClick = { viewModel.onEvent(Event.NewGame) },
-						colors = ButtonDefaults.buttonColors(
-							containerColor = MaterialTheme.colorScheme.primaryContainer
-						)
-					) {
-						Text(
-							text = "New game",
-							color = MaterialTheme.colorScheme.onPrimaryContainer,
-						)
-					}
-				}
-
-				ScreenState.LOADING -> {
-					CircularProgressIndicator()
-				}
-
-				ScreenState.DONE -> {
-					navController.navigate(Destination.SudokuGame)
-				}
-			}
 		}
 
+		ScreenState.LOADING -> {
+			CircularProgressIndicator()
+		}
+
+		ScreenState.DONE -> {
+			LaunchedEffect(Unit) {
+				onNavigateToGame()
+			}
+		}
 	}
+}
+
+@Composable
+private fun GameButton(
+	onClick: () -> Unit,
+	text: String,
+	modifier: Modifier = Modifier
+) {
+	Button(
+		onClick = onClick,
+		colors = ButtonDefaults.buttonColors(
+			containerColor = MaterialTheme.colorScheme.primaryContainer
+		),
+		modifier = modifier
+	) {
+		Text(
+			text = text,
+			color = MaterialTheme.colorScheme.onPrimaryContainer,
+		)
+	}
+}
+
+@Composable
+private fun Selects(
+	gridSizeOptions: List<String>,
+	difficultyOptions: List<String>,
+	onGridSizeChange: (Int) -> Unit,
+	onDifficultyChange: (Int) -> Unit,
+	modifier: Modifier = Modifier
+) {
+	val rememberedGridSizeChange = rememberCallback(onGridSizeChange)
+	val rememberedDifficultyChange = rememberCallback(onDifficultyChange)
+
+	Column(modifier = modifier) {
+		HorizontalSelect(
+			options = gridSizeOptions,
+			onChange = rememberedGridSizeChange,
+			modifier = Modifier.fillMaxWidth()
+		)
+		HorizontalSelect(
+			options = difficultyOptions,
+			onChange = rememberedDifficultyChange,
+			modifier = Modifier.fillMaxWidth()
+		)
+	}
+}
+
+@Composable
+private fun rememberCallback(callback: (Int) -> Unit): (Int) -> Unit {
+	return remember(callback) { callback }
 }
 
 @Preview
