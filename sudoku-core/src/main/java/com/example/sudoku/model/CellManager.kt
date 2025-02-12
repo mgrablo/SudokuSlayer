@@ -3,7 +3,9 @@ package com.example.sudoku.model
 import com.example.sudoku.solver.ClassicSudokuSolver
 
 class CellManager(
-	private val data: Array<SudokuCellData>
+	private val data: Array<SudokuCellData>,
+	private val gridSize: Int,
+	private val blockSize: Int
 ) {
 	fun addAttribute(row: Int, col: Int, attribute: CellAttributes) {
 		updateCell(row, col) { it.copy(attributes = it.attributes + attribute) }
@@ -88,14 +90,14 @@ class CellManager(
 		updateFilteredCells(
 			filterCondition =  { !it.attributes.contains(CellAttributes.GENERATED) },
 			updater = { cell ->
-				val possibleNumbers = (1..9).filter { ClassicSudokuSolver.isValidMove(SudokuGrid.fromCellData(data), cell.row, cell.col, it) }.toSet()
+				val possibleNumbers = (1..gridSize).filter { ClassicSudokuSolver.isValidMove(SudokuGrid.fromCellData(data), cell.row, cell.col, it) }.toSet()
 				cell.copy(cornerNotes = possibleNumbers)
 			}
 		)
 	}
 
 	fun markRuleBreakingCells() {
-		for (row in 0..8) {
+		for (row in 0 until gridSize) {
 			val rowData = data.filter { it.row == row && it.number != 0}
 			rowData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
 				updateFilteredCells(
@@ -104,7 +106,7 @@ class CellManager(
 				)
 			}
 		}
-		for (col in 0..8) {
+		for (col in 0 until gridSize) {
 			val colData = data.filter { it.col == col && it.number != 0}
 			colData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
 				updateFilteredCells(
@@ -113,11 +115,11 @@ class CellManager(
 				)
 			}
 		}
-		for (subgrid in 0..8) {
-			val subgridData = data.filter { it.number != 0 && ((it.row / 3) * 3 + it.col / 3) == subgrid}
+		for (subgrid in 0 until gridSize) {
+			val subgridData = data.filter { it.number != 0 && ((it.row / blockSize) * blockSize + it.col / blockSize) == subgrid}
 			subgridData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
 				updateFilteredCells(
-					filterCondition = {((it.row / 3) * 3 + it.col / 3) == subgrid && it.number == number },
+					filterCondition = {((it.row / blockSize) * blockSize + it.col / blockSize) == subgrid && it.number == number },
 					updater = { it.copy(attributes = it.attributes + CellAttributes.RULE_BREAKING) }
 				)
 			}
@@ -132,7 +134,7 @@ class CellManager(
 	}
 
 	private fun updateCell(row: Int, col: Int, updater: (SudokuCellData) -> SudokuCellData) {
-		val index = row * 9 + col
+		val index = row * gridSize + col
 		data[index] = updater(data[index])
 	}
 

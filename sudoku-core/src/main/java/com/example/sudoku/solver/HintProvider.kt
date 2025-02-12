@@ -30,14 +30,14 @@ data class Hint(
 	val enforcingCells: List<SudokuCellData> = emptyList() // field that contains cells that enforce the hint
 )
 
-class HintProvider() {
+class HintProvider(val gridSize: Int = 9) {
 	fun provideHint(data: Array<SudokuCellData>): Hint? {
 		// Check Naked Single from entire grid.
 		findNakedSingle(data)?.let { return it }
 
 		// Generate Houses from data
 		val houses = mutableListOf<House>()
-		(0..8).forEach { i ->
+		(0..gridSize).forEach { i ->
 			houses.add(House.Block(data.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
 			houses.add(House.Row(data.filter { it.row == i }, i))
 			houses.add(House.Column(data.filter { it.col == i }, i))
