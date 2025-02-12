@@ -88,6 +88,7 @@ class SudokuDataStoreRepository(
 
 		return SudokuGridProto.newBuilder()
 			.setSeed(domainSudoku.seed ?: 0)
+			.setGridSize(domainSudoku.gridSize)
 			.addAllData(protoCells)
 			.build()
 	}

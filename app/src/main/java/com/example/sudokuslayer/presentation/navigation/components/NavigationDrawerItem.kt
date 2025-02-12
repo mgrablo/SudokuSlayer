@@ -14,7 +14,7 @@ import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.navigation.DestinationIcon
 
 @Composable
-fun MyNavigationDrawerItem(isSelected: Boolean, destination: Destination, onClick: () -> Unit) {
+fun NavigationDrawerItem(isSelected: Boolean, destination: Destination, onClick: () -> Unit) {
 	NavigationDrawerItem(
 		icon = {
 			DestinationIcon(destination.icon)
