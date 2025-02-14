@@ -2,7 +2,7 @@ package com.example.sudoku.dlxalgorithm
 
 class SudokuExactCoverMatrix private constructor(
 	val gridSize: Int,
-	val subgridSize: Int
+	val subgridSize: Int,
 ) : ExactCoverMatrix {
 	override val totalOptions = gridSize * gridSize * gridSize
 	override val totalConstraints = gridSize * gridSize * 4
@@ -15,7 +15,11 @@ class SudokuExactCoverMatrix private constructor(
 		}
 	}
 
-	fun cover(row: Int, col: Int, num: Int): Array<BooleanArray> {
+	fun cover(
+		row: Int,
+		col: Int,
+		num: Int,
+	): Array<BooleanArray> {
 		val rowIndex = cellToRowIndex(row, col, num)
 		val matrixRow = exactCoverMatrix.getMatrixRow(rowIndex)
 		matrixRow.forEachIndexed { col, filled ->
@@ -40,11 +44,19 @@ class SudokuExactCoverMatrix private constructor(
 		return matrix
 	}
 
-	private fun cellToRowIndex(row: Int, col: Int, digit: Int): Int {
+	private fun cellToRowIndex(
+		row: Int,
+		col: Int,
+		digit: Int,
+	): Int {
 		return row * (gridSize * gridSize) + col * gridSize + (digit - 1)
 	}
 
-	private fun createConstraints(row: Int, col: Int, num: Int): List<Int> {
+	private fun createConstraints(
+		row: Int,
+		col: Int,
+		num: Int,
+	): List<Int> {
 		val rowColConstraint = row * gridSize + col
 		val rowNumConstraint = gridSize * gridSize + row * gridSize + num
 		val colNumConstraint = 2 * gridSize * gridSize + col * gridSize + num
@@ -52,9 +64,13 @@ class SudokuExactCoverMatrix private constructor(
 		return listOf(rowColConstraint, rowNumConstraint, colNumConstraint, boxNumConstraint)
 	}
 
-	private fun getBoxIndex(row: Int, col: Int): Int {
+	private fun getBoxIndex(
+		row: Int,
+		col: Int,
+	): Int {
 		return (row / subgridSize) * subgridSize + (col / subgridSize)
 	}
+
 	companion object {
 		fun createClassic(): SudokuExactCoverMatrix {
 			val matrix = SudokuExactCoverMatrix(9, 3)
@@ -62,7 +78,10 @@ class SudokuExactCoverMatrix private constructor(
 			return matrix
 		}
 
-		fun create(gridSize: Int, subgridSize: Int): SudokuExactCoverMatrix {
+		fun create(
+			gridSize: Int,
+			subgridSize: Int,
+		): SudokuExactCoverMatrix {
 			val matrix = SudokuExactCoverMatrix(gridSize, subgridSize)
 			matrix.buildBase()
 			return matrix

@@ -47,7 +47,7 @@ fun NavigationDrawer(
 				Text(
 					text = "Sudoku Slayer",
 					modifier = Modifier.padding(16.dp),
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 				HorizontalDivider()
 				destinations.forEach { destination ->
@@ -59,11 +59,11 @@ fun NavigationDrawer(
 							scope.launch {
 								drawerState.close()
 							}
-						}
+						},
 					)
 				}
 			}
-		}
+		},
 	) {
 		Box(Modifier.fillMaxSize()) {
 			content()

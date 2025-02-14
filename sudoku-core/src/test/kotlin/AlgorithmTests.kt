@@ -10,29 +10,28 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class AlgorithmTests {
-
 	@Nested
 	@DisplayName("Matrix Conversion Tests")
 	inner class MatrixConversionTests {
-
 		@Test
 		fun `should convert simple boolean matrix to DLX structure`() {
-			val booleanMatrix = arrayOf(
-				booleanArrayOf(true, false, true, true, false),
-				booleanArrayOf(false, true, false, true, false),
-				booleanArrayOf(false, true, true, true, false),
-			)
+			val booleanMatrix =
+				arrayOf(
+					booleanArrayOf(true, false, true, true, false),
+					booleanArrayOf(false, true, false, true, false),
+					booleanArrayOf(false, true, true, true, false),
+				)
 
 			val root = booleanMatrix.toRootNode()
 
 			// Verify structure
 			assertEquals("root", root.name, "Root node name should be 'Root node'")
-			assertEquals("H0", ( root.right as HeaderNode).name, "First column header should be 'H0'")
-			assertEquals("H1", ( root.right.right as HeaderNode).name, "Second column header should be 'H1'")
-			assertEquals("H2", ( root.right.right.right as HeaderNode).name, "Third column header should be 'H2'")
-			assertEquals(1, ( root.right as HeaderNode).numOfNodes, "Column 0 should have 1 nodes")
-			assertEquals(2, ( root.right.right as HeaderNode).numOfNodes, "Column 1 should have 2 nodes")
-			assertEquals(0, ( root.right.right.right.right.right as HeaderNode).numOfNodes, "Column 4 should have 0 nodes")
+			assertEquals("H0", (root.right as HeaderNode).name, "First column header should be 'H0'")
+			assertEquals("H1", (root.right.right as HeaderNode).name, "Second column header should be 'H1'")
+			assertEquals("H2", (root.right.right.right as HeaderNode).name, "Third column header should be 'H2'")
+			assertEquals(1, (root.right as HeaderNode).numOfNodes, "Column 0 should have 1 nodes")
+			assertEquals(2, (root.right.right as HeaderNode).numOfNodes, "Column 1 should have 2 nodes")
+			assertEquals(0, (root.right.right.right.right.right as HeaderNode).numOfNodes, "Column 4 should have 0 nodes")
 		}
 
 		@Test
@@ -47,7 +46,6 @@ class AlgorithmTests {
 	@Nested
 	@DisplayName("DLX Algorithm Tests")
 	inner class DLXTests {
-
 		@Test
 		@DisplayName("Should find single solution for simple exact cover problem")
 		fun testSimpleExactCover() {
@@ -59,7 +57,7 @@ class AlgorithmTests {
 			assertEquals(1, result.size, "Should find exactly one solution")
 			assertTrue(
 				result[0].containsAll(listOf(0, 2)),
-				"Solution should include rows 0 and 2"
+				"Solution should include rows 0 and 2",
 			)
 		}
 
@@ -85,8 +83,9 @@ class AlgorithmTests {
 			root.solveAll().also { result.addAll(it) }
 
 			assertEquals(
-				limit, result.size,
-				"Should only find specified number of solutions"
+				limit,
+				result.size,
+				"Should only find specified number of solutions",
 			)
 		}
 
@@ -97,11 +96,12 @@ class AlgorithmTests {
 			// 1 1 0    Column 1 needs to be covered
 			// 0 0 1    Column 2 needs to be covered
 			// 0 0 1    But covering any row creates conflicts
-			val noSolutionMatrix = arrayOf(
-				booleanArrayOf(true, true, false),
-				booleanArrayOf(false, true, true),
-				booleanArrayOf(true, false, true)
-			).toRootNode()
+			val noSolutionMatrix =
+				arrayOf(
+					booleanArrayOf(true, true, false),
+					booleanArrayOf(false, true, true),
+					booleanArrayOf(true, false, true),
+				).toRootNode()
 
 			val result = mutableListOf<Int>()
 			noSolutionMatrix.solve {
@@ -109,8 +109,9 @@ class AlgorithmTests {
 			}
 
 			assertEquals(
-				0, result.size,
-				"Matrix with no possible solution should have empty solutions list"
+				0,
+				result.size,
+				"Matrix with no possible solution should have empty solutions list",
 			)
 		}
 
@@ -125,30 +126,36 @@ class AlgorithmTests {
 			}
 
 			assertEquals(
-				0, result.size,
-				"Empty matrix should have no solutions"
+				0,
+				result.size,
+				"Empty matrix should have no solutions",
 			)
 		}
 
 		@Test
 		@DisplayName("Should handle matrix with all false values")
 		fun testAllFalseMatrix() {
-			val allFalseMatrix = arrayOf(
-				booleanArrayOf(false, false, false),
-				booleanArrayOf(false, false, false),
-				booleanArrayOf(false, false, false)
-			).toRootNode()
+			val allFalseMatrix =
+				arrayOf(
+					booleanArrayOf(false, false, false),
+					booleanArrayOf(false, false, false),
+					booleanArrayOf(false, false, false),
+				).toRootNode()
 
 			val result = mutableListOf<List<Int>>()
 			allFalseMatrix.solveAll().also { result.addAll(it) }
 
 			assertEquals(
-				0, result.size,
-				"Matrix with all false values should have no solutions"
+				0,
+				result.size,
+				"Matrix with all false values should have no solutions",
 			)
 		}
 
-		private fun createLargeMatrix(rows: Int, cols: Int): RootNode {
+		private fun createLargeMatrix(
+			rows: Int,
+			cols: Int,
+		): RootNode {
 			val matrix = Array(rows) { BooleanArray(cols) { row -> (row) % 2 == 0 } }
 			val root = matrix.toRootNode()
 			return root
@@ -162,12 +169,13 @@ class AlgorithmTests {
 			// 0 1 1 0
 			// 0 1 0 1
 
-			val root = arrayOf(
-				booleanArrayOf(true, false, false, true),
-				booleanArrayOf(true, true, false, false),
-				booleanArrayOf(false, true, true, false),
-				booleanArrayOf(false, true, false, true),
-			).toRootNode()
+			val root =
+				arrayOf(
+					booleanArrayOf(true, false, false, true),
+					booleanArrayOf(true, true, false, false),
+					booleanArrayOf(false, true, true, false),
+					booleanArrayOf(false, true, false, true),
+				).toRootNode()
 
 			return root
 		}
@@ -180,12 +188,13 @@ class AlgorithmTests {
 			// 0 1 1 0
 			// 0 0 1 0
 
-			val root = arrayOf(
-				booleanArrayOf(true, false, false, true),
-				booleanArrayOf(false, true, false, false),
-				booleanArrayOf(false, false, true, false),
-				booleanArrayOf(false, true, true, false),
-			).toRootNode()
+			val root =
+				arrayOf(
+					booleanArrayOf(true, false, false, true),
+					booleanArrayOf(false, true, false, false),
+					booleanArrayOf(false, false, true, false),
+					booleanArrayOf(false, true, true, false),
+				).toRootNode()
 
 			return root
 		}

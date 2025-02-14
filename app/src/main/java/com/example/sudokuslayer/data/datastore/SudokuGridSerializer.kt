@@ -21,12 +21,15 @@ object SudokuGridSerializer : Serializer<SudokuGrid> {
 		}
 	}
 
-	override suspend fun writeTo(t: SudokuGrid, output: OutputStream) {
+	override suspend fun writeTo(
+		t: SudokuGrid,
+		output: OutputStream,
+	) {
 		t.writeTo(output)
 	}
 }
 
 val Context.sudokuGridDataStore: DataStore<SudokuGrid> by dataStore(
 	fileName = "sudokugrid.db",
-	serializer = SudokuGridSerializer
+	serializer = SudokuGridSerializer,
 )

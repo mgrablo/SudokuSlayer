@@ -29,61 +29,63 @@ data class SudokuCreatorUiState(
 enum class ScreenState {
 	INITIAL,
 	LOADING,
-	DONE
+	DONE,
 }
 
 @Stable
 data class SavedGameData(
 	val elapsedTime: Long,
-	val difficulty: SudokuDifficulty
+	val difficulty: SudokuDifficulty,
+	val gridSize: SudokuGridSize,
 )
 
+@Stable
 enum class SudokuGridSize {
 	FOUR,
 	NINE,
-	SIXTEEN;
+	SIXTEEN,
+	;
 
-	override fun toString(): String {
-		return when (this) {
+	override fun toString(): String =
+		when (this) {
 			FOUR -> "4x4"
 			NINE -> "9x9"
 			SIXTEEN -> "16x16"
 		}
-	}
 
 	companion object {
-		fun fromInt(size: Int): SudokuGridSize {
-			return when (size) {
+		fun fromInt(size: Int): SudokuGridSize =
+			when (size) {
 				0 -> FOUR
 				1 -> NINE
 				2 -> SIXTEEN
 				else -> NINE
 			}
-		}
 	}
 }
 
+@Stable
 enum class SudokuDifficulty {
 	EASY,
 	MEDIUM,
 	HARD,
-	EXPERT;
+	EXPERT,
+	;
 
 	companion object {
-		fun fromInt(difficulty: Int): SudokuDifficulty {
-			return when (difficulty) {
+		fun fromInt(difficulty: Int): SudokuDifficulty =
+			when (difficulty) {
 				0 -> EASY
 				1 -> MEDIUM
 				2 -> HARD
 				3 -> EXPERT
 				else -> EASY
 			}
-		}
 	}
 }
 
 class SudokuCreatorViewModel(
-	private val dataStoreRepository: SudokuDataStoreRepository
+	private val dataStoreRepository: SudokuDataStoreRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -93,8 +95,12 @@ class SudokuCreatorViewModel(
 			dataStoreRepository.sudokuGridProto.firstOrNull()?.let { sudoku ->
 				_uiState.update {
 					it.copy(
-						selectedGridSize = SudokuGridSize.fromInt(sudoku.gridSize),
-						savedGameData = SavedGameData(0, SudokuDifficulty.EASY)
+						savedGameData =
+							SavedGameData(
+								0,
+								SudokuDifficulty.EASY,
+								SudokuGridSize.fromInt(sudoku.gridSize),
+							),
 					)
 				}
 			}
@@ -102,7 +108,7 @@ class SudokuCreatorViewModel(
 			dataStoreRepository.difficultyProto.firstOrNull()?.let { difficulty ->
 				_uiState.update {
 					it.copy(
-						savedGameData = it.savedGameData!!.copy(difficulty = difficulty)
+						savedGameData = it.savedGameData!!.copy(difficulty = difficulty),
 					)
 				}
 			}
@@ -110,7 +116,7 @@ class SudokuCreatorViewModel(
 			dataStoreRepository.elapsedTimeProto.firstOrNull()?.let { elapsedTime ->
 				_uiState.update {
 					it.copy(
-						savedGameData = it.savedGameData!!.copy(elapsedTime = elapsedTime)
+						savedGameData = it.savedGameData!!.copy(elapsedTime = elapsedTime),
 					)
 				}
 			}
@@ -118,9 +124,16 @@ class SudokuCreatorViewModel(
 	}
 
 	sealed interface Event {
-		data class ChangeDifficulty(val num: Int) : Event
-		data class ChangeGridSize(val num: Int) : Event
+		data class ChangeDifficulty(
+			val num: Int,
+		) : Event
+
+		data class ChangeGridSize(
+			val num: Int,
+		) : Event
+
 		data object NewGame : Event
+
 		data object LoadSudoku : Event
 	}
 
@@ -142,7 +155,7 @@ class SudokuCreatorViewModel(
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					selectedGridSize = SudokuGridSize.fromInt(num)
+					selectedGridSize = SudokuGridSize.fromInt(num),
 				)
 			}
 		}
@@ -152,7 +165,7 @@ class SudokuCreatorViewModel(
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					selectedDifficulty = SudokuDifficulty.fromInt(num)
+					selectedDifficulty = SudokuDifficulty.fromInt(num),
 				)
 			}
 		}
@@ -163,22 +176,23 @@ class SudokuCreatorViewModel(
 			it.copy(loadingState = ScreenState.LOADING)
 		}
 		viewModelScope.launch(Dispatchers.IO) {
-			val gridSize = when (_uiState.value.selectedGridSize) {
-				SudokuGridSize.FOUR -> 4
-				SudokuGridSize.NINE -> 9
-				SudokuGridSize.SIXTEEN -> 16
-			}
+			val gridSize =
+				when (_uiState.value.selectedGridSize) {
+					SudokuGridSize.FOUR -> 4
+					SudokuGridSize.NINE -> 9
+					SudokuGridSize.SIXTEEN -> 16
+				}
 			val generator = ClassicSudokuGenerator(gridSize)
 			val cellsToRemove: Int =
 				calculateCellsToRemove(
 					_uiState.value.selectedDifficulty,
-					_uiState.value.selectedGridSize
+					_uiState.value.selectedGridSize,
 				)
 
-			val sudoku = generator.createSudoku(cellsToRemove)
+			val sudoku = generator.createSudoku(cellsToRemove, Random.nextLong())
 			_uiState.update {
 				it.copy(
-					loadingState = ScreenState.DONE
+					loadingState = ScreenState.DONE,
 				)
 			}
 
@@ -195,7 +209,7 @@ class SudokuCreatorViewModel(
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					loadingState = ScreenState.DONE
+					loadingState = ScreenState.DONE,
 				)
 			}
 		}
@@ -203,35 +217,37 @@ class SudokuCreatorViewModel(
 
 	private fun calculateCellsToRemove(
 		difficulty: SudokuDifficulty,
-		gridSize: SudokuGridSize
-	): Int {
-		return when (gridSize) {
-			SudokuGridSize.FOUR -> when (difficulty) {
-				SudokuDifficulty.EASY -> Random.nextInt(2, 4)
-				SudokuDifficulty.MEDIUM -> Random.nextInt(4, 6)
-				SudokuDifficulty.HARD -> Random.nextInt(6, 8)
-				SudokuDifficulty.EXPERT -> Random.nextInt(8, 10)
-			}
+		gridSize: SudokuGridSize,
+	): Int =
+		when (gridSize) {
+			SudokuGridSize.FOUR ->
+				when (difficulty) {
+					SudokuDifficulty.EASY -> Random.nextInt(2, 4)
+					SudokuDifficulty.MEDIUM -> Random.nextInt(4, 6)
+					SudokuDifficulty.HARD -> Random.nextInt(6, 8)
+					SudokuDifficulty.EXPERT -> Random.nextInt(8, 10)
+				}
 
-			SudokuGridSize.NINE -> when (difficulty) {
-				SudokuDifficulty.EASY -> Random.nextInt(30, 40)
-				SudokuDifficulty.MEDIUM -> Random.nextInt(41, 50)
-				SudokuDifficulty.HARD -> Random.nextInt(51, 60)
-				SudokuDifficulty.EXPERT -> Random.nextInt(61, 64)
-			}
+			SudokuGridSize.NINE ->
+				when (difficulty) {
+					SudokuDifficulty.EASY -> Random.nextInt(30, 40)
+					SudokuDifficulty.MEDIUM -> Random.nextInt(41, 50)
+					SudokuDifficulty.HARD -> Random.nextInt(51, 60)
+					SudokuDifficulty.EXPERT -> Random.nextInt(61, 64)
+				}
 
-			SudokuGridSize.SIXTEEN -> when (difficulty) {
-				SudokuDifficulty.EASY -> Random.nextInt(100, 120)
-				SudokuDifficulty.MEDIUM -> Random.nextInt(121, 140)
-				SudokuDifficulty.HARD -> Random.nextInt(141, 160)
-				SudokuDifficulty.EXPERT -> Random.nextInt(161, 180)
-			}
+			SudokuGridSize.SIXTEEN ->
+				when (difficulty) {
+					SudokuDifficulty.EASY -> Random.nextInt(100, 120)
+					SudokuDifficulty.MEDIUM -> Random.nextInt(121, 140)
+					SudokuDifficulty.HARD -> Random.nextInt(141, 160)
+					SudokuDifficulty.EXPERT -> Random.nextInt(161, 180)
+				}
 		}
-	}
 }
 
-class SudokuCreatorViewModelFactory(private val dataStoreRepository: SudokuDataStoreRepository) :
-	ViewModelProvider.NewInstanceFactory() {
-	override fun <T : ViewModel> create(modelClass: Class<T>): T =
-		SudokuCreatorViewModel(dataStoreRepository) as T
+class SudokuCreatorViewModelFactory(
+	private val dataStoreRepository: SudokuDataStoreRepository,
+) : ViewModelProvider.NewInstanceFactory() {
+	override fun <T : ViewModel> create(modelClass: Class<T>): T = SudokuCreatorViewModel(dataStoreRepository) as T
 }

@@ -10,7 +10,6 @@ class HeaderNode(val name: String) : DLXNode() {
 
 	var numOfNodes: Int = 0
 
-
 	// Removes column from the matrix, as well as every row that has node in said column
 	fun cover() {
 		// Hides column by pointing this node's neighbors at each other
@@ -24,10 +23,10 @@ class HeaderNode(val name: String) : DLXNode() {
 			while (rowNode != colNode) {
 				// Hides node by pointing (up, down) neighbors at each other
 				rowNode.removeUpDown()
-//				println((rowNode as DataNode).name)
+// 				println((rowNode as DataNode).name)
 				(rowNode as DataNode).header.run {
 					numOfNodes = numOfNodes - 1
-//					println("header: ${rowNode.header.name} nodes: ${rowNode.header.numOfNodes}")
+// 					println("header: ${rowNode.header.name} nodes: ${rowNode.header.numOfNodes}")
 				}
 				// Move right
 				rowNode = rowNode.right
@@ -45,7 +44,6 @@ class HeaderNode(val name: String) : DLXNode() {
 			// Going left to right
 			var rowNode = colNode.left
 			while (rowNode != colNode) {
-
 				rowNode.up.insertDown(rowNode)
 				(rowNode as DataNode).header.numOfNodes++
 				// Move left

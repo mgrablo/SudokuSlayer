@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class TimerViewModel(
-	private val dataStoreRepository: SudokuDataStoreRepository
+	private val dataStoreRepository: SudokuDataStoreRepository,
 ) : ViewModel(), DefaultLifecycleObserver {
 	private var isRunning = false
 	private val _elapsedTime = MutableStateFlow(0L)
@@ -66,8 +66,7 @@ class TimerViewModel(
 }
 
 class TimerViewModelFactory(
-	private val dataStoreRepository: SudokuDataStoreRepository
+	private val dataStoreRepository: SudokuDataStoreRepository,
 ) : ViewModelProvider.NewInstanceFactory() {
-	override fun <T : ViewModel> create(modelClass: Class<T>): T =
-		TimerViewModel(dataStoreRepository) as T
+	override fun <T : ViewModel> create(modelClass: Class<T>): T = TimerViewModel(dataStoreRepository) as T
 }

@@ -43,126 +43,129 @@ fun KeyPad(
 	gridSize: Int,
 	modifier: Modifier = Modifier,
 ) {
-	val leftActionPadItems = listOf(
-		ActionPadItem(
-			icon = {
-				Icon(
-					painter = painterResource(R.drawable.lightbulb),
-					contentDescription = "Show Hint"
-				)
-			},
-			contentDescription = "Show Hint",
-			onClick = onHintClick,
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
-		),
-		ActionPadItem(
-			icon = {
-				Icon(
-					painter = painterResource(R.drawable.question_mark),
-					contentDescription = "Show mistakes"
-				)
-			},
-			contentDescription = "Show mistakes",
-			onClick = onShowMistakesClick,
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
-		),
-		ActionPadItem(
-			icon = {
-				Icon(
-					imageVector = Icons.Default.Refresh,
-					contentDescription = "Restart this game"
-				)
-			},
-			contentDescription = "Restart game",
-			onClick = onResetClick,
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
+	val leftActionPadItems =
+		listOf(
+			ActionPadItem(
+				icon = {
+					Icon(
+						painter = painterResource(R.drawable.lightbulb),
+						contentDescription = "Show Hint",
+					)
+				},
+				contentDescription = "Show Hint",
+				onClick = onHintClick,
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = {
+					Icon(
+						painter = painterResource(R.drawable.question_mark),
+						contentDescription = "Show mistakes",
+					)
+				},
+				contentDescription = "Show mistakes",
+				onClick = onShowMistakesClick,
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = {
+					Icon(
+						imageVector = Icons.Default.Refresh,
+						contentDescription = "Restart this game",
+					)
+				},
+				contentDescription = "Restart game",
+				onClick = onResetClick,
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
 		)
-	)
-	val middleActionPadItems = listOf(
-		ActionPadItem(
-			icon = { Icon(painterResource(R.drawable.undo), "Undo icon") },
-			onClick = onUndoClick,
-			contentDescription = "Undo last move",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
-		),
-		ActionPadItem(
-			icon = { Icon(Icons.Default.Clear, "Clear icon") },
-			onClick = onClearClick,
-			contentDescription = "Clear cell",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
-
-		),
-		ActionPadItem(
-			icon = { Icon(painterResource(R.drawable.redo), "Redo icon") },
-			onClick = onRedoClick,
-			contentDescription = "Redo last move",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
+	val middleActionPadItems =
+		listOf(
+			ActionPadItem(
+				icon = { Icon(painterResource(R.drawable.undo), "Undo icon") },
+				onClick = onUndoClick,
+				contentDescription = "Undo last move",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = { Icon(Icons.Default.Clear, "Clear icon") },
+				onClick = onClearClick,
+				contentDescription = "Clear cell",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = { Icon(painterResource(R.drawable.redo), "Redo icon") },
+				onClick = onRedoClick,
+				contentDescription = "Redo last move",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
 		)
-	)
-	val rightActionPadItems = listOf(
-		ActionPadItem(
-			icon = { Icon(painterResource(R.drawable.tag), "Hashtag icon") },
-			onClick = onNumberSwitchClick,
-			contentDescription = "Switch to number input mode",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground,
-		),
-		ActionPadItem(
-			icon = { Icon(painterResource(R.drawable.stylus_note), "Pen icon") },
-			onClick = onNoteSwitchClick,
-			contentDescription = "Switch to note input mode",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
-		),
-		ActionPadItem(
-			icon = { Icon(painterResource(R.drawable.palette), "Palette icon") },
-			onClick = onColorSwitchClick,
-			contentDescription = "Switch to color input mode",
-			backgroundColor = MaterialTheme.colorScheme.background,
-			iconColor = MaterialTheme.colorScheme.onBackground
+	val rightActionPadItems =
+		listOf(
+			ActionPadItem(
+				icon = { Icon(painterResource(R.drawable.tag), "Hashtag icon") },
+				onClick = onNumberSwitchClick,
+				contentDescription = "Switch to number input mode",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = { Icon(painterResource(R.drawable.stylus_note), "Pen icon") },
+				onClick = onNoteSwitchClick,
+				contentDescription = "Switch to note input mode",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
+			ActionPadItem(
+				icon = { Icon(painterResource(R.drawable.palette), "Palette icon") },
+				onClick = onColorSwitchClick,
+				contentDescription = "Switch to color input mode",
+				backgroundColor = MaterialTheme.colorScheme.background,
+				iconColor = MaterialTheme.colorScheme.onBackground,
+			),
 		)
-	)
 
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
-		modifier = modifier
-			.heightIn(350.dp, 400.dp)
-			.fillMaxWidth()
-			.padding(8.dp)
+		modifier =
+			modifier
+				.heightIn(350.dp, 400.dp)
+				.fillMaxWidth()
+				.padding(8.dp),
 	) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceEvenly,
 			verticalAlignment = Alignment.CenterVertically,
-//			modifier = Modifier.weight(maxOf(sqrt(gridSize.toDouble()).toFloat(), 3f))
+// 			modifier = Modifier.weight(maxOf(sqrt(gridSize.toDouble()).toFloat(), 3f))
 		) {
 			ActionPad(
 				items = leftActionPadItems,
 				orientation = ActionPadOrientation.VERTICAL,
-				modifier = Modifier.weight(1f)
+				modifier = Modifier.weight(1f),
 			)
 			NumberPad(
 				gridSize = gridSize,
 				onButtonClick = onNumberClick,
 				inputMode = inputMode,
-				modifier = Modifier.weight(sqrt(gridSize.toDouble()).toFloat())
+				modifier = Modifier.weight(sqrt(gridSize.toDouble()).toFloat()),
 			)
 			ActionPad(
 				items = rightActionPadItems,
 				orientation = ActionPadOrientation.VERTICAL,
-				modifier = Modifier.weight(1f)
+				modifier = Modifier.weight(1f),
 			)
 		}
 		ActionPad(
 			items = middleActionPadItems,
 			orientation = ActionPadOrientation.HORIZONTAL,
-//			modifier = Modifier.weight(1f)
+// 			modifier = Modifier.weight(1f)
 		)
 	}
 }
@@ -206,7 +209,7 @@ private fun KeyPadFourPreview() {
 			onShowMistakesClick = { },
 			onResetClick = { },
 			inputMode = InputMode.NUMBER,
-			gridSize = 4
+			gridSize = 4,
 		)
 	}
 }
@@ -228,7 +231,7 @@ private fun KeyPadSixteenPreview() {
 			onShowMistakesClick = { },
 			onResetClick = { },
 			inputMode = InputMode.NUMBER,
-			gridSize = 16
+			gridSize = 16,
 		)
 	}
 }

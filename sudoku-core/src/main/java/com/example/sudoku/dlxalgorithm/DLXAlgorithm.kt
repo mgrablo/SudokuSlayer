@@ -15,7 +15,7 @@ import java.util.Stack
 object DLXAlgorithm {
 	fun RootNode.solve(
 		shouldContinue: () -> Boolean = { true },
-		collect: (ArrayList<Int>) -> Boolean
+		collect: (ArrayList<Int>) -> Boolean,
 	) {
 		solveProblem(collect = collect, shouldContinue = shouldContinue)
 	}
@@ -24,28 +24,30 @@ object DLXAlgorithm {
 		ArrayList<List<Int>>().apply {
 			solveProblem(
 				collect = { add(it) },
-				shouldContinue = { true }
+				shouldContinue = { true },
 			)
 		}
 
 	@OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
-	fun CoroutineScope.solveSuspend(rootNode: RootNode, limit: Int = 2) =
-		produce<List<Int>>(capacity = 2) {
-			var count = 0
-			rootNode.solveProblem(
-				collect = { solution ->
-					runCatching { channel.trySend(solution.toList()) }.isSuccess
-					count++
-					false
-				},
-				shouldContinue = { !isClosedForSend && isActive && count <= limit }
-			)
-		}
+	fun CoroutineScope.solveSuspend(
+		rootNode: RootNode,
+		limit: Int = 2,
+	) = produce<List<Int>>(capacity = 2) {
+		var count = 0
+		rootNode.solveProblem(
+			collect = { solution ->
+				runCatching { channel.trySend(solution.toList()) }.isSuccess
+				count++
+				false
+			},
+			shouldContinue = { !isClosedForSend && isActive && count <= limit },
+		)
+	}
 
 	private fun RootNode.solveProblem(
 		solution: Stack<Int> = Stack<Int>(),
 		collect: (ArrayList<Int>) -> Boolean,
-		shouldContinue: () -> Boolean
+		shouldContinue: () -> Boolean,
 	) {
 		if (!shouldContinue()) {
 			return

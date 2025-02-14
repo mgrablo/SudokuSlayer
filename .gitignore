@@ -1,12 +1,10 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.idea
+/.vscode
+**/bin**
+/.kotlin/
 .DS_Store
 /build
 /captures
@@ -16,3 +14,4 @@ local.properties
 kls_database.db
 .idea/git_toolbox_blame.xml
 .idea/git_toolbox_prj.xml
+/.kotlin/

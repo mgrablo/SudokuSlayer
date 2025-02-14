@@ -3,20 +3,15 @@ package com.example.sudoku.solver
 import com.example.sudoku.dlxalgorithm.DLXAlgorithm.solveSuspend
 import com.example.sudoku.dlxalgorithm.DancingLinksMatrix
 import com.example.sudoku.model.SudokuGrid
-import kotlinx.coroutines.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.take
-import kotlin.random.Random
 
 object ClassicSudokuSolver : SudokuSolver {
-	var random: Random = Random.Default
-
 	// Bitwise mask for numbers 1 to gridSize
 	private fun getValidMask(gridSize: Int): Long = (1L shl (gridSize + 1)) - 2L
 
-	private fun numbersToMask(numbers: Iterable<Int>): Long =
-		numbers.fold(0L) { acc, num -> acc or (1L shl num) }
+	private fun numbersToMask(numbers: Iterable<Int>): Long = numbers.fold(0L) { acc, num -> acc or (1L shl num) }
 
 	override fun checkRow(row: IntArray): Boolean {
 		var mask = 0
@@ -37,19 +32,20 @@ object ClassicSudokuSolver : SudokuSolver {
 		sudoku: SudokuGrid,
 		rowNum: Int,
 		colNum: Int,
-		num: Int
+		num: Int,
 	): Boolean {
 		val gridSize = sudoku.gridSize
 		val subgridSize = sudoku.subgridSize
 		val rowMask = numbersToMask(sudoku.getRow(rowNum).map { it.number })
 		if (rowMask and (1L shl num) != 0L) return false
 
-		val colMask = numbersToMask(sudoku.getCol(colNum).map { it.number })
+		val colMask = numbersToMask(sudoku.getColumn(colNum).map { it.number })
 		if (colMask and (1L shl num) != 0L) return false
 
-		val subgridMask = numbersToMask(
-			sudoku.getSubgrid(rowNum, colNum, subgridSize).map { it.number },
-		)
+		val subgridMask =
+			numbersToMask(
+				sudoku.getSubgrid(rowNum, colNum, subgridSize).map { it.number },
+			)
 		return subgridMask and (1L shl num) == 0L
 	}
 
@@ -57,7 +53,7 @@ object ClassicSudokuSolver : SudokuSolver {
 		// Check rows and columns
 		for (i in 0 until sudoku.gridSize) {
 			if (!checkRow(sudoku.getRow(i).map { it.number }.toIntArray())) return false
-			if (!checkColumn(sudoku.getCol(i).map { it.number }.toIntArray())) return false
+			if (!checkColumn(sudoku.getColumn(i).map { it.number }.toIntArray())) return false
 		}
 
 		// Check subgrids
@@ -95,33 +91,36 @@ object ClassicSudokuSolver : SudokuSolver {
 		for (num in 1..sudoku.gridSize) {
 			// Check rows
 			for (row in 0 until sudoku.gridSize) {
-				if (!sudoku.getRow(row).any { it.number == num } && 
-					(0 until sudoku.gridSize).none { col -> 
-						sudoku[row, col].number == 0 && isValidMove(sudoku, row, col, num)
-					}) {
+				if (!sudoku.getRow(row).any { it.number == num } &&
+					(0 until sudoku.gridSize).none { col ->
+						sudoku.getCellAt(row, col).number == 0 && isValidMove(sudoku, row, col, num)
+					}
+				) {
 					return false
 				}
 			}
-			
+
 			// Check columns
 			for (col in 0 until sudoku.gridSize) {
-				if (!sudoku.getCol(col).any { it.number == num } && 
-					(0 until sudoku.gridSize).none { row -> 
-						sudoku[row, col].number == 0 && isValidMove(sudoku, row, col, num)
-					}) {
+				if (!sudoku.getColumn(col).any { it.number == num } &&
+					(0 until sudoku.gridSize).none { row ->
+						sudoku.getCellAt(row, col).number == 0 && isValidMove(sudoku, row, col, num)
+					}
+				) {
 					return false
 				}
 			}
-			
+
 			// Check subgrids
 			val subgridSize = sudoku.subgridSize
 			for (blockRow in 0 until sudoku.gridSize step subgridSize) {
 				for (blockCol in 0 until sudoku.gridSize step subgridSize) {
 					val subgrid = sudoku.getSubgrid(blockRow, blockCol, subgridSize)
 					if (!subgrid.any { it.number == num } &&
-						subgrid.none { cell -> 
+						subgrid.none { cell ->
 							cell.number == 0 && isValidMove(sudoku, cell.row, cell.col, num)
-						}) {
+						}
+					) {
 						return false
 					}
 				}
@@ -131,76 +130,45 @@ object ClassicSudokuSolver : SudokuSolver {
 		return true
 	}
 
-	private val moveCache = mutableMapOf<Triple<Int, Int, Int>, List<Int>>()
-
-	private fun getValidMovesWithCache(sudoku: SudokuGrid, row: Int, col: Int): List<Int> {
-		val key = Triple(row, col, sudoku.hashCode())
-		return moveCache.getOrPut(key) {
-			getValidMoves(sudoku, row, col)
-		}
-	}
-
-	private fun fillGridWithoutCheck(sudoku: SudokuGrid): Boolean {
-		val bestCell = findBestCell(sudoku) ?: return true
-		val (row, col) = bestCell
-
-		val validMoves = getValidMovesWithCache(sudoku, row, col)
-		if (validMoves.isEmpty()) return false
-
-		for (num in validMoves.shuffled(sudoku.random)) {
-			sudoku[row, col] = num
-			if (fillGridWithoutCheck(sudoku)) {
-				moveCache.clear() // Clear cache after successful fill
-				return true
+	override suspend fun fillGrid(sudoku: SudokuGrid): SudokuGrid? =
+		coroutineScope {
+			if (!isSolvable(sudoku)) {
+				return@coroutineScope null
 			}
-			sudoku[row, col] = 0
+
+			val result = solve(sudoku)
+			return@coroutineScope result
 		}
 
-		return false
-	}
+	override suspend fun solve(sudoku: SudokuGrid): SudokuGrid? =
+		coroutineScope {
+			val dlxMatrix = DancingLinksMatrix.fromSudoku(sudoku)
+			val result = mutableListOf<Int>()
+			dlxMatrix.rootNode.printNotEmptyNodes()
 
-	// Helper extension function
-	private fun SudokuGrid.copyFrom(other: SudokuGrid) {
-		other.getArray().forEach { cell ->
-			this[cell.row, cell.col] = cell.number
-		}
-	}
+			val channel = solveSuspend(dlxMatrix.rootNode, 1)
 
-	override suspend fun fillGrid(sudoku: SudokuGrid): Boolean = coroutineScope {
-		if (!isSolvable(sudoku))
-			return@coroutineScope false
+			channel.consumeAsFlow()
+				.take(1)
+				.collect {
+					result.addAll(it)
+				}
+			channel.cancel()
 
-		val result = solve(sudoku)
-		moveCache.clear()
-		return@coroutineScope result
-	}
-
-
-	suspend fun solve(sudoku: SudokuGrid): Boolean = coroutineScope {
-		val dlxMatrix = DancingLinksMatrix.fromSudoku(sudoku)
-		val result = mutableListOf<Int>()
-		dlxMatrix.rootNode.printNotEmptyNodes()
-
-		val channel = solveSuspend(dlxMatrix.rootNode, 1)
-
-		channel.consumeAsFlow()
-			.take(1)
-			.collect {
-				result.addAll(it)
+			if (result.isEmpty()) {
+				null
+			} else {
+				result.toSudokuGrid(sudoku)
 			}
-		channel.cancel()
-
-		if (result.isEmpty()) false
-
-		result.toSudokuGrid(sudoku).getArray().forEach { cell ->
-			sudoku[cell.row, cell.col] = cell.number
 		}
-		true
-	}
 
-	private fun getValidMoves(sudoku: SudokuGrid, row: Int, col: Int): List<Int> {
+	fun getValidMoves(
+		sudoku: SudokuGrid,
+		row: Int,
+		col: Int,
+	): List<Int> {
 		val rowMask = numbersToMask(sudoku.getRow(row).map { it.number })
-		val colMask = numbersToMask(sudoku.getCol(col).map { it.number })
+		val colMask = numbersToMask(sudoku.getColumn(col).map { it.number })
 		val subgridMask =
 			numbersToMask(sudoku.getSubgrid(row, col, sudoku.subgridSize).map { it.number })
 
@@ -209,50 +177,16 @@ object ClassicSudokuSolver : SudokuSolver {
 		return (1..sudoku.gridSize).filter { validMask and (1L shl it) != 0L }
 	}
 
-	override suspend fun hasUniqueSolution(sudoku: SudokuGrid): Boolean = coroutineScope {
-		val dancingLinksMatrix = DancingLinksMatrix.fromSudoku(sudoku)
-		val result = mutableListOf<List<Int>>()
+	override suspend fun hasUniqueSolution(sudoku: SudokuGrid): Boolean =
+		coroutineScope {
+			val dancingLinksMatrix = DancingLinksMatrix.fromSudoku(sudoku)
+			val result = mutableListOf<List<Int>>()
 
-		solveSuspend(dancingLinksMatrix.rootNode)
-			.consumeAsFlow()
-			.take(2)
-			.collect { result.add(it) }
+			solveSuspend(dancingLinksMatrix.rootNode)
+				.consumeAsFlow()
+				.take(2)
+				.collect { result.add(it) }
 
-		result.size == 1
-	}
-
-	fun findBestCell(sudoku: SudokuGrid): Pair<Int, Int>? {
-		var bestRow = -1
-		var bestCol = -1
-		var minPossibilities = Int.MAX_VALUE
-		val gridSize = sudoku.gridSize - 1
-
-		for (row in 0..gridSize) {
-			for (col in 0..gridSize) {
-				if (sudoku[row, col].number == 0) {
-					val possibilities = getValidMoves(sudoku, row, col).size
-					if (possibilities < minPossibilities) {
-						minPossibilities = possibilities
-						bestRow = row
-						bestCol = col
-						if (possibilities == 1) return bestRow to bestCol // Early termination
-					}
-				}
-			}
+			result.size == 1
 		}
-		return if (bestRow != -1 && bestCol != -1) bestRow to bestCol else null
-	}
-}
-
-private suspend fun List<Deferred<Boolean>>.awaitAny(): Boolean = coroutineScope {
-	val results = this@awaitAny.map { deferred ->
-		async {
-			try {
-				deferred.await()
-			} catch (e: Exception) {
-				false
-			}
-		}
-	}
-	results.awaitAll().any { it }
 }

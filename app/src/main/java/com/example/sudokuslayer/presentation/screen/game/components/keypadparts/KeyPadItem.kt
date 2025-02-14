@@ -29,14 +29,15 @@ fun KeyPadItem(
 	modifier: Modifier = Modifier,
 ) {
 	Box(
-		modifier = modifier
-			.aspectRatio(1f)
-			.clip(CircleShape)
-			.background(bgColor)
-			.clickable(
-				onClick = onClick
-			),
-		contentAlignment = Alignment.Center
+		modifier =
+			modifier
+				.aspectRatio(1f)
+				.clip(CircleShape)
+				.background(bgColor)
+				.clickable(
+					onClick = onClick,
+				),
+		contentAlignment = Alignment.Center,
 	) {
 		if (icon != null) {
 			icon()
@@ -46,7 +47,7 @@ fun KeyPadItem(
 				color = textColor,
 				style = MaterialTheme.typography.titleMedium,
 				maxLines = 1,
-				fontSize = LocalTextStyle.current.fontSize.times(0.8f)
+				fontSize = LocalTextStyle.current.fontSize.times(0.8f),
 			)
 		}
 	}
@@ -72,7 +73,7 @@ private fun KeyboardItemIconPreview() {
 			icon = {
 				Icon(
 					imageVector = Icons.Default.Clear,
-					contentDescription = "clear"
+					contentDescription = "clear",
 				)
 			},
 			onClick = { },

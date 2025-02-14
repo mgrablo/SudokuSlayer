@@ -1,12 +1,25 @@
 package com.example.sudokuslayer.presentation.screen.game
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudoku.model.addAttribute
+import com.example.sudoku.model.addCornerNote
+import com.example.sudoku.model.clearAllCornerNotes
+import com.example.sudoku.model.clearCornerNotes
+import com.example.sudoku.model.clearGrid
+import com.example.sudoku.model.clearMatchingNumberHighlight
+import com.example.sudoku.model.clearRowColumnHighlight
+import com.example.sudoku.model.clearRuleBreakingCells
+import com.example.sudoku.model.fillNotes
+import com.example.sudoku.model.highlightMatchingCells
+import com.example.sudoku.model.highlightRowAndColumn
+import com.example.sudoku.model.markRuleBreakingCells
+import com.example.sudoku.model.removeAttribute
+import com.example.sudoku.model.removeCornerNote
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintProvider
@@ -18,6 +31,10 @@ import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
+import kotlinx.collections.immutable.minus
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.plus
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,57 +42,79 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class SudokuGameViewModel(
-	private val dataStoreRepository: SudokuDataStoreRepository
+	private val dataStoreRepository: SudokuDataStoreRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
 	private val _isLoading = MutableStateFlow(false)
 	val isLoading: StateFlow<Boolean> = _isLoading
+	val data = uiState.value.sudoku.data
 
 	init {
 		_isLoading.value = true
-		viewModelScope.launch(Dispatchers.IO) {
-			loadData()
-		}.invokeOnCompletion {
-			_isLoading.value = false
-		}
+		viewModelScope
+			.launch(Dispatchers.IO) {
+				loadData()
+			}.invokeOnCompletion {
+				_isLoading.value = false
+			}
 	}
 
 	private val lastMoves: ArrayDeque<SudokuMove> = ArrayDeque()
 	private val futureMoves: ArrayDeque<SudokuMove> = ArrayDeque()
 
 	sealed interface Event {
-		data class SelectCell(val row: Int, val col: Int) : Event
-		data class InputNumber(val number: Int) : Event
-		data class SwitchInputMode(val inputMode: InputMode) : Event
+		data class SelectCell(
+			val row: Int,
+			val col: Int,
+		) : Event
+
+		data class InputNumber(
+			val number: Int,
+		) : Event
+
+		data class SwitchInputMode(
+			val inputMode: InputMode,
+		) : Event
+
 		data object ClearCell : Event
+
 		data object Undo : Event
+
 		data object Redo : Event
+
 		data object ProvideHint : Event
+
 		data object ExplainHint : Event
+
 		data object ShowMistakes : Event
+
 		data object HintFillNotes : Event
+
 		data object ResetGame : Event
+
 		data object ResetNotes : Event
+
 		data object DismissVictoryDialog : Event
 	}
 
 	fun onEvent(event: Event) {
 		when (event) {
 			is Event.SelectCell -> selectCell(event.row, event.col)
-			is Event.InputNumber -> inputNumber(
-				event.number,
-				_uiState.value.selectedCell,
-				_uiState.value.inputMode
-			)
+			is Event.InputNumber ->
+				inputNumber(
+					event.number,
+					_uiState.value.selectedCell,
+					_uiState.value.inputMode,
+				)
 
-			is Event.ClearCell -> inputNumber(
-				0,
-				_uiState.value.selectedCell,
-				_uiState.value.inputMode
-			)
+			is Event.ClearCell ->
+				inputNumber(
+					0,
+					_uiState.value.selectedCell,
+					_uiState.value.inputMode,
+				)
 
 			is Event.Undo -> undoLastMove()
 			is Event.Redo -> redoLastMove()
@@ -101,7 +140,7 @@ class SudokuGameViewModel(
 			viewModelScope.launch(Dispatchers.IO) {
 				_uiState.update {
 					it.copy(
-						sudoku = gridData
+						sudoku = gridData,
 					)
 				}
 			}
@@ -110,32 +149,38 @@ class SudokuGameViewModel(
 		dataStoreRepository.difficultyProto.firstOrNull()?.let { difficulty ->
 			_uiState.update {
 				it.copy(
-					difficulty = difficulty
+					difficulty = difficulty,
 				)
 			}
 		} ?: throw Exception("Proto Difficulty not found!")
 	}
 
-	private fun selectCell(row: Int, col: Int) {
+	private fun selectCell(
+		row: Int,
+		col: Int,
+	) {
 		viewModelScope.launch {
-			val updatedSudoku = _uiState.value.sudoku.clone()
+			var updatedSudoku = _uiState.value.sudoku
 			val lastSelected = _uiState.value.selectedCell
 			lastSelected?.let {
-				updatedSudoku.removeAttribute(it.first, it.second, CellAttributes.SELECTED)
-				if (updatedSudoku[row, col].number != 0)
-					updatedSudoku.clearNumberHighlight()
-				updatedSudoku.clearRowColumnHighlight()
+				updatedSudoku =
+					updatedSudoku.removeAttribute(it.first, it.second, CellAttributes.SELECTED)
+				if (updatedSudoku.getCellAt(row, col).number != 0) {
+					updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
+				}
+				updatedSudoku = updatedSudoku.clearRowColumnHighlight()
 			}
 
-			updatedSudoku.addAttribute(row, col, CellAttributes.SELECTED)
-			val currentlySelected = updatedSudoku[row, col]
-			updatedSudoku.highlightMatchingCells(currentlySelected.number)
-			updatedSudoku.highlightRowAndColumn(currentlySelected.row, currentlySelected.col)
+			updatedSudoku = updatedSudoku.addAttribute(row, col, CellAttributes.SELECTED)
+			val currentlySelected = updatedSudoku.getCellAt(row, col)
+			updatedSudoku = updatedSudoku.highlightMatchingCells(currentlySelected.number)
+			updatedSudoku =
+				updatedSudoku.highlightRowAndColumn(currentlySelected.row, currentlySelected.col)
 
 			_uiState.update {
 				it.copy(
 					sudoku = updatedSudoku,
-					selectedCell = currentlySelected.row to currentlySelected.col
+					selectedCell = currentlySelected.row to currentlySelected.col,
 				)
 			}
 		}
@@ -145,30 +190,33 @@ class SudokuGameViewModel(
 		number: Int,
 		selectedCell: Pair<Int, Int>?,
 		inputMode: InputMode,
-		isHint: Boolean = false
+		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
 			val currentState = _uiState.value
-			val updatedSudoku = currentState.sudoku.clone()
+			var updatedSudoku = currentState.sudoku
 			val (row, col) = selectedCell ?: return@launch
 
-			if (updatedSudoku[row, col].attributes.contains(
-					CellAttributes.GENERATED
+			if (updatedSudoku.getCellAt(row, col).attributes.contains(
+					CellAttributes.GENERATED,
 				)
-			) return@launch
-			val backupCell = updatedSudoku[row, col]
-
-			when (inputMode) {
-				InputMode.NUMBER -> handleNumberInput(number, updatedSudoku, selectedCell)
-
-				InputMode.NOTE -> handleNoteInput(number, updatedSudoku, selectedCell, isHint)
-
-				InputMode.COLOR -> {}
+			) {
+				return@launch
 			}
 
+			val backupCell = updatedSudoku.getCellAt(row, col)
+			updatedSudoku =
+				when (inputMode) {
+					InputMode.NUMBER -> handleNumberInput(number, updatedSudoku, selectedCell)
+
+					InputMode.NOTE -> handleNoteInput(number, updatedSudoku, selectedCell, isHint)
+
+					InputMode.COLOR -> handleNumberInput(number, updatedSudoku, selectedCell)
+				}
+
 			if (isHint && InputMode.NUMBER == inputMode) {
-				updatedSudoku.removeAttribute(row, col, CellAttributes.HINT_FOCUS)
-				updatedSudoku.addAttribute(row, col, CellAttributes.HINT_REVEALED)
+				updatedSudoku = updatedSudoku.removeAttribute(row, col, CellAttributes.HINT_FOCUS)
+				updatedSudoku = updatedSudoku.addAttribute(row, col, CellAttributes.HINT_REVEALED)
 			}
 
 			saveMoveAndUpdateState(backupCell, updatedSudoku)
@@ -177,12 +225,12 @@ class SudokuGameViewModel(
 
 	private fun resetGame() {
 		viewModelScope.launch {
-			var updatedSudoku = _uiState.value.sudoku.clone()
-			updatedSudoku.resetGame()
+			var updatedSudoku = _uiState.value.sudoku
+			updatedSudoku = updatedSudoku.clearGrid()
 			_uiState.update {
 				it.copy(
 					sudoku = updatedSudoku,
-					hintLogs = emptyList(),
+					hintLogs = persistentListOf(),
 					lastHint = null,
 					selectedCell = null,
 				)
@@ -195,11 +243,11 @@ class SudokuGameViewModel(
 
 	private fun resetNotes() {
 		viewModelScope.launch {
-			val updatedSudoku = _uiState.value.sudoku.clone()
-			updatedSudoku.clearNotes()
+			var updatedSudoku = _uiState.value.sudoku
+			updatedSudoku = updatedSudoku.clearAllCornerNotes()
 			_uiState.update {
 				it.copy(
-					sudoku = updatedSudoku
+					sudoku = updatedSudoku,
 				)
 			}
 			dataStoreRepository.updateData(updatedSudoku)
@@ -211,7 +259,7 @@ class SudokuGameViewModel(
 		if (result) {
 			_uiState.update {
 				it.copy(
-					gameState = GameState.VICTORY
+					gameState = GameState.VICTORY,
 				)
 			}
 		}
@@ -220,7 +268,7 @@ class SudokuGameViewModel(
 	private fun handleDismissVictoryDialog() {
 		_uiState.update {
 			it.copy(
-				gameState = GameState.PLAYING
+				gameState = GameState.PLAYING,
 			)
 		}
 	}
@@ -228,34 +276,40 @@ class SudokuGameViewModel(
 	private fun switchInputMode(mode: InputMode) {
 		_uiState.update {
 			it.copy(
-				inputMode = mode
+				inputMode = mode,
 			)
 		}
 	}
 
 	private fun handleMove(
 		moveStack: ArrayDeque<SudokuMove>,
-		targetStack: ArrayDeque<SudokuMove>
+		targetStack: ArrayDeque<SudokuMove>,
 	) {
-		if (moveStack.isEmpty())
+		if (moveStack.isEmpty()) {
 			return
+		}
 
 		viewModelScope.launch {
 			val (previousCellData, newCellData) = moveStack.removeLast()
-			val updatedSudoku = _uiState.value.sudoku.clone()
+			var updatedSudoku = _uiState.value.sudoku
 
-			updatedSudoku.replaceCell(previousCellData.row, previousCellData.col, previousCellData)
+			updatedSudoku =
+				updatedSudoku.withReplacedCell(
+					previousCellData.row,
+					previousCellData.col,
+					previousCellData,
+				)
 			targetStack.add(SudokuMove(newCellData, previousCellData))
 
-			updatedSudoku.clearRuleBreakingCells()
-			updatedSudoku.markRuleBreakingCells()
+			updatedSudoku = updatedSudoku.clearRuleBreakingCells()
+			updatedSudoku = updatedSudoku.markRuleBreakingCells()
 
 			_uiState.update { it.copy(sudoku = updatedSudoku) }
 
 			dataStoreRepository.updateCell(
 				row = previousCellData.row,
 				col = previousCellData.col,
-				newCellData = updatedSudoku[previousCellData.row, previousCellData.col]
+				newCellData = updatedSudoku.getCellAt(previousCellData.row, previousCellData.col),
 			)
 		}
 	}
@@ -264,13 +318,19 @@ class SudokuGameViewModel(
 
 	private fun redoLastMove() = handleMove(futureMoves, lastMoves)
 
-	private fun handleNumberInput(number: Int, sudoku: SudokuGrid, selectedCell: Pair<Int, Int>) {
+	private fun handleNumberInput(
+		number: Int,
+		sudoku: SudokuGrid,
+		selectedCell: Pair<Int, Int>,
+	): SudokuGrid {
 		val (row, col) = selectedCell
+		var updatedSudoku = sudoku
 		if (number == 0) {
-			sudoku[row, col] = 0
-			sudoku.clearCornerNotes(row, col)
+			updatedSudoku = updatedSudoku.withValue(row, col, 0)
+			updatedSudoku = updatedSudoku.clearCornerNotes(row, col)
 		} else {
-			sudoku[row, col] = if (sudoku[row, col].number == number) 0 else number
+			val newValue = if (sudoku.getCellAt(row, col).number == number) 0 else number
+			updatedSudoku = updatedSudoku.withValue(row, col, newValue)
 			if (_uiState.value.lastHint?.row == row &&
 				_uiState.value.lastHint?.col == col &&
 				number == _uiState.value.lastHint?.value
@@ -278,51 +338,56 @@ class SudokuGameViewModel(
 				val updatedLogs = _uiState.value.hintLogs.toMutableList()
 				val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
 				val log = updatedLogs[lastHintId]
-				updatedLogs[lastHintId] = log.copy(
-					isUserGuessed = true,
-					explanation = log.explanation + "~You guessed correctly!~"
-				)
+				updatedLogs[lastHintId] =
+					log.copy(
+						isUserGuessed = true,
+						explanation = log.explanation + "~You guessed correctly!~",
+					)
 				_uiState.update {
 					it.copy(
 						lastHint = null,
-						hintLogs = updatedLogs
+						hintLogs = updatedLogs.toPersistentList(),
 					)
 				}
 			}
-			sudoku.clearNumberHighlight()
-			sudoku.highlightMatchingCells(number)
-			sudoku.clearRuleBreakingCells()
-			sudoku.markRuleBreakingCells()
+			updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
+			updatedSudoku = updatedSudoku.highlightMatchingCells(number)
+			updatedSudoku = updatedSudoku.clearRuleBreakingCells()
+			updatedSudoku = updatedSudoku.markRuleBreakingCells()
 		}
+
+		return updatedSudoku
 	}
 
 	private fun handleNoteInput(
 		number: Int,
 		sudoku: SudokuGrid,
 		selectedCell: Pair<Int, Int>,
-		isHint: Boolean = false
-	) {
+		isHint: Boolean = false,
+	): SudokuGrid {
 		val (row, col) = selectedCell
+		var updatedSudoku = sudoku
 		if (number == 0) {
-			sudoku[row, col] = 0
-			sudoku.clearCornerNotes(row, col)
-		} else if (number in sudoku[row, col].cornerNotes && !isHint) {
-			sudoku.removeCornerNote(row, col, number)
+			updatedSudoku = updatedSudoku.withValue(row, col, 0)
+			updatedSudoku = updatedSudoku.clearCornerNotes(row, col)
+		} else if (number in sudoku.getCellAt(row, col).cornerNotes && !isHint) {
+			updatedSudoku = updatedSudoku.removeCornerNote(row, col, number)
 		} else {
-			sudoku.addCornerNote(row, col, number)
+			updatedSudoku = updatedSudoku.addCornerNote(row, col, number)
 		}
+		return updatedSudoku
 	}
 
 	private fun saveMoveAndUpdateState(
 		previousCellData: SudokuCellData,
-		updatedSudoku: SudokuGrid
+		updatedSudoku: SudokuGrid,
 	) {
 		val (row, col) = previousCellData
 		lastMoves.add(
 			SudokuMove(
 				previousCellData = previousCellData,
-				newCellData = updatedSudoku[row, col]
-			)
+				newCellData = updatedSudoku.getCellAt(row, col),
+			),
 		)
 
 		_uiState.update {
@@ -330,7 +395,7 @@ class SudokuGameViewModel(
 		}
 
 		viewModelScope.launch {
-			dataStoreRepository.updateCell(row, col, updatedSudoku[row, col])
+			dataStoreRepository.updateCell(row, col, updatedSudoku.getCellAt(row, col))
 		}
 
 		if (updatedSudoku.getEmptyCellsCount() == 0) {
@@ -340,11 +405,11 @@ class SudokuGameViewModel(
 
 	private fun fillNotes() {
 		viewModelScope.launch {
-			val updatedSudoku = _uiState.value.sudoku.clone()
-			updatedSudoku.fillNotes()
+			var updatedSudoku = _uiState.value.sudoku
+			updatedSudoku = updatedSudoku.fillNotes()
 			_uiState.update {
 				it.copy(
-					sudoku = updatedSudoku
+					sudoku = updatedSudoku,
 				)
 			}
 			dataStoreRepository.updateData(updatedSudoku)
@@ -354,10 +419,11 @@ class SudokuGameViewModel(
 	private fun provideHint() {
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
-			val updatedSudoku = _uiState.value.sudoku.clone()
+			var updatedSudoku = _uiState.value.sudoku
 			val hintProvider = HintProvider(updatedSudoku.gridSize)
 			// Fill candidates once
-			val filledCandidatesGrid = hintProvider.fillCandidates(updatedSudoku.getArray())
+			val filledCandidatesGrid =
+				hintProvider.fillCandidates(updatedSudoku.data).toMutableList()
 
 			// Remove candidates from all affected cells for locked candidate hints
 			_uiState.value.hintLogs.forEach { log ->
@@ -366,71 +432,82 @@ class SudokuGameViewModel(
 						is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
 							if (hint.affectedCells.isNotEmpty()) {
 								hint.affectedCells.forEach { affected ->
-									filledCandidatesGrid.indexOfFirst { it.row == affected.row && it.col == affected.col }
-										.takeIf { it != -1 }?.let { index ->
+									filledCandidatesGrid
+										.indexOfFirst { it.row == affected.row && it.col == affected.col }
+										.takeIf { it != -1 }
+										?.let { index ->
 											val cell = filledCandidatesGrid[index]
 											filledCandidatesGrid[index] =
 												cell.copy(candidates = cell.candidates - hint.value)
 										}
 								}
 							} else {
-								filledCandidatesGrid.indexOfFirst { it.row == hint.row && it.col == hint.col }
-									.takeIf { it != -1 }?.let { index ->
+								filledCandidatesGrid
+									.indexOfFirst { it.row == hint.row && it.col == hint.col }
+									.takeIf { it != -1 }
+									?.let { index ->
 										val cell = filledCandidatesGrid[index]
 										filledCandidatesGrid[index] =
 											cell.copy(candidates = cell.candidates - hint.value)
 									}
 							}
 						}
+
 						else -> Unit
 					}
 				}
 			}
 
 			val hint: Hint? = hintProvider.provideHint(data = filledCandidatesGrid)
-
-			Log.d("Hint", hint.toString())
 			if (hint != null) {
 				when (hint.type!!) {
 					is HintType.HiddenSingle, is HintType.NakedSingle -> {
-						updatedSudoku.addAttribute(hint.row, hint.col, CellAttributes.HINT_FOCUS)
+						updatedSudoku =
+							updatedSudoku.addAttribute(
+								hint.row,
+								hint.col,
+								CellAttributes.HINT_FOCUS,
+							)
 					}
 
 					is HintType.PointingCandidate -> {
-							hint.enforcingCells.forEach { cell ->
+						hint.enforcingCells.forEach { cell ->
+							updatedSudoku =
 								updatedSudoku.addAttribute(
 									cell.row,
 									cell.col,
-									CellAttributes.HINT_FOCUS
+									CellAttributes.HINT_FOCUS,
 								)
-							}
+						}
 					}
 
 					is HintType.ClaimingCandidate -> {
-							hint.enforcingCells.forEach { cell ->
+						hint.enforcingCells.forEach { cell ->
+							updatedSudoku =
 								updatedSudoku.addAttribute(
 									cell.row,
 									cell.col,
-									CellAttributes.HINT_FOCUS
+									CellAttributes.HINT_FOCUS,
 								)
 						}
 					}
 				}
-
-
 				selectCell(hint.row, hint.col)
-				val explanationSteps = hint.explanationStrategy?.generateHintExplanationSteps(updatedSudoku, hint) ?: emptyList()
-				val hintLog = HintLog(
-					hint = hint,
-					isUserGuessed = false,
-					isRevealed = false,
-					explanation = explanationSteps
-				)
+				val explanationSteps =
+					hint.explanationStrategy?.generateHintExplanationSteps(updatedSudoku, hint)
+						?: emptyList()
+				val hintLog =
+					HintLog(
+						hint = hint,
+						isUserGuessed = false,
+						isRevealed = false,
+						explanation = explanationSteps.toPersistentList(),
+					)
 				_uiState.update {
 					it.copy(
 						sudoku = updatedSudoku,
 						lastHint = hint,
-						hintLogs = it.hintLogs + hintLog
+						hintLogs = it.hintLogs + hintLog,
 					)
 				}
 			}
@@ -440,14 +517,18 @@ class SudokuGameViewModel(
 	private fun explainHint() {
 		viewModelScope.launch {
 			val hint: Hint = _uiState.value.lastHint ?: return@launch
-			if (_uiState.value.sudoku[hint.row, hint.col].number != 0) return@launch
-
+			if (_uiState.value.sudoku
+					.getCellAt(hint.row, hint.col)
+					.number != 0
+			) {
+				return@launch
+			}
 			selectCell(hint.row, hint.col)
+
 			when (hint.type) {
 				is HintType.PointingCandidate -> {
 					val otherCells = hint.enforcingCells
 					otherCells.forEach { cell ->
-						_uiState.value.sudoku.highlightMatchingCells(hint.value)
 						inputNumber(hint.value, cell.row to cell.col, InputMode.NOTE, true)
 					}
 				}
@@ -455,7 +536,6 @@ class SudokuGameViewModel(
 				is HintType.ClaimingCandidate -> {
 					val otherCells = hint.enforcingCells
 					otherCells.forEach { cell ->
-						_uiState.value.sudoku.highlightMatchingCells(hint.value)
 						inputNumber(hint.value, cell.row to cell.col, InputMode.NOTE, true)
 					}
 				}
@@ -471,8 +551,8 @@ class SudokuGameViewModel(
 
 			_uiState.update {
 				it.copy(
-					hintLogs = updatedLogs,
-					lastHint = null
+					hintLogs = updatedLogs.toPersistentList(),
+					lastHint = null,
 				)
 			}
 		}
@@ -480,8 +560,7 @@ class SudokuGameViewModel(
 }
 
 class SudokuGameViewModelFactory(
-	private val dataStoreRepository: SudokuDataStoreRepository
+	private val dataStoreRepository: SudokuDataStoreRepository,
 ) : ViewModelProvider.NewInstanceFactory() {
-	override fun <T : ViewModel> create(modelClass: Class<T>): T =
-		SudokuGameViewModel(dataStoreRepository) as T
+	override fun <T : ViewModel> create(modelClass: Class<T>): T = SudokuGameViewModel(dataStoreRepository) as T
 }

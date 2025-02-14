@@ -28,7 +28,8 @@ data class ActionPadItem(
 )
 
 enum class ActionPadOrientation {
-	HORIZONTAL, VERTICAL
+	HORIZONTAL,
+	VERTICAL,
 }
 
 @Composable
@@ -40,11 +41,12 @@ fun ActionPad(
 	when (orientation) {
 		ActionPadOrientation.HORIZONTAL -> {
 			Row(
-				modifier = modifier
-					.padding(horizontal = 8.dp),
-//					.fillMaxWidth(),
+				modifier =
+					modifier
+						.padding(horizontal = 8.dp),
+				// 					.fillMaxWidth(),
 				horizontalArrangement = Arrangement.spacedBy(8.dp),
-				verticalAlignment = Alignment.CenterVertically
+				verticalAlignment = Alignment.CenterVertically,
 			) {
 				items.forEach { item ->
 					KeyPadItem(
@@ -53,7 +55,7 @@ fun ActionPad(
 						onClick = item.onClick,
 						bgColor = item.backgroundColor,
 						textColor = item.iconColor,
-						modifier = Modifier.size(60.dp)
+						modifier = Modifier.size(60.dp),
 					)
 				}
 			}
@@ -61,11 +63,12 @@ fun ActionPad(
 
 		ActionPadOrientation.VERTICAL -> {
 			Column(
-				modifier = modifier
-					.padding(vertical = 8.dp),
-//					.fillMaxHeight(),
+				modifier =
+					modifier
+						.padding(vertical = 8.dp),
+				// 					.fillMaxHeight(),
 				verticalArrangement = Arrangement.spacedBy(8.dp),
-				horizontalAlignment = Alignment.CenterHorizontally
+				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
 				items.forEach { item ->
 					KeyPadItem(
@@ -74,7 +77,7 @@ fun ActionPad(
 						onClick = item.onClick,
 						bgColor = item.backgroundColor,
 						textColor = item.iconColor,
-						modifier = Modifier.size(60.dp)
+						modifier = Modifier.size(60.dp),
 					)
 				}
 			}
@@ -86,30 +89,30 @@ fun ActionPad(
 @Composable
 private fun ActionPadHorizontalPreview() {
 	SudokuSlayerTheme {
-		val items = listOf(
-			ActionPadItem(
-				icon = { Icon(Icons.AutoMirrored.Default.ArrowBack, "") },
-				onClick = { },
-				contentDescription = "",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground
-			),
-			ActionPadItem(
-				icon = { Icon(Icons.Default.Clear, "") },
-				onClick = { },
-				contentDescription = "",
-				backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-				iconColor = MaterialTheme.colorScheme.onPrimaryContainer
-			),
-			ActionPadItem(
-				icon = { Icon(Icons.AutoMirrored.Default.ArrowForward, "") },
-				onClick = { },
-				contentDescription = "",
-				backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
-				iconColor = MaterialTheme.colorScheme.onTertiaryContainer
+		val items =
+			listOf(
+				ActionPadItem(
+					icon = { Icon(Icons.AutoMirrored.Default.ArrowBack, "") },
+					onClick = { },
+					contentDescription = "",
+					backgroundColor = MaterialTheme.colorScheme.background,
+					iconColor = MaterialTheme.colorScheme.onBackground,
+				),
+				ActionPadItem(
+					icon = { Icon(Icons.Default.Clear, "") },
+					onClick = { },
+					contentDescription = "",
+					backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+					iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+				),
+				ActionPadItem(
+					icon = { Icon(Icons.AutoMirrored.Default.ArrowForward, "") },
+					onClick = { },
+					contentDescription = "",
+					backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+					iconColor = MaterialTheme.colorScheme.onTertiaryContainer,
+				),
 			)
-
-		)
 		ActionPad(
 			items = items,
 			orientation = ActionPadOrientation.HORIZONTAL,

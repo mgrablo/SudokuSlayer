@@ -34,44 +34,47 @@ import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	val cellBorderColor = MaterialTheme.colorScheme.outlineVariant
 	val blockBorderColor = MaterialTheme.colorScheme.outline
 
 	var scale by remember { mutableFloatStateOf(1f) }
-	val colors = remember {
-		SudokuBoardColors(
-			cellBorder = cellBorderColor,
-			blockBorder = blockBorderColor
-		)
-	}
+	val colors =
+		remember {
+			SudokuBoardColors(
+				cellBorder = cellBorderColor,
+				blockBorder = blockBorderColor,
+			)
+		}
 
-	val transformableState = rememberTransformableState { zoomChange, _, _ ->
-		scale = (scale * zoomChange).coerceIn(0.5f, 2f)
-	}
+	val transformableState =
+		rememberTransformableState { zoomChange, _, _ ->
+			scale = (scale * zoomChange).coerceIn(0.5f, 2f)
+		}
 
 	Box(
-		modifier = modifier
-			.aspectRatio(1f)
-			.drawWithContent {
-				drawGridLines(
-					gridSize = sudoku.gridSize,
-					blockSize = sudoku.subgridSize,
-					colors = colors
+		modifier =
+			modifier
+				.aspectRatio(1f)
+				.drawWithContent {
+					drawGridLines(
+						gridSize = sudoku.gridSize,
+						blockSize = sudoku.subgridSize,
+						colors = colors,
+					)
+				}
+				.border(
+					width = 1.dp,
+					color = MaterialTheme.colorScheme.outlineVariant,
+					shape = RoundedCornerShape(8.dp),
 				)
-			}
-			.border(
-				width = 1.dp,
-				color = MaterialTheme.colorScheme.outlineVariant,
-				shape = RoundedCornerShape(8.dp)
-			)
-			.graphicsLayer(
-				scaleX = scale,
-				scaleY = scale,
-			)
-			.transformable(state = transformableState)
-			.clipToBounds()
+				.graphicsLayer(
+					scaleX = scale,
+					scaleY = scale,
+				)
+				.transformable(state = transformableState)
+				.clipToBounds(),
 	) {
 		LazyVerticalGrid(
 			columns = GridCells.Fixed(sudoku.gridSize),
@@ -82,15 +85,16 @@ fun SudokuBoard(
 				SudokuCell(
 					cellData = cell,
 					onClick = { onCellClick(cell.row, cell.col) },
-					attributeStates = CellAttributeStates(
-						isGenerated = cell.attributes.contains(CellAttributes.GENERATED),
-						isNumberHighlighted = cell.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED),
-						isRowColumnHighlighted = cell.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED),
-						isSelected = cell.attributes.contains(CellAttributes.SELECTED),
-						isBreakingRules = cell.attributes.contains(CellAttributes.RULE_BREAKING),
-						isHintFocus = cell.attributes.contains(CellAttributes.HINT_FOCUS),
-						isHintRevealed = cell.attributes.contains(CellAttributes.HINT_REVEALED)
-					),
+					attributeStates =
+						CellAttributeStates(
+							isGenerated = cell.attributes.contains(CellAttributes.GENERATED),
+							isNumberHighlighted = cell.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED),
+							isRowColumnHighlighted = cell.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED),
+							isSelected = cell.attributes.contains(CellAttributes.SELECTED),
+							isBreakingRules = cell.attributes.contains(CellAttributes.RULE_BREAKING),
+							isHintFocus = cell.attributes.contains(CellAttributes.HINT_FOCUS),
+							isHintRevealed = cell.attributes.contains(CellAttributes.HINT_REVEALED),
+						),
 				)
 			}
 		}
@@ -101,7 +105,7 @@ fun ContentDrawScope.drawGridLines(
 	gridSize: Int,
 	blockSize: Int,
 	colors: SudokuBoardColors,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	drawContent()
 	repeat(gridSize - 1) { index ->
@@ -112,13 +116,13 @@ fun ContentDrawScope.drawGridLines(
 			color = color,
 			strokeWidth = width,
 			start = Offset(size.width / gridSize * (index + 1), 0f),
-			end = Offset(size.width / gridSize * (index + 1), size.height)
+			end = Offset(size.width / gridSize * (index + 1), size.height),
 		)
 		drawLine(
 			color = color,
 			strokeWidth = width,
 			start = Offset(0f, size.height / gridSize * (index + 1)),
-			end = Offset(size.width, size.height / gridSize * (index + 1))
+			end = Offset(size.width, size.height / gridSize * (index + 1)),
 		)
 	}
 }
@@ -126,7 +130,7 @@ fun ContentDrawScope.drawGridLines(
 // Add this data class to avoid recreating colors
 data class SudokuBoardColors(
 	val cellBorder: Color,
-	val blockBorder: Color
+	val blockBorder: Color,
 )
 
 @PreviewLightDark

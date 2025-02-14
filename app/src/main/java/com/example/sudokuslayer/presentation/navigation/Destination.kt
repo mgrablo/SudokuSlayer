@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Destination(
 	val routeName: String,
-	val icon: DestinationIcon
+	val icon: DestinationIcon,
 ) {
 	@Serializable
 	object SudokuGame : Destination("Current game", DestinationIcon.ResourceIcon(R.drawable.tag))
@@ -21,5 +21,6 @@ sealed class Destination(
 @Serializable
 sealed class DestinationIcon {
 	data class VectorIcon(val imageVector: ImageVector) : DestinationIcon()
+
 	data class ResourceIcon(val resourceId: Int) : DestinationIcon()
 }

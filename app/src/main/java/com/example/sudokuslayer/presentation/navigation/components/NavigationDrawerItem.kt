@@ -14,7 +14,11 @@ import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.navigation.DestinationIcon
 
 @Composable
-fun NavigationDrawerItem(isSelected: Boolean, destination: Destination, onClick: () -> Unit) {
+fun NavigationDrawerItem(
+	isSelected: Boolean,
+	destination: Destination,
+	onClick: () -> Unit,
+) {
 	NavigationDrawerItem(
 		icon = {
 			DestinationIcon(destination.icon)
@@ -22,15 +26,16 @@ fun NavigationDrawerItem(isSelected: Boolean, destination: Destination, onClick:
 		label = {
 			Text(
 				text = destination.routeName,
-				color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+				color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
 			)
 		},
 		selected = isSelected,
 		onClick = onClick,
 		modifier = Modifier.padding(8.dp),
-		colors = NavigationDrawerItemDefaults.colors(
-			selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-		)
+		colors =
+			NavigationDrawerItemDefaults.colors(
+				selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+			),
 	)
 }
 

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class DancingLinksMatrixTest {
-
 	@Test
 	fun `test empty matrix conversion`() {
 		val emptyMatrix = Array(0) { BooleanArray(0) }
@@ -34,10 +33,11 @@ class DancingLinksMatrixTest {
 
 	@Test
 	fun `test 2x2 matrix conversion`() {
-		val matrix = arrayOf(
-			booleanArrayOf(true, false),
-			booleanArrayOf(false, true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(true, false),
+				booleanArrayOf(false, true),
+			)
 		val root = matrix.toRootNode()
 		
 		// Check first column
@@ -55,9 +55,10 @@ class DancingLinksMatrixTest {
 
 	@Test
 	fun `test horizontal node connections`() {
-		val matrix = arrayOf(
-			booleanArrayOf(true, true, true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(true, true, true),
+			)
 		val root = matrix.toRootNode()
 		
 		val firstNode = (root.right as HeaderNode).down as DataNode
@@ -71,10 +72,11 @@ class DancingLinksMatrixTest {
 
 	@Test
 	fun `test vertical node connections`() {
-		val matrix = arrayOf(
-			booleanArrayOf(true),
-			booleanArrayOf(true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(true),
+				booleanArrayOf(true),
+			)
 		val root = matrix.toRootNode()
 		
 		val header = root.right as HeaderNode
@@ -93,16 +95,17 @@ class DancingLinksMatrixTest {
 		
 		var header = root.right
 		for (i in 0..3) {
-			assertEquals("H$i", ( header as HeaderNode ).name)
+			assertEquals("H$i", (header as HeaderNode).name)
 			header = header.right
 		}
 	}
 
 	@Test
 	fun `test data node properties`() {
-		val matrix = arrayOf(
-			booleanArrayOf(true, false, true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(true, false, true),
+			)
 		val root = matrix.toRootNode()
 		
 		val firstHeader = root.right as HeaderNode

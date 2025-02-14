@@ -49,16 +49,21 @@ import kotlinx.coroutines.launch
 fun SudokuGameScreen(
 	context: Context,
 	openDrawer: () -> Unit,
-	viewModel: SudokuGameViewModel = viewModel(
-		factory = SudokuGameViewModelFactory(
-			SudokuDataStoreRepository(context.sudokuGridDataStore)
-		)
-	),
-	timerViewModel: TimerViewModel = viewModel(
-		factory = TimerViewModelFactory(
-			SudokuDataStoreRepository(context.sudokuGridDataStore)
-		)
-	),
+	modifier: Modifier = Modifier,
+	viewModel: SudokuGameViewModel =
+		viewModel(
+			factory =
+				SudokuGameViewModelFactory(
+					SudokuDataStoreRepository(context.sudokuGridDataStore),
+				),
+		),
+	timerViewModel: TimerViewModel =
+		viewModel(
+			factory =
+				TimerViewModelFactory(
+					SudokuDataStoreRepository(context.sudokuGridDataStore),
+				),
+		),
 ) {
 	val lifecycleOwner = LocalLifecycleOwner.current
 	val scope = rememberCoroutineScope()
@@ -75,19 +80,20 @@ fun SudokuGameScreen(
 
 	val loadingState by viewModel.isLoading.collectAsState()
 	var resetDialogState by remember { mutableStateOf(false) }
-	var hintsDialogState by remember { mutableStateOf(false)}
+	var hintsDialogState by remember { mutableStateOf(false) }
 
-	val scaffoldState = rememberBottomSheetScaffoldState(
-		bottomSheetState = rememberStandardBottomSheetState(
-			initialValue = SheetValue.Hidden,
-			skipHiddenState = false
+	val scaffoldState =
+		rememberBottomSheetScaffoldState(
+			bottomSheetState =
+				rememberStandardBottomSheetState(
+					initialValue = SheetValue.Hidden,
+					skipHiddenState = false,
+				),
 		)
-	)
-
 
 	VictoryDialog(
 		isVisible = uiState.gameState == GameState.VICTORY,
-		onDismissRequest = { viewModel.onEvent(Event.DismissVictoryDialog) }
+		onDismissRequest = { viewModel.onEvent(Event.DismissVictoryDialog) },
 	)
 
 	ResetDialog(
@@ -101,7 +107,7 @@ fun SudokuGameScreen(
 		onClearNotesClick = {
 			viewModel.onEvent(Event.ResetNotes)
 			resetDialogState = false
-		}
+		},
 	)
 
 	HintsDialog(
@@ -123,7 +129,7 @@ fun SudokuGameScreen(
 			scope.launch {
 				scaffoldState.bottomSheetState.expand()
 			}
-		}
+		},
 	)
 
 	HintBottomSheetScaffold(
@@ -135,9 +141,10 @@ fun SudokuGameScreen(
 		topBar = {
 			CenterAlignedTopAppBar(
 				title = { Text("Sudoku Slayer") },
-				colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-					containerColor = MaterialTheme.colorScheme.surfaceContainer
-				),
+				colors =
+					TopAppBarDefaults.centerAlignedTopAppBarColors(
+						containerColor = MaterialTheme.colorScheme.surfaceContainer,
+					),
 				navigationIcon = {
 					IconButton(onClick = { openDrawer() }) {
 						Icon(Icons.Default.Menu, "")
@@ -150,9 +157,10 @@ fun SudokuGameScreen(
 			CircularProgressIndicator()
 		} else {
 			Column(
-				modifier = Modifier
-					.fillMaxSize(),
-				horizontalAlignment = Alignment.CenterHorizontally
+				modifier =
+					Modifier
+						.fillMaxSize(),
+				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
 				TimerDisplay(elapsedTime = { elapsedTime })
 				SudokuBoard(
@@ -171,7 +179,7 @@ fun SudokuGameScreen(
 					onShowMistakesClick = { viewModel.onEvent(Event.ShowMistakes) },
 					onResetClick = { resetDialogState = true },
 					inputMode = uiState.inputMode,
-					gridSize = uiState.sudoku.gridSize
+					gridSize = uiState.sudoku.gridSize,
 				)
 			}
 		}
@@ -183,6 +191,6 @@ fun SudokuGameScreen(
 private fun SudokuGameScreenPreview() {
 	SudokuGameScreen(
 		context = LocalContext.current,
-		openDrawer = { }
+		openDrawer = { },
 	)
 }

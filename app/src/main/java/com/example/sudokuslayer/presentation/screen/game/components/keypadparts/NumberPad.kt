@@ -21,33 +21,36 @@ fun NumberPad(
 	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
 	inputMode: InputMode,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	val numbers = (1..gridSize).toList()
 	val keyboardRows = numbers.chunked(sqrt(gridSize.toDouble()).toInt())
 
-	val keyColor = when(inputMode) {
-		InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.colorContainer
-		InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.colorContainer
-		InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.colorContainer
-	}
+	val keyColor =
+		when (inputMode) {
+			InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.colorContainer
+			InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.colorContainer
+			InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.colorContainer
+		}
 
-	val textColor = when(inputMode) {
-		InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.onColorContainer
-		InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.onColorContainer
-		InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.onColorContainer
-	}
+	val textColor =
+		when (inputMode) {
+			InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.onColorContainer
+			InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.onColorContainer
+			InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.onColorContainer
+		}
 
 	Column(
-		modifier = modifier
-			.padding(8.dp),
+		modifier =
+			modifier
+				.padding(8.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
-		horizontalAlignment = Alignment.CenterHorizontally
+		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
 		keyboardRows.forEach { row ->
 			Row(
 				horizontalArrangement = Arrangement.spacedBy(8.dp),
-				verticalAlignment = Alignment.CenterVertically
+				verticalAlignment = Alignment.CenterVertically,
 			) {
 				for (number in row) {
 					KeyPadItem(
@@ -55,7 +58,7 @@ fun NumberPad(
 						onClick = { onButtonClick(number) },
 						bgColor = keyColor,
 						textColor = textColor,
-						modifier = Modifier.weight(1f)
+						modifier = Modifier.weight(1f),
 					)
 				}
 			}
@@ -70,7 +73,7 @@ private fun NumberPadNineItemsPreview() {
 		NumberPad(
 			onButtonClick = { },
 			inputMode = InputMode.NUMBER,
-			gridSize = 9
+			gridSize = 9,
 		)
 	}
 }
@@ -82,10 +85,11 @@ private fun NumberPadFourItemsPreview() {
 		NumberPad(
 			onButtonClick = { },
 			inputMode = InputMode.NUMBER,
-			gridSize = 4
+			gridSize = 4,
 		)
 	}
 }
+
 @Preview
 @Composable
 private fun NumberPadSixteenItemsPreview() {
@@ -93,8 +97,7 @@ private fun NumberPadSixteenItemsPreview() {
 		NumberPad(
 			onButtonClick = { },
 			inputMode = InputMode.NUMBER,
-			gridSize = 16
+			gridSize = 16,
 		)
 	}
-	
 }

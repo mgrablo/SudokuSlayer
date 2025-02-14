@@ -25,10 +25,11 @@ import kotlinx.coroutines.launch
 fun App() {
 	val navController = rememberNavController()
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-	val destinations = listOf(
-		Destination.SudokuGame,
-		Destination.SudokuCreator
-	)
+	val destinations =
+		listOf(
+			Destination.SudokuGame,
+			Destination.SudokuCreator,
+		)
 	val scope = rememberCoroutineScope()
 	val view = LocalView.current
 	val window = (view.context as Activity).window
@@ -40,17 +41,17 @@ fun App() {
 		}
 	}
 
-	SudokuSlayerTheme() {
+	SudokuSlayerTheme {
 		NavigationDrawer(
 			destinations = destinations,
 			drawerState = drawerState,
 			navController = navController,
-			scope = scope
+			scope = scope,
 		) {
 			Column(modifier = Modifier.fillMaxSize()) {
 				SudokuNavHost(
 					navController = navController,
-					openDrawer = { scope.launch { drawerState.open() } }
+					openDrawer = { scope.launch { drawerState.open() } },
 				)
 			}
 		}

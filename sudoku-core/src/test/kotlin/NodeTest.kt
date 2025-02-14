@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
 
 class NodeTest {
-	private val testMatrix = arrayOf(
-		booleanArrayOf(true, false, true),
-		booleanArrayOf(true, true, false),
-		booleanArrayOf(false, true, true)
-	)
+	private val testMatrix =
+		arrayOf(
+			booleanArrayOf(true, false, true),
+			booleanArrayOf(true, true, false),
+			booleanArrayOf(false, true, true),
+		)
 
 	@Test
 	fun `cover should remove column`() {
@@ -21,13 +22,13 @@ class NodeTest {
 		assertNotEquals(
 			firstColumn,
 			rootNode.right,
-			"First column should be removed from the matrix"
+			"First column should be removed from the matrix",
 		)
 		assertEquals("H1", (rootNode.right as HeaderNode).name, "Next column header should be 'H1'")
 		assertEquals(
 			"H2",
 			(rootNode.right.right as HeaderNode).name,
-			"Next column header should be 'H2'"
+			"Next column header should be 'H2'",
 		)
 	}
 
@@ -71,11 +72,12 @@ class NodeTest {
 
 	@Test
 	fun `cover should remove affected rows`() {
-		val matrix = arrayOf(
-			booleanArrayOf(false, false, true),
-			booleanArrayOf(true, true, false),
-			booleanArrayOf(false, true, true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(false, false, true),
+				booleanArrayOf(true, true, false),
+				booleanArrayOf(false, true, true),
+			)
 		val rootNode = matrix.toRootNode()
 		val firstColumn = rootNode.right as HeaderNode
 		firstColumn.cover()
@@ -156,11 +158,12 @@ class NodeTest {
 
 	@Test
 	fun `should find best column`() {
-		val matrix = arrayOf(
-			booleanArrayOf(true, false, false),
-			booleanArrayOf(true, true, false),
-			booleanArrayOf(false, true, true)
-		)
+		val matrix =
+			arrayOf(
+				booleanArrayOf(true, false, false),
+				booleanArrayOf(true, true, false),
+				booleanArrayOf(false, true, true),
+			)
 		val root = matrix.toRootNode()
 		val bestColumn = root.findBestColumn() as HeaderNode
 		assertEquals("H2", bestColumn.name, "Best column should be 'H0'")

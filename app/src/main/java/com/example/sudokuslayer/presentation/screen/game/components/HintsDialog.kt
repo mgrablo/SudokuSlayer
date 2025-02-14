@@ -42,13 +42,14 @@ fun HintsDialog(
 	onDismissRequest: () -> Unit,
 	onFillNotesClick: () -> Unit,
 	onHintClick: () -> Unit,
-	onShowLogsClick: () -> Unit
+	onShowLogsClick: () -> Unit,
 ) {
-	val buttons = listOf(
-		HintDialogButton("Hint cell", onHintClick, { Icon(Icons.Default.Face, null) }),
-		HintDialogButton("Show hint logs", onShowLogsClick, { Icon(Icons.AutoMirrored.Default.List, null) }),
-		HintDialogButton("Fill notes", onFillNotesClick, { Icon(painterResource(R.drawable.stylus_note), null) }),
-	)
+	val buttons =
+		listOf(
+			HintDialogButton("Hint cell", onHintClick, { Icon(Icons.Default.Face, null) }),
+			HintDialogButton("Show hint logs", onShowLogsClick, { Icon(Icons.AutoMirrored.Default.List, null) }),
+			HintDialogButton("Fill notes", onFillNotesClick, { Icon(painterResource(R.drawable.stylus_note), null) }),
+		)
 
 	if (isVisible) {
 		Dialog(
@@ -56,18 +57,19 @@ fun HintsDialog(
 		) {
 			Box(
 				modifier =
-				Modifier
-					.widthIn(min = 280.dp, max = 560.dp)
-					.height(400.dp)
-					.padding(20.dp)
-					.clip(RoundedCornerShape(12.dp))
+					Modifier
+						.widthIn(min = 280.dp, max = 560.dp)
+						.height(400.dp)
+						.padding(20.dp)
+						.clip(RoundedCornerShape(12.dp)),
 			) {
 				Card(
 					modifier = Modifier.fillMaxSize(),
-					colors = CardDefaults.cardColors(
-						containerColor = MaterialTheme.colorScheme.surface
-					),
-					elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+					colors =
+						CardDefaults.cardColors(
+							containerColor = MaterialTheme.colorScheme.surface,
+						),
+					elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
 				) {
 					Column(
 						modifier = Modifier.padding(20.dp),
@@ -79,21 +81,22 @@ fun HintsDialog(
 							items(buttons) { button ->
 								Button(
 									onClick = button.onClick,
-									colors = ButtonDefaults.buttonColors(
-										containerColor = MaterialTheme.colorScheme.primaryContainer,
-										contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-									)
+									colors =
+										ButtonDefaults.buttonColors(
+											containerColor = MaterialTheme.colorScheme.primaryContainer,
+											contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+										),
 								) {
 									Row(
 										Modifier.fillMaxWidth().padding(4.dp),
 										horizontalArrangement = Arrangement.Center,
-										verticalAlignment = Alignment.CenterVertically
+										verticalAlignment = Alignment.CenterVertically,
 									) {
 										button.icon()
 										Spacer(Modifier.width(10.dp))
 										Text(
 											text = button.text,
-											color = MaterialTheme.colorScheme.onPrimaryContainer
+											color = MaterialTheme.colorScheme.onPrimaryContainer,
 										)
 									}
 								}
@@ -110,7 +113,7 @@ fun HintsDialog(
 data class HintDialogButton(
 	val text: String,
 	val onClick: () -> Unit,
-	val icon: @Composable () -> Unit = { }
+	val icon: @Composable () -> Unit = { },
 )
 
 @PreviewLightDark
@@ -123,7 +126,7 @@ private fun HintsDialogPreview() {
 			onDismissRequest = { },
 			onHintClick = { },
 			onFillNotesClick = { },
-			onShowLogsClick = {}
+			onShowLogsClick = {},
 		)
 	}
 }
