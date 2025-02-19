@@ -105,7 +105,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 				.toSet()
 				.joinToString(", ")
 		val block = grid.getSubgrid(hint.row, hint.col)
-		val blockId = (hint.row / 3) * 3 + (hint.col / 3) + 1
+		val blockId = (hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 		val otherCells = hint.enforcingCells
 		val groupType = hintType.groupType
 
@@ -143,7 +143,7 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 		hint: Hint,
 	): List<String> {
 		val hintType = hint.type as HintType.PointingCandidate
-		val affectedBlockId = (hint.row / 3) * 3 + (hint.col / 3) + 1
+		val affectedBlockId = (hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 		val scope = if (hintType.groupType is GroupType.Row) "row" else "column"
 
 		val enforcingCells = hint.enforcingCells
@@ -154,12 +154,12 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 				.map { (index, cells) ->
 					Pair<Int, Int?>(
 						index,
-						cells.firstOrNull()?.let { (it.row / 3) * 3 + (it.col / 3) + 1 },
+						cells.firstOrNull()?.let { (it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1 },
 					)
 				}
 
 		val enforcingBlockId =
-			enforcingCells.firstOrNull()?.let { (it.row / 3) * 3 + (it.col / 3) + 1 }
+			enforcingCells.firstOrNull()?.let { (it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1 }
 		val enforcingScopePart = getScopePartString(enforcingCells.firstOrNull(), hintType.groupType)
 
 		val enforcingCellsExplanation =

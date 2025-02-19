@@ -17,7 +17,6 @@ fun SudokuGrid.updateCells(
 				if (predicate(cell)) transform(cell) else cell
 			}.toPersistentList()
 
-	persistentSetOf<Int>(1, 2, 3) + 4
 	return copy(data = newCells)
 }
 
@@ -115,33 +114,56 @@ fun SudokuGrid.clearRowColumnHighlight(): SudokuGrid =
 
 fun SudokuGrid.markRuleBreakingCells(): SudokuGrid {
 	var updatedSudoku = this
-	for (i in 0 until gridSize) {
-		val rowData = data.filter { it.row == i && it.number != 0 }
-		rowData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
-			updatedSudoku =
-				updateCells(
-					predicate = { it.row == i && it.number == number },
-					transform = { it.copy(attributes = it.attributes + CellAttributes.RULE_BREAKING) },
-				)
+	val ruleBreakingCells = mutableSetOf<Triple<Int, Int, Int>>()
+
+	data
+		.groupBy { it.row }
+		.forEach { (_, rowCells) ->
+			rowCells
+				.filter { it.number != 0 }
+				.groupBy { it.number }
+				.filter { it.value.size > 1 }
+				.forEach { (number, cells) ->
+					cells.forEach { cell ->
+						ruleBreakingCells.add(Triple(cell.row, cell.col, number))
+					}
+				}
 		}
-		val colData = data.filter { it.col == i && it.number != 0 }
-		colData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
-			updatedSudoku =
-				updateCells(
-					predicate = { it.col == i && it.number == number },
-					transform = { it.copy(attributes = it.attributes + CellAttributes.RULE_BREAKING) },
-				)
+
+	data
+		.groupBy { it.col }
+		.forEach { (_, colCells) ->
+			colCells
+				.filter { it.number != 0 }
+				.groupBy { it.number }
+				.filter { it.value.size > 1 }
+				.forEach { (number, cells) ->
+					cells.forEach { cell ->
+						ruleBreakingCells.add(Triple(cell.row, cell.col, number))
+					}
+				}
 		}
-		val subgridData = data.filter { it.number != 0 && ((it.row / subgridSize) * subgridSize + it.col / subgridSize) == i }
-		subgridData.groupingBy { it.number }.eachCount().filter { it.value > 1 }.forEach { (number, _) ->
-			updatedSudoku =
-				updateCells(
-					predicate = { ((it.row / subgridSize) * subgridSize + it.col / subgridSize) == i && it.number == number },
-					transform = { it.copy(attributes = it.attributes + CellAttributes.RULE_BREAKING) },
-				)
+
+	data
+		.groupBy { (it.row / subgridSize) * subgridSize + it.col / subgridSize }
+		.forEach { (_, blockCells) ->
+			blockCells
+				.filter { it.number != 0 }
+				.groupBy { it.number }
+				.filter { it.value.size > 1 }
+				.forEach { (number, cells) ->
+					cells.forEach { cell ->
+						ruleBreakingCells.add(Triple(cell.row, cell.col, number))
+					}
+				}
 		}
-	}
-	return updatedSudoku
+
+	return updateCells(
+		predicate = { cell ->
+			ruleBreakingCells.any { it.first == cell.row && it.second == cell.col && it.third == cell.number }
+		},
+		transform = { it.copy(attributes = it.attributes + CellAttributes.RULE_BREAKING) },
+	)
 }
 
 fun SudokuGrid.clearRuleBreakingCells(): SudokuGrid =

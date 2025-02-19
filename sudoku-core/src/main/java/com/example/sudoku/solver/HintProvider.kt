@@ -3,11 +3,13 @@ package com.example.sudoku.solver
 import androidx.compose.runtime.Stable
 import com.example.sudoku.model.House
 import com.example.sudoku.model.SudokuCellData
+import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.symmetricDifference
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
+import kotlin.math.sqrt
 
 @Stable
 sealed interface HintType {
@@ -55,17 +57,17 @@ data class Hint(
 	val enforcingCells: PersistentList<SudokuCellData> = persistentListOf(),
 )
 
-class HintProvider(
-	val gridSize: Int = 9,
-) {
+class HintProvider {
 	fun provideHint(data: List<SudokuCellData>): Hint? {
+		val gridSize = sqrt(data.size.toDouble()).toInt()
+		val blockSize = sqrt(gridSize.toDouble()).toInt()
 		// Check Naked Single from entire grid.
 		findNakedSingle(data)?.let { return it }
 
 		// Generate Houses from data
 		val houses = mutableListOf<House>()
 		(0..gridSize).forEach { i ->
-			houses.add(House.Block(data.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
+			houses.add(House.Block(data.filter { it.row / blockSize == i / blockSize && it.col / blockSize == i % blockSize }, i))
 			houses.add(House.Row(data.filter { it.row == i }, i))
 			houses.add(House.Column(data.filter { it.col == i }, i))
 		}
@@ -239,15 +241,17 @@ class HintProvider(
 		}
 		val hints = mutableListOf<Hint>()
 		val candidateDigits = house.cells.flatMap { it.candidates }.toSet()
+		val gridSize = sqrt(data.size.toDouble()).toInt()
+		val blockSize = sqrt(gridSize.toDouble()).toInt()
 		for (digit in candidateDigits) {
 			val candidateCells = house.cells.filter { it.number == 0 && digit in it.candidates }
 			if (candidateCells.isNotEmpty()) {
 				// Check if candidate cells belong to the same block (using block index)
-				val uniqueBlocks = candidateCells.map { (it.row / 3) * 3 + (it.col / 3) }.toSet()
+				val uniqueBlocks = candidateCells.map { (it.row / blockSize) * blockSize + (it.col / blockSize) }.toSet()
 				if (uniqueBlocks.size == 1) {
 					val blockIndex = uniqueBlocks.first()
 					val blockCells =
-						getBox(data, blockIndex / 3, blockIndex % 3)
+						getBlock(data, blockIndex / blockSize, blockIndex % blockSize)
 							.filter {
 								!candidateCells.containsCell(it) && it.number == 0 && digit in it.candidates
 							}
@@ -284,15 +288,7 @@ class HintProvider(
 		row: Int,
 		col: Int,
 	): Set<Int> {
-		if (data[row * 9 + col].number != 0) {
-			return emptySet()
-		}
-		val rowValues = data.filter { it.row == row }.map { it.number }
-		val colValues = data.filter { it.col == col }.map { it.number }
-		val subgridValues =
-			data.filter { it.row / 3 == row / 3 && it.col / 3 == col / 3 }.map { it.number }
-		val allValues = (1..9).toSet()
-		val possibleValues = allValues - rowValues - colValues - subgridValues
+		val possibleValues = ClassicSudokuSolver.getValidMoves(SudokuGrid.fromCellData(data), row, col).toSet()
 		return possibleValues
 	}
 
@@ -306,14 +302,16 @@ class HintProvider(
 		col: Int,
 	): List<SudokuCellData> = data.filter { it.col == col }
 
-	private fun getBox(
+	private fun getBlock(
 		data: List<SudokuCellData>,
 		boxRow: Int,
 		boxCol: Int,
 	): List<SudokuCellData> {
-		val startRow = boxRow * 3
-		val startCol = boxCol * 3
-		return data.filter { it.row in startRow until startRow + 3 && it.col in startCol until startCol + 3 }
+		val gridSize = sqrt(data.size.toDouble()).toInt()
+		val blockSize = sqrt(gridSize.toDouble()).toInt()
+		val startRow = boxRow * blockSize
+		val startCol = boxCol * blockSize
+		return data.filter { it.row in startRow until startRow + blockSize && it.col in startCol until startCol + blockSize }
 	}
 }
 

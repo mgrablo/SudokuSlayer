@@ -66,6 +66,11 @@ class SudokuGameViewModel(
 			}
 	}
 
+	override fun onCleared() {
+		super.onCleared()
+		saveGameState()
+	}
+
 	private val lastMoves: ArrayDeque<SudokuMove> = ArrayDeque()
 	private val futureMoves: ArrayDeque<SudokuMove> = ArrayDeque()
 
@@ -139,7 +144,7 @@ class SudokuGameViewModel(
 			is Event.DismissVictoryDialog -> handleDismissVictoryDialog()
 			is Event.SwitchInputMode -> switchInputMode(event.inputMode)
 			is Event.ResetNotes -> resetNotes()
-			is Event.ResetTimer -> { }
+			is Event.ResetTimer -> {}
 		}
 	}
 
@@ -309,8 +314,18 @@ class SudokuGameViewModel(
 				)
 			targetStack.add(SudokuMove(newCellData, previousCellData))
 
-			updatedSudoku = updatedSudoku.clearRuleBreakingCells()
-			updatedSudoku = updatedSudoku.markRuleBreakingCells()
+			updatedSudoku =
+				updatedSudoku
+					.clearMatchingNumberHighlight()
+					.clearRowColumnHighlight()
+			updatedSudoku =
+				updatedSudoku
+					.highlightMatchingCells(previousCellData.number)
+					.highlightRowAndColumn(previousCellData.row, previousCellData.col)
+			updatedSudoku =
+				updatedSudoku
+					.clearRuleBreakingCells()
+					.markRuleBreakingCells()
 
 			_uiState.update { it.copy(sudoku = updatedSudoku) }
 
@@ -333,12 +348,19 @@ class SudokuGameViewModel(
 	): SudokuGrid {
 		val (row, col) = selectedCell
 		var updatedSudoku = sudoku
+		if (updatedSudoku.getCellAt(row, col).attributes.contains(CellAttributes.GENERATED)) {
+			return updatedSudoku
+		}
+
 		if (number == 0) {
 			updatedSudoku = updatedSudoku.withValue(row, col, 0)
 			updatedSudoku = updatedSudoku.clearCornerNotes(row, col)
 		} else {
 			val newValue = if (sudoku.getCellAt(row, col).number == number) 0 else number
 			updatedSudoku = updatedSudoku.withValue(row, col, newValue)
+			updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
+			updatedSudoku = updatedSudoku.highlightMatchingCells(number)
+
 			if (_uiState.value.lastHint?.row == row &&
 				_uiState.value.lastHint?.col == col &&
 				number == _uiState.value.lastHint?.value
@@ -358,12 +380,10 @@ class SudokuGameViewModel(
 					)
 				}
 			}
-			updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
-			updatedSudoku = updatedSudoku.highlightMatchingCells(number)
-			updatedSudoku = updatedSudoku.clearRuleBreakingCells()
-			updatedSudoku = updatedSudoku.markRuleBreakingCells()
 		}
 
+		updatedSudoku = updatedSudoku.clearRuleBreakingCells()
+		updatedSudoku = updatedSudoku.markRuleBreakingCells()
 		return updatedSudoku
 	}
 
@@ -386,6 +406,13 @@ class SudokuGameViewModel(
 		return updatedSudoku
 	}
 
+	private fun saveGameState() {
+		viewModelScope.launch(Dispatchers.IO) {
+			val currentState = _uiState.value
+			dataStoreRepository.updateData(currentState.sudoku)
+		}
+	}
+
 	private fun saveMoveAndUpdateState(
 		previousCellData: SudokuCellData,
 		updatedSudoku: SudokuGrid,
@@ -402,9 +429,7 @@ class SudokuGameViewModel(
 			it.copy(sudoku = updatedSudoku)
 		}
 
-		viewModelScope.launch {
-			dataStoreRepository.updateCell(row, col, updatedSudoku.getCellAt(row, col))
-		}
+		saveGameState()
 
 		if (updatedSudoku.getEmptyCellsCount() == 0) {
 			handleAllCellsFilled()
@@ -428,7 +453,7 @@ class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _uiState.value.sudoku
-			val hintProvider = HintProvider(updatedSudoku.gridSize)
+			val hintProvider = HintProvider()
 			// Fill candidates once
 			val filledCandidatesGrid =
 				hintProvider.fillCandidates(updatedSudoku.data).toMutableList()
