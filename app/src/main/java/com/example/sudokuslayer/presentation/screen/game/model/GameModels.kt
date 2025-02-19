@@ -24,6 +24,7 @@ data class SudokuMove(
 )
 
 enum class GameState {
+	LOADING,
 	PLAYING,
 	VICTORY,
 }

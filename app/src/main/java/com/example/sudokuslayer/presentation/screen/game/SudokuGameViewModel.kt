@@ -47,17 +47,22 @@ class SudokuGameViewModel(
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
-	private val _isLoading = MutableStateFlow(false)
-	val isLoading: StateFlow<Boolean> = _isLoading
-	val data = uiState.value.sudoku.data
 
 	init {
-		_isLoading.value = true
+		_uiState.update {
+			it.copy(
+				gameState = GameState.LOADING,
+			)
+		}
 		viewModelScope
 			.launch(Dispatchers.IO) {
 				loadData()
 			}.invokeOnCompletion {
-				_isLoading.value = false
+				_uiState.update {
+					it.copy(
+						gameState = GameState.PLAYING,
+					)
+				}
 			}
 	}
 
@@ -97,6 +102,8 @@ class SudokuGameViewModel(
 		data object ResetNotes : Event
 
 		data object DismissVictoryDialog : Event
+
+		data object ResetTimer : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -132,6 +139,7 @@ class SudokuGameViewModel(
 			is Event.DismissVictoryDialog -> handleDismissVictoryDialog()
 			is Event.SwitchInputMode -> switchInputMode(event.inputMode)
 			is Event.ResetNotes -> resetNotes()
+			is Event.ResetTimer -> { }
 		}
 	}
 

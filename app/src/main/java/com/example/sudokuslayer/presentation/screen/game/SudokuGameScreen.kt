@@ -26,10 +26,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import com.example.sudokuslayer.data.datastore.sudokuGridDataStore
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameViewModel.Event
@@ -42,7 +42,9 @@ import com.example.sudokuslayer.presentation.screen.game.components.TimerDisplay
 import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialog
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
+import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,8 +68,6 @@ fun SudokuGameScreen(
 		),
 ) {
 	val lifecycleOwner = LocalLifecycleOwner.current
-	val scope = rememberCoroutineScope()
-
 	DisposableEffect(Unit) {
 		lifecycleOwner.lifecycle.addObserver(timerViewModel)
 		onDispose {
@@ -75,10 +75,32 @@ fun SudokuGameScreen(
 		}
 	}
 
-	val uiState by viewModel.uiState.collectAsState()
 	val elapsedTime by timerViewModel.elapsedTime.collectAsState()
+	val uiState by viewModel.uiState.collectAsState()
+	SudokuGameContent(
+		uiState = uiState,
+		onEvent = {
+			if (it is Event.ResetGame) {
+				timerViewModel.resetTimer()
+			}
+			viewModel.onEvent(it)
+		},
+		modifier = modifier,
+		elapsedTime = { elapsedTime },
+		openDrawer = openDrawer,
+	)
+}
 
-	val loadingState by viewModel.isLoading.collectAsState()
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SudokuGameContent(
+	uiState: SudokuGameUiState,
+	onEvent: (Event) -> Unit,
+	elapsedTime: () -> Long,
+	openDrawer: () -> Unit,
+	modifier: Modifier = Modifier,
+) {
+	val scope = rememberCoroutineScope()
 	var resetDialogState by remember { mutableStateOf(false) }
 	var hintsDialogState by remember { mutableStateOf(false) }
 
@@ -93,19 +115,19 @@ fun SudokuGameScreen(
 
 	VictoryDialog(
 		isVisible = uiState.gameState == GameState.VICTORY,
-		onDismissRequest = { viewModel.onEvent(Event.DismissVictoryDialog) },
+		onDismissRequest = { onEvent(Event.DismissVictoryDialog) },
 	)
 
 	ResetDialog(
 		isVisible = resetDialogState,
 		onConfirmClick = {
-			viewModel.onEvent(Event.ResetGame)
-			timerViewModel.resetTimer()
+			onEvent(Event.ResetGame)
+			onEvent(Event.ResetNotes)
 			resetDialogState = false
 		},
 		onDismissClick = { resetDialogState = false },
 		onClearNotesClick = {
-			viewModel.onEvent(Event.ResetNotes)
+			onEvent(Event.ResetNotes)
 			resetDialogState = false
 		},
 	)
@@ -114,14 +136,14 @@ fun SudokuGameScreen(
 		isVisible = hintsDialogState,
 		onDismissRequest = { hintsDialogState = false },
 		onHintClick = {
-			viewModel.onEvent(Event.ProvideHint)
+			onEvent(Event.ProvideHint)
 			hintsDialogState = false
 			scope.launch {
 				scaffoldState.bottomSheetState.expand()
 			}
 		},
 		onFillNotesClick = {
-			viewModel.onEvent(Event.HintFillNotes)
+			onEvent(Event.HintFillNotes)
 			hintsDialogState = false
 		},
 		onShowLogsClick = {
@@ -136,8 +158,8 @@ fun SudokuGameScreen(
 		sheetScaffoldState = scaffoldState,
 		hintLogs = uiState.hintLogs,
 		showNextHint = uiState.lastHint == null,
-		explainHintClick = { viewModel.onEvent(Event.ExplainHint) },
-		nextHintClick = { viewModel.onEvent(Event.ProvideHint) },
+		explainHintClick = { onEvent(Event.ExplainHint) },
+		nextHintClick = { onEvent(Event.ProvideHint) },
 		topBar = {
 			CenterAlignedTopAppBar(
 				title = { Text("Sudoku Slayer") },
@@ -153,7 +175,7 @@ fun SudokuGameScreen(
 			)
 		},
 	) { innerPadding ->
-		if (loadingState) {
+		if (uiState.gameState == GameState.LOADING) {
 			CircularProgressIndicator()
 		} else {
 			Column(
@@ -162,21 +184,21 @@ fun SudokuGameScreen(
 						.fillMaxSize(),
 				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
-				TimerDisplay(elapsedTime = { elapsedTime })
+				TimerDisplay(elapsedTime = { elapsedTime() })
 				SudokuBoard(
 					sudoku = uiState.sudoku,
-					onCellClick = { row, col -> viewModel.onEvent(Event.SelectCell(row, col)) },
+					onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 				)
 				KeyPad(
-					onNumberClick = { viewModel.onEvent(Event.InputNumber(it)) },
-					onClearClick = { viewModel.onEvent(Event.ClearCell) },
-					onUndoClick = { viewModel.onEvent(Event.Undo) },
-					onRedoClick = { viewModel.onEvent(Event.Redo) },
-					onNumberSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.NUMBER)) },
-					onNoteSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.NOTE)) },
-					onColorSwitchClick = { viewModel.onEvent(Event.SwitchInputMode(InputMode.COLOR)) },
+					onNumberClick = { onEvent(Event.InputNumber(it)) },
+					onClearClick = { onEvent(Event.ClearCell) },
+					onUndoClick = { onEvent(Event.Undo) },
+					onRedoClick = { onEvent(Event.Redo) },
+					onNumberSwitchClick = { onEvent(Event.SwitchInputMode(InputMode.NUMBER)) },
+					onNoteSwitchClick = { onEvent(Event.SwitchInputMode(InputMode.NOTE)) },
+					onColorSwitchClick = { onEvent(Event.SwitchInputMode(InputMode.COLOR)) },
 					onHintClick = { hintsDialogState = true },
-					onShowMistakesClick = { viewModel.onEvent(Event.ShowMistakes) },
+					onShowMistakesClick = { onEvent(Event.ShowMistakes) },
 					onResetClick = { resetDialogState = true },
 					inputMode = uiState.inputMode,
 					gridSize = uiState.sudoku.gridSize,
@@ -189,8 +211,22 @@ fun SudokuGameScreen(
 @Preview
 @Composable
 private fun SudokuGameScreenPreview() {
-	SudokuGameScreen(
-		context = LocalContext.current,
-		openDrawer = { },
+	SudokuGameContent(
+		uiState =
+			SudokuGameUiState(
+				sudoku = createFilledSudokuGrid(9),
+			),
+		onEvent = {},
+		elapsedTime = { 1 },
+		openDrawer = {},
+		modifier = Modifier.fillMaxSize(),
 	)
+}
+
+private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
+	val list = mutableListOf<IntArray>()
+	repeat(gridSize) {
+		list += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
+	}
+	return SudokuGrid.fromIntArray(list)
 }

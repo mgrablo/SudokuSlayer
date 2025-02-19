@@ -113,7 +113,8 @@ data class SudokuGrid(
 			intArrayData: Collection<IntArray>,
 			gridSize: Int = 9,
 		): SudokuGrid {
-			require(intArrayData.size == gridSize && intArrayData.all { it.size == gridSize })
+			require(intArrayData.size == gridSize)
+			require(intArrayData.all { it.size == gridSize })
 			return SudokuGrid(
 				gridSize = gridSize,
 				data = intArrayToData(intArrayData),

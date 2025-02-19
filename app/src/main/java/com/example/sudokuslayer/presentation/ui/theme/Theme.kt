@@ -586,6 +586,61 @@ data class ColorFamily(
 	val onColorContainer: Color,
 )
 
+@Immutable
+data class SudokuBoardColors(
+	val defaultBackground: Color,
+	val onDefaultBackground: Color,
+	val selectedBackground: Color,
+	val onSelectedBackground: Color,
+	val highlightedBackground: Color,
+	val onHighlightedBackground: Color,
+	val hintMarkBackground: Color,
+	val onHintMarkBackground: Color,
+	val invalidMarkBackground: Color,
+	val onInvalidMarkBackground: Color,
+	val matchingMarkBackground: Color,
+	val onMatchingMarkBackground: Color,
+	val cellBorder: Color,
+	val blockBorder: Color,
+)
+
+val MochaSudokuBoard: SudokuBoardColors =
+	SudokuBoardColors(
+		defaultBackground = Catppuccin.Mocha.Base,
+		onDefaultBackground = Catppuccin.Mocha.Text,
+		selectedBackground = Catppuccin.Mocha.Surface1,
+		onSelectedBackground = Catppuccin.Mocha.Text,
+		highlightedBackground = Catppuccin.Mocha.Surface0,
+		onHighlightedBackground = Catppuccin.Mocha.Text,
+		hintMarkBackground = Catppuccin.Mocha.Green,
+		onHintMarkBackground = Catppuccin.Mocha.Crust,
+		invalidMarkBackground = Catppuccin.Mocha.Red,
+		onInvalidMarkBackground = Catppuccin.Mocha.Crust,
+		matchingMarkBackground = Catppuccin.Mocha.Lavender,
+		onMatchingMarkBackground = Catppuccin.Mocha.Crust,
+		cellBorder = Catppuccin.Mocha.Overlay0,
+		blockBorder = Catppuccin.Mocha.Overlay2,
+	)
+
+
+val LatteSudokuBoard: SudokuBoardColors =
+	SudokuBoardColors(
+		defaultBackground = Catppuccin.Latte.Base,
+		onDefaultBackground = Catppuccin.Latte.Text,
+		selectedBackground = Catppuccin.Latte.Surface1,
+		onSelectedBackground = Catppuccin.Latte.Text,
+		highlightedBackground = Catppuccin.Latte.Surface0,
+		onHighlightedBackground = Catppuccin.Latte.Text,
+		hintMarkBackground = Catppuccin.Latte.Green,
+		onHintMarkBackground = Catppuccin.Latte.Crust,
+		invalidMarkBackground = Catppuccin.Latte.Red,
+		onInvalidMarkBackground = Catppuccin.Latte.Crust,
+		matchingMarkBackground = Catppuccin.Latte.Lavender,
+		onMatchingMarkBackground = Catppuccin.Latte.Crust,
+		cellBorder = Catppuccin.Latte.Overlay0,
+		blockBorder = Catppuccin.Latte.Overlay2,
+	)
+
 val unspecified_scheme =
 	ColorFamily(
 		Color.Unspecified,
@@ -600,6 +655,11 @@ private val LocalExtendedColorScheme =
 	}
 
 val LocalCatppuccinPalette = staticCompositionLocalOf<CatppuccinPalette> { Catppuccin.Latte }
+
+val LocalSudokuBoardColors =
+	staticCompositionLocalOf<SudokuBoardColors> {
+		MochaSudokuBoard
+	}
 
 val MaterialTheme.extendedColorScheme: ExtendedColorScheme
 	@Composable
@@ -630,8 +690,15 @@ fun SudokuSlayerTheme(
 			else -> Catppuccin.Latte
 		}
 
+	val boardColors =
+		when {
+			darkTheme -> MochaSudokuBoard
+			else -> LatteSudokuBoard
+		}
+
+
 	CompositionLocalProvider(LocalExtendedColorScheme provides extendedColorScheme) {
-		CompositionLocalProvider(LocalCatppuccinPalette provides catppuccinPalette) {
+		CompositionLocalProvider(LocalSudokuBoardColors provides boardColors) {
 			CatppuccinTheme.DarkLightPalette(
 				darkTheme = darkTheme,
 				darkPalette = CatppuccinMaterial.Mocha(),

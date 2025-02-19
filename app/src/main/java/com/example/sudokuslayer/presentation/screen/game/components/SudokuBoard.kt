@@ -1,170 +1,178 @@
 package com.example.sudokuslayer.presentation.screen.game.components
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sudoku.model.CellAttributes
+import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
+import com.example.sudokuslayer.presentation.ui.theme.LocalSudokuBoardColors
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.mutate
+import kotlinx.collections.immutable.persistentSetOf
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
+	textStyle: TextStyle = TextStyle(),
 ) {
-	val cellBorderColor = MaterialTheme.colorScheme.outlineVariant
-	val blockBorderColor = MaterialTheme.colorScheme.outline
-
-	var scale by remember { mutableFloatStateOf(1f) }
-	val colors =
-		remember {
-			SudokuBoardColors(
-				cellBorder = cellBorderColor,
-				blockBorder = blockBorderColor,
-			)
-		}
-
-	val transformableState =
-		rememberTransformableState { zoomChange, _, _ ->
-			scale = (scale * zoomChange).coerceIn(0.5f, 2f)
-		}
-
-	Box(
-		modifier =
-			modifier
-				.aspectRatio(1f)
-				.drawWithContent {
-					drawGridLines(
-						gridSize = sudoku.gridSize,
-						blockSize = sudoku.subgridSize,
-						colors = colors,
-					)
-				}
-				.border(
-					width = 1.dp,
-					color = MaterialTheme.colorScheme.outlineVariant,
-					shape = RoundedCornerShape(8.dp),
-				)
-				.graphicsLayer(
-					scaleX = scale,
-					scaleY = scale,
-				)
-				.transformable(state = transformableState)
-				.clipToBounds(),
+	BoxWithConstraints(
+		contentAlignment = Alignment.Center,
+		modifier = modifier,
 	) {
-		LazyVerticalGrid(
-			columns = GridCells.Fixed(sudoku.gridSize),
-			modifier = Modifier.fillMaxSize(),
-			userScrollEnabled = false,
-		) {
-			items(sudoku.getArray(), key = { "r${it.row}c${it.col}" }) { cell ->
-				SudokuCell(
-					cellData = cell,
-					onClick = { onCellClick(cell.row, cell.col) },
-					attributeStates =
-						CellAttributeStates(
-							isGenerated = cell.attributes.contains(CellAttributes.GENERATED),
-							isNumberHighlighted = cell.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED),
-							isRowColumnHighlighted = cell.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED),
-							isSelected = cell.attributes.contains(CellAttributes.SELECTED),
-							isBreakingRules = cell.attributes.contains(CellAttributes.RULE_BREAKING),
-							isHintFocus = cell.attributes.contains(CellAttributes.HINT_FOCUS),
-							isHintRevealed = cell.attributes.contains(CellAttributes.HINT_REVEALED),
-						),
+		val boardSize = sudoku.gridSize
+		val blockSize = sudoku.subgridSize
+		val blockPadding = LocalPadding.current.tiny
+		val totalBlockPadding = blockPadding * (boardSize / blockSize - 1)
+		val cellSize = (maxWidth - totalBlockPadding) / boardSize
+		val sizeAdjustedTextStyle =
+			textStyle.copy(
+				fontSize = (cellSize.value * 0.6f).sp,
+			)
+
+		val lineColor = LocalSudokuBoardColors.current.blockBorder
+
+		Column {
+			repeat(boardSize) { row ->
+				if (row > 0 && row % blockSize == 0) {
+					Spacer(modifier = Modifier.height(blockPadding))
+				}
+
+				Row {
+					repeat(boardSize) { col ->
+						if (col > 0 && col % blockSize == 0) {
+							Spacer(modifier = Modifier.width(blockPadding))
+						}
+
+						SudokuCell(
+							data = sudoku.getCellAt(row, col),
+							gridSize = boardSize,
+							onCellClick = { row, col -> onCellClick(row, col) },
+							modifier = Modifier.size(cellSize),
+							textStyle = sizeAdjustedTextStyle,
+						)
+					}
+				}
+			}
+		}
+
+		Canvas(modifier = Modifier.matchParentSize()) {
+			val lineThicknessPx = 2.dp.toPx()
+			val numBlocks = boardSize / blockSize
+
+			fun dividerPosition(index: Int): Float =
+				index * (blockSize * cellSize.toPx()) +
+					(index - 1) * blockPadding.toPx() +
+					blockPadding.toPx() / 2f
+
+			// Draw horizontal dividers
+			for (i in 1 until numBlocks) {
+				val y = dividerPosition(i)
+				drawLine(
+					color = lineColor,
+					start = Offset(0f, y),
+					end = Offset(size.width, y),
+					strokeWidth = lineThicknessPx,
+					cap = StrokeCap.Round,
+				)
+			}
+
+			// Draw vertical dividers
+			for (j in 1 until numBlocks) {
+				val x = dividerPosition(j)
+				drawLine(
+					color = lineColor,
+					start = Offset(x, 0f),
+					end = Offset(x, size.height),
+					strokeWidth = lineThicknessPx,
+					cap = StrokeCap.Round,
 				)
 			}
 		}
 	}
 }
 
-fun ContentDrawScope.drawGridLines(
-	gridSize: Int,
-	blockSize: Int,
-	colors: SudokuBoardColors,
-	modifier: Modifier = Modifier,
-) {
-	drawContent()
-	repeat(gridSize - 1) { index ->
-		val color = if ((index + 1) % blockSize == 0) colors.blockBorder else colors.cellBorder
-		val width = if ((index + 1) % blockSize == 0) 2.dp.toPx() else 1.dp.toPx()
-
-		drawLine(
-			color = color,
-			strokeWidth = width,
-			start = Offset(size.width / gridSize * (index + 1), 0f),
-			end = Offset(size.width / gridSize * (index + 1), size.height),
-		)
-		drawLine(
-			color = color,
-			strokeWidth = width,
-			start = Offset(0f, size.height / gridSize * (index + 1)),
-			end = Offset(size.width, size.height / gridSize * (index + 1)),
-		)
+@PreviewLightDark
+@Composable
+private fun SudokuBoardNormalPreview() {
+	val grid = createFilledSudokuGrid(9)
+	SudokuSlayerTheme {
+		SudokuBoard(grid, onCellClick = { _, _ -> })
 	}
 }
-
-// Add this data class to avoid recreating colors
-data class SudokuBoardColors(
-	val cellBorder: Color,
-	val blockBorder: Color,
-)
 
 @PreviewLightDark
 @Composable
-private fun SudokuBoardPreview() {
+private fun SudokuBoardBigPreview() {
+	val grid = createFilledSudokuGrid(16)
 	SudokuSlayerTheme {
-		var grid = SudokuGrid(9)
-		SudokuBoard(
-			grid,
-			onCellClick = { row, col -> },
-		)
+		SudokuBoard(grid, onCellClick = { _, _ -> })
 	}
 }
 
-@Preview
+@PreviewLightDark
 @Composable
-private fun SudokuBoardFourByFourPreview() {
+private fun SudokuBoardSmallPreview() {
+	val grid = createFilledSudokuGrid(4)
 	SudokuSlayerTheme {
-		var grid = SudokuGrid(4)
-		SudokuBoard(
-			grid,
-			onCellClick = { row, col -> },
-		)
+		SudokuBoard(grid, onCellClick = { _, _ -> })
 	}
 }
 
-@Preview
-@Composable
-private fun SudokuBoardSixteenBySixteenPreview() {
-	SudokuSlayerTheme {
-		var grid = SudokuGrid(16)
-		SudokuBoard(
-			grid,
-			onCellClick = { row, col -> },
-		)
+private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
+	val list = mutableListOf<IntArray>()
+	repeat(gridSize) {
+		list += (1..gridSize).toList().toIntArray()
 	}
+	return SudokuGrid.fromIntArray(list, gridSize)
+}
+
+private fun createSudokuCellData(gridSize: Int): List<SudokuCellData> {
+	val list =
+		mutableListOf<SudokuCellData>().apply {
+			repeat(gridSize + 1) {
+				// 0 to 9
+				add(SudokuCellData(0, 0, it))
+			}
+			repeat(gridSize + 1) {
+				add(
+					SudokuCellData(
+						0,
+						0,
+						it,
+						cornerNotes = persistentSetOf<Int>().mutate { it.addAll(1..gridSize) },
+					),
+				)
+			}
+			repeat(8) {
+				add(
+					SudokuCellData(
+						0,
+						0,
+						3,
+						attributes = persistentSetOf(CellAttributes.entries[it]),
+					),
+				)
+			}
+		}
+	return list
 }
