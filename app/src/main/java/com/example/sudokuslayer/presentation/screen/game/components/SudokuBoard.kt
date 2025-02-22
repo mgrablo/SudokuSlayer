@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -35,15 +36,22 @@ fun SudokuBoard(
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
+	val itemsInRow = remember { sudoku.gridSize }
+	val itemsInBlock = remember { sudoku.subgridSize }
 	BoxWithConstraints(
 		contentAlignment = Alignment.Center,
 		modifier = modifier,
 	) {
-		val boardSize = sudoku.gridSize
-		val blockSize = sudoku.subgridSize
+		val requiredRatio = itemsInRow.toFloat() / itemsInRow
+		val currentRatio = maxWidth / maxHeight
 		val blockPadding = LocalPadding.current.tiny
-		val totalBlockPadding = blockPadding * (boardSize / blockSize - 1)
-		val cellSize = (maxWidth - totalBlockPadding) / boardSize
+		val totalBlockPadding = blockPadding * (itemsInRow / itemsInBlock - 1)
+		val cellSize =
+			if (requiredRatio > currentRatio) {
+				(maxWidth - totalBlockPadding) / itemsInRow
+			} else {
+				(maxHeight - totalBlockPadding) / itemsInRow
+			}
 		val sizeAdjustedTextStyle =
 			textStyle.copy(
 				fontSize = (cellSize.value * 0.6f).sp,
@@ -52,20 +60,20 @@ fun SudokuBoard(
 		val lineColor = LocalSudokuBoardColors.current.blockBorder
 
 		Column {
-			repeat(boardSize) { row ->
-				if (row > 0 && row % blockSize == 0) {
+			repeat(itemsInRow) { row ->
+				if (row > 0 && row % itemsInBlock == 0) {
 					Spacer(modifier = Modifier.height(blockPadding))
 				}
 
 				Row {
-					repeat(boardSize) { col ->
-						if (col > 0 && col % blockSize == 0) {
+					repeat(itemsInRow) { col ->
+						if (col > 0 && col % itemsInBlock == 0) {
 							Spacer(modifier = Modifier.width(blockPadding))
 						}
 
 						SudokuCell(
 							data = sudoku.getCellAt(row, col),
-							gridSize = boardSize,
+							gridSize = itemsInRow,
 							onCellClick = { row, col -> onCellClick(row, col) },
 							modifier = Modifier.size(cellSize),
 							textStyle = sizeAdjustedTextStyle,
@@ -75,12 +83,12 @@ fun SudokuBoard(
 			}
 		}
 
-		Canvas(modifier = Modifier.matchParentSize()) {
+		Canvas(modifier = Modifier.size(cellSize * itemsInRow + totalBlockPadding)) {
 			val lineThicknessPx = 2.dp.toPx()
-			val numBlocks = boardSize / blockSize
+			val numBlocks = itemsInRow / itemsInBlock
 
 			fun dividerPosition(index: Int): Float =
-				index * (blockSize * cellSize.toPx()) +
+				index * (itemsInBlock * cellSize.toPx()) +
 					(index - 1) * blockPadding.toPx() +
 					blockPadding.toPx() / 2f
 

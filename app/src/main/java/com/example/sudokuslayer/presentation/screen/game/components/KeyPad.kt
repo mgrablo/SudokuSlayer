@@ -5,12 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
@@ -31,7 +30,6 @@ import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.InputModeSwitch
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.KeyPadItem
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.NumberPad
-import com.example.sudokuslayer.presentation.screen.game.model.InputMode
 import com.example.sudokuslayer.presentation.ui.theme.LocalKeyPadColors
 import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
@@ -46,24 +44,15 @@ fun KeyPad(
 	onClearClick: () -> Unit,
 	onUndoClick: () -> Unit,
 	onRedoClick: () -> Unit,
-	onNumberSwitchClick: () -> Unit,
-	onNoteSwitchClick: () -> Unit,
-	onColorSwitchClick: () -> Unit,
+	onSwitchInputMode: () -> Unit,
 	onHintClick: () -> Unit,
 	onShowMistakesClick: () -> Unit,
 	onResetClick: () -> Unit,
-	inputMode: InputMode,
+	noteMode: Boolean,
 	gridSize: Int,
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
-	val leftActionPadItems =
-		getLeftActionPadItems(
-			onHintClick = onHintClick,
-			onShowMistakesClick = onShowMistakesClick,
-			onResetClick = onResetClick,
-		)
-
 	val middleActionPadItems =
 		getMiddleActionPadItems(
 			onUndoClick = onUndoClick,
@@ -71,14 +60,14 @@ fun KeyPad(
 			onRedoClick = onRedoClick,
 		)
 
-	val itemsInRow = remember { if(gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 2 else gridSize + 1 }
-	val itemsInColumn = remember { itemsInRow + 2 }
+	val itemsInRow = remember { if(gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 1 else gridSize + 1 }
+	val itemsInColumn = remember { itemsInRow + 1 }
 
 	BoxWithConstraints(
 		contentAlignment = Alignment.Center,
 		modifier =
 			modifier
-				.heightIn(max = 500.dp)
+				.fillMaxSize()
 				.padding(LocalPadding.current.small),
 	) {
 		val requiredRatio = itemsInRow.toFloat() / itemsInColumn
@@ -98,23 +87,18 @@ fun KeyPad(
 
 		Column(
 			verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-			horizontalAlignment = Alignment.End,
-			modifier =
-				Modifier
-					.width(itemSize * itemsInRow + totalItemWidthPadding)
-					.height(itemSize * itemsInColumn + totalItemHeightPadding),
+			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			if (gridSize > 4) {
 				Row(
 					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-					modifier = Modifier.fillMaxWidth(),
 				) {
 					Column(
 						verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
 						InputModeSwitch(
-							onClick = { },
-							inputMode = inputMode == InputMode.NOTE,
+							onClick = onSwitchInputMode,
+							inputMode = noteMode,
 							iconSize = fontSize.value.dp,
 							modifier = Modifier.size(itemSize),
 						)
@@ -140,7 +124,7 @@ fun KeyPad(
 					NumberPad(
 						gridSize = gridSize,
 						onButtonClick = onNumberClick,
-						inputMode = inputMode,
+						noteMode = noteMode,
 						textStyle = textStyle,
 						itemSize = itemSize,
 					)
@@ -149,6 +133,7 @@ fun KeyPad(
 					horizontalArrangement = Arrangement.Center,
 					modifier = Modifier.fillMaxWidth(),
 				) {
+					Spacer(modifier = Modifier.size(itemSize))
 					ActionPad(
 						items = middleActionPadItems,
 						orientation = ActionPadOrientation.HORIZONTAL,
@@ -159,7 +144,6 @@ fun KeyPad(
 			} else {
 				Row(
 					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-					modifier = Modifier.fillMaxWidth(),
 				) {
 					KeyPadItem(
 						text = "",
@@ -173,14 +157,13 @@ fun KeyPad(
 					NumberPad(
 						gridSize = gridSize,
 						onButtonClick = onNumberClick,
-						inputMode = inputMode,
+						noteMode = noteMode,
 						textStyle = textStyle,
 						itemSize = itemSize,
 					)
 				}
 				Row(
 					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-					modifier = Modifier.fillMaxWidth(),
 				) {
 					KeyPadItem(
 						text = "",
@@ -198,8 +181,8 @@ fun KeyPad(
 						textStyle = textStyle,
 					)
 					InputModeSwitch(
-						onClick = { },
-						inputMode = inputMode == InputMode.NOTE,
+						onClick = onSwitchInputMode,
+						inputMode = noteMode,
 						iconSize = fontSize.value.dp,
 						modifier = Modifier.size(itemSize),
 					)
@@ -208,42 +191,6 @@ fun KeyPad(
 		}
 	}
 }
-
-@Composable
-private fun getLeftActionPadItems(
-	onHintClick: () -> Unit,
-	onShowMistakesClick: () -> Unit,
-	onResetClick: () -> Unit,
-): PersistentList<ActionPadItem> =
-	persistentListOf(
-		ActionPadItem(
-			icon =
-				AppIcon.ResourceIcon(
-					resourceId = R.drawable.lightbulb,
-					contentDescription = "Show Hint",
-				),
-			contentDescription = "Show Hint",
-			onClick = onHintClick,
-		),
-		ActionPadItem(
-			icon =
-				AppIcon.ResourceIcon(
-					resourceId = R.drawable.question_mark,
-					contentDescription = "Show mistakes",
-				),
-			contentDescription = "Show mistakes",
-			onClick = onShowMistakesClick,
-		),
-		ActionPadItem(
-			icon =
-				AppIcon.VectorIcon(
-					imageVector = Icons.Default.Refresh,
-					contentDescription = "Restart this game",
-				),
-			contentDescription = "Restart game",
-			onClick = onResetClick,
-		),
-	)
 
 @Composable
 private fun getMiddleActionPadItems(
@@ -278,13 +225,11 @@ private fun KeyPadPreview() {
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
-			onNumberSwitchClick = { },
-			onNoteSwitchClick = { },
-			onColorSwitchClick = { },
+			onSwitchInputMode = { },
 			onHintClick = { },
 			onShowMistakesClick = { },
 			onResetClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = true,
 			gridSize = 9,
 		)
 	}
@@ -299,13 +244,11 @@ private fun KeyPadFourPreview() {
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
-			onNumberSwitchClick = { },
-			onNoteSwitchClick = { },
-			onColorSwitchClick = { },
 			onHintClick = { },
+			onSwitchInputMode = { },
 			onShowMistakesClick = { },
 			onResetClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = false,
 			gridSize = 4,
 		)
 	}
@@ -320,13 +263,11 @@ private fun KeyPadSixteenPreview() {
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
-			onNumberSwitchClick = { },
-			onNoteSwitchClick = { },
-			onColorSwitchClick = { },
+			onSwitchInputMode = { },
 			onHintClick = { },
 			onShowMistakesClick = { },
 			onResetClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = false,
 			gridSize = 16,
 		)
 	}

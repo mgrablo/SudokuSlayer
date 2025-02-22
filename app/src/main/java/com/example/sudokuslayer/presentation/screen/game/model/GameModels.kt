@@ -12,7 +12,7 @@ data class SudokuGameUiState(
 	val sudoku: SudokuGrid = SudokuGrid(),
 	val selectedCell: Pair<Int, Int>? = null,
 	val gameState: GameState = GameState.PLAYING,
-	val inputMode: InputMode = InputMode.NUMBER,
+	val isInNoteMode: Boolean = false,
 	val difficulty: SudokuDifficulty = SudokuDifficulty.EASY,
 	val lastHint: Hint? = null,
 	val hintLogs: PersistentList<HintLog> = persistentListOf(),

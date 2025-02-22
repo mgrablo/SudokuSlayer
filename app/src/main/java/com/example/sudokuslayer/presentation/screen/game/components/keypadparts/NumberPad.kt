@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.sudokuslayer.presentation.screen.game.model.InputMode
 import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.presentation.ui.theme.extendedColorScheme
@@ -27,7 +26,7 @@ import kotlin.math.sqrt
 fun NumberPad(
 	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
-	inputMode: InputMode,
+	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
 	textStyle: TextStyle = TextStyle(),
@@ -36,17 +35,17 @@ fun NumberPad(
 	val keyboardRows = numbers.chunked(if(numbers.size > 4) sqrt(gridSize.toDouble()).toInt() else numbers.size)
 
 	val keyColor =
-		when (inputMode) {
-			InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.colorContainer
-			InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.colorContainer
-			InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.colorContainer
+		if (noteMode) {
+			MaterialTheme.extendedColorScheme.lavender.colorContainer
+		} else {
+			MaterialTheme.extendedColorScheme.pink.colorContainer
 		}
 
 	val textColor =
-		when (inputMode) {
-			InputMode.NUMBER -> MaterialTheme.extendedColorScheme.lavender.onColorContainer
-			InputMode.NOTE -> MaterialTheme.extendedColorScheme.pink.onColorContainer
-			InputMode.COLOR -> MaterialTheme.extendedColorScheme.rosewater.onColorContainer
+		if (noteMode) {
+			MaterialTheme.extendedColorScheme.lavender.onColorContainer
+		} else {
+			MaterialTheme.extendedColorScheme.pink.onColorContainer
 		}
 
 	Column(
@@ -82,7 +81,7 @@ private fun NumberPadNineItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = false,
 			gridSize = 9,
 			modifier = Modifier.padding(16.dp),
 		)
@@ -95,7 +94,7 @@ private fun NumberPadFourItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = false,
 			gridSize = 4,
 			modifier = Modifier.padding(16.dp),
 		)
@@ -108,7 +107,7 @@ private fun NumberPadSixteenItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
-			inputMode = InputMode.NUMBER,
+			noteMode = false,
 			gridSize = 16,
 			modifier = Modifier.padding(16.dp),
 		)

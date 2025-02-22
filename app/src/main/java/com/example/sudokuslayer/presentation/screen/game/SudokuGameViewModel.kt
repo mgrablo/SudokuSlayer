@@ -28,7 +28,6 @@ import com.example.sudoku.solver.fillCandidates
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.HintLog
-import com.example.sudokuslayer.presentation.screen.game.model.InputMode
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
 import kotlinx.collections.immutable.minus
@@ -84,9 +83,7 @@ class SudokuGameViewModel(
 			val number: Int,
 		) : Event
 
-		data class SwitchInputMode(
-			val inputMode: InputMode,
-		) : Event
+		data object SwitchInputMode : Event
 
 		data object ClearCell : Event
 
@@ -118,14 +115,14 @@ class SudokuGameViewModel(
 				inputNumber(
 					event.number,
 					_uiState.value.selectedCell,
-					_uiState.value.inputMode,
+					_uiState.value.isInNoteMode,
 				)
 
 			is Event.ClearCell ->
 				inputNumber(
 					0,
 					_uiState.value.selectedCell,
-					_uiState.value.inputMode,
+					_uiState.value.isInNoteMode,
 				)
 
 			is Event.Undo -> undoLastMove()
@@ -142,7 +139,7 @@ class SudokuGameViewModel(
 			is Event.HintFillNotes -> fillNotes()
 			is Event.ShowMistakes -> {}
 			is Event.DismissVictoryDialog -> handleDismissVictoryDialog()
-			is Event.SwitchInputMode -> switchInputMode(event.inputMode)
+			is Event.SwitchInputMode -> switchInputMode()
 			is Event.ResetNotes -> resetNotes()
 			is Event.ResetTimer -> {}
 		}
@@ -202,7 +199,7 @@ class SudokuGameViewModel(
 	private fun inputNumber(
 		number: Int,
 		selectedCell: Pair<Int, Int>?,
-		inputMode: InputMode,
+		noteMode: Boolean,
 		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
@@ -219,15 +216,13 @@ class SudokuGameViewModel(
 
 			val backupCell = updatedSudoku.getCellAt(row, col)
 			updatedSudoku =
-				when (inputMode) {
-					InputMode.NUMBER -> handleNumberInput(number, updatedSudoku, selectedCell)
-
-					InputMode.NOTE -> handleNoteInput(number, updatedSudoku, selectedCell, isHint)
-
-					InputMode.COLOR -> handleNumberInput(number, updatedSudoku, selectedCell)
+				if (noteMode) {
+					handleNoteInput(number, updatedSudoku, selectedCell, isHint)
+				} else {
+					handleNumberInput(number, updatedSudoku, selectedCell)
 				}
 
-			if (isHint && InputMode.NUMBER == inputMode) {
+			if (isHint && !noteMode) {
 				updatedSudoku = updatedSudoku.removeAttribute(row, col, CellAttributes.HINT_FOCUS)
 				updatedSudoku = updatedSudoku.addAttribute(row, col, CellAttributes.HINT_REVEALED)
 			}
@@ -286,10 +281,10 @@ class SudokuGameViewModel(
 		}
 	}
 
-	private fun switchInputMode(mode: InputMode) {
+	private fun switchInputMode() {
 		_uiState.update {
 			it.copy(
-				inputMode = mode,
+				isInNoteMode = !it.isInNoteMode,
 			)
 		}
 	}
@@ -562,19 +557,34 @@ class SudokuGameViewModel(
 				is HintType.PointingCandidate -> {
 					val otherCells = hint.enforcingCells
 					otherCells.forEach { cell ->
-						inputNumber(hint.value, cell.row to cell.col, InputMode.NOTE, true)
+						inputNumber(
+							number = hint.value,
+							selectedCell = cell.row to cell.col,
+							noteMode = true,
+							isHint = true,
+						)
 					}
 				}
 
 				is HintType.ClaimingCandidate -> {
 					val otherCells = hint.enforcingCells
 					otherCells.forEach { cell ->
-						inputNumber(hint.value, cell.row to cell.col, InputMode.NOTE, true)
+						inputNumber(
+							number = hint.value,
+							selectedCell = cell.row to cell.col,
+							noteMode = false,
+							isHint = true,
+						)
 					}
 				}
 
 				else -> {
-					inputNumber(hint.value, hint.row to hint.col, InputMode.NUMBER, true)
+					inputNumber(
+						number = hint.value,
+						selectedCell = hint.row to hint.col,
+						noteMode = false,
+						isHint = true,
+					)
 				}
 			}
 
