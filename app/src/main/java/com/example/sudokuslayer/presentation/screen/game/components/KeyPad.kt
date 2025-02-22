@@ -1,32 +1,45 @@
 package com.example.sudokuslayer.presentation.screen.game.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sudokuslayer.R
+import com.example.sudokuslayer.presentation.navigation.AppIcon
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.ActionPad
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.ActionPadItem
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.ActionPadOrientation
+import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.InputModeSwitch
+import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.KeyPadItem
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.NumberPad
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
+import com.example.sudokuslayer.presentation.ui.theme.LocalKeyPadColors
+import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.sqrt
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun KeyPad(
 	onNumberClick: (Int) -> Unit,
@@ -42,136 +55,221 @@ fun KeyPad(
 	inputMode: InputMode,
 	gridSize: Int,
 	modifier: Modifier = Modifier,
+	textStyle: TextStyle = TextStyle(),
 ) {
 	val leftActionPadItems =
-		listOf(
-			ActionPadItem(
-				icon = {
-					Icon(
-						painter = painterResource(R.drawable.lightbulb),
-						contentDescription = "Show Hint",
-					)
-				},
-				contentDescription = "Show Hint",
-				onClick = onHintClick,
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = {
-					Icon(
-						painter = painterResource(R.drawable.question_mark),
-						contentDescription = "Show mistakes",
-					)
-				},
-				contentDescription = "Show mistakes",
-				onClick = onShowMistakesClick,
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = {
-					Icon(
-						imageVector = Icons.Default.Refresh,
-						contentDescription = "Restart this game",
-					)
-				},
-				contentDescription = "Restart game",
-				onClick = onResetClick,
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-		)
-	val middleActionPadItems =
-		listOf(
-			ActionPadItem(
-				icon = { Icon(painterResource(R.drawable.undo), "Undo icon") },
-				onClick = onUndoClick,
-				contentDescription = "Undo last move",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = { Icon(Icons.Default.Clear, "Clear icon") },
-				onClick = onClearClick,
-				contentDescription = "Clear cell",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = { Icon(painterResource(R.drawable.redo), "Redo icon") },
-				onClick = onRedoClick,
-				contentDescription = "Redo last move",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-		)
-	val rightActionPadItems =
-		listOf(
-			ActionPadItem(
-				icon = { Icon(painterResource(R.drawable.tag), "Hashtag icon") },
-				onClick = onNumberSwitchClick,
-				contentDescription = "Switch to number input mode",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = { Icon(painterResource(R.drawable.stylus_note), "Pen icon") },
-				onClick = onNoteSwitchClick,
-				contentDescription = "Switch to note input mode",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
-			ActionPadItem(
-				icon = { Icon(painterResource(R.drawable.palette), "Palette icon") },
-				onClick = onColorSwitchClick,
-				contentDescription = "Switch to color input mode",
-				backgroundColor = MaterialTheme.colorScheme.background,
-				iconColor = MaterialTheme.colorScheme.onBackground,
-			),
+		getLeftActionPadItems(
+			onHintClick = onHintClick,
+			onShowMistakesClick = onShowMistakesClick,
+			onResetClick = onResetClick,
 		)
 
-	Column(
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Center,
+	val middleActionPadItems =
+		getMiddleActionPadItems(
+			onUndoClick = onUndoClick,
+			onClearClick = onClearClick,
+			onRedoClick = onRedoClick,
+		)
+
+	val itemsInRow = remember { if(gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 2 else gridSize + 1 }
+	val itemsInColumn = remember { itemsInRow + 2 }
+
+	BoxWithConstraints(
+		contentAlignment = Alignment.Center,
 		modifier =
 			modifier
-				.heightIn(350.dp, 400.dp)
-				.fillMaxWidth()
-				.padding(8.dp),
+				.heightIn(max = 500.dp)
+				.padding(LocalPadding.current.small),
 	) {
-		Row(
-			horizontalArrangement = Arrangement.SpaceEvenly,
-			verticalAlignment = Alignment.CenterVertically,
-// 			modifier = Modifier.weight(maxOf(sqrt(gridSize.toDouble()).toFloat(), 3f))
+		val requiredRatio = itemsInRow.toFloat() / itemsInColumn
+		val currentRatio = maxWidth / maxHeight
+		val itemPadding = LocalPadding.current.tiny
+		val totalItemWidthPadding = itemPadding * (itemsInRow - 1)
+		val totalItemHeightPadding = itemPadding * (itemsInColumn - 1)
+
+		val itemSize =
+			if (requiredRatio > currentRatio) {
+				(maxWidth - totalItemWidthPadding) / itemsInRow
+			} else {
+				(maxHeight - totalItemHeightPadding) / itemsInColumn
+			}
+		val fontSize = (itemSize.value * 0.6f).sp
+		val textStyle = textStyle.copy(fontSize = fontSize)
+
+		Column(
+			verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+			horizontalAlignment = Alignment.End,
+			modifier =
+				Modifier
+					.width(itemSize * itemsInRow + totalItemWidthPadding)
+					.height(itemSize * itemsInColumn + totalItemHeightPadding),
 		) {
-			ActionPad(
-				items = leftActionPadItems,
-				orientation = ActionPadOrientation.VERTICAL,
-				modifier = Modifier.weight(1f),
-			)
-			NumberPad(
-				gridSize = gridSize,
-				onButtonClick = onNumberClick,
-				inputMode = inputMode,
-				modifier = Modifier.weight(sqrt(gridSize.toDouble()).toFloat()),
-			)
-			ActionPad(
-				items = rightActionPadItems,
-				orientation = ActionPadOrientation.VERTICAL,
-				modifier = Modifier.weight(1f),
-			)
+			if (gridSize > 4) {
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					Column(
+						verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					) {
+						InputModeSwitch(
+							onClick = { },
+							inputMode = inputMode == InputMode.NOTE,
+							iconSize = fontSize.value.dp,
+							modifier = Modifier.size(itemSize),
+						)
+						KeyPadItem(
+							text = "",
+							icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+							onClick = onHintClick,
+							textStyle = textStyle,
+							modifier = Modifier.size(itemSize),
+							bgColor = LocalKeyPadColors.current.actionPadBackground,
+							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+						)
+						KeyPadItem(
+							text = "",
+							icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+							onClick = onResetClick,
+							textStyle = textStyle,
+							modifier = Modifier.size(itemSize),
+							bgColor = LocalKeyPadColors.current.actionPadBackground,
+							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+						)
+					}
+					NumberPad(
+						gridSize = gridSize,
+						onButtonClick = onNumberClick,
+						inputMode = inputMode,
+						textStyle = textStyle,
+						itemSize = itemSize,
+					)
+				}
+				Row(
+					horizontalArrangement = Arrangement.Center,
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					ActionPad(
+						items = middleActionPadItems,
+						orientation = ActionPadOrientation.HORIZONTAL,
+						itemSize = itemSize,
+						textStyle = textStyle,
+					)
+				}
+			} else {
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					KeyPadItem(
+						text = "",
+						icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+						onClick = onHintClick,
+						textStyle = textStyle,
+						modifier = Modifier.size(itemSize),
+						bgColor = LocalKeyPadColors.current.actionPadBackground,
+						textColor = LocalKeyPadColors.current.actionPadOnBackground,
+					)
+					NumberPad(
+						gridSize = gridSize,
+						onButtonClick = onNumberClick,
+						inputMode = inputMode,
+						textStyle = textStyle,
+						itemSize = itemSize,
+					)
+				}
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					KeyPadItem(
+						text = "",
+						icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+						onClick = onResetClick,
+						textStyle = textStyle,
+						modifier = Modifier.size(itemSize),
+						bgColor = LocalKeyPadColors.current.actionPadBackground,
+						textColor = LocalKeyPadColors.current.actionPadOnBackground,
+					)
+					ActionPad(
+						items = middleActionPadItems,
+						orientation = ActionPadOrientation.HORIZONTAL,
+						itemSize = itemSize,
+						textStyle = textStyle,
+					)
+					InputModeSwitch(
+						onClick = { },
+						inputMode = inputMode == InputMode.NOTE,
+						iconSize = fontSize.value.dp,
+						modifier = Modifier.size(itemSize),
+					)
+				}
+			}
 		}
-		ActionPad(
-			items = middleActionPadItems,
-			orientation = ActionPadOrientation.HORIZONTAL,
-// 			modifier = Modifier.weight(1f)
-		)
 	}
 }
 
+@Composable
+private fun getLeftActionPadItems(
+	onHintClick: () -> Unit,
+	onShowMistakesClick: () -> Unit,
+	onResetClick: () -> Unit,
+): PersistentList<ActionPadItem> =
+	persistentListOf(
+		ActionPadItem(
+			icon =
+				AppIcon.ResourceIcon(
+					resourceId = R.drawable.lightbulb,
+					contentDescription = "Show Hint",
+				),
+			contentDescription = "Show Hint",
+			onClick = onHintClick,
+		),
+		ActionPadItem(
+			icon =
+				AppIcon.ResourceIcon(
+					resourceId = R.drawable.question_mark,
+					contentDescription = "Show mistakes",
+				),
+			contentDescription = "Show mistakes",
+			onClick = onShowMistakesClick,
+		),
+		ActionPadItem(
+			icon =
+				AppIcon.VectorIcon(
+					imageVector = Icons.Default.Refresh,
+					contentDescription = "Restart this game",
+				),
+			contentDescription = "Restart game",
+			onClick = onResetClick,
+		),
+	)
+
+@Composable
+private fun getMiddleActionPadItems(
+	onUndoClick: () -> Unit,
+	onClearClick: () -> Unit,
+	onRedoClick: () -> Unit,
+): PersistentList<ActionPadItem> =
+	persistentListOf(
+		ActionPadItem(
+			icon = AppIcon.ResourceIcon(R.drawable.undo, "Undo icon"),
+			onClick = onUndoClick,
+			contentDescription = "Undo last move",
+		),
+		ActionPadItem(
+			icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear icon"),
+			onClick = onClearClick,
+			contentDescription = "Clear cell",
+		),
+		ActionPadItem(
+			icon = AppIcon.ResourceIcon(R.drawable.redo, "Redo icon"),
+			onClick = onRedoClick,
+			contentDescription = "Redo last move",
+		),
+	)
+
 @PreviewLightDark
-@Preview(showBackground = true)
 @Composable
 private fun KeyPadPreview() {
 	SudokuSlayerTheme {
@@ -192,8 +290,7 @@ private fun KeyPadPreview() {
 	}
 }
 
-@PreviewLightDark
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun KeyPadFourPreview() {
 	SudokuSlayerTheme {
@@ -214,8 +311,7 @@ private fun KeyPadFourPreview() {
 	}
 }
 
-@PreviewLightDark
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun KeyPadSixteenPreview() {
 	SudokuSlayerTheme {

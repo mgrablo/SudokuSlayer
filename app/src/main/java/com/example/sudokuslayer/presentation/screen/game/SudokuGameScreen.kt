@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudoku.model.SudokuGrid
@@ -43,6 +45,7 @@ import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialo
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.InputMode
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
+import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -208,19 +211,55 @@ fun SudokuGameContent(
 	}
 }
 
-@Preview
+@PreviewScreenSizes
+@PreviewLightDark
 @Composable
 private fun SudokuGameScreenPreview() {
-	SudokuGameContent(
-		uiState =
+	SudokuSlayerTheme {
+		SudokuGameContent(
+			uiState =
+				SudokuGameUiState(
+					sudoku = createFilledSudokuGrid(9),
+				),
+			onEvent = {},
+			elapsedTime = { 1 },
+			openDrawer = {},
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@Preview
+@Composable
+private fun SudokuGameScreenSixteenPreview() {
+	SudokuSlayerTheme {
+		SudokuGameContent(
+			uiState =
 			SudokuGameUiState(
-				sudoku = createFilledSudokuGrid(9),
+				sudoku = createFilledSudokuGrid(16),
 			),
-		onEvent = {},
-		elapsedTime = { 1 },
-		openDrawer = {},
-		modifier = Modifier.fillMaxSize(),
-	)
+			onEvent = {},
+			elapsedTime = { 1 },
+			openDrawer = {},
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+@Preview
+@Composable
+private fun SudokuGameScreenFourPreview() {
+	SudokuSlayerTheme {
+		SudokuGameContent(
+			uiState =
+			SudokuGameUiState(
+				sudoku = createFilledSudokuGrid(4),
+			),
+			onEvent = {},
+			elapsedTime = { 1 },
+			openDrawer = {},
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
 }
 
 private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
@@ -228,5 +267,5 @@ private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
 	repeat(gridSize) {
 		list += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
 	}
-	return SudokuGrid.fromIntArray(list)
+	return SudokuGrid.fromIntArray(list, gridSize)
 }

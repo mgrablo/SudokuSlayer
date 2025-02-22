@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sudokuslayer.presentation.navigation.Destination
-import com.example.sudokuslayer.presentation.navigation.DestinationIcon
+import com.example.sudokuslayer.presentation.navigation.AppIcon
 
 @Composable
 fun NavigationDrawerItem(
@@ -40,9 +40,9 @@ fun NavigationDrawerItem(
 }
 
 @Composable
-fun DestinationIcon(icon: DestinationIcon) {
+private fun DestinationIcon(icon: AppIcon) {
 	when (icon) {
-		is DestinationIcon.ResourceIcon -> Icon(painterResource(icon.resourceId), "")
-		is DestinationIcon.VectorIcon -> Icon(icon.imageVector, "")
+		is AppIcon.ResourceIcon -> Icon(painterResource(icon.resourceId), "")
+		is AppIcon.VectorIcon -> Icon(icon.imageVector, "")
 	}
 }

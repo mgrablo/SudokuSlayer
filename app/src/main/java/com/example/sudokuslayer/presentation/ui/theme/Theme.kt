@@ -604,6 +604,18 @@ data class SudokuBoardColors(
 	val blockBorder: Color,
 )
 
+@Immutable
+data class KeypadColors(
+	val numberPadBackground: Color,
+	val numberPadOnBackground: Color,
+	val actionPadBackground: Color,
+	val actionPadOnBackground: Color,
+	val noteModeSelectedBackground: Color,
+	val noteModeSelectedOnBackground: Color,
+	val numberModeSelectedBackground: Color,
+	val numberModeSelectedOnBackground: Color,
+)
+
 val MochaSudokuBoard: SudokuBoardColors =
 	SudokuBoardColors(
 		defaultBackground = Catppuccin.Mocha.Base,
@@ -622,7 +634,6 @@ val MochaSudokuBoard: SudokuBoardColors =
 		blockBorder = Catppuccin.Mocha.Overlay2,
 	)
 
-
 val LatteSudokuBoard: SudokuBoardColors =
 	SudokuBoardColors(
 		defaultBackground = Catppuccin.Latte.Base,
@@ -639,6 +650,30 @@ val LatteSudokuBoard: SudokuBoardColors =
 		onMatchingMarkBackground = Catppuccin.Latte.Crust,
 		cellBorder = Catppuccin.Latte.Overlay0,
 		blockBorder = Catppuccin.Latte.Overlay2,
+	)
+
+val MochaKeypadColors: KeypadColors =
+	KeypadColors(
+		numberPadBackground = Catppuccin.Mocha.Lavender,
+		numberPadOnBackground = Catppuccin.Mocha.Crust,
+		actionPadBackground = Catppuccin.Mocha.Base,
+		actionPadOnBackground = Catppuccin.Mocha.Text,
+		noteModeSelectedBackground = Catppuccin.Mocha.Teal,
+		noteModeSelectedOnBackground = Catppuccin.Mocha.Crust,
+		numberModeSelectedBackground = Catppuccin.Mocha.Sky,
+		numberModeSelectedOnBackground = Catppuccin.Mocha.Crust,
+	)
+
+val LatteKeypadColors: KeypadColors =
+	KeypadColors(
+		numberPadBackground = Catppuccin.Latte.Lavender,
+		numberPadOnBackground = Catppuccin.Latte.Crust,
+		actionPadBackground = Catppuccin.Latte.Base,
+		actionPadOnBackground = Catppuccin.Latte.Text,
+		noteModeSelectedBackground = Catppuccin.Latte.Teal,
+		noteModeSelectedOnBackground = Catppuccin.Latte.Crust,
+		numberModeSelectedBackground = Catppuccin.Latte.Sky,
+		numberModeSelectedOnBackground = Catppuccin.Latte.Crust,
 	)
 
 val unspecified_scheme =
@@ -659,6 +694,11 @@ val LocalCatppuccinPalette = staticCompositionLocalOf<CatppuccinPalette> { Catpp
 val LocalSudokuBoardColors =
 	staticCompositionLocalOf<SudokuBoardColors> {
 		MochaSudokuBoard
+	}
+
+val LocalKeyPadColors =
+	staticCompositionLocalOf<KeypadColors> {
+		MochaKeypadColors
 	}
 
 val MaterialTheme.extendedColorScheme: ExtendedColorScheme
@@ -684,27 +724,28 @@ fun SudokuSlayerTheme(
 			else -> extendedLight
 		}
 
-	val catppuccinPalette =
-		when {
-			darkTheme -> Catppuccin.Mocha
-			else -> Catppuccin.Latte
-		}
-
 	val boardColors =
 		when {
 			darkTheme -> MochaSudokuBoard
 			else -> LatteSudokuBoard
 		}
 
+	val keypadColors =
+		when {
+			darkTheme -> MochaKeypadColors
+			else -> LatteKeypadColors
+		}
 
 	CompositionLocalProvider(LocalExtendedColorScheme provides extendedColorScheme) {
 		CompositionLocalProvider(LocalSudokuBoardColors provides boardColors) {
-			CatppuccinTheme.DarkLightPalette(
-				darkTheme = darkTheme,
-				darkPalette = CatppuccinMaterial.Mocha(),
-				lightPalette = CatppuccinMaterial.Latte(),
-			) {
-				content()
+			CompositionLocalProvider(LocalKeyPadColors provides keypadColors) {
+				CatppuccinTheme.DarkLightPalette(
+					darkTheme = darkTheme,
+					darkPalette = CatppuccinMaterial.Mocha(),
+					lightPalette = CatppuccinMaterial.Latte(),
+				) {
+					content()
+				}
 			}
 		}
 	}

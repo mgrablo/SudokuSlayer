@@ -1,33 +1,10 @@
 package com.example.sudokuslayer
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.core.graphics.alpha
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
-import kotlin.math.min
-import kotlin.math.roundToInt
-
-fun Color.lighten(factor: Float): Color {
-	val argb = this.toArgb()
-	val red = (argb.red * factor).roundToInt()
-	val green = (argb.green * factor).roundToInt()
-	val blue = (argb.blue * factor).roundToInt()
-
-	return Color(
-		android.graphics.Color.argb(
-			argb.alpha,
-			min(red, 255),
-			min(green, 255),
-			min(blue, 255),
-		),
-	)
-}
 
 fun createAnnotatedString(
 	input: String,
@@ -53,14 +30,15 @@ fun createAnnotatedString(
 		)
 
 	val matches =
-		patterns.flatMap { (pattern, style, removeMarks) ->
-			pattern.findAll(input).map { matchResult ->
-				val start = matchResult.range.first
-				val end = matchResult.range.last + 1
-				val content = if (removeMarks) matchResult.groupValues[1] else matchResult.value
-				Triple(start, end, content to style)
-			}
-		}.sortedBy { it.first }
+		patterns
+			.flatMap { (pattern, style, removeMarks) ->
+				pattern.findAll(input).map { matchResult ->
+					val start = matchResult.range.first
+					val end = matchResult.range.last + 1
+					val content = if (removeMarks) matchResult.groupValues[1] else matchResult.value
+					Triple(start, end, content to style)
+				}
+			}.sortedBy { it.first }
 
 	return buildAnnotatedString {
 		var lastIndex = 0

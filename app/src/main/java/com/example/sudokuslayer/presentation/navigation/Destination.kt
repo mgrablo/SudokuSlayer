@@ -9,18 +9,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Destination(
 	val routeName: String,
-	val icon: DestinationIcon,
+	val icon: AppIcon,
 ) {
 	@Serializable
-	object SudokuGame : Destination("Current game", DestinationIcon.ResourceIcon(R.drawable.tag))
+	object SudokuGame : Destination("Current game", AppIcon.ResourceIcon(R.drawable.tag))
 
 	@Serializable
-	object SudokuCreator : Destination("New game", DestinationIcon.VectorIcon(Icons.Default.Add))
+	object SudokuCreator : Destination("New game", AppIcon.VectorIcon(Icons.Default.Add, "Clear"))
 }
 
 @Serializable
-sealed class DestinationIcon {
-	data class VectorIcon(val imageVector: ImageVector) : DestinationIcon()
+sealed class AppIcon {
+	abstract val contentDescription: String?
+	data class VectorIcon(val imageVector: ImageVector, override val contentDescription: String? = null) : AppIcon()
 
-	data class ResourceIcon(val resourceId: Int) : DestinationIcon()
+	data class ResourceIcon(val resourceId: Int, override val contentDescription: String? = null) : AppIcon()
 }

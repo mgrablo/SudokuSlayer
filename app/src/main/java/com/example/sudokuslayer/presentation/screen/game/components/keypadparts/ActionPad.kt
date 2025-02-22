@@ -9,22 +9,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.sudokuslayer.presentation.navigation.AppIcon
+import com.example.sudokuslayer.presentation.ui.theme.LocalKeyPadColors
+import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 data class ActionPadItem(
-	val icon: @Composable () -> Unit,
+	val icon: AppIcon,
 	val onClick: () -> Unit,
 	val contentDescription: String,
-	val backgroundColor: Color,
-	val iconColor: Color,
 )
 
 enum class ActionPadOrientation {
@@ -34,52 +40,60 @@ enum class ActionPadOrientation {
 
 @Composable
 fun ActionPad(
-	items: List<ActionPadItem>,
-	orientation: ActionPadOrientation = ActionPadOrientation.HORIZONTAL,
+	items: PersistentList<ActionPadItem>,
 	modifier: Modifier = Modifier,
+	orientation: ActionPadOrientation = ActionPadOrientation.HORIZONTAL,
+	itemSize: Dp = 60.dp,
+	textStyle: TextStyle = TextStyle(),
+	itemBackgroundColor: Color = LocalKeyPadColors.current.actionPadBackground,
+	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground,
 ) {
+	LayoutWithOrientation(
+		orientation = orientation,
+		modifier = modifier,
+	) {
+		items.forEach { item ->
+			KeyPadItem(
+				text = "",
+				icon = item.icon,
+				onClick = item.onClick,
+				bgColor = itemBackgroundColor,
+				textColor = itemOnBackgroundColor,
+				textStyle = textStyle,
+				modifier =
+					Modifier
+						.size(itemSize)
+			)
+		}
+	}
+}
+
+@Composable
+private fun LayoutWithOrientation(
+	orientation: ActionPadOrientation,
+	modifier: Modifier = Modifier,
+	content: @Composable () -> Unit,
+) {
+	val movableContent = remember { movableContentOf { content() } }
+
 	when (orientation) {
 		ActionPadOrientation.HORIZONTAL -> {
 			Row(
-				modifier =
-					modifier
-						.padding(horizontal = 8.dp),
-				// 					.fillMaxWidth(),
-				horizontalArrangement = Arrangement.spacedBy(8.dp),
+				modifier = modifier,
+				horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 				verticalAlignment = Alignment.CenterVertically,
 			) {
-				items.forEach { item ->
-					KeyPadItem(
-						text = "",
-						icon = item.icon,
-						onClick = item.onClick,
-						bgColor = item.backgroundColor,
-						textColor = item.iconColor,
-						modifier = Modifier.size(60.dp),
-					)
-				}
+				movableContent()
 			}
 		}
 
 		ActionPadOrientation.VERTICAL -> {
 			Column(
-				modifier =
-					modifier
-						.padding(vertical = 8.dp),
-				// 					.fillMaxHeight(),
-				verticalArrangement = Arrangement.spacedBy(8.dp),
+				modifier = modifier.padding(LocalPadding.current.tiny),
+				verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
-				items.forEach { item ->
-					KeyPadItem(
-						text = "",
-						icon = item.icon,
-						onClick = item.onClick,
-						bgColor = item.backgroundColor,
-						textColor = item.iconColor,
-						modifier = Modifier.size(60.dp),
-					)
-				}
+				movableContent()
 			}
 		}
 	}
@@ -89,33 +103,44 @@ fun ActionPad(
 @Composable
 private fun ActionPadHorizontalPreview() {
 	SudokuSlayerTheme {
-		val items =
-			listOf(
-				ActionPadItem(
-					icon = { Icon(Icons.AutoMirrored.Default.ArrowBack, "") },
-					onClick = { },
-					contentDescription = "",
-					backgroundColor = MaterialTheme.colorScheme.background,
-					iconColor = MaterialTheme.colorScheme.onBackground,
-				),
-				ActionPadItem(
-					icon = { Icon(Icons.Default.Clear, "") },
-					onClick = { },
-					contentDescription = "",
-					backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-					iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-				),
-				ActionPadItem(
-					icon = { Icon(Icons.AutoMirrored.Default.ArrowForward, "") },
-					onClick = { },
-					contentDescription = "",
-					backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
-					iconColor = MaterialTheme.colorScheme.onTertiaryContainer,
-				),
-			)
+		val items = getPreviewItems()
+
 		ActionPad(
 			items = items,
 			orientation = ActionPadOrientation.HORIZONTAL,
 		)
 	}
 }
+
+@Preview
+@Composable
+private fun ActionPadVerticalPreview() {
+	SudokuSlayerTheme {
+		val items = getPreviewItems()
+
+		ActionPad(
+			items = items,
+			orientation = ActionPadOrientation.VERTICAL,
+		)
+	}
+}
+
+@Composable
+private fun getPreviewItems() =
+	persistentListOf(
+		ActionPadItem(
+			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowBack, ""),
+			onClick = { },
+			contentDescription = "",
+		),
+		ActionPadItem(
+			icon = AppIcon.VectorIcon(Icons.Default.Clear, ""),
+			onClick = { },
+			contentDescription = "",
+		),
+		ActionPadItem(
+			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowForward, ""),
+			onClick = { },
+			contentDescription = "",
+		),
+	)
