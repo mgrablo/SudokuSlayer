@@ -10,7 +10,6 @@ abstract class DLXNode {
 	lateinit var down: DLXNode
 		protected set
 
-
 	// Used for inserting column headers
 	fun insertRight(node: DLXNode) {
 		// Pointers of new node

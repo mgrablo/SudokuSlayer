@@ -37,7 +37,7 @@ class HintProviderTest {
 			assertEquals(
 				setOf(3, 6, 8, 9),
 				possibleValues.toSet(),
-				"Expected possible values {3,6,8,9} at position (0,1)"
+				"Expected possible values {3,6,8,9} at position (0,1)",
 			)
 		}
 
@@ -52,7 +52,7 @@ class HintProviderTest {
 				{ assertEquals(3, hint!!.row, "Naked single should be in row 3") },
 				{ assertEquals(2, hint!!.col, "Naked single should be in column 2") },
 				{ assertEquals(8, hint!!.value, "Naked single value should be 8") },
-				{ assertEquals(HintType.NakedSingle, hint!!.type) }
+				{ assertEquals(HintType.NakedSingle, hint!!.type) },
 			)
 		}
 	}
@@ -67,9 +67,10 @@ class HintProviderTest {
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val houses = generateHouses(updatedGrid)
 
-			val hiddenSingle = houses.firstNotNullOfOrNull { house ->
-				hintProvider.findHiddenSingle(house)
-			}
+			val hiddenSingle =
+				houses.firstNotNullOfOrNull { house ->
+					hintProvider.findHiddenSingle(house)
+				}
 
 			assertNotNull(hiddenSingle, "Should find a hidden single")
 			assertInstanceOf<HintType.HiddenSingle>(hiddenSingle!!.type)
@@ -82,9 +83,10 @@ class HintProviderTest {
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val houses = generateHouses(updatedGrid)
 
-			val lockedCandidates = houses.firstNotNullOfOrNull { house ->
-				hintProvider.findLockedCandidate(house, updatedGrid)
-			}
+			val lockedCandidates =
+				houses.firstNotNullOfOrNull { house ->
+					hintProvider.findLockedCandidate(house, updatedGrid)
+				}
 
 			assertNotNull(lockedCandidates, "Should find locked candidates")
 			assertTrue(lockedCandidates!!.isNotEmpty(), "Should have at least one locked candidate")
@@ -97,17 +99,18 @@ class HintProviderTest {
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val blockHouses = generateBlockHouses(updatedGrid)
 
-			val pointingCandidates = blockHouses
-				.mapNotNull { house ->
-					hintProvider.findPointingCandidates(house, updatedGrid)
-						.takeIf { it.isNotEmpty() }
-				}
-				.firstOrNull()
+			val pointingCandidates =
+				blockHouses
+					.mapNotNull { house ->
+						hintProvider.findPointingCandidates(house, updatedGrid)
+							.takeIf { it.isNotEmpty() }
+					}
+					.firstOrNull()
 
 			assertNotNull(pointingCandidates, "Should find pointing candidates")
 			assertTrue(
 				pointingCandidates!!.isNotEmpty(),
-				"Should have at least one pointing candidate"
+				"Should have at least one pointing candidate",
 			)
 		}
 
@@ -147,22 +150,25 @@ class HintProviderTest {
 		}
 	}
 
-	private fun generateHouses(grid: Array<SudokuCellData>) = buildList {
-		(0..8).forEach { i ->
-			add(House.Row(grid.filter { it.row == i }, i))
-			add(House.Column(grid.filter { it.col == i }, i))
-			add(House.Block(grid.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
-		}
-	}
-
-	private fun generateBlockHouses(grid: Array<SudokuCellData>) = buildList {
-		for (blockRow in 0 until 3) {
-			for (blockCol in 0 until 3) {
-				val blockCells = grid.filter {
-					it.row / 3 == blockRow && it.col / 3 == blockCol
-				}
-				add(House.Block(blockCells, blockRow * 3 + blockCol))
+	private fun generateHouses(grid: Collection<SudokuCellData>) =
+		buildList {
+			(0..8).forEach { i ->
+				add(House.Row(grid.filter { it.row == i }, i))
+				add(House.Column(grid.filter { it.col == i }, i))
+				add(House.Block(grid.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
 			}
 		}
-	}
+
+	private fun generateBlockHouses(grid: Collection<SudokuCellData>) =
+		buildList {
+			for (blockRow in 0 until 3) {
+				for (blockCol in 0 until 3) {
+					val blockCells =
+						grid.filter {
+							it.row / 3 == blockRow && it.col / 3 == blockCol
+						}
+					add(House.Block(blockCells, blockRow * 3 + blockCol))
+				}
+			}
+		}
 }

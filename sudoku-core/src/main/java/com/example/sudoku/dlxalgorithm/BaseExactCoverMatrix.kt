@@ -10,7 +10,7 @@ interface ExactCoverMatrix {
 
 class BaseExactCoverMatrix(
 	override val totalOptions: Int,
-	override val totalConstraints: Int
+	override val totalConstraints: Int,
 ) : ExactCoverMatrix {
 	override val matrix = Array(totalOptions) { BooleanArray(totalConstraints) { false } }
 
@@ -21,14 +21,20 @@ class BaseExactCoverMatrix(
 
 	fun getMatrixRow(row: Int) = matrix[row]
 
-
-	fun fillMatrixRow(matrixRow: BooleanArray, constraints: List<Int>) {
+	fun fillMatrixRow(
+		matrixRow: BooleanArray,
+		constraints: List<Int>,
+	) {
 		for (constraint in constraints) {
 			matrixRow[constraint] = true
 		}
 	}
 
-	fun cover(matrix: Array<BooleanArray>, column: Int, excludeRow: Int) {
+	fun cover(
+		matrix: Array<BooleanArray>,
+		column: Int,
+		excludeRow: Int,
+	) {
 		for (i in matrix.indices) {
 			if (i != excludeRow && matrix[i][column]) {
 				Arrays.fill(matrix[i], false)
@@ -37,7 +43,10 @@ class BaseExactCoverMatrix(
 	}
 
 	companion object {
-		fun create(totalOptions: Int, totalConstraints: Int): BaseExactCoverMatrix {
+		fun create(
+			totalOptions: Int,
+			totalConstraints: Int,
+		): BaseExactCoverMatrix {
 			return BaseExactCoverMatrix(totalOptions, totalConstraints)
 		}
 

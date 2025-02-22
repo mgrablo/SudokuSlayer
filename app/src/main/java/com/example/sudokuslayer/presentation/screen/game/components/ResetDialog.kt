@@ -22,10 +22,12 @@ fun ResetDialog(
 			title = {
 				Text(text = "Clear Sudoku", color = MaterialTheme.colorScheme.onSurface)
 			},
-			text = { Text(
-				text = "Are you sure you want to clear the entire Sudoku board? This action cannot be undone.",
-				color = MaterialTheme.colorScheme.onSurfaceVariant
-			) },
+			text = {
+				Text(
+					text = "Are you sure you want to clear the entire Sudoku board? This action cannot be undone.",
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
+				)
+			},
 			icon = { Icon(Icons.Default.Warning, "") },
 			containerColor = MaterialTheme.colorScheme.surface,
 			textContentColor = MaterialTheme.colorScheme.onSurface,
@@ -33,13 +35,14 @@ fun ResetDialog(
 			confirmButton = {
 				TextButton(
 					onClick = onConfirmClick,
-					colors = ButtonDefaults.textButtonColors(
-						contentColor = MaterialTheme.colorScheme.primary
-					)
+					colors =
+						ButtonDefaults.textButtonColors(
+							contentColor = MaterialTheme.colorScheme.primary,
+						),
 				) {
 					Text(
 						text = "Yes",
-						color = MaterialTheme.colorScheme.primary
+						color = MaterialTheme.colorScheme.primary,
 					)
 				}
 			},
@@ -47,16 +50,16 @@ fun ResetDialog(
 				TextButton(onDismissClick) {
 					Text(
 						text = "No",
-						color = MaterialTheme.colorScheme.primary
+						color = MaterialTheme.colorScheme.primary,
 					)
 				}
 				TextButton(onClearNotesClick) {
 					Text(
 						text = "Clear only notes",
-						color = MaterialTheme.colorScheme.primary
+						color = MaterialTheme.colorScheme.primary,
 					)
 				}
-			}
+			},
 		)
 	}
 }

@@ -1,6 +1,6 @@
 package com.example.sudoku
 
-fun symmetricDifference(lists: List<Set<Int>>) : Set<Int> {
+fun symmetricDifference(lists: List<Set<Int>>): Set<Int> {
 	return lists
 		.flatMap { it.toSet() }
 		.groupingBy { it }
@@ -11,4 +11,4 @@ fun symmetricDifference(lists: List<Set<Int>>) : Set<Int> {
 
 inline fun <T> ArrayDeque<T>.push(element: T) = addLast(element) // returns Unit
 
-inline fun <T> ArrayDeque<T>.pop() = removeLastOrNull()          // returns T?
+inline fun <T> ArrayDeque<T>.pop() = removeLastOrNull() // returns T?

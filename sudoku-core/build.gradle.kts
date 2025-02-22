@@ -17,7 +17,8 @@ kotlin {
 dependencies {
 	implementation(libs.annotations)
 	implementation(libs.kotlinx.coroutines.core)
-
+	implementation(libs.kotlinx.collections.immutable)
+	implementation(libs.androidx.runtime)
 	testImplementation(libs.junit.jupiter)
 	testImplementation(libs.junit.jupiter.api)
 	compileOnly(libs.junit.jupiter.params)
@@ -25,5 +26,5 @@ dependencies {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }

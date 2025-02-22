@@ -1,6 +1,9 @@
 package com.example.sudokuslayer.presentation.navigation.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
@@ -20,6 +23,7 @@ import com.example.sudokuslayer.presentation.navigation.Destination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationDrawer(
@@ -33,19 +37,21 @@ fun NavigationDrawer(
 	val currentScreen = navBackStackEntry?.destination
 
 	ModalNavigationDrawer(
+		gesturesEnabled = currentScreen?.hierarchy?.none { it.hasRoute(Destination.SudokuGame::class) } == true || drawerState.isOpen,
 		drawerState = drawerState,
+		modifier = Modifier,
 		drawerContent = {
 			ModalDrawerSheet(
-				drawerContainerColor = MaterialTheme.colorScheme.surfaceVariant
+				drawerContainerColor = MaterialTheme.colorScheme.surfaceVariant,
 			) {
 				Text(
 					text = "Sudoku Slayer",
 					modifier = Modifier.padding(16.dp),
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 				HorizontalDivider()
 				destinations.forEach { destination ->
-					MyNavigationDrawerItem(
+					NavigationDrawerItem(
 						isSelected = currentScreen?.hierarchy?.any { it.hasRoute(destination::class) } == true,
 						destination = destination,
 						onClick = {
@@ -53,12 +59,14 @@ fun NavigationDrawer(
 							scope.launch {
 								drawerState.close()
 							}
-						}
+						},
 					)
 				}
 			}
-		}
+		},
 	) {
-		content()
+		Box(Modifier.fillMaxSize()) {
+			content()
+		}
 	}
 }

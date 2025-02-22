@@ -23,6 +23,7 @@ message SudokuGrid {
   repeated SudokuCell data = 2;
   int64 elapsedTime = 3;
   Difficulty difficulty = 4;
+  int32 gridSize = 5;
 
   enum Difficulty {
     DIFFICULTY_UNSPECIFIED = 0;

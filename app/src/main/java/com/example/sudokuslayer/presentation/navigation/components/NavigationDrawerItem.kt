@@ -11,10 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sudokuslayer.presentation.navigation.Destination
-import com.example.sudokuslayer.presentation.navigation.DestinationIcon
+import com.example.sudokuslayer.presentation.navigation.AppIcon
 
 @Composable
-fun MyNavigationDrawerItem(isSelected: Boolean, destination: Destination, onClick: () -> Unit) {
+fun NavigationDrawerItem(
+	isSelected: Boolean,
+	destination: Destination,
+	onClick: () -> Unit,
+) {
 	NavigationDrawerItem(
 		icon = {
 			DestinationIcon(destination.icon)
@@ -22,22 +26,23 @@ fun MyNavigationDrawerItem(isSelected: Boolean, destination: Destination, onClic
 		label = {
 			Text(
 				text = destination.routeName,
-				color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+				color = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
 			)
 		},
 		selected = isSelected,
 		onClick = onClick,
 		modifier = Modifier.padding(8.dp),
-		colors = NavigationDrawerItemDefaults.colors(
-			selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-		)
+		colors =
+			NavigationDrawerItemDefaults.colors(
+				selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+			),
 	)
 }
 
 @Composable
-fun DestinationIcon(icon: DestinationIcon) {
+private fun DestinationIcon(icon: AppIcon) {
 	when (icon) {
-		is DestinationIcon.ResourceIcon -> Icon(painterResource(icon.resourceId), "")
-		is DestinationIcon.VectorIcon -> Icon(icon.imageVector, "")
+		is AppIcon.ResourceIcon -> Icon(painterResource(icon.resourceId), "")
+		is AppIcon.VectorIcon -> Icon(icon.imageVector, "")
 	}
 }

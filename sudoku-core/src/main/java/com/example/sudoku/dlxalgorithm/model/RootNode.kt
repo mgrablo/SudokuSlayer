@@ -31,10 +31,11 @@ class RootNode(val name: String = "root") : DLXNode() {
 		var column = this.right
 		while (column != this) {
 			val headerNode = column as HeaderNode
-			if(headerNode.numOfNodes == 0){
-				column = column.right
-				continue
-			}
+			if (headerNode.numOfNodes == 0)
+				{
+					column = column.right
+					continue
+				}
 			var row = column.down
 			while (row != column) {
 				row = row.down
@@ -48,12 +49,13 @@ fun RootNode.findBestColumn(): HeaderNode? {
 	var header: HeaderNode? = null
 	var minNodes = Int.MAX_VALUE
 	var next = right
-	while(next != this && minNodes > 1){
+	while (next != this && minNodes > 1) {
 		val numOfNodes = (next as HeaderNode).numOfNodes
-		if(numOfNodes < minNodes){
-			minNodes = next.numOfNodes
-			header = next
-		}
+		if (numOfNodes < minNodes)
+			{
+				minNodes = next.numOfNodes
+				header = next
+			}
 		next = next.right
 	}
 	return header

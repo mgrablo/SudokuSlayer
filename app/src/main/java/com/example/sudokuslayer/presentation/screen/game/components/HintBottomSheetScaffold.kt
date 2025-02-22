@@ -46,20 +46,22 @@ import com.example.sudoku.solver.NakedSingleExplanation
 import com.example.sudokuslayer.R
 import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun HintBottomSheetScaffold(
 	sheetScaffoldState: BottomSheetScaffoldState,
-	hintLogs: List<HintLog> = emptyList(),
 	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
+	modifier: Modifier = Modifier,
+	hintLogs: PersistentList<HintLog> = persistentListOf(),
 	showNextHint: Boolean = false,
 	topBar: @Composable (() -> Unit)? = null,
-	content: @Composable (PaddingValues) -> Unit
+	content: @Composable (PaddingValues) -> Unit,
 ) {
 	BottomSheetScaffold(
 		scaffoldState = sheetScaffoldState,
@@ -76,21 +78,21 @@ fun HintBottomSheetScaffold(
 				showNextHint = showNextHint,
 				explainHintClick = explainHintClick,
 				nextHintClick = nextHintClick,
-				modifier = Modifier.heightIn(min = 128.dp, max = 350.dp)
+				modifier = Modifier.heightIn(min = 128.dp, max = 350.dp),
 			)
 		},
-		content = content
+		content = content,
 	)
 }
 
 @Composable
 fun SheetContent(
 	title: String,
-	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
+	explainHintClick: () -> Unit,
+	modifier: Modifier = Modifier,
 	showNextHint: Boolean = false,
-	logs: List<HintLog> = emptyList(),
-	modifier: Modifier = Modifier
+	logs: PersistentList<HintLog> = persistentListOf(),
 ) {
 	val listState = rememberLazyListState()
 	val expandedItems = remember { mutableStateListOf<HintLog>() }
@@ -98,32 +100,37 @@ fun SheetContent(
 	val coroutineScope = rememberCoroutineScope()
 
 	LaunchedEffect(logs.size) {
-		if (logs.isNotEmpty())
+		if (logs.isNotEmpty()) {
 			listState.animateScrollToItem(logs.size - 1)
+		} else {
+			interactionSources.clear()
+		}
 	}
 
 	Column(
-		modifier = modifier
-			.fillMaxSize()
-			.padding(16.dp)
-			.padding(
-				bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-			),
-		horizontalAlignment = Alignment.CenterHorizontally
+		modifier =
+			modifier
+				.fillMaxSize()
+				.padding(16.dp)
+				.padding(
+					bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+				),
+		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
 		Text(
 			text = title,
 			style = MaterialTheme.typography.titleLarge,
-			modifier = Modifier
-				.padding(bottom = 8.dp)
+			modifier =
+				Modifier
+					.padding(bottom = 8.dp),
 		)
 		LazyColumn(
 			state = listState,
-			modifier = Modifier
-				.fillMaxWidth()
-				.weight(1f)
+			modifier =
+				Modifier
+					.fillMaxWidth()
+					.weight(1f),
 		) {
-
 			itemsIndexed(items = logs, key = { id, v -> id }) { index, hintLog ->
 				val interactionSource = remember { MutableInteractionSource() }
 				if (interactionSources.size <= index) {
@@ -137,8 +144,9 @@ fun SheetContent(
 					cardContent = hintLog.explanation.drop(1),
 					onExplainClick = {
 						explainHintClick()
-						if (!expandedItems.contains(hintLog))
+						if (!expandedItems.contains(hintLog)) {
 							expandedItems.add(hintLog)
+						}
 					},
 					isExpanded = expandedItems.contains(hintLog),
 					onExpandToggle = {
@@ -151,10 +159,9 @@ fun SheetContent(
 					isRevealed = hintLog.isRevealed,
 					isUserGuessed = hintLog.isUserGuessed,
 					interactionSource = interactionSource,
-					modifier = Modifier.animateItem()
+					modifier = Modifier.animateItem(),
 				)
 				Spacer(Modifier.height(8.dp))
-
 			}
 		}
 
@@ -162,9 +169,9 @@ fun SheetContent(
 			text = "Next hint",
 			icon = { Icon(painterResource(R.drawable.lightbulb), null) },
 			onClick = {
-				if (showNextHint)
+				if (showNextHint) {
 					nextHintClick()
-				else {
+				} else {
 					if (interactionSources.isNotEmpty()) {
 						coroutineScope.launch {
 							val lastInteractionSource = interactionSources.last()
@@ -183,22 +190,23 @@ fun SheetContent(
 @Composable
 fun BottomSheetElevatedButton(
 	text: String,
+	onClick: () -> Unit,
+	modifier: Modifier = Modifier,
 	icon: @Composable (() -> Unit)? = null,
 	containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
 	contentColor: Color = MaterialTheme.colorScheme.primary,
-	onClick: () -> Unit
 ) {
 	ElevatedButton(
 		onClick = onClick,
-		colors = ButtonDefaults.elevatedButtonColors(
-			containerColor = containerColor,
-			contentColor = contentColor
-		)
-
+		colors =
+			ButtonDefaults.elevatedButtonColors(
+				containerColor = containerColor,
+				contentColor = contentColor,
+			),
 	) {
 		Text(
 			text = text,
-			color = contentColor
+			color = contentColor,
 		)
 
 		if (icon != null) {
@@ -213,29 +221,36 @@ fun BottomSheetElevatedButton(
 @Composable
 private fun HintBottomSheetScaffoldPreview() {
 	SudokuSlayerTheme {
-		val scaffoldState = rememberBottomSheetScaffoldState(
-			bottomSheetState = rememberStandardBottomSheetState(
-				initialValue = SheetValue.Expanded
+		val scaffoldState =
+			rememberBottomSheetScaffoldState(
+				bottomSheetState =
+					rememberStandardBottomSheetState(
+						initialValue = SheetValue.Expanded,
+					),
 			)
-		)
 		HintBottomSheetScaffold(
 			sheetScaffoldState = scaffoldState,
-			hintLogs = listOf(
-				HintLog(
-					hint = Hint(
-						row = 1,
-						col = 1,
-						value = 4,
-						type = HintType.NakedSingle,
-						explanationStrategy = NakedSingleExplanation(),
-						additionalInfo = ""
-					), isUserGuessed = false, isRevealed = false, explanation = emptyList()
-				)
-			),
+			hintLogs =
+				persistentListOf(
+					HintLog(
+						hint =
+							Hint(
+								row = 1,
+								col = 1,
+								value = 4,
+								type = HintType.NakedSingle,
+								explanationStrategy = NakedSingleExplanation(),
+								additionalInfo = "",
+							),
+						isUserGuessed = false,
+						isRevealed = false,
+						explanation = persistentListOf(),
+					),
+				),
 			explainHintClick = { },
 			nextHintClick = { },
 			topBar = null,
-			content = { }
+			content = { },
 		)
 	}
 }
