@@ -13,12 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
@@ -72,14 +71,8 @@ fun SudokuGameScreen(
 		),
 ) {
 	val lifecycleOwner = LocalLifecycleOwner.current
-	DisposableEffect(Unit) {
-		lifecycleOwner.lifecycle.addObserver(timerViewModel)
-		onDispose {
-			lifecycleOwner.lifecycle.removeObserver(timerViewModel)
-		}
-	}
 
-	val elapsedTime by timerViewModel.elapsedTime.collectAsState()
+	val elapsedTime by timerViewModel.elapsedTime.collectAsStateWithLifecycle(lifecycleOwner)
 	val uiState by viewModel.uiState.collectAsState()
 	SudokuGameContent(
 		uiState = uiState,
@@ -91,6 +84,7 @@ fun SudokuGameScreen(
 		},
 		modifier = modifier,
 		elapsedTime = { elapsedTime },
+		saveTime = { timerViewModel.updateElapsedTime(it) },
 		openDrawer = openDrawer,
 	)
 }
@@ -101,6 +95,7 @@ fun SudokuGameContent(
 	uiState: SudokuGameUiState,
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
+	saveTime: (Long) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -169,7 +164,12 @@ fun SudokuGameContent(
 		nextHintClick = { onEvent(Event.ProvideHint) },
 		topBar = {
 			CenterAlignedTopAppBar(
-				title = { Text("Sudoku Slayer") },
+				title = {
+					TimerDisplay(
+						elapsedTime = { elapsedTime() },
+						onPause = { onEvent(Event.ResetTimer) },
+					)
+				},
 				colors =
 					TopAppBarDefaults.centerAlignedTopAppBarColors(
 						containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -192,7 +192,6 @@ fun SudokuGameContent(
 							.fillMaxSize(),
 					horizontalAlignment = Alignment.CenterHorizontally,
 				) {
-					TimerDisplay(elapsedTime = { elapsedTime() })
 					SudokuBoard(
 						sudoku = uiState.sudoku,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
@@ -206,7 +205,7 @@ fun SudokuGameContent(
 						onHintClick = { hintsDialogState = true },
 						onShowMistakesClick = { onEvent(Event.ShowMistakes) },
 						onResetClick = { resetDialogState = true },
-						onSwitchInputMode = { onEvent(Event.SwitchInputMode)},
+						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
 						modifier = Modifier.weight(1f),
@@ -227,7 +226,7 @@ fun SudokuGameContent(
 						onHintClick = { hintsDialogState = true },
 						onShowMistakesClick = { onEvent(Event.ShowMistakes) },
 						onResetClick = { resetDialogState = true },
-						onSwitchInputMode = { onEvent(Event.SwitchInputMode)},
+						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
 						modifier = Modifier.weight(1f),
@@ -251,6 +250,7 @@ private fun SudokuGameScreenPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -268,6 +268,7 @@ private fun SudokuGameScreenSixteenPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -285,6 +286,7 @@ private fun SudokuGameScreenFourPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
