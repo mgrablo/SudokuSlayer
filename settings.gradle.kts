@@ -24,3 +24,4 @@ rootProject.name = "SudokuSlayer"
 include(":app")
 include(":sudoku-core")
 include(":data:core")
+include(":data:settings")

@@ -1,6 +1,7 @@
 package com.example.sudokuslayer
 
 import android.app.Activity
+import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerValue
@@ -14,21 +15,34 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
+import com.example.data.core.preferences.DataStoreProvider
+import com.example.data.core.preferences.PreferencesManager
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.navigation.SudokuNavHost
 import com.example.sudokuslayer.presentation.navigation.components.NavigationDrawer
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.coroutines.launch
 
+class App : Application() {
+	lateinit var preferencesManager: PreferencesManager
+		private set
+
+	override fun onCreate() {
+		super.onCreate()
+		preferencesManager = DataStoreProvider.providePreferencesManager(this)
+	}
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+internal fun AppContent() {
 	val navController = rememberNavController()
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 	val destinations =
 		listOf(
 			Destination.SudokuGame,
 			Destination.SudokuCreator,
+			Destination.Settings,
 		)
 	val scope = rememberCoroutineScope()
 	val view = LocalView.current

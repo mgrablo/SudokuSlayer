@@ -5,9 +5,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.sudokuslayer.presentation.navigation.Destination.Settings
 import com.example.sudokuslayer.presentation.navigation.Destination.SudokuCreator
 import com.example.sudokuslayer.presentation.navigation.Destination.SudokuGame
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameScreen
+import com.example.sudokuslayer.presentation.screen.settings.SettingsScreen
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorScreen
 
 @Composable
@@ -29,6 +31,11 @@ fun SudokuNavHost(
 			SudokuCreatorScreen(
 				context = LocalContext.current,
 				navController = navController,
+				openDrawer = openDrawer,
+			)
+		}
+		composable<Settings> {
+			SettingsScreen(
 				openDrawer = openDrawer,
 			)
 		}
