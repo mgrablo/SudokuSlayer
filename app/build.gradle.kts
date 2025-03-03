@@ -101,6 +101,8 @@ dependencies {
 
 	api(project(":sudoku-core"))
 	implementation(project(":data:core"))
+	implementation(project(":data:preferences"))
+	implementation(project(":data:settings"))
 }
 
 configure<KtlintExtension> {

@@ -8,6 +8,8 @@ java {
 }
 dependencies {
 	implementation(project(":data:core"))
+
+	implementation(libs.kotlinx.coroutines.core)
 }
 kotlin {
 	compilerOptions {

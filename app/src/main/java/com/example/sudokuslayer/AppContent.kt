@@ -15,21 +15,21 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.data.core.preferences.DataStoreProvider
-import com.example.data.core.preferences.PreferencesManager
+import com.example.data.core.preferences.PreferenceStorageSingleton
+import com.example.data.preferences.DataStorePreferenceStorageFactory
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.navigation.SudokuNavHost
 import com.example.sudokuslayer.presentation.navigation.components.NavigationDrawer
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.coroutines.launch
 
-class App : Application() {
-	lateinit var preferencesManager: PreferencesManager
-		private set
-
+class MyApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
-		preferencesManager = DataStoreProvider.providePreferencesManager(this)
+
+		PreferenceStorageSingleton.initialize(
+			DataStorePreferenceStorageFactory(applicationContext),
+		)
 	}
 }
 

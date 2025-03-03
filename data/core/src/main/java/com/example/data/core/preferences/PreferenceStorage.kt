@@ -2,19 +2,17 @@ package com.example.data.core.preferences
 
 import kotlinx.coroutines.flow.Flow
 
-interface PreferencesManager {
+interface PreferenceStorage {
 	fun <T> getAsFlow(key: Key<T>): Flow<T?>
 
 	suspend fun <T> get(key: Key<T>): T?
 
-	suspend fun <T> writeValue(
+	suspend fun <T> set(
 		key: Key<T>,
 		value: T?,
 	)
 
-	suspend fun <T> clearValue(key: Key<T>) {
-		writeValue(key, null)
-	}
+	suspend fun <T> clear(key: Key<T>) = set(key, null)
 
 	sealed class Key<T>(
 		val name: String,
@@ -30,24 +28,24 @@ interface PreferencesManager {
 			defaultValue: Int?,
 		) : Key<Int>(name, defaultValue)
 
-		open class LongKey(
+		open class BooleanKey(
 			name: String,
-			defaultValue: Long?,
-		) : Key<Long>(name, defaultValue)
+			defaultValue: Boolean?,
+		) : Key<Boolean>(name, defaultValue)
 
 		open class FloatKey(
 			name: String,
 			defaultValue: Float?,
 		) : Key<Float>(name, defaultValue)
 
+		open class LongKey(
+			name: String,
+			defaultValue: Long?,
+		) : Key<Long>(name, defaultValue)
+
 		open class DoubleKey(
 			name: String,
 			defaultValue: Double?,
 		) : Key<Double>(name, defaultValue)
-
-		open class BooleanKey(
-			name: String,
-			defaultValue: Boolean?,
-		) : Key<Boolean>(name, defaultValue)
 	}
 }

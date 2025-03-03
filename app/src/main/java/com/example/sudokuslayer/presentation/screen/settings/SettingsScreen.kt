@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 
+
 @Composable
 fun SettingsScreen(
 	openDrawer: () -> Unit,
@@ -51,6 +52,7 @@ fun SettingsScreen(
 private fun SettingsScreenContent(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
+	theme: String = "system",
 ) {
 	Scaffold(
 		topBar = {
@@ -92,7 +94,7 @@ private fun SettingsScreenContent(
 								singleLine = true,
 								trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageExpanded) },
 								modifier = Modifier
-									.menuAnchor(type = MenuAnchorType.SecondaryEditable)
+									.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
 									.width(200.dp),
 							)
 

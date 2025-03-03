@@ -28,11 +28,6 @@ annotations = "1.9.1"
 immutableCollections = "0.3.8"
 ktlint = "12.1.2"
 ktlintCompose = "0.4.22"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-appcompat = "1.7.0"
-material = "1.12.0"
-
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,7 +47,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name="navigation-
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore"}
-androidx-datastorePreferences = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastore"}
+androidx-datastorePreferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore"}
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
 compose-unstyled = { group = "com.composables", name = "core", version.ref = "composeUnstyled"}
 catppuccin-palette = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "palette", version.ref = "catppuccinPalette"}
