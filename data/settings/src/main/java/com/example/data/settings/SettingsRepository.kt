@@ -1,5 +1,7 @@
 package com.example.data.settings
 
+import com.example.data.core.model.ColorScheme
+import com.example.data.core.model.DarkMode
 import com.example.data.core.preferences.PreferenceStorage
 import com.example.data.core.preferences.PreferenceStorageSingleton
 import kotlinx.coroutines.flow.Flow
@@ -8,12 +10,37 @@ import kotlinx.coroutines.flow.map
 class SettingsRepository {
 	private val preferenceStorage: PreferenceStorage = PreferenceStorageSingleton.getInstance("settings")
 
-	val theme: Flow<String> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.Theme).map { it.orEmpty() }
+	val darkMode: Flow<DarkMode> =
+		preferenceStorage
+			.getAsFlow(SettingsPreferenceKeys.DarkMode)
+			.map { it.orEmpty() }
+			.map { DarkMode.fromName(it) }
+
+	val darkModeColorScheme: Flow<ColorScheme> =
+		preferenceStorage
+			.getAsFlow(SettingsPreferenceKeys.DarkColorScheme)
+			.map { it.orEmpty() }
+			.map { ColorScheme.fromName(it) }
+
+	val lightModeColorScheme: Flow<ColorScheme> =
+		preferenceStorage
+			.getAsFlow(SettingsPreferenceKeys.LightColorScheme)
+			.map { it.orEmpty() }
+			.map { ColorScheme.fromName(it) }
+
 	val language: Flow<String> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.Language).map { it.orEmpty() }
 	val leftHandMode: Flow<Boolean> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.LeftHandMode).map { it == true }
 
-	suspend fun setTheme(theme: String) {
-		preferenceStorage.set(SettingsPreferenceKeys.Theme, theme)
+	suspend fun setDarkMode(darkMode: DarkMode) {
+		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
+	}
+
+	suspend fun setDarkColorScheme(colorScheme: ColorScheme) {
+		preferenceStorage.set(SettingsPreferenceKeys.DarkColorScheme, colorScheme.name)
+	}
+
+	suspend fun setLightColorScheme(colorScheme: ColorScheme) {
+		preferenceStorage.set(SettingsPreferenceKeys.LightColorScheme, colorScheme.name)
 	}
 
 	suspend fun setLanguage(language: String) {
@@ -23,4 +50,10 @@ class SettingsRepository {
 	suspend fun setLeftHandMode(leftHandMode: Boolean) {
 		preferenceStorage.set(SettingsPreferenceKeys.LeftHandMode, leftHandMode)
 	}
+
+	fun getAvailableColorSchemes(): List<String> = ColorScheme.getAvailableColorSchemes()
+
+	fun getDarkColorSchemes(): List<String> = ColorScheme.getDarkColorSchemes()
+
+	fun getLightColorSchemes(): List<String> = ColorScheme.getLightColorSchemes()
 }

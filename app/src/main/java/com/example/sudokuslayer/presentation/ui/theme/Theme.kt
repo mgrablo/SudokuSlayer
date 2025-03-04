@@ -1,17 +1,13 @@
 package com.example.sudokuslayer.presentation.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.shifthackz.catppuccin.compose.CatppuccinMaterial
-import com.shifthackz.catppuccin.compose.CatppuccinTheme
 import com.shifthackz.catppuccin.palette.Catppuccin
 import com.shifthackz.catppuccin.palette.CatppuccinPalette
 
@@ -634,6 +630,41 @@ val MochaSudokuBoard: SudokuBoardColors =
 		blockBorder = Catppuccin.Mocha.Overlay2,
 	)
 
+val MacchiatoSudokuBoard: SudokuBoardColors =
+	SudokuBoardColors(
+		defaultBackground = Catppuccin.Macchiato.Base,
+		onDefaultBackground = Catppuccin.Macchiato.Text,
+		selectedBackground = Catppuccin.Macchiato.Surface1,
+		onSelectedBackground = Catppuccin.Macchiato.Text,
+		highlightedBackground = Catppuccin.Macchiato.Surface0,
+		onHighlightedBackground = Catppuccin.Macchiato.Text,
+		hintMarkBackground = Catppuccin.Macchiato.Green,
+		onHintMarkBackground = Catppuccin.Macchiato.Crust,
+		invalidMarkBackground = Catppuccin.Macchiato.Red,
+		onInvalidMarkBackground = Catppuccin.Macchiato.Crust,
+		matchingMarkBackground = Catppuccin.Macchiato.Lavender,
+		onMatchingMarkBackground = Catppuccin.Macchiato.Crust,
+		cellBorder = Catppuccin.Macchiato.Overlay0,
+		blockBorder = Catppuccin.Macchiato.Overlay2,
+	)
+
+val FrappeSudokuBoard: SudokuBoardColors =
+	SudokuBoardColors(
+		defaultBackground = Catppuccin.Frappe.Base,
+		onDefaultBackground = Catppuccin.Frappe.Text,
+		selectedBackground = Catppuccin.Frappe.Surface1,
+		onSelectedBackground = Catppuccin.Frappe.Text,
+		highlightedBackground = Catppuccin.Frappe.Surface0,
+		onHighlightedBackground = Catppuccin.Frappe.Text,
+		hintMarkBackground = Catppuccin.Frappe.Green,
+		onHintMarkBackground = Catppuccin.Frappe.Crust,
+		invalidMarkBackground = Catppuccin.Frappe.Red,
+		onInvalidMarkBackground = Catppuccin.Frappe.Crust,
+		matchingMarkBackground = Catppuccin.Frappe.Lavender,
+		onMatchingMarkBackground = Catppuccin.Frappe.Crust,
+		cellBorder = Catppuccin.Frappe.Overlay0,
+		blockBorder = Catppuccin.Frappe.Overlay2,
+	)
 val LatteSudokuBoard: SudokuBoardColors =
 	SudokuBoardColors(
 		defaultBackground = Catppuccin.Latte.Base,
@@ -663,6 +694,29 @@ val MochaKeypadColors: KeypadColors =
 		numberModeSelectedBackground = Catppuccin.Mocha.Sky,
 		numberModeSelectedOnBackground = Catppuccin.Mocha.Crust,
 	)
+val MacchiatoKeypadColors: KeypadColors =
+	KeypadColors(
+		numberPadBackground = Catppuccin.Macchiato.Lavender,
+		numberPadOnBackground = Catppuccin.Macchiato.Crust,
+		actionPadBackground = Catppuccin.Macchiato.Base,
+		actionPadOnBackground = Catppuccin.Macchiato.Text,
+		noteModeSelectedBackground = Catppuccin.Macchiato.Teal,
+		noteModeSelectedOnBackground = Catppuccin.Macchiato.Crust,
+		numberModeSelectedBackground = Catppuccin.Macchiato.Sky,
+		numberModeSelectedOnBackground = Catppuccin.Macchiato.Crust,
+	)
+
+val FrappeKeypadColors: KeypadColors =
+	KeypadColors(
+		numberPadBackground = Catppuccin.Frappe.Lavender,
+		numberPadOnBackground = Catppuccin.Frappe.Crust,
+		actionPadBackground = Catppuccin.Frappe.Base,
+		actionPadOnBackground = Catppuccin.Frappe.Text,
+		noteModeSelectedBackground = Catppuccin.Frappe.Teal,
+		noteModeSelectedOnBackground = Catppuccin.Frappe.Crust,
+		numberModeSelectedBackground = Catppuccin.Frappe.Sky,
+		numberModeSelectedOnBackground = Catppuccin.Frappe.Crust,
+	)
 
 val LatteKeypadColors: KeypadColors =
 	KeypadColors(
@@ -684,7 +738,7 @@ val unspecified_scheme =
 		Color.Unspecified,
 	)
 
-private val LocalExtendedColorScheme =
+internal val LocalExtendedColorScheme =
 	staticCompositionLocalOf<ExtendedColorScheme> {
 		extendedLight
 	}
@@ -710,43 +764,3 @@ val MaterialTheme.catppuccinPalette: CatppuccinPalette
 	@Composable
 	@ReadOnlyComposable
 	get() = LocalCatppuccinPalette.current
-
-@Composable
-fun SudokuSlayerTheme(
-	darkTheme: Boolean = isSystemInDarkTheme(),
-	content:
-		@Composable()
-		() -> Unit,
-) {
-	val extendedColorScheme =
-		when {
-			darkTheme -> extendedDark
-			else -> extendedLight
-		}
-
-	val boardColors =
-		when {
-			darkTheme -> MochaSudokuBoard
-			else -> LatteSudokuBoard
-		}
-
-	val keypadColors =
-		when {
-			darkTheme -> MochaKeypadColors
-			else -> LatteKeypadColors
-		}
-
-	CompositionLocalProvider(LocalExtendedColorScheme provides extendedColorScheme) {
-		CompositionLocalProvider(LocalSudokuBoardColors provides boardColors) {
-			CompositionLocalProvider(LocalKeyPadColors provides keypadColors) {
-				CatppuccinTheme.DarkLightPalette(
-					darkTheme = darkTheme,
-					darkPalette = CatppuccinMaterial.Mocha(),
-					lightPalette = CatppuccinMaterial.Latte(),
-				) {
-					content()
-				}
-			}
-		}
-	}
-}
