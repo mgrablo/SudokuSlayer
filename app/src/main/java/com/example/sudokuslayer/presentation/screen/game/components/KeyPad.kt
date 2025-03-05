@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sudokuslayer.R
+import com.example.sudokuslayer.presentation.components.ReversibleRow
 import com.example.sudokuslayer.presentation.navigation.AppIcon
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.ActionPad
 import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.ActionPadItem
@@ -50,6 +51,7 @@ fun KeyPad(
 	onResetClick: () -> Unit,
 	noteMode: Boolean,
 	gridSize: Int,
+	isLeftHandMode: Boolean,
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
@@ -90,7 +92,9 @@ fun KeyPad(
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			if (gridSize > 4) {
-				Row(
+				// Keypad with 9-16 numbers
+				ReversibleRow(
+					reverseLayout = isLeftHandMode,
 					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 				) {
 					Column(
@@ -129,7 +133,8 @@ fun KeyPad(
 						itemSize = itemSize,
 					)
 				}
-				Row(
+				ReversibleRow(
+					reverseLayout = isLeftHandMode,
 					horizontalArrangement = Arrangement.Center,
 					modifier = Modifier.fillMaxWidth(),
 				) {
@@ -142,7 +147,9 @@ fun KeyPad(
 					)
 				}
 			} else {
-				Row(
+				// Keypad with 4 numbers
+				ReversibleRow(
+					reverseLayout = isLeftHandMode,
 					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 				) {
 					KeyPadItem(
@@ -230,6 +237,7 @@ private fun KeyPadPreview() {
 			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
+			isLeftHandMode = true,
 			gridSize = 9,
 		)
 	}
@@ -249,10 +257,33 @@ private fun KeyPadFourPreview() {
 			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
+			isLeftHandMode = false,
 			gridSize = 4,
 		)
 	}
 }
+
+
+@Preview
+@Composable
+private fun KeyPadFourLeftHandPreview() {
+	SudokuSlayerTheme {
+		KeyPad(
+			onNumberClick = { },
+			onClearClick = { },
+			onUndoClick = { },
+			onRedoClick = { },
+			onHintClick = { },
+			onSwitchInputMode = { },
+			onShowMistakesClick = { },
+			onResetClick = { },
+			noteMode = true,
+			isLeftHandMode = true,
+			gridSize = 4,
+		)
+	}
+}
+
 
 @Preview
 @Composable
@@ -268,6 +299,27 @@ private fun KeyPadSixteenPreview() {
 			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
+			isLeftHandMode = false,
+			gridSize = 16,
+		)
+	}
+}
+
+@Preview
+@Composable
+private fun KeyPadSixteenLeftPreview() {
+	SudokuSlayerTheme {
+		KeyPad(
+			onNumberClick = { },
+			onClearClick = { },
+			onUndoClick = { },
+			onRedoClick = { },
+			onSwitchInputMode = { },
+			onHintClick = { },
+			onShowMistakesClick = { },
+			onResetClick = { },
+			noteMode = true,
+			isLeftHandMode = true,
 			gridSize = 16,
 		)
 	}

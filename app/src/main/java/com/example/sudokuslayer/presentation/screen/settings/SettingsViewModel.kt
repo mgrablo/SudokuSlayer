@@ -1,6 +1,5 @@
 package com.example.sudokuslayer.presentation.screen.settings
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -93,8 +92,6 @@ class SettingsViewModel(
 	private fun setDarkMode(darkMode: String) {
 		viewModelScope.launch {
 			settingsRepository.setDarkMode(DarkMode.fromName(darkMode))
-			Log.d("test", darkMode)
-			Log.d("test", DarkMode.fromName(darkMode).toString())
 		}
 	}
 

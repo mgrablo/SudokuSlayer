@@ -1,9 +1,13 @@
 package com.example.sudokuslayer.presentation.screen.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -18,7 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudokuslayer.presentation.screen.settings.components.SettingDropDownMenu
@@ -83,8 +87,11 @@ private fun SettingsScreenContent(
 			modifier =
 				Modifier
 					.fillMaxSize()
+					.displayCutoutPadding()
+					.systemBarsPadding()
 					.padding(paddingValues)
-					.padding(LocalPadding.current.normal),
+					.padding(LocalPadding.current.normal)
+					.verticalScroll(rememberScrollState()),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
 			val themeOptions = persistentSetOf("System", "Dark", "Light")
@@ -138,7 +145,7 @@ private fun SettingsScreenContent(
 	}
 }
 
-@Preview
+@PreviewScreenSizes
 @Composable
 private fun SettingsScreenPreview() {
 	SudokuSlayerTheme {
