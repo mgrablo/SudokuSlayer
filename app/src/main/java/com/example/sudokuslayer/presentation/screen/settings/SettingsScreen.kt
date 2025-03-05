@@ -43,6 +43,7 @@ fun SettingsScreen(
 	val lightColorScheme by viewModel.lightColorScheme.collectAsStateWithLifecycle()
 	val darkColorScheme by viewModel.darkColorScheme.collectAsStateWithLifecycle()
 	val leftHandMode by viewModel.leftHandMode.collectAsStateWithLifecycle()
+	val actionButtonsOnTop by viewModel.actionButtonsOnTop.collectAsStateWithLifecycle()
 
 	SettingsScreenContent(
 		openDrawer = openDrawer,
@@ -53,6 +54,7 @@ fun SettingsScreen(
 		selectedDarkColorScheme = darkColorScheme.name,
 		darkMode = darkMode.displayName,
 		leftHandMode = leftHandMode,
+		actionButtonsOnTop = actionButtonsOnTop,
 		modifier = modifier.fillMaxSize(),
 	)
 }
@@ -67,6 +69,7 @@ private fun SettingsScreenContent(
 	selectedLightColorScheme: String,
 	selectedDarkColorScheme: String,
 	leftHandMode: Boolean,
+	actionButtonsOnTop: Boolean,
 	darkMode: String,
 	modifier: Modifier = Modifier,
 ) {
@@ -102,6 +105,11 @@ private fun SettingsScreenContent(
 			SettingsCategory("Appearance") {
 				SettingDropDownMenu(
 					title = "Theme",
+					description = if (darkMode == "system") {
+						"Follow system theme"
+					} else {
+						null
+					},
 					isExpanded = themeExpanded,
 					onExpandedChange = { themeExpanded = it },
 					onSelect = {
@@ -136,10 +144,20 @@ private fun SettingsScreenContent(
 			SettingsCategory("Accessibility") {
 				SettingSwitchItem(
 					title = "Left hand mode",
+					description = "Swap the layout of the keypad",
 					value = leftHandMode,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleLeftHandMode(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
+
+				SettingSwitchItem(
+					title = "Show action buttons on top",
+					description = "Move the action buttons to the top of the screen",
+					value = actionButtonsOnTop,
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
+
 			}
 		}
 	}
@@ -158,6 +176,7 @@ private fun SettingsScreenPreview() {
 			selectedDarkColorScheme = "Mocha",
 			leftHandMode = true,
 			darkMode = "System",
+			actionButtonsOnTop = false,
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

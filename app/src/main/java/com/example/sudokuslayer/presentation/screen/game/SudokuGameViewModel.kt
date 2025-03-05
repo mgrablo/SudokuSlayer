@@ -78,6 +78,15 @@ class SudokuGameViewModel(
 				}
 			}
 		}
+		viewModelScope.launch {
+			settingsRepository.showActionButtonsOnTop.collect {showActionButtonsOnTop ->
+				_uiState.update {
+					it.copy(
+						showActionButtonsOnTop = showActionButtonsOnTop,
+					)
+				}
+			}
+		}
 	}
 
 	override fun onCleared() {

@@ -54,6 +54,13 @@ class SettingsViewModel(
 			initialValue = false,
 		)
 
+	val actionButtonsOnTop: StateFlow<Boolean> =
+		settingsRepository.showActionButtonsOnTop.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000L),
+			initialValue = false,
+		)
+
 	val lightColorSchemes = settingsRepository.getLightColorSchemes().toPersistentSet()
 	val darkColorSchemes = settingsRepository.getDarkColorSchemes().toPersistentSet()
 
@@ -77,6 +84,10 @@ class SettingsViewModel(
 		data class ToggleLeftHandMode(
 			val leftHandMode: Boolean,
 		) : Event
+
+		data class ToggleActionButtonsOnTop(
+			val actionButtonsOnTop: Boolean,
+		) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -86,6 +97,7 @@ class SettingsViewModel(
 			is Event.SetDarkColorScheme -> setDarkColorScheme(event.scheme)
 			is Event.SetLanguage -> setLanguage(event.language)
 			is Event.ToggleLeftHandMode -> toggleLeftHandMode(event.leftHandMode)
+			is Event.ToggleActionButtonsOnTop -> toggleActionButtonsOnTop(event.actionButtonsOnTop)
 		}
 	}
 
@@ -118,6 +130,13 @@ class SettingsViewModel(
 			settingsRepository.setLeftHandMode(leftHandMode)
 		}
 	}
+
+	private fun toggleActionButtonsOnTop(actionButtonsOnTop: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setShowActionButtonsOnTop(actionButtonsOnTop)
+		}
+	}
+
 
 	companion object {
 		val Factory:

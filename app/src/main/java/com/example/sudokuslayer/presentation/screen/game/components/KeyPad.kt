@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Refresh
@@ -52,6 +53,7 @@ fun KeyPad(
 	noteMode: Boolean,
 	gridSize: Int,
 	isLeftHandMode: Boolean,
+	showActionButtonsOnTop: Boolean,
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
@@ -62,7 +64,7 @@ fun KeyPad(
 			onRedoClick = onRedoClick,
 		)
 
-	val itemsInRow = remember { if(gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 1 else gridSize + 1 }
+	val itemsInRow = remember { if (gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 1 else gridSize + 1 }
 	val itemsInColumn = remember { itemsInRow + 1 }
 
 	BoxWithConstraints(
@@ -87,25 +89,77 @@ fun KeyPad(
 		val fontSize = (itemSize.value * 0.6f).sp
 		val textStyle = textStyle.copy(fontSize = fontSize)
 
-		Column(
+		LazyColumn(
+			reverseLayout = showActionButtonsOnTop,
 			verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			if (gridSize > 4) {
 				// Keypad with 9-16 numbers
-				ReversibleRow(
-					reverseLayout = isLeftHandMode,
-					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-				) {
-					Column(
-						verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+				item() {
+					ReversibleRow(
+						reverseLayout = isLeftHandMode,
+						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
-						InputModeSwitch(
-							onClick = onSwitchInputMode,
-							inputMode = noteMode,
-							iconSize = fontSize.value.dp,
-							modifier = Modifier.size(itemSize),
+						Column(
+							verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+						) {
+							InputModeSwitch(
+								onClick = onSwitchInputMode,
+								inputMode = noteMode,
+								iconSize = fontSize.value.dp,
+								modifier = Modifier.size(itemSize),
+							)
+							KeyPadItem(
+								text = "",
+								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+								onClick = onHintClick,
+								textStyle = textStyle,
+								modifier = Modifier.size(itemSize),
+								bgColor = LocalKeyPadColors.current.actionPadBackground,
+								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							)
+							KeyPadItem(
+								text = "",
+								icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+								onClick = onResetClick,
+								textStyle = textStyle,
+								modifier = Modifier.size(itemSize),
+								bgColor = LocalKeyPadColors.current.actionPadBackground,
+								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							)
+						}
+						NumberPad(
+							gridSize = gridSize,
+							onButtonClick = onNumberClick,
+							noteMode = noteMode,
+							textStyle = textStyle,
+							itemSize = itemSize,
 						)
+					}
+				}
+				item {
+					ReversibleRow(
+						reverseLayout = isLeftHandMode,
+						horizontalArrangement = Arrangement.Center,
+						modifier = Modifier.fillMaxWidth(),
+					) {
+						Spacer(modifier = Modifier.size(itemSize))
+						ActionPad(
+							items = middleActionPadItems,
+							orientation = ActionPadOrientation.HORIZONTAL,
+							itemSize = itemSize,
+							textStyle = textStyle,
+						)
+					}
+				}
+			} else {
+				// Keypad with 4 numbers
+				item {
+					ReversibleRow(
+						reverseLayout = isLeftHandMode,
+						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					) {
 						KeyPadItem(
 							text = "",
 							icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
@@ -115,6 +169,19 @@ fun KeyPad(
 							bgColor = LocalKeyPadColors.current.actionPadBackground,
 							textColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
+						NumberPad(
+							gridSize = gridSize,
+							onButtonClick = onNumberClick,
+							noteMode = noteMode,
+							textStyle = textStyle,
+							itemSize = itemSize,
+						)
+					}
+				}
+				item {
+					Row(
+						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
+					) {
 						KeyPadItem(
 							text = "",
 							icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
@@ -124,75 +191,19 @@ fun KeyPad(
 							bgColor = LocalKeyPadColors.current.actionPadBackground,
 							textColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
+						ActionPad(
+							items = middleActionPadItems,
+							orientation = ActionPadOrientation.HORIZONTAL,
+							itemSize = itemSize,
+							textStyle = textStyle,
+						)
+						InputModeSwitch(
+							onClick = onSwitchInputMode,
+							inputMode = noteMode,
+							iconSize = fontSize.value.dp,
+							modifier = Modifier.size(itemSize),
+						)
 					}
-					NumberPad(
-						gridSize = gridSize,
-						onButtonClick = onNumberClick,
-						noteMode = noteMode,
-						textStyle = textStyle,
-						itemSize = itemSize,
-					)
-				}
-				ReversibleRow(
-					reverseLayout = isLeftHandMode,
-					horizontalArrangement = Arrangement.Center,
-					modifier = Modifier.fillMaxWidth(),
-				) {
-					Spacer(modifier = Modifier.size(itemSize))
-					ActionPad(
-						items = middleActionPadItems,
-						orientation = ActionPadOrientation.HORIZONTAL,
-						itemSize = itemSize,
-						textStyle = textStyle,
-					)
-				}
-			} else {
-				// Keypad with 4 numbers
-				ReversibleRow(
-					reverseLayout = isLeftHandMode,
-					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-				) {
-					KeyPadItem(
-						text = "",
-						icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
-						onClick = onHintClick,
-						textStyle = textStyle,
-						modifier = Modifier.size(itemSize),
-						bgColor = LocalKeyPadColors.current.actionPadBackground,
-						textColor = LocalKeyPadColors.current.actionPadOnBackground,
-					)
-					NumberPad(
-						gridSize = gridSize,
-						onButtonClick = onNumberClick,
-						noteMode = noteMode,
-						textStyle = textStyle,
-						itemSize = itemSize,
-					)
-				}
-				Row(
-					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-				) {
-					KeyPadItem(
-						text = "",
-						icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
-						onClick = onResetClick,
-						textStyle = textStyle,
-						modifier = Modifier.size(itemSize),
-						bgColor = LocalKeyPadColors.current.actionPadBackground,
-						textColor = LocalKeyPadColors.current.actionPadOnBackground,
-					)
-					ActionPad(
-						items = middleActionPadItems,
-						orientation = ActionPadOrientation.HORIZONTAL,
-						itemSize = itemSize,
-						textStyle = textStyle,
-					)
-					InputModeSwitch(
-						onClick = onSwitchInputMode,
-						inputMode = noteMode,
-						iconSize = fontSize.value.dp,
-						modifier = Modifier.size(itemSize),
-					)
 				}
 			}
 		}
@@ -238,6 +249,7 @@ private fun KeyPadPreview() {
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
+			showActionButtonsOnTop = true,
 			gridSize = 9,
 		)
 	}
@@ -258,11 +270,11 @@ private fun KeyPadFourPreview() {
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
+			showActionButtonsOnTop = false,
 			gridSize = 4,
 		)
 	}
 }
-
 
 @Preview
 @Composable
@@ -279,11 +291,11 @@ private fun KeyPadFourLeftHandPreview() {
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
+			showActionButtonsOnTop = true,
 			gridSize = 4,
 		)
 	}
 }
-
 
 @Preview
 @Composable
@@ -300,6 +312,7 @@ private fun KeyPadSixteenPreview() {
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
+			showActionButtonsOnTop = false,
 			gridSize = 16,
 		)
 	}
@@ -320,6 +333,7 @@ private fun KeyPadSixteenLeftPreview() {
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
+			showActionButtonsOnTop = true,
 			gridSize = 16,
 		)
 	}

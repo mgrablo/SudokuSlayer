@@ -30,6 +30,8 @@ class SettingsRepository {
 
 	val language: Flow<String> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.Language).map { it.orEmpty() }
 	val leftHandMode: Flow<Boolean> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.LeftHandMode).map { it == true }
+	val showActionButtonsOnTop: Flow<Boolean> =
+		preferenceStorage.getAsFlow(SettingsPreferenceKeys.ShowActionButtonsOnTop).map { it == true }
 
 	suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
@@ -49,6 +51,10 @@ class SettingsRepository {
 
 	suspend fun setLeftHandMode(leftHandMode: Boolean) {
 		preferenceStorage.set(SettingsPreferenceKeys.LeftHandMode, leftHandMode)
+	}
+
+	suspend fun setShowActionButtonsOnTop(actionButtonsOnTop: Boolean) {
+		preferenceStorage.set(SettingsPreferenceKeys.ShowActionButtonsOnTop, actionButtonsOnTop)
 	}
 
 	fun getAvailableColorSchemes(): List<String> = ColorScheme.getAvailableColorSchemes()

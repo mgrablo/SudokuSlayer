@@ -36,16 +36,16 @@ fun NumberPad(
 
 	val keyColor =
 		if (noteMode) {
-			MaterialTheme.extendedColorScheme.lavender.colorContainer
-		} else {
 			MaterialTheme.extendedColorScheme.pink.colorContainer
+		} else {
+			MaterialTheme.extendedColorScheme.lavender.colorContainer
 		}
 
 	val textColor =
 		if (noteMode) {
-			MaterialTheme.extendedColorScheme.lavender.onColorContainer
-		} else {
 			MaterialTheme.extendedColorScheme.pink.onColorContainer
+		} else {
+			MaterialTheme.extendedColorScheme.lavender.onColorContainer
 		}
 
 	Column(

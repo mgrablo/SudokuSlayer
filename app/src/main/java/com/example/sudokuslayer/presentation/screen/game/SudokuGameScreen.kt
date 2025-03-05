@@ -211,6 +211,7 @@ fun SudokuGameContent(
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
 						isLeftHandMode = uiState.isLeftHandMode,
+						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
 					)
 				}
@@ -233,6 +234,7 @@ fun SudokuGameContent(
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
 						isLeftHandMode = uiState.isLeftHandMode,
+						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
 					)
 				}

@@ -12,4 +12,6 @@ interface SettingsPreferenceKeys {
 	data object Language : PreferenceStorage.Key.StringKey(name = "language", defaultValue = "system")
 
 	data object LeftHandMode : PreferenceStorage.Key.BooleanKey(name = "left_hand_mode", defaultValue = false)
+
+	data object ShowActionButtonsOnTop : PreferenceStorage.Key.BooleanKey(name = "action_buttons_on_top", defaultValue = false)
 }

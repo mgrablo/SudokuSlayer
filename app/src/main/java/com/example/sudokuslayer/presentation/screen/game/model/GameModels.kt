@@ -17,6 +17,7 @@ data class SudokuGameUiState(
 	val lastHint: Hint? = null,
 	val hintLogs: PersistentList<HintLog> = persistentListOf(),
 	val isLeftHandMode: Boolean = false,
+	val showActionButtonsOnTop: Boolean = false,
 )
 
 data class SudokuMove(
@@ -28,12 +29,6 @@ enum class GameState {
 	LOADING,
 	PLAYING,
 	VICTORY,
-}
-
-enum class InputMode {
-	NUMBER,
-	NOTE,
-	COLOR,
 }
 
 @Stable
