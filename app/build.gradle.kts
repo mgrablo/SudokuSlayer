@@ -12,12 +12,21 @@ plugins {
 
 android {
 	namespace = "com.example.sudokuslayer"
-	compileSdk = 35
+	compileSdk =
+		libs.versions.android.compileSdk
+			.get()
+			.toInt()
 
 	defaultConfig {
 		applicationId = "com.example.sudokuslayer"
-		minSdk = 26
-		targetSdk = 34
+		minSdk =
+			libs.versions.android.minSdk
+				.get()
+				.toInt()
+		targetSdk =
+			libs.versions.android.targetSdk
+				.get()
+				.toInt()
 		versionCode = 1
 		versionName = "1.0"
 
@@ -91,6 +100,9 @@ dependencies {
 	debugImplementation(libs.androidx.ui.test.manifest)
 
 	api(project(":sudoku-core"))
+	implementation(project(":data:core"))
+	implementation(project(":data:preferences"))
+	implementation(project(":data:settings"))
 }
 
 configure<KtlintExtension> {

@@ -3,6 +3,10 @@ package com.example.sudokuslayer.presentation.screen.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.data.settings.SettingsRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
@@ -43,6 +47,7 @@ import kotlinx.coroutines.launch
 
 class SudokuGameViewModel(
 	private val dataStoreRepository: SudokuDataStoreRepository,
+	private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
@@ -63,6 +68,25 @@ class SudokuGameViewModel(
 					)
 				}
 			}
+
+		viewModelScope.launch {
+			settingsRepository.leftHandMode.collect {isLeftHandMode ->
+				_uiState.update {
+					it.copy(
+						isLeftHandMode = isLeftHandMode,
+					)
+				}
+			}
+		}
+		viewModelScope.launch {
+			settingsRepository.showActionButtonsOnTop.collect {showActionButtonsOnTop ->
+				_uiState.update {
+					it.copy(
+						showActionButtonsOnTop = showActionButtonsOnTop,
+					)
+				}
+			}
+		}
 	}
 
 	override fun onCleared() {
@@ -600,10 +624,22 @@ class SudokuGameViewModel(
 			}
 		}
 	}
-}
 
-class SudokuGameViewModelFactory(
-	private val dataStoreRepository: SudokuDataStoreRepository,
-) : ViewModelProvider.NewInstanceFactory() {
-	override fun <T : ViewModel> create(modelClass: Class<T>): T = SudokuGameViewModel(dataStoreRepository) as T
+	companion object {
+		val DATASTORE_REPOSITORY_KEY = object : CreationExtras.Key<SudokuDataStoreRepository> {}
+
+		val Factory:
+			ViewModelProvider.Factory =
+			viewModelFactory {
+				initializer {
+					val settingsRepository = SettingsRepository()
+					val dataStoreRepository = this[DATASTORE_REPOSITORY_KEY] as SudokuDataStoreRepository
+
+					SudokuGameViewModel(
+						dataStoreRepository = dataStoreRepository,
+						settingsRepository = settingsRepository,
+					)
+				}
+			}
+	}
 }

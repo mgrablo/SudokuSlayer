@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
@@ -57,10 +58,11 @@ fun SudokuGameScreen(
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel =
 		viewModel(
-			factory =
-				SudokuGameViewModelFactory(
-					SudokuDataStoreRepository(context.sudokuGridDataStore),
-				),
+			factory = SudokuGameViewModel.Factory,
+			extras =
+				MutableCreationExtras().apply {
+					set(SudokuGameViewModel.DATASTORE_REPOSITORY_KEY, SudokuDataStoreRepository(context.sudokuGridDataStore))
+				},
 		),
 	timerViewModel: TimerViewModel =
 		viewModel(
@@ -208,6 +210,8 @@ fun SudokuGameContent(
 						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
+						isLeftHandMode = uiState.isLeftHandMode,
+						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
 					)
 				}
@@ -229,6 +233,8 @@ fun SudokuGameContent(
 						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
 						gridSize = uiState.sudoku.gridSize,
+						isLeftHandMode = uiState.isLeftHandMode,
+						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
 					)
 				}
@@ -282,6 +288,7 @@ private fun SudokuGameScreenFourPreview() {
 			uiState =
 				SudokuGameUiState(
 					sudoku = createFilledSudokuGrid(4),
+					isLeftHandMode = true,
 				),
 			onEvent = {},
 			elapsedTime = { 1 },
