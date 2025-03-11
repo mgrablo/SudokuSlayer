@@ -34,16 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
-import com.example.sudokuslayer.data.datastore.sudokuGridDataStore
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorViewModel.Event
 import com.example.sudokuslayer.presentation.screen.sudokucreator.components.HorizontalSelect
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import org.koin.androidx.compose.koinViewModel
 
 private val PreviewBoxSize = 200.dp
 private const val SELECTSMAXWIDTH = 0.8f
@@ -55,13 +53,7 @@ fun SudokuCreatorScreen(
 	context: Context,
 	navController: NavController,
 	openDrawer: () -> Unit,
-	viewModel: SudokuCreatorViewModel =
-		viewModel(
-			factory =
-				SudokuCreatorViewModelFactory(
-					SudokuDataStoreRepository(context.sudokuGridDataStore),
-				),
-		),
+	viewModel: SudokuCreatorViewModel = koinViewModel(),
 ) {
 	val uiState by viewModel.uiState.collectAsState()
 

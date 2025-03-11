@@ -31,7 +31,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
@@ -48,6 +47,7 @@ import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,14 +56,7 @@ fun SudokuGameScreen(
 	context: Context,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SudokuGameViewModel =
-		viewModel(
-			factory = SudokuGameViewModel.Factory,
-			extras =
-				MutableCreationExtras().apply {
-					set(SudokuGameViewModel.DATASTORE_REPOSITORY_KEY, SudokuDataStoreRepository(context.sudokuGridDataStore))
-				},
-		),
+	viewModel: SudokuGameViewModel = koinViewModel(),
 	timerViewModel: TimerViewModel =
 		viewModel(
 			factory =

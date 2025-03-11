@@ -3,9 +3,11 @@ package com.example.data.game
 import com.example.data.core.proto.ProtoStorageFactory
 import com.example.data.game.mappers.ProtoCellMapper
 import com.example.data.game.mappers.ProtoGameMapper
+import com.example.data.game.mappers.ProtoGridMapper
 import com.example.data.game.models.Game
 import com.example.data.game.models.GameDifficulty
 import com.example.sudoku.model.SudokuCellData
+import com.example.sudoku.model.SudokuGrid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -13,6 +15,7 @@ class ProtoGameRepository(
 	protoStorageFactory: ProtoStorageFactory,
 	serializer: ProtoGameSerializer,
 	private val gameMapper: ProtoGameMapper = ProtoGameMapper(),
+	private val gridMapper: ProtoGridMapper = ProtoGridMapper(),
 	private val cellMapper: ProtoCellMapper = ProtoCellMapper(),
 ) {
 	private val protoStorage =
@@ -26,6 +29,16 @@ class ProtoGameRepository(
 	suspend fun saveGame(game: Game) {
 		protoStorage.updateData {
 			gameMapper.toProtoGame(game)
+		}
+	}
+
+	suspend fun updateGrid(grid: SudokuGrid) {
+		protoStorage.updateData { protoGame ->
+			protoGame
+				.toBuilder()
+				.setGrid(
+					gridMapper.toProtoGrid(grid)
+				).build()
 		}
 	}
 

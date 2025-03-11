@@ -15,6 +15,7 @@ class ProtoGridMapper(
 		ProtoGrid
 			.newBuilder()
 			.addAllCell(input.getArray().map { protoCellMapper.toProtoCell(it) })
+			.setGridSize(input.gridSize)
 			.setSeed(input.seed ?: 0)
 			.build()
 }
