@@ -1,6 +1,5 @@
 package com.example.sudokuslayer.presentation.screen.sudokucreator
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -50,7 +48,6 @@ private val SpacerHeight = 50.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuCreatorScreen(
-	context: Context,
 	navController: NavController,
 	openDrawer: () -> Unit,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
@@ -234,7 +231,6 @@ private fun Selects(
 @Composable
 private fun SudokuCreatorScreenPreview() {
 	SudokuCreatorScreen(
-		context = LocalContext.current,
 		navController = rememberNavController(),
 		openDrawer = { },
 	)

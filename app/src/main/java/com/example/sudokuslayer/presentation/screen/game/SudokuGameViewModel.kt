@@ -2,7 +2,6 @@ package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.data.game.ProtoGameRepository
 import com.example.data.game.models.GameDifficulty
 import com.example.data.settings.SettingsRepository
@@ -28,7 +27,6 @@ import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintProvider
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.fillCandidates
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
@@ -622,23 +620,5 @@ class SudokuGameViewModel(
 				)
 			}
 		}
-	}
-
-	companion object {
-		val DATASTORE_REPOSITORY_KEY = object : CreationExtras.Key<SudokuDataStoreRepository> {}
-
-//		val Factory:
-//			ViewModelProvider.Factory =
-//			viewModelFactory {
-//				initializer {
-//					val settingsRepository = SettingsRepository()
-//					val dataStoreRepository = this[DATASTORE_REPOSITORY_KEY] as SudokuDataStoreRepository
-//
-//					SudokuGameViewModel(
-//						dataStoreRepository = dataStoreRepository,
-//						settingsRepository = settingsRepository,
-//					)
-//				}
-//			}
 	}
 }

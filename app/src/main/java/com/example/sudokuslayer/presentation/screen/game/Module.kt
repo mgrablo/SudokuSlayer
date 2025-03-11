@@ -5,5 +5,15 @@ import org.koin.dsl.module
 
 val gameModule =
 	module {
-		viewModel { SudokuGameViewModel(get(), get()) }
+		viewModel {
+			SudokuGameViewModel(
+				dataStoreRepository = get(),
+				settingsRepository = get(),
+			)
+		}
+		viewModel {
+			TimerViewModel(
+				dataStoreRepository = get(),
+			)
+		}
 	}
