@@ -48,6 +48,7 @@ dependencies {
 	implementation(libs.protobuf.kotlin.lite)
 	implementation(libs.protobuf.javalite)
 	implementation(libs.kotlinx.collections.immutable)
+	implementation(libs.koin.core)
 }
 
 protobuf {

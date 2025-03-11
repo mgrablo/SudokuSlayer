@@ -28,6 +28,9 @@ import com.example.sudokuslayer.presentation.navigation.components.NavigationDra
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.presentation.ui.theme.ThemeProvider
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
 class MyApplication : Application() {
 	override fun onCreate() {
@@ -36,6 +39,12 @@ class MyApplication : Application() {
 		PreferenceStorageSingleton.initialize(
 			DataStorePreferenceStorageFactory(applicationContext),
 		)
+
+		startKoin {
+			androidLogger()
+			androidContext(this@MyApplication)
+			modules()
+		}
 	}
 }
 
