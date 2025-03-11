@@ -1,0 +1,19 @@
+syntax = "proto3";
+package data.game;
+option java_multiple_files = true;
+
+
+message ProtoCell {
+	int32 row = 1;
+	int32 col = 2;
+	int32 number = 3;
+	repeated int32 cornerNotes = 4;
+	repeated Attributes attributes = 5;
+
+	enum Attributes {
+		UNSPECIFIED = 0;
+		GENERATED = 1;
+		HINT_REVEALED = 2;
+		BREAKING_RULE = 3;
+	}
+}

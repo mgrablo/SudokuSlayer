@@ -1,0 +1,19 @@
+package com.example.sudokuslayer.presentation.screen.game
+
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val gameModule =
+	module {
+		viewModel {
+			SudokuGameViewModel(
+				dataStoreRepository = get(),
+				settingsRepository = get(),
+			)
+		}
+		viewModel {
+			TimerViewModel(
+				dataStoreRepository = get(),
+			)
+		}
+	}

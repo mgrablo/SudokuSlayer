@@ -3,10 +3,11 @@ package com.example.sudokuslayer.presentation.screen.sudokucreator
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.game.ProtoGameRepository
+import com.example.data.game.models.Game
+import com.example.data.game.models.GameDifficulty
 import com.example.sudoku.generator.ClassicSudokuGenerator
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -85,38 +86,28 @@ enum class SudokuDifficulty {
 }
 
 class SudokuCreatorViewModel(
-	private val dataStoreRepository: SudokuDataStoreRepository,
+	private val dataStoreRepository: ProtoGameRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
 
 	init {
 		viewModelScope.launch {
-			dataStoreRepository.sudokuGridProto.firstOrNull()?.let { sudoku ->
+			dataStoreRepository.getGame().firstOrNull()?.let { sudoku ->
 				_uiState.update {
 					it.copy(
 						savedGameData =
 							SavedGameData(
-								0,
-								SudokuDifficulty.EASY,
-								SudokuGridSize.fromInt(sudoku.gridSize),
+								elapsedTime = sudoku.elapsedTime,
+								gridSize = SudokuGridSize.fromInt(sudoku.grid.gridSize),
+								difficulty =
+									when (sudoku.difficulty) {
+										GameDifficulty.Easy -> SudokuDifficulty.EASY
+										GameDifficulty.Medium -> SudokuDifficulty.MEDIUM
+										GameDifficulty.Hard -> SudokuDifficulty.HARD
+										GameDifficulty.Expert -> SudokuDifficulty.EXPERT
+									},
 							),
-					)
-				}
-			}
-
-			dataStoreRepository.difficultyProto.firstOrNull()?.let { difficulty ->
-				_uiState.update {
-					it.copy(
-						savedGameData = it.savedGameData!!.copy(difficulty = difficulty),
-					)
-				}
-			}
-
-			dataStoreRepository.elapsedTimeProto.firstOrNull()?.let { elapsedTime ->
-				_uiState.update {
-					it.copy(
-						savedGameData = it.savedGameData!!.copy(elapsedTime = elapsedTime),
 					)
 				}
 			}
@@ -196,9 +187,20 @@ class SudokuCreatorViewModel(
 				)
 			}
 
-			dataStoreRepository.updateData(sudoku)
-			dataStoreRepository.updateDifficulty(_uiState.value.selectedDifficulty)
-			dataStoreRepository.updateElapsedTime(0L)
+			dataStoreRepository.saveGame(
+				Game(
+					grid = sudoku,
+					difficulty =
+						when (_uiState.value.selectedDifficulty) {
+							SudokuDifficulty.EASY -> GameDifficulty.Easy
+							SudokuDifficulty.MEDIUM -> GameDifficulty.Medium
+							SudokuDifficulty.HARD -> GameDifficulty.Hard
+							SudokuDifficulty.EXPERT -> GameDifficulty.Expert
+						},
+					elapsedTime = 0L,
+					hintsUsed = 0,
+				),
+			)
 		}
 	}
 
@@ -244,10 +246,4 @@ class SudokuCreatorViewModel(
 					SudokuDifficulty.EXPERT -> Random.nextInt(161, 180)
 				}
 		}
-}
-
-class SudokuCreatorViewModelFactory(
-	private val dataStoreRepository: SudokuDataStoreRepository,
-) : ViewModelProvider.NewInstanceFactory() {
-	override fun <T : ViewModel> create(modelClass: Class<T>): T = SudokuCreatorViewModel(dataStoreRepository) as T
 }

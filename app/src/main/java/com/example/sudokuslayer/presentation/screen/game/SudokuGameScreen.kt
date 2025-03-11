@@ -1,6 +1,5 @@
 package com.example.sudokuslayer.presentation.screen.game
 
-import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +27,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.MutableCreationExtras
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
-import com.example.sudokuslayer.data.datastore.sudokuGridDataStore
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameViewModel.Event
 import com.example.sudokuslayer.presentation.screen.game.components.HintBottomSheetScaffold
 import com.example.sudokuslayer.presentation.screen.game.components.HintsDialog
@@ -48,34 +41,19 @@ import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuGameScreen(
-	context: Context,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SudokuGameViewModel =
-		viewModel(
-			factory = SudokuGameViewModel.Factory,
-			extras =
-				MutableCreationExtras().apply {
-					set(SudokuGameViewModel.DATASTORE_REPOSITORY_KEY, SudokuDataStoreRepository(context.sudokuGridDataStore))
-				},
-		),
-	timerViewModel: TimerViewModel =
-		viewModel(
-			factory =
-				TimerViewModelFactory(
-					SudokuDataStoreRepository(context.sudokuGridDataStore),
-				),
-		),
+	viewModel: SudokuGameViewModel = koinViewModel(),
+	timerViewModel: TimerViewModel = koinViewModel(),
 ) {
-	val lifecycleOwner = LocalLifecycleOwner.current
-
-	val elapsedTime by timerViewModel.elapsedTime.collectAsStateWithLifecycle(lifecycleOwner)
-	val uiState by viewModel.uiState.collectAsState()
+	val elapsedTime by timerViewModel.elapsedTime.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	SudokuGameContent(
 		uiState = uiState,
 		onEvent = {
@@ -169,7 +147,7 @@ fun SudokuGameContent(
 				title = {
 					TimerDisplay(
 						elapsedTime = { elapsedTime() },
-						onPause = { onEvent(Event.ResetTimer) },
+						onPause = { saveTime(elapsedTime()) },
 					)
 				},
 				colors =

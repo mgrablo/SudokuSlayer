@@ -1,0 +1,21 @@
+syntax = "proto3";
+package data.game;
+import "ProtoCell.proto";
+import "ProtoGrid.proto";
+
+option java_multiple_files = true;
+
+message ProtoGame {
+	ProtoGrid grid = 1;
+	Difficulty difficulty = 2;
+	int64 elapsedTime = 3;
+	int32 hintsUsed = 4;
+
+	enum Difficulty {
+		UNSPECIFIED = 0;
+		EASY = 1;
+		MEDIUM = 2;
+		HARD = 3;
+		EXPERT = 4;
+	}
+}

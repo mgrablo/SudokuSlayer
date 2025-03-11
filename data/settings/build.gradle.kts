@@ -10,6 +10,7 @@ dependencies {
 	implementation(project(":data:core"))
 
 	implementation(libs.kotlinx.coroutines.core)
+	implementation(libs.koin.core)
 }
 kotlin {
 	compilerOptions {

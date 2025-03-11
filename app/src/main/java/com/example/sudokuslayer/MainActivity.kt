@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.compose.KoinApplication
 
 class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -11,7 +14,15 @@ class MainActivity : ComponentActivity() {
 		enableEdgeToEdge()
 
 		setContent {
-			AppContent()
+			KoinApplication(
+				application = {
+					modules(appModule)
+					androidContext(this@MainActivity)
+					androidLogger()
+				},
+			) {
+				AppContent()
+			}
 		}
 	}
 }

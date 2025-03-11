@@ -1,6 +1,5 @@
 package com.example.sudokuslayer.presentation.screen.sudokucreator
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,19 +30,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
-import com.example.sudokuslayer.data.datastore.sudokuGridDataStore
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorViewModel.Event
 import com.example.sudokuslayer.presentation.screen.sudokucreator.components.HorizontalSelect
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import org.koin.androidx.compose.koinViewModel
 
 private val PreviewBoxSize = 200.dp
 private const val SELECTSMAXWIDTH = 0.8f
@@ -52,16 +48,9 @@ private val SpacerHeight = 50.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuCreatorScreen(
-	context: Context,
 	navController: NavController,
 	openDrawer: () -> Unit,
-	viewModel: SudokuCreatorViewModel =
-		viewModel(
-			factory =
-				SudokuCreatorViewModelFactory(
-					SudokuDataStoreRepository(context.sudokuGridDataStore),
-				),
-		),
+	viewModel: SudokuCreatorViewModel = koinViewModel(),
 ) {
 	val uiState by viewModel.uiState.collectAsState()
 
@@ -242,7 +231,6 @@ private fun Selects(
 @Composable
 private fun SudokuCreatorScreenPreview() {
 	SudokuCreatorScreen(
-		context = LocalContext.current,
 		navController = rememberNavController(),
 		openDrawer = { },
 	)

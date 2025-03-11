@@ -1,11 +1,9 @@
 package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.data.game.ProtoGameRepository
+import com.example.data.game.models.GameDifficulty
 import com.example.data.settings.SettingsRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
@@ -29,11 +27,11 @@ import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintProvider
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.fillCandidates
-import com.example.sudokuslayer.data.datastore.SudokuDataStoreRepository
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
+import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuDifficulty
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
@@ -46,7 +44,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SudokuGameViewModel(
-	private val dataStoreRepository: SudokuDataStoreRepository,
+	private val dataStoreRepository: ProtoGameRepository,
 	private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
@@ -70,7 +68,7 @@ class SudokuGameViewModel(
 			}
 
 		viewModelScope.launch {
-			settingsRepository.leftHandMode.collect {isLeftHandMode ->
+			settingsRepository.leftHandMode.collect { isLeftHandMode ->
 				_uiState.update {
 					it.copy(
 						isLeftHandMode = isLeftHandMode,
@@ -79,7 +77,7 @@ class SudokuGameViewModel(
 			}
 		}
 		viewModelScope.launch {
-			settingsRepository.showActionButtonsOnTop.collect {showActionButtonsOnTop ->
+			settingsRepository.showActionButtonsOnTop.collect { showActionButtonsOnTop ->
 				_uiState.update {
 					it.copy(
 						showActionButtonsOnTop = showActionButtonsOnTop,
@@ -170,23 +168,22 @@ class SudokuGameViewModel(
 	}
 
 	private suspend fun loadData() {
-		dataStoreRepository.sudokuGridProto.firstOrNull()?.let { gridData ->
+		dataStoreRepository.getGame().firstOrNull()?.let { game ->
 			viewModelScope.launch(Dispatchers.IO) {
 				_uiState.update {
 					it.copy(
-						sudoku = gridData,
+						sudoku = game.grid,
+						difficulty =
+							when (game.difficulty) {
+								GameDifficulty.Easy -> SudokuDifficulty.EASY
+								GameDifficulty.Medium -> SudokuDifficulty.MEDIUM
+								GameDifficulty.Hard -> SudokuDifficulty.HARD
+								GameDifficulty.Expert -> SudokuDifficulty.EXPERT
+							},
 					)
 				}
 			}
 		} ?: throw Exception("Proto Sudoku not found!")
-
-		dataStoreRepository.difficultyProto.firstOrNull()?.let { difficulty ->
-			_uiState.update {
-				it.copy(
-					difficulty = difficulty,
-				)
-			}
-		} ?: throw Exception("Proto Difficulty not found!")
 	}
 
 	private fun selectCell(
@@ -269,7 +266,7 @@ class SudokuGameViewModel(
 			}
 			lastMoves.clear()
 			futureMoves.clear()
-			dataStoreRepository.updateData(updatedSudoku)
+			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
@@ -282,7 +279,7 @@ class SudokuGameViewModel(
 					sudoku = updatedSudoku,
 				)
 			}
-			dataStoreRepository.updateData(updatedSudoku)
+			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
@@ -350,8 +347,8 @@ class SudokuGameViewModel(
 
 			dataStoreRepository.updateCell(
 				row = previousCellData.row,
-				col = previousCellData.col,
-				newCellData = updatedSudoku.getCellAt(previousCellData.row, previousCellData.col),
+				column = previousCellData.col,
+				cellData = updatedSudoku.getCellAt(previousCellData.row, previousCellData.col),
 			)
 		}
 	}
@@ -428,7 +425,7 @@ class SudokuGameViewModel(
 	private fun saveGameState() {
 		viewModelScope.launch(Dispatchers.IO) {
 			val currentState = _uiState.value
-			dataStoreRepository.updateData(currentState.sudoku)
+			dataStoreRepository.updateGrid(currentState.sudoku)
 		}
 	}
 
@@ -464,7 +461,7 @@ class SudokuGameViewModel(
 					sudoku = updatedSudoku,
 				)
 			}
-			dataStoreRepository.updateData(updatedSudoku)
+			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
@@ -623,23 +620,5 @@ class SudokuGameViewModel(
 				)
 			}
 		}
-	}
-
-	companion object {
-		val DATASTORE_REPOSITORY_KEY = object : CreationExtras.Key<SudokuDataStoreRepository> {}
-
-		val Factory:
-			ViewModelProvider.Factory =
-			viewModelFactory {
-				initializer {
-					val settingsRepository = SettingsRepository()
-					val dataStoreRepository = this[DATASTORE_REPOSITORY_KEY] as SudokuDataStoreRepository
-
-					SudokuGameViewModel(
-						dataStoreRepository = dataStoreRepository,
-						settingsRepository = settingsRepository,
-					)
-				}
-			}
 	}
 }
