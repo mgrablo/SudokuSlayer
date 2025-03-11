@@ -41,11 +41,13 @@ android {
 
 dependencies {
 	implementation(project(":data:core"))
+	implementation(project(":sudoku-core"))
 
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.androidx.proto.datastore)
 	implementation(libs.protobuf.kotlin.lite)
 	implementation(libs.protobuf.javalite)
+	implementation(libs.kotlinx.collections.immutable)
 }
 
 protobuf {
@@ -58,9 +60,6 @@ protobuf {
 	generateProtoTasks {
 		all().forEach { task ->
 			task.builtins {
-				create("kotlin") {
-					option("lite")
-				}
 				create("java") {
 					option("lite")
 				}
