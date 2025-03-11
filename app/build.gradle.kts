@@ -106,6 +106,7 @@ dependencies {
 	implementation(project(":data:preferences"))
 	implementation(project(":data:settings"))
 	implementation(project(":data:game"))
+	implementation(project(":data:core-android"))
 }
 
 configure<KtlintExtension> {
