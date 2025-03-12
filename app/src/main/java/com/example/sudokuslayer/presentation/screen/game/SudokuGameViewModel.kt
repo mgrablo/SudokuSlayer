@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.game.ProtoGameRepository
 import com.example.data.game.models.GameDifficulty
 import com.example.data.settings.SettingsRepository
+import com.example.domain.game.usecases.GetGameUseCase
+import com.example.domain.game.usecases.SaveGameUseCase
+import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
@@ -46,6 +49,9 @@ import kotlinx.coroutines.launch
 class SudokuGameViewModel(
 	private val dataStoreRepository: ProtoGameRepository,
 	private val settingsRepository: SettingsRepository,
+	private val getGameUseCase: GetGameUseCase,
+	private val saveGameUseCase: SaveGameUseCase,
+	private val selectCellUseCase: SelectCellUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
@@ -191,27 +197,16 @@ class SudokuGameViewModel(
 		col: Int,
 	) {
 		viewModelScope.launch {
-			var updatedSudoku = _uiState.value.sudoku
-			val lastSelected = _uiState.value.selectedCell
-			lastSelected?.let {
-				updatedSudoku =
-					updatedSudoku.removeAttribute(it.first, it.second, CellAttributes.SELECTED)
-				if (updatedSudoku.getCellAt(row, col).number != 0) {
-					updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
-				}
-				updatedSudoku = updatedSudoku.clearRowColumnHighlight()
-			}
-
-			updatedSudoku = updatedSudoku.addAttribute(row, col, CellAttributes.SELECTED)
-			val currentlySelected = updatedSudoku.getCellAt(row, col)
-			updatedSudoku = updatedSudoku.highlightMatchingCells(currentlySelected.number)
-			updatedSudoku =
-				updatedSudoku.highlightRowAndColumn(currentlySelected.row, currentlySelected.col)
+			var updatedSudoku =
+				selectCellUseCase(
+					sudoku = _uiState.value.sudoku,
+					selectedCell = row to col,
+				)
 
 			_uiState.update {
 				it.copy(
 					sudoku = updatedSudoku,
-					selectedCell = currentlySelected.row to currentlySelected.col,
+					selectedCell = row to col,
 				)
 			}
 		}

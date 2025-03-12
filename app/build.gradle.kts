@@ -102,6 +102,9 @@ dependencies {
 	debugImplementation(libs.androidx.ui.test.manifest)
 
 	api(project(":sudoku-core"))
+	implementation(project(":domain:game"))
+
+	// TODO: Replace with domain modules
 	implementation(project(":data:core"))
 	implementation(project(":data:preferences"))
 	implementation(project(":data:settings"))

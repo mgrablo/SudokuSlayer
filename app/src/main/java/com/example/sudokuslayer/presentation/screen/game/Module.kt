@@ -9,6 +9,9 @@ val gameModule =
 			SudokuGameViewModel(
 				dataStoreRepository = get(),
 				settingsRepository = get(),
+				getGameUseCase = get(),
+				saveGameUseCase = get(),
+				selectCellUseCase = get(),
 			)
 		}
 		viewModel {
