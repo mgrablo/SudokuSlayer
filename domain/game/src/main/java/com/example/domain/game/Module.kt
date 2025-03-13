@@ -2,17 +2,25 @@ package com.example.domain.game
 
 import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
 import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
+import com.example.domain.game.usecases.FocusOnHintCellsUseCase
+import com.example.domain.game.usecases.GenerateHintLogUseCase
 import com.example.domain.game.usecases.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.HighlightMatchingNumbersUseCase
 import com.example.domain.game.usecases.HighlightRowAndColumnUseCase
 import com.example.domain.game.usecases.InputNumberUseCase
+import com.example.domain.game.usecases.ProvideHintUseCase
+import com.example.domain.game.usecases.RevealHintOnGridUseCase
+import com.example.domain.game.usecases.RevealLastHintLogUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
+import com.example.sudoku.sudokuModule
 import org.koin.dsl.module
 
 val domainGameModule =
 	module {
+		includes(sudokuModule)
+
 		factory { GetGameUseCase(get()) }
 		factory { GetElapsedTimeUseCase(get()) }
 		factory { SaveGameUseCase(get()) }
@@ -24,4 +32,10 @@ val domainGameModule =
 		factory { ClearHighlightedRowAndColumnUseCase() }
 
 		factory { InputNumberUseCase() }
+
+		factory { ProvideHintUseCase(get()) }
+		factory { FocusOnHintCellsUseCase() }
+		factory { GenerateHintLogUseCase() }
+		factory { RevealHintOnGridUseCase(get()) }
+		factory { RevealLastHintLogUseCase() }
 	}

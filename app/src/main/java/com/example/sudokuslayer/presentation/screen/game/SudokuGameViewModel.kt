@@ -5,9 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.settings.SettingsRepository
 import com.example.domain.game.models.Game
 import com.example.domain.game.models.GameDifficulty
-import com.example.domain.game.models.HintLog
+import com.example.domain.game.usecases.FocusOnHintCellsUseCase
+import com.example.domain.game.usecases.GenerateHintLogUseCase
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.InputNumberUseCase
+import com.example.domain.game.usecases.ProvideHintUseCase
+import com.example.domain.game.usecases.RevealHintOnGridUseCase
+import com.example.domain.game.usecases.RevealLastHintLogUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.sudoku.model.CellAttributes
@@ -26,13 +30,9 @@ import com.example.sudoku.model.markRuleBreakingCells
 import com.example.sudoku.model.removeAttribute
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
-import com.example.sudoku.solver.HintProvider
-import com.example.sudoku.solver.HintType
-import com.example.sudoku.solver.fillCandidates
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
-import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
@@ -50,6 +50,11 @@ class SudokuGameViewModel(
 	private val saveGameUseCase: SaveGameUseCase,
 	private val selectCellUseCase: SelectCellUseCase,
 	private val inputNumberUseCase: InputNumberUseCase,
+	private val provideHintUseCase: ProvideHintUseCase,
+	private val focusOnHintCellsUseCase: FocusOnHintCellsUseCase,
+	private val generateHintLogUseCase: GenerateHintLogUseCase,
+	private val revealHintOnGridUseCase: RevealHintOnGridUseCase,
+	private val revealLastHintLogUseCase: RevealLastHintLogUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
@@ -165,7 +170,7 @@ class SudokuGameViewModel(
 			}
 
 			is Event.ExplainHint -> {
-				explainHint()
+				revealHint()
 			}
 
 			is Event.HintFillNotes -> fillNotes()
@@ -424,89 +429,16 @@ class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _game.value.grid
-			val hintProvider = HintProvider()
-			// Fill candidates once
-			val filledCandidatesGrid =
-				hintProvider.fillCandidates(updatedSudoku.data).toMutableList()
 
-			// Remove candidates from all affected cells for locked candidate hints
-			_game.value.hintLogs.forEach { log ->
-				log.hint.let { hint ->
-					when (hint.type) {
-						is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
-							if (hint.affectedCells.isNotEmpty()) {
-								hint.affectedCells.forEach { affected ->
-									filledCandidatesGrid
-										.indexOfFirst { it.row == affected.row && it.col == affected.col }
-										.takeIf { it != -1 }
-										?.let { index ->
-											val cell = filledCandidatesGrid[index]
-											filledCandidatesGrid[index] =
-												cell.copy(candidates = cell.candidates - hint.value)
-										}
-								}
-							} else {
-								filledCandidatesGrid
-									.indexOfFirst { it.row == hint.row && it.col == hint.col }
-									.takeIf { it != -1 }
-									?.let { index ->
-										val cell = filledCandidatesGrid[index]
-										filledCandidatesGrid[index] =
-											cell.copy(candidates = cell.candidates - hint.value)
-									}
-							}
-						}
-
-						else -> Unit
-					}
-				}
-			}
-
-			val hint: Hint? = hintProvider.provideHint(data = filledCandidatesGrid)
+			val hint: Hint? = provideHintUseCase(_game.value)
 			if (hint != null) {
-				when (hint.type) {
-					is HintType.HiddenSingle, is HintType.NakedSingle -> {
-						updatedSudoku =
-							updatedSudoku.addAttribute(
-								hint.row,
-								hint.col,
-								CellAttributes.HINT_FOCUS,
-							)
-					}
-
-					is HintType.PointingCandidate -> {
-						hint.enforcingCells.forEach { cell ->
-							updatedSudoku =
-								updatedSudoku.addAttribute(
-									cell.row,
-									cell.col,
-									CellAttributes.HINT_FOCUS,
-								)
-						}
-					}
-
-					is HintType.ClaimingCandidate -> {
-						hint.enforcingCells.forEach { cell ->
-							updatedSudoku =
-								updatedSudoku.addAttribute(
-									cell.row,
-									cell.col,
-									CellAttributes.HINT_FOCUS,
-								)
-						}
-					}
-				}
+				updatedSudoku = focusOnHintCellsUseCase(hint, updatedSudoku)
 				selectCell(hint.row, hint.col)
-				val explanationSteps =
-					hint.explanationStrategy?.generateHintExplanationSteps(updatedSudoku, hint)
-						?: emptyList()
 				val hintLog =
-					HintLog(
+					generateHintLogUseCase(
 						id = _game.value.hintLogs.size,
 						hint = hint,
-						isUserGuessed = false,
-						isRevealed = false,
-						explanation = explanationSteps.toPersistentList(),
+						grid = updatedSudoku,
 					)
 				_game.update {
 					it.copy(
@@ -523,7 +455,7 @@ class SudokuGameViewModel(
 		}
 	}
 
-	private fun explainHint() {
+	private fun revealHint() {
 		viewModelScope.launch {
 			val hint: Hint = _uiState.value.lastHint ?: return@launch
 			if (_game.value.grid
@@ -534,44 +466,8 @@ class SudokuGameViewModel(
 			}
 			selectCell(hint.row, hint.col)
 
-			when (hint.type) {
-				is HintType.PointingCandidate -> {
-					val otherCells = hint.enforcingCells
-					otherCells.forEach { cell ->
-						inputNumber(
-							number = hint.value,
-							selectedCell = cell.row to cell.col,
-							noteMode = true,
-							isHint = true,
-						)
-					}
-				}
-
-				is HintType.ClaimingCandidate -> {
-					val otherCells = hint.enforcingCells
-					otherCells.forEach { cell ->
-						inputNumber(
-							number = hint.value,
-							selectedCell = cell.row to cell.col,
-							noteMode = false,
-							isHint = true,
-						)
-					}
-				}
-
-				else -> {
-					inputNumber(
-						number = hint.value,
-						selectedCell = hint.row to hint.col,
-						noteMode = false,
-						isHint = true,
-					)
-				}
-			}
-
-			val updatedLogs = _game.value.hintLogs.toMutableList()
-			val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
-			updatedLogs[lastHintId] = updatedLogs[lastHintId].copy(isRevealed = true)
+			val updatedSudoku = revealHintOnGridUseCase(hint, _game.value.grid)
+			val updatedLogs = revealLastHintLogUseCase(_game.value.hintLogs)
 
 			_uiState.update {
 				it.copy(
@@ -580,7 +476,8 @@ class SudokuGameViewModel(
 			}
 			_game.update {
 				it.copy(
-					hintLogs = updatedLogs.toPersistentList(),
+					grid = updatedSudoku,
+					hintLogs = updatedLogs,
 				)
 			}
 		}
