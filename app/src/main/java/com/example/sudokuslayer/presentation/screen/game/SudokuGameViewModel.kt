@@ -3,7 +3,6 @@ package com.example.sudokuslayer.presentation.screen.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.settings.SettingsRepository
-import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.models.HintLog
 import com.example.domain.game.repositories.GameRepository
 import com.example.domain.game.usecases.GetGameUseCase
@@ -35,7 +34,6 @@ import com.example.sudoku.solver.fillCandidates
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
-import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuDifficulty
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
@@ -182,13 +180,8 @@ class SudokuGameViewModel(
 				_uiState.update {
 					it.copy(
 						sudoku = game.grid,
-						difficulty =
-							when (game.difficulty) {
-								GameDifficulty.Easy -> SudokuDifficulty.EASY
-								GameDifficulty.Medium -> SudokuDifficulty.MEDIUM
-								GameDifficulty.Hard -> SudokuDifficulty.HARD
-								GameDifficulty.Expert -> SudokuDifficulty.EXPERT
-							},
+						difficulty = game.difficulty,
+						hintLogs = game.hintLogs.toPersistentList(),
 					)
 				}
 			}
