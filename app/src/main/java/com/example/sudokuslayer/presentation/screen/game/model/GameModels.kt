@@ -1,6 +1,6 @@
 package com.example.sudokuslayer.presentation.screen.game.model
 
-import androidx.compose.runtime.Stable
+import com.example.data.game.models.HintLog
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.solver.Hint
@@ -30,11 +30,3 @@ enum class GameState {
 	PLAYING,
 	VICTORY,
 }
-
-@Stable
-data class HintLog(
-	val hint: Hint,
-	val isUserGuessed: Boolean,
-	val isRevealed: Boolean,
-	val explanation: PersistentList<String>,
-)

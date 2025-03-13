@@ -9,6 +9,7 @@ message ProtoCell {
 	int32 number = 3;
 	repeated int32 cornerNotes = 4;
 	repeated Attributes attributes = 5;
+	repeated int32 candidates = 6;
 
 	enum Attributes {
 		UNSPECIFIED = 0;

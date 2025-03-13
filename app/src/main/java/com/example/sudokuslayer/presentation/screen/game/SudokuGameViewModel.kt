@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.game.ProtoGameRepository
 import com.example.data.game.models.GameDifficulty
+import com.example.data.game.models.HintLog
 import com.example.data.settings.SettingsRepository
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.SaveGameUseCase

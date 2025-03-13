@@ -1,9 +1,11 @@
 package com.example.data.game
 
 import com.example.data.core.proto.ProtoStorageFactory
-import com.example.data.game.mappers.ProtoCellMapper
-import com.example.data.game.mappers.ProtoGameMapper
-import com.example.data.game.mappers.ProtoGridMapper
+import com.example.data.game.mappers.toGame
+import com.example.data.game.mappers.toProtoCell
+import com.example.data.game.mappers.toProtoDifficulty
+import com.example.data.game.mappers.toProtoGame
+import com.example.data.game.mappers.toProtoGrid
 import com.example.data.game.models.Game
 import com.example.data.game.models.GameDifficulty
 import com.example.sudoku.model.SudokuCellData
@@ -14,9 +16,6 @@ import kotlinx.coroutines.flow.map
 class ProtoGameRepository(
 	protoStorageFactory: ProtoStorageFactory,
 	serializer: ProtoGameSerializer,
-	private val gameMapper: ProtoGameMapper = ProtoGameMapper(),
-	private val gridMapper: ProtoGridMapper = ProtoGridMapper(),
-	private val cellMapper: ProtoCellMapper = ProtoCellMapper(),
 ) {
 	private val protoStorage =
 		protoStorageFactory.createProtoStorage(
@@ -24,11 +23,11 @@ class ProtoGameRepository(
 			serializer = serializer,
 		)
 
-	fun getGame(): Flow<Game> = protoStorage.getData().map { gameMapper(it) }
+	fun getGame(): Flow<Game> = protoStorage.getData().map { it.toGame() }
 
 	suspend fun saveGame(game: Game) {
 		protoStorage.updateData {
-			gameMapper.toProtoGame(game)
+			game.toProtoGame()
 		}
 	}
 
@@ -37,7 +36,7 @@ class ProtoGameRepository(
 			protoGame
 				.toBuilder()
 				.setGrid(
-					gridMapper.toProtoGrid(grid)
+					grid.toProtoGrid(),
 				).build()
 		}
 	}
@@ -73,7 +72,7 @@ class ProtoGameRepository(
 						.toBuilder()
 						.setCell(
 							row * protoGame.grid.gridSize + column,
-							cellMapper.toProtoCell(cellData),
+							cellData.toProtoCell(),
 						).build(),
 				).build()
 		}
@@ -84,7 +83,7 @@ class ProtoGameRepository(
 			it
 				.toBuilder()
 				.setDifficulty(
-					gameMapper.mapToProtoDifficulty(difficulty),
+					difficulty.toProtoDifficulty(),
 				).build()
 		}
 	}
