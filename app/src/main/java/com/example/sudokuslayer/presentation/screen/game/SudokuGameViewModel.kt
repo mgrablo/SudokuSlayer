@@ -7,6 +7,7 @@ import com.example.data.game.models.GameDifficulty
 import com.example.data.game.models.HintLog
 import com.example.data.settings.SettingsRepository
 import com.example.domain.game.usecases.GetGameUseCase
+import com.example.domain.game.usecases.InputNumberUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.sudoku.model.CellAttributes
@@ -32,7 +33,6 @@ import com.example.sudoku.solver.HintProvider
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.fillCandidates
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
-import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuDifficulty
@@ -53,6 +53,7 @@ class SudokuGameViewModel(
 	private val getGameUseCase: GetGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
 	private val selectCellUseCase: SelectCellUseCase,
+	private val inputNumberUseCase: InputNumberUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
@@ -63,6 +64,7 @@ class SudokuGameViewModel(
 				gameState = GameState.LOADING,
 			)
 		}
+
 		viewModelScope
 			.launch(Dispatchers.IO) {
 				loadData()
@@ -175,7 +177,7 @@ class SudokuGameViewModel(
 	}
 
 	private suspend fun loadData() {
-		dataStoreRepository.getGame().firstOrNull()?.let { game ->
+		getGameUseCase().firstOrNull()?.let { game ->
 			viewModelScope.launch(Dispatchers.IO) {
 				_uiState.update {
 					it.copy(
@@ -220,24 +222,19 @@ class SudokuGameViewModel(
 		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
-			val currentState = _uiState.value
-			var updatedSudoku = currentState.sudoku
+			var updatedSudoku = _uiState.value.sudoku
 			val (row, col) = selectedCell ?: return@launch
-
-			if (updatedSudoku.getCellAt(row, col).attributes.contains(
-					CellAttributes.GENERATED,
-				)
-			) {
-				return@launch
-			}
 
 			val backupCell = updatedSudoku.getCellAt(row, col)
 			updatedSudoku =
-				if (noteMode) {
-					handleNoteInput(number, updatedSudoku, selectedCell, isHint)
-				} else {
-					handleNumberInput(number, updatedSudoku, selectedCell)
-				}
+				inputNumberUseCase(
+					sudokuGrid = updatedSudoku,
+					number = number,
+					row = row,
+					column = col,
+					isNote = noteMode,
+					isHint = isHint,
+				)
 
 			if (isHint && !noteMode) {
 				updatedSudoku = updatedSudoku.removeAttribute(row, col, CellAttributes.HINT_FOCUS)
@@ -364,38 +361,26 @@ class SudokuGameViewModel(
 			return updatedSudoku
 		}
 
-		if (number == 0) {
-			updatedSudoku = updatedSudoku.withValue(row, col, 0)
-			updatedSudoku = updatedSudoku.clearCornerNotes(row, col)
-		} else {
-			val newValue = if (sudoku.getCellAt(row, col).number == number) 0 else number
-			updatedSudoku = updatedSudoku.withValue(row, col, newValue)
-			updatedSudoku = updatedSudoku.clearMatchingNumberHighlight()
-			updatedSudoku = updatedSudoku.highlightMatchingCells(number)
-
-			if (_uiState.value.lastHint?.row == row &&
-				_uiState.value.lastHint?.col == col &&
-				number == _uiState.value.lastHint?.value
-			) {
-				val updatedLogs = _uiState.value.hintLogs.toMutableList()
-				val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
-				val log = updatedLogs[lastHintId]
-				updatedLogs[lastHintId] =
-					log.copy(
-						isUserGuessed = true,
-						explanation = log.explanation + "~You guessed correctly!~",
-					)
-				_uiState.update {
-					it.copy(
-						lastHint = null,
-						hintLogs = updatedLogs.toPersistentList(),
-					)
-				}
+		if (_uiState.value.lastHint?.row == row &&
+			_uiState.value.lastHint?.col == col &&
+			number == _uiState.value.lastHint?.value
+		) {
+			val updatedLogs = _uiState.value.hintLogs.toMutableList()
+			val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
+			val log = updatedLogs[lastHintId]
+			updatedLogs[lastHintId] =
+				log.copy(
+					isUserGuessed = true,
+					explanation = log.explanation + "~You guessed correctly!~",
+				)
+			_uiState.update {
+				it.copy(
+					lastHint = null,
+					hintLogs = updatedLogs.toPersistentList(),
+				)
 			}
 		}
 
-		updatedSudoku = updatedSudoku.clearRuleBreakingCells()
-		updatedSudoku = updatedSudoku.markRuleBreakingCells()
 		return updatedSudoku
 	}
 

@@ -1,0 +1,51 @@
+syntax = "proto3";
+package data.game;
+
+import "ProtoCell.proto";
+option java_multiple_files = true;
+
+message ProtoHintLog {
+	string id = 1;
+	repeated string explanation = 2;
+	bool is_user_guessed = 3;
+	bool is_revealed = 4;
+	ProtoHint hint = 5;
+}
+
+
+message ProtoHint {
+	int32 row = 1;
+	int32 column = 2;
+	int32 value = 3;
+	repeated ProtoCell enforcing_cells = 4;
+	repeated ProtoCell affected_cells = 5;
+	ProtoHintType hintType = 6;
+	string additionalInfo = 7;
+}
+
+message ProtoHintType {
+	Type type = 1;
+	optional ProtoHintHouse house = 2;
+
+	enum Type {
+		HintType_UNSPECIFIED = 0;
+		NakedSingle = 1;
+		HiddenSingle = 2;
+		PointingCandidate = 3;
+		ClaimingCandidate = 4;
+	}
+
+	message ProtoHintHouse {
+		int32 id = 1;
+		Type houseType = 2;
+
+		enum Type {
+			HouseType_UNSPECIFIED = 0;
+			Row = 1;
+			Column = 2;
+			Block = 3;
+		}
+	}
+}
+
+

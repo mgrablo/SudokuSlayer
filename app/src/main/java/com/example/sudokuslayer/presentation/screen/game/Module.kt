@@ -12,6 +12,7 @@ val gameModule =
 				getGameUseCase = get(),
 				saveGameUseCase = get(),
 				selectCellUseCase = get(),
+				inputNumberUseCase = get(),
 			)
 		}
 		viewModel {

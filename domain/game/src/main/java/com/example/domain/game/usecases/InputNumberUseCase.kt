@@ -2,7 +2,10 @@ package com.example.domain.game.usecases
 
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudoku.model.clearRuleBreakingCells
+import com.example.sudoku.model.markRuleBreakingCells
 import kotlinx.collections.immutable.minus
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 
 class InputNumberUseCase {
@@ -19,8 +22,19 @@ class InputNumberUseCase {
 		}
 
 		val cell = sudokuGrid.getCellAt(row, column)
+
 		var updatedGrid =
-			if (isNote) {
+			if (number == 0) {
+				sudokuGrid.withReplacedCell(
+					row = row,
+					col = column,
+					cellData =
+						cell.copy(
+							number = number,
+							cornerNotes = persistentSetOf(),
+						),
+				)
+			} else if (isNote) {
 				sudokuGrid.withReplacedCell(
 					row = row,
 					col = column,
@@ -40,7 +54,7 @@ class InputNumberUseCase {
 					col = column,
 					cellData =
 						cell.copy(
-							number = number,
+							number = if (number == cell.number) 0 else number,
 							attributes =
 								if (isHint) {
 									cell.attributes + CellAttributes.HINT_REVEALED
@@ -51,6 +65,10 @@ class InputNumberUseCase {
 				)
 			}
 
+		updatedGrid =
+			updatedGrid
+				.clearRuleBreakingCells()
+				.markRuleBreakingCells()
 		return updatedGrid
 	}
 }
