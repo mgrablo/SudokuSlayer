@@ -3,6 +3,7 @@ package com.example.data.game.mappers
 import com.example.domain.game.models.Game
 import com.example.domain.game.models.GameDifficulty
 import data.game.ProtoGame
+import kotlinx.collections.immutable.toPersistentList
 
 fun Game.toProtoGame(): ProtoGame =
 	ProtoGame
@@ -20,7 +21,7 @@ fun ProtoGame.toGame(): Game =
 		difficulty = difficulty.toGameDifficulty(),
 		elapsedTime = elapsedTime,
 		hintsUsed = hintsUsed,
-		hintLogs = hintLogsList.map { it.toHintLog() },
+		hintLogs = hintLogsList.map { it.toHintLog() }.toPersistentList(),
 	)
 
 fun GameDifficulty.toProtoDifficulty(): ProtoGame.Difficulty =

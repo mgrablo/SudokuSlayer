@@ -1,13 +1,14 @@
 package com.example.domain.game.models
 
 import com.example.sudoku.model.SudokuGrid
+import kotlinx.collections.immutable.PersistentList
 
 data class Game(
 	val grid: SudokuGrid,
 	val difficulty: GameDifficulty,
 	val elapsedTime: Long,
 	val hintsUsed: Int,
-	val hintLogs: List<HintLog>,
+	val hintLogs: PersistentList<HintLog>,
 )
 
 enum class GameDifficulty {

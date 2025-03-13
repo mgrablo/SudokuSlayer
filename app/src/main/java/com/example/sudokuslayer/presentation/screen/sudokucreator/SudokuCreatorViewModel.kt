@@ -9,6 +9,7 @@ import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.models.SudokuGridSize
 import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.generator.ClassicSudokuGenerator
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -169,7 +170,7 @@ class SudokuCreatorViewModel(
 					difficulty = _uiState.value.selectedDifficulty,
 					elapsedTime = 0L,
 					hintsUsed = 0,
-					hintLogs = emptyList(),
+					hintLogs = persistentListOf(),
 				),
 			)
 		}
