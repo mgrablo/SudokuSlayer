@@ -2,10 +2,10 @@ package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.game.ProtoGameRepository
-import com.example.data.game.models.GameDifficulty
-import com.example.data.game.models.HintLog
 import com.example.data.settings.SettingsRepository
+import com.example.domain.game.models.GameDifficulty
+import com.example.domain.game.models.HintLog
+import com.example.domain.game.repositories.GameRepository
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.InputNumberUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SudokuGameViewModel(
-	private val dataStoreRepository: ProtoGameRepository,
+	private val dataStoreRepository: GameRepository,
 	private val settingsRepository: SettingsRepository,
 	private val getGameUseCase: GetGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
@@ -528,6 +528,7 @@ class SudokuGameViewModel(
 						?: emptyList()
 				val hintLog =
 					HintLog(
+						id = _uiState.value.hintLogs.size,
 						hint = hint,
 						isUserGuessed = false,
 						isRevealed = false,

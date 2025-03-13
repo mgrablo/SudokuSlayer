@@ -4,9 +4,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.game.ProtoGameRepository
-import com.example.data.game.models.Game
-import com.example.data.game.models.GameDifficulty
+import com.example.domain.game.models.Game
+import com.example.domain.game.models.GameDifficulty
+import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +86,7 @@ enum class SudokuDifficulty {
 }
 
 class SudokuCreatorViewModel(
-	private val dataStoreRepository: ProtoGameRepository,
+	private val dataStoreRepository: GameRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -199,6 +199,7 @@ class SudokuCreatorViewModel(
 						},
 					elapsedTime = 0L,
 					hintsUsed = 0,
+					hintLogs = emptyList(),
 				),
 			)
 		}

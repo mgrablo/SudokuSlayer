@@ -2,13 +2,13 @@ package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.game.ProtoGameRepository
+import com.example.domain.game.repositories.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class TimerViewModel(
-	private val dataStoreRepository: ProtoGameRepository,
+	private val dataStoreRepository: GameRepository,
 ) : ViewModel() {
 	private val _elapsedTime = MutableStateFlow(0L)
 	val elapsedTime: StateFlow<Long> = _elapsedTime

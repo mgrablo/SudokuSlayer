@@ -6,32 +6,35 @@ import com.example.data.game.mappers.toProtoCell
 import com.example.data.game.mappers.toProtoDifficulty
 import com.example.data.game.mappers.toProtoGame
 import com.example.data.game.mappers.toProtoGrid
-import com.example.data.game.models.Game
-import com.example.data.game.models.GameDifficulty
+import com.example.data.game.mappers.toProtoHintLog
+import com.example.domain.game.models.Game
+import com.example.domain.game.models.GameDifficulty
+import com.example.domain.game.models.HintLog
+import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ProtoGameRepository(
+class AndroidProtoGameRepository(
 	protoStorageFactory: ProtoStorageFactory,
 	serializer: ProtoGameSerializer,
-) {
+) : GameRepository {
 	private val protoStorage =
 		protoStorageFactory.createProtoStorage(
 			filename = "game.pb",
 			serializer = serializer,
 		)
 
-	fun getGame(): Flow<Game> = protoStorage.getData().map { it.toGame() }
+	override fun getGame(): Flow<Game> = protoStorage.getData().map { it.toGame() }
 
-	suspend fun saveGame(game: Game) {
+	override suspend fun saveGame(game: Game) {
 		protoStorage.updateData {
 			game.toProtoGame()
 		}
 	}
 
-	suspend fun updateGrid(grid: SudokuGrid) {
+	override suspend fun updateGrid(grid: SudokuGrid) {
 		protoStorage.updateData { protoGame ->
 			protoGame
 				.toBuilder()
@@ -41,7 +44,7 @@ class ProtoGameRepository(
 		}
 	}
 
-	suspend fun updateElapsedTime(elapsedTime: Long) {
+	override suspend fun updateElapsedTime(elapsedTime: Long) {
 		protoStorage.updateData {
 			it
 				.toBuilder()
@@ -50,7 +53,7 @@ class ProtoGameRepository(
 		}
 	}
 
-	suspend fun updateHintsUsed(hintsUsed: Int) {
+	override suspend fun updateHintsUsed(hintsUsed: Int) {
 		protoStorage.updateData {
 			it
 				.toBuilder()
@@ -59,7 +62,7 @@ class ProtoGameRepository(
 		}
 	}
 
-	suspend fun updateCell(
+	override suspend fun updateCell(
 		row: Int,
 		column: Int,
 		cellData: SudokuCellData,
@@ -78,7 +81,26 @@ class ProtoGameRepository(
 		}
 	}
 
-	suspend fun updateDifficulty(difficulty: GameDifficulty) {
+	override suspend fun addHintLog(hintLog: HintLog) {
+		protoStorage.updateData { protoGame ->
+			protoGame
+				.toBuilder()
+				.addHintLogs(
+					hintLog.toProtoHintLog(),
+				).build()
+		}
+	}
+
+	override suspend fun updateHintLog(hintLog: HintLog) {
+		protoStorage.updateData { protoGame ->
+			protoGame
+				.toBuilder()
+				.setHintLogs(hintLog.id, hintLog.toProtoHintLog())
+				.build()
+		}
+	}
+
+	override suspend fun updateGameDifficulty(difficulty: GameDifficulty) {
 		protoStorage.updateData {
 			it
 				.toBuilder()

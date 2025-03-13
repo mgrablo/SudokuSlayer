@@ -1,12 +1,13 @@
 package com.example.data.game.mappers
 
-import com.example.data.game.models.HintLog
+import com.example.domain.game.models.HintLog
 import data.game.ProtoHintLog
 import kotlinx.collections.immutable.toPersistentList
 
 fun HintLog.toProtoHintLog(): ProtoHintLog =
 	ProtoHintLog
 		.newBuilder()
+		.setId(id)
 		.setHint(hint.toProtoHint())
 		.setIsUserGuessed(isUserGuessed)
 		.setIsRevealed(isRevealed)
@@ -16,6 +17,7 @@ fun HintLog.toProtoHintLog(): ProtoHintLog =
 
 fun ProtoHintLog.toHintLog(): HintLog =
 	HintLog(
+		id = id,
 		hint = hint.toHint(),
 		isUserGuessed = isUserGuessed,
 		isRevealed = isRevealed,

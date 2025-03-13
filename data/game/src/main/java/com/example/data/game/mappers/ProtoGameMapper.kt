@@ -1,7 +1,7 @@
 package com.example.data.game.mappers
 
-import com.example.data.game.models.Game
-import com.example.data.game.models.GameDifficulty
+import com.example.domain.game.models.Game
+import com.example.domain.game.models.GameDifficulty
 import data.game.ProtoGame
 
 fun Game.toProtoGame(): ProtoGame =

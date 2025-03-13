@@ -1,6 +1,6 @@
 package com.example.sudokuslayer.presentation.screen.game.model
 
-import com.example.data.game.models.HintLog
+import com.example.domain.game.models.HintLog
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.solver.Hint

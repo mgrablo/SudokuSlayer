@@ -1,0 +1,27 @@
+package com.example.domain.game
+
+import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
+import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
+import com.example.domain.game.usecases.GetElapsedTimeUseCase
+import com.example.domain.game.usecases.GetGameUseCase
+import com.example.domain.game.usecases.HighlightMatchingNumbersUseCase
+import com.example.domain.game.usecases.HighlightRowAndColumnUseCase
+import com.example.domain.game.usecases.InputNumberUseCase
+import com.example.domain.game.usecases.SaveGameUseCase
+import com.example.domain.game.usecases.SelectCellUseCase
+import org.koin.dsl.module
+
+val domainGameModule =
+	module {
+		factory { GetGameUseCase(get()) }
+		factory { GetElapsedTimeUseCase(get()) }
+		factory { SaveGameUseCase(get()) }
+
+		factory { SelectCellUseCase(get(), get(), get(), get()) }
+		factory { HighlightMatchingNumbersUseCase() }
+		factory { ClearHighlightedNumbersUseCase(get()) }
+		factory { HighlightRowAndColumnUseCase() }
+		factory { ClearHighlightedRowAndColumnUseCase() }
+
+		factory { InputNumberUseCase() }
+	}
