@@ -7,7 +7,6 @@ val gameModule =
 	module {
 		viewModel {
 			SudokuGameViewModel(
-				dataStoreRepository = get(),
 				settingsRepository = get(),
 				getGameUseCase = get(),
 				saveGameUseCase = get(),

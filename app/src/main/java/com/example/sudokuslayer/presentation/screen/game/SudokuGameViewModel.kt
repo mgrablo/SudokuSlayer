@@ -6,7 +6,6 @@ import com.example.data.settings.SettingsRepository
 import com.example.domain.game.models.Game
 import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.models.HintLog
-import com.example.domain.game.repositories.GameRepository
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.InputNumberUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
@@ -40,12 +39,12 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SudokuGameViewModel(
-	private val dataStoreRepository: GameRepository,
 	private val settingsRepository: SettingsRepository,
 	private val getGameUseCase: GetGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
@@ -74,40 +73,33 @@ class SudokuGameViewModel(
 			)
 		}
 
-		viewModelScope
-			.launch(Dispatchers.IO) {
-				loadData()
-			}.invokeOnCompletion {
-				_uiState.update {
-					it.copy(
-						gameState = GameState.PLAYING,
-					)
-				}
+		viewModelScope.launch {
+			loadData()
+			_uiState.update {
+				it.copy(
+					gameState = GameState.PLAYING,
+				)
 			}
+		}
 
 		viewModelScope.launch {
-			settingsRepository.leftHandMode.collect { isLeftHandMode ->
+			combine(
+				settingsRepository.leftHandMode,
+				settingsRepository.showActionButtonsOnTop,
+			) { isLeftHandMode, showActionButtonsOnTop ->
 				_uiState.update {
 					it.copy(
 						isLeftHandMode = isLeftHandMode,
-					)
-				}
-			}
-		}
-		viewModelScope.launch {
-			settingsRepository.showActionButtonsOnTop.collect { showActionButtonsOnTop ->
-				_uiState.update {
-					it.copy(
 						showActionButtonsOnTop = showActionButtonsOnTop,
 					)
 				}
 			}
 		}
-	}
-
-	override fun onCleared() {
-		super.onCleared()
-		saveGameState()
+		viewModelScope.launch {
+			game.collect { game ->
+				saveGameUseCase(game)
+			}
+		}
 	}
 
 	private val lastMoves: ArrayDeque<SudokuMove> = ArrayDeque()
@@ -274,7 +266,6 @@ class SudokuGameViewModel(
 			}
 			lastMoves.clear()
 			futureMoves.clear()
-			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
@@ -287,7 +278,6 @@ class SudokuGameViewModel(
 					grid = updatedSudoku,
 				)
 			}
-			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
@@ -352,12 +342,6 @@ class SudokuGameViewModel(
 					.markRuleBreakingCells()
 
 			_game.update { it.copy(grid = updatedSudoku) }
-
-			dataStoreRepository.updateCell(
-				row = previousCellData.row,
-				column = previousCellData.col,
-				cellData = updatedSudoku.getCellAt(previousCellData.row, previousCellData.col),
-			)
 		}
 	}
 
@@ -403,13 +387,6 @@ class SudokuGameViewModel(
 		return updatedSudoku
 	}
 
-	private fun saveGameState() {
-		viewModelScope.launch(Dispatchers.IO) {
-			val currentState = _game.value
-			dataStoreRepository.updateGrid(currentState.grid)
-		}
-	}
-
 	private fun saveMoveAndUpdateState(
 		previousCellData: SudokuCellData,
 		updatedSudoku: SudokuGrid,
@@ -426,8 +403,6 @@ class SudokuGameViewModel(
 			it.copy(grid = updatedSudoku)
 		}
 
-		saveGameState()
-
 		if (updatedSudoku.getEmptyCellsCount() == 0) {
 			handleAllCellsFilled()
 		}
@@ -442,7 +417,6 @@ class SudokuGameViewModel(
 					grid = updatedSudoku,
 				)
 			}
-			dataStoreRepository.updateGrid(updatedSudoku)
 		}
 	}
 
