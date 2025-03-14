@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package data.game;
+
+option java_multiple_files = true;
+
+message ProtoOperation {
+	int64 id = 1;
+	int32 row = 2;
+	int32 column = 3;
+	int32 value = 4;
+}
+
+message ProtoOperationHistory {
+	repeated ProtoOperation redoOperations = 1;
+	repeated ProtoOperation undoOperations = 2;
+}

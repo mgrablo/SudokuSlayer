@@ -17,7 +17,6 @@ import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.model.addAttribute
 import com.example.sudoku.model.clearAllCornerNotes
 import com.example.sudoku.model.clearGrid
 import com.example.sudoku.model.clearMatchingNumberHighlight
@@ -27,7 +26,6 @@ import com.example.sudoku.model.fillNotes
 import com.example.sudoku.model.highlightMatchingCells
 import com.example.sudoku.model.highlightRowAndColumn
 import com.example.sudoku.model.markRuleBreakingCells
-import com.example.sudoku.model.removeAttribute
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
@@ -72,13 +70,12 @@ class SudokuGameViewModel(
 	val game: StateFlow<Game> = _game
 
 	init {
-		_uiState.update {
-			it.copy(
-				gameState = GameState.LOADING,
-			)
-		}
-
 		viewModelScope.launch {
+			_uiState.update {
+				it.copy(
+					gameState = GameState.LOADING,
+				)
+			}
 			loadData()
 			_uiState.update {
 				it.copy(
@@ -150,16 +147,16 @@ class SudokuGameViewModel(
 			is Event.SelectCell -> selectCell(event.row, event.col)
 			is Event.InputNumber ->
 				inputNumber(
-					event.number,
-					_uiState.value.selectedCell,
-					_uiState.value.isInNoteMode,
+					number = event.number,
+					selectedCell = _uiState.value.selectedCell,
+					noteMode = _uiState.value.isInNoteMode,
 				)
 
 			is Event.ClearCell ->
 				inputNumber(
-					0,
-					_uiState.value.selectedCell,
-					_uiState.value.isInNoteMode,
+					number = 0,
+					selectedCell = _uiState.value.selectedCell,
+					noteMode = _uiState.value.isInNoteMode,
 				)
 
 			is Event.Undo -> undoLastMove()
@@ -243,11 +240,6 @@ class SudokuGameViewModel(
 					isNote = noteMode,
 					isHint = isHint,
 				)
-
-			if (isHint && !noteMode) {
-				updatedSudoku = updatedSudoku.removeAttribute(row, col, CellAttributes.HINT_FOCUS)
-				updatedSudoku = updatedSudoku.addAttribute(row, col, CellAttributes.HINT_REVEALED)
-			}
 
 			saveMoveAndUpdateState(backupCell, updatedSudoku)
 		}
