@@ -5,32 +5,28 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.settings.SettingsRepository
 import com.example.domain.game.models.Game
 import com.example.domain.game.models.GameDifficulty
+import com.example.domain.game.repositories.Operation
+import com.example.domain.game.repositories.OperationRepository
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.GenerateHintLogUseCase
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.InputNumberUseCase
 import com.example.domain.game.usecases.ProvideHintUseCase
+import com.example.domain.game.usecases.RedoOperationUseCase
+import com.example.domain.game.usecases.ResetGameUseCase
 import com.example.domain.game.usecases.RevealHintOnGridUseCase
 import com.example.domain.game.usecases.RevealLastHintLogUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
+import com.example.domain.game.usecases.UndoOperationUseCase
 import com.example.sudoku.model.CellAttributes
-import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
-import com.example.sudoku.model.clearGrid
-import com.example.sudoku.model.clearMatchingNumberHighlight
-import com.example.sudoku.model.clearRowColumnHighlight
-import com.example.sudoku.model.clearRuleBreakingCells
 import com.example.sudoku.model.fillNotes
-import com.example.sudoku.model.highlightMatchingCells
-import com.example.sudoku.model.highlightRowAndColumn
-import com.example.sudoku.model.markRuleBreakingCells
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
-import com.example.sudokuslayer.presentation.screen.game.model.SudokuMove
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
@@ -41,9 +37,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SudokuGameViewModel(
 	private val settingsRepository: SettingsRepository,
+	private val operationRepository: OperationRepository,
 	private val getGameUseCase: GetGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
 	private val selectCellUseCase: SelectCellUseCase,
@@ -53,7 +52,11 @@ class SudokuGameViewModel(
 	private val generateHintLogUseCase: GenerateHintLogUseCase,
 	private val revealHintOnGridUseCase: RevealHintOnGridUseCase,
 	private val revealLastHintLogUseCase: RevealLastHintLogUseCase,
+	private val undoOperationUseCase: UndoOperationUseCase,
+	private val redoOperationUseCase: RedoOperationUseCase,
+	private val resetGameUseCase: ResetGameUseCase,
 ) : ViewModel() {
+	private val mutex = Mutex()
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
 
@@ -103,9 +106,6 @@ class SudokuGameViewModel(
 			}
 		}
 	}
-
-	private val lastMoves: ArrayDeque<SudokuMove> = ArrayDeque()
-	private val futureMoves: ArrayDeque<SudokuMove> = ArrayDeque()
 
 	sealed interface Event {
 		data class SelectCell(
@@ -200,15 +200,13 @@ class SudokuGameViewModel(
 		col: Int,
 	) {
 		viewModelScope.launch {
-			var updatedSudoku =
-				selectCellUseCase(
-					sudoku = _game.value.grid,
-					selectedCell = row to col,
-				)
-
 			_game.update {
 				it.copy(
-					grid = updatedSudoku,
+					grid =
+						selectCellUseCase(
+							sudoku = _game.value.grid,
+							selectedCell = row to col,
+						),
 				)
 			}
 
@@ -240,29 +238,34 @@ class SudokuGameViewModel(
 					isNote = noteMode,
 					isHint = isHint,
 				)
+			operationRepository.apply {
+				addUndoOperation(
+					Operation(
+						id = operationRepository.getUndoOperations().size.toLong(),
+						cell = updatedSudoku.getCellAt(row, col),
+						oldCell = backupCell,
+					),
+				)
+				clearRedoOperations()
+			}
 
-			saveMoveAndUpdateState(backupCell, updatedSudoku)
+			_game.update {
+				it.copy(
+					grid = updatedSudoku,
+				)
+			}
 		}
 	}
 
 	private fun resetGame() {
 		viewModelScope.launch {
-			var updatedSudoku = _game.value.grid
-			updatedSudoku = updatedSudoku.clearGrid()
-			_game.update {
-				it.copy(
-					grid = updatedSudoku,
-					hintLogs = persistentListOf(),
-				)
-			}
+			_game.update { resetGameUseCase(it) }
 			_uiState.update {
 				it.copy(
 					lastHint = null,
 					selectedCell = null,
 				)
 			}
-			lastMoves.clear()
-			futureMoves.clear()
 		}
 	}
 
@@ -305,46 +308,30 @@ class SudokuGameViewModel(
 		}
 	}
 
-	private fun handleMove(
-		moveStack: ArrayDeque<SudokuMove>,
-		targetStack: ArrayDeque<SudokuMove>,
-	) {
-		if (moveStack.isEmpty()) {
-			return
-		}
-
+	private fun undoLastMove() {
 		viewModelScope.launch {
-			val (previousCellData, newCellData) = moveStack.removeLast()
-			var updatedSudoku = _game.value.grid
+			mutex.withLock {
+				if (operationRepository.getUndoOperations().isEmpty()) return@withLock
 
-			updatedSudoku =
-				updatedSudoku.withReplacedCell(
-					previousCellData.row,
-					previousCellData.col,
-					previousCellData,
-				)
-			targetStack.add(SudokuMove(newCellData, previousCellData))
-
-			updatedSudoku =
-				updatedSudoku
-					.clearMatchingNumberHighlight()
-					.clearRowColumnHighlight()
-			updatedSudoku =
-				updatedSudoku
-					.highlightMatchingCells(previousCellData.number)
-					.highlightRowAndColumn(previousCellData.row, previousCellData.col)
-			updatedSudoku =
-				updatedSudoku
-					.clearRuleBreakingCells()
-					.markRuleBreakingCells()
-
-			_game.update { it.copy(grid = updatedSudoku) }
+				val grid = undoOperationUseCase(_game.value.grid)
+				_game.update {
+					it.copy(grid = grid)
+				}
+			}
 		}
 	}
 
-	private fun undoLastMove() = handleMove(lastMoves, futureMoves)
-
-	private fun redoLastMove() = handleMove(futureMoves, lastMoves)
+	private fun redoLastMove() {
+		viewModelScope.launch {
+			mutex.withLock {
+				if (operationRepository.getRedoOperations().isEmpty()) return@withLock
+				val grid = redoOperationUseCase(_game.value.grid)
+				_game.update {
+					it.copy(grid = grid)
+				}
+			}
+		}
+	}
 
 	private fun handleNumberInput(
 		number: Int,
@@ -382,27 +369,6 @@ class SudokuGameViewModel(
 		}
 
 		return updatedSudoku
-	}
-
-	private fun saveMoveAndUpdateState(
-		previousCellData: SudokuCellData,
-		updatedSudoku: SudokuGrid,
-	) {
-		val (row, col) = previousCellData
-		lastMoves.add(
-			SudokuMove(
-				previousCellData = previousCellData,
-				newCellData = updatedSudoku.getCellAt(row, col),
-			),
-		)
-
-		_game.update {
-			it.copy(grid = updatedSudoku)
-		}
-
-		if (updatedSudoku.getEmptyCellsCount() == 0) {
-			handleAllCellsFilled()
-		}
 	}
 
 	private fun fillNotes() {

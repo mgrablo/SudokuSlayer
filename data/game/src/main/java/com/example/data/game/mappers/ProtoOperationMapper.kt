@@ -7,15 +7,13 @@ fun Operation.toProtoOperation(): ProtoOperation =
 	ProtoOperation
 		.newBuilder()
 		.setId(id)
-		.setRow(cellRow)
-		.setColumn(cellColumn)
-		.setValue(value)
+		.setCell(cell.toProtoCell())
+		.setOldCell(oldCell.toProtoCell())
 		.build()
 
 fun ProtoOperation.toOperation(): Operation =
 	Operation(
 		id = id,
-		cellRow = row,
-		cellColumn = column,
-		value = value,
+		cell = cell.toSudokuCellData(),
+		oldCell = oldCell.toSudokuCellData(),
 	)

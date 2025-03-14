@@ -7,7 +7,7 @@ import com.example.sudoku.solver.HintType
 class RevealHintOnGridUseCase(
 	private val inputNumberUseCase: InputNumberUseCase,
 ) {
-	operator fun invoke(
+	suspend operator fun invoke(
 		hint: Hint,
 		grid: SudokuGrid,
 	): SudokuGrid =
@@ -27,7 +27,7 @@ class RevealHintOnGridUseCase(
 				)
 		}
 
-	private fun revealPointingCandidate(
+	private suspend fun revealPointingCandidate(
 		hint: Hint,
 		grid: SudokuGrid,
 	): SudokuGrid {
@@ -47,7 +47,7 @@ class RevealHintOnGridUseCase(
 		return updatedGrid
 	}
 
-	private fun revealClaimingCandidate(
+	private suspend fun revealClaimingCandidate(
 		hint: Hint,
 		grid: SudokuGrid,
 	): SudokuGrid {

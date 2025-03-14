@@ -38,6 +38,6 @@ fun ProtoGame.Difficulty.toGameDifficulty(): GameDifficulty =
 		ProtoGame.Difficulty.MEDIUM -> GameDifficulty.Medium
 		ProtoGame.Difficulty.HARD -> GameDifficulty.Hard
 		ProtoGame.Difficulty.EXPERT -> GameDifficulty.Expert
-		ProtoGame.Difficulty.UNSPECIFIED -> throw IllegalArgumentException("Unspecified difficulty")
+		ProtoGame.Difficulty.UNSPECIFIED -> GameDifficulty.Easy
 		ProtoGame.Difficulty.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized difficulty")
 	}

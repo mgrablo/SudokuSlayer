@@ -7,6 +7,7 @@ import org.koin.dsl.module
 val dataGameModule =
 	module {
 		factory { ProtoGameSerializer() }
+		factory { ProtoOperationHistorySerializer() }
 
 		single<GameRepository> {
 			AndroidProtoGameRepository(

@@ -1,30 +1,38 @@
 package com.example.domain.game.repositories
 
+import com.example.sudoku.model.SudokuCellData
 import kotlinx.coroutines.flow.Flow
 
 interface OperationRepository {
-	fun getRedoOperations(): Flow<List<Operation>>
+	fun getRedoOperationsFlow(): Flow<List<Operation>>
 
-	fun getUndoOperations(): Flow<List<Operation>>
+	suspend fun getRedoOperations(): List<Operation>
+
+	fun getUndoOperationsFlow(): Flow<List<Operation>>
+
+	suspend fun getUndoOperations(): List<Operation>
 
 	suspend fun addRedoOperation(operation: Operation)
 
 	suspend fun addUndoOperation(operation: Operation)
 
-	suspend fun removeRedoOperation(operation: Operation)
+	suspend fun removeRedoOperation(id: Long)
 
-	suspend fun removeUndoOperation(operation: Operation)
+	suspend fun removeUndoOperation(id: Long)
 
 	suspend fun clearOperations()
 
 	suspend fun clearRedoOperations()
 
 	suspend fun clearUndoOperations()
+
+	suspend fun findRedoOperation(id: Long): Operation?
+
+	suspend fun findUndoOperation(id: Long): Operation?
 }
 
 data class Operation(
 	val id: Long,
-	val cellRow: Int,
-	val cellColumn: Int,
-	val value: Int,
+	val cell: SudokuCellData,
+	val oldCell: SudokuCellData,
 )

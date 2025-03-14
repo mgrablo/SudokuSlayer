@@ -8,6 +8,7 @@ val gameModule =
 		viewModel {
 			SudokuGameViewModel(
 				settingsRepository = get(),
+				operationRepository = get(),
 				getGameUseCase = get(),
 				saveGameUseCase = get(),
 				selectCellUseCase = get(),
@@ -17,6 +18,9 @@ val gameModule =
 				generateHintLogUseCase = get(),
 				revealHintOnGridUseCase = get(),
 				revealLastHintLogUseCase = get(),
+				undoOperationUseCase = get(),
+				redoOperationUseCase = get(),
+				resetGameUseCase = get(),
 			)
 		}
 		viewModel {

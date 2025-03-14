@@ -6,6 +6,7 @@ import com.example.data.game.mappers.toProtoOperation
 import com.example.domain.game.repositories.Operation
 import com.example.domain.game.repositories.OperationRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class AndroidProtoOperationRepository(
@@ -18,11 +19,18 @@ class AndroidProtoOperationRepository(
 			serializer = serializer,
 		)
 
-	override fun getRedoOperations(): Flow<List<Operation>> = protoStorage.getData().map { it.redoOperationsList.map { it.toOperation() } }
+	override fun getRedoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map { it.redoOperationsList.map { it.toOperation() } }
 
-	override fun getUndoOperations(): Flow<List<Operation>> = protoStorage.getData().map { it.undoOperationsList.map { it.toOperation() } }
+	override fun getUndoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map { it.undoOperationsList.map { it.toOperation() } }
+
+	override suspend fun getRedoOperations(): List<Operation> = getRedoOperationsFlow().firstOrNull() ?: emptyList()
+
+	override suspend fun getUndoOperations(): List<Operation> = getUndoOperationsFlow().firstOrNull() ?: emptyList()
 
 	override suspend fun addRedoOperation(operation: Operation) {
+		require(operation.cell.row == operation.oldCell.row)
+		require(operation.cell.col == operation.oldCell.col)
+
 		protoStorage.updateData {
 			it
 				.toBuilder()
@@ -32,6 +40,9 @@ class AndroidProtoOperationRepository(
 	}
 
 	override suspend fun addUndoOperation(operation: Operation) {
+		require(operation.cell.row == operation.oldCell.row)
+		require(operation.cell.col == operation.oldCell.col)
+
 		protoStorage.updateData {
 			it
 				.toBuilder()
@@ -40,22 +51,22 @@ class AndroidProtoOperationRepository(
 		}
 	}
 
-	override suspend fun removeRedoOperation(operation: Operation) {
+	override suspend fun removeRedoOperation(id: Long) {
 		protoStorage.updateData {
 			it
 				.toBuilder()
 				.removeRedoOperations(
-					it.redoOperationsList.indexOfFirst { it.id == operation.id },
+					it.redoOperationsList.indexOfFirst { it.id == id },
 				).build()
 		}
 	}
 
-	override suspend fun removeUndoOperation(operation: Operation) {
+	override suspend fun removeUndoOperation(id: Long) {
 		protoStorage.updateData {
 			it
 				.toBuilder()
 				.removeUndoOperations(
-					it.undoOperationsList.indexOfFirst { it.id == operation.id },
+					it.undoOperationsList.indexOfFirst { it.id == id },
 				).build()
 		}
 	}
@@ -87,4 +98,8 @@ class AndroidProtoOperationRepository(
 				.build()
 		}
 	}
+
+	override suspend fun findRedoOperation(id: Long): Operation? = getRedoOperations().firstOrNull { it.id == id }
+
+	override suspend fun findUndoOperation(id: Long): Operation? = getUndoOperations().firstOrNull { it.id == id }
 }

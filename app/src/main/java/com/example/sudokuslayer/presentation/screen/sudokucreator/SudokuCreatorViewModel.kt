@@ -75,7 +75,7 @@ class SudokuCreatorViewModel(
 						4 -> 0
 						9 -> 1
 						16 -> 2
-						else -> throw IllegalArgumentException("Invalid grid size: ${game.grid.gridSize}")
+						else -> return@launch
 					}
 				_uiState.update {
 					it.copy(
