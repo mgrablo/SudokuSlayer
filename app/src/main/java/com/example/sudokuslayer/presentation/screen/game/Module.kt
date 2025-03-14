@@ -12,6 +12,11 @@ val gameModule =
 				saveGameUseCase = get(),
 				selectCellUseCase = get(),
 				inputNumberUseCase = get(),
+				provideHintUseCase = get(),
+				focusOnHintCellsUseCase = get(),
+				generateHintLogUseCase = get(),
+				revealHintOnGridUseCase = get(),
+				revealLastHintLogUseCase = get(),
 			)
 		}
 		viewModel {

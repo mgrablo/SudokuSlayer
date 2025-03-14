@@ -23,52 +23,34 @@ class InputNumberUseCase {
 
 		val cell = sudokuGrid.getCellAt(row, column)
 
-		var updatedGrid =
-			if (number == 0) {
-				sudokuGrid.withReplacedCell(
-					row = row,
-					col = column,
-					cellData =
-						cell.copy(
-							number = number,
-							cornerNotes = persistentSetOf(),
-						),
-				)
-			} else if (isNote) {
-				sudokuGrid.withReplacedCell(
-					row = row,
-					col = column,
-					cellData =
-						cell.copy(
-							cornerNotes =
-								if (cell.cornerNotes.contains(number)) {
-									cell.cornerNotes - number
-								} else {
-									cell.cornerNotes + number
-								},
-						),
-				)
-			} else {
-				sudokuGrid.withReplacedCell(
-					row = row,
-					col = column,
-					cellData =
-						cell.copy(
-							number = if (number == cell.number) 0 else number,
-							attributes =
-								if (isHint) {
-									cell.attributes + CellAttributes.HINT_REVEALED
-								} else {
-									cell.attributes - CellAttributes.HINT_REVEALED
-								},
-						),
-				)
+		val updatedCell =
+			when {
+				number == 0 ->
+					cell.copy(
+						number = 0,
+						cornerNotes = persistentSetOf(),
+					)
+
+				isNote ->
+					cell.copy(
+						cornerNotes =
+							if (cell.cornerNotes.contains(number)) {
+								cell.cornerNotes - number
+							} else {
+								cell.cornerNotes + number
+							},
+					)
+
+				else ->
+					cell.copy(
+						number = if (number == cell.number) 0 else number,
+						attributes = if (isHint) cell.attributes + CellAttributes.HINT_REVEALED else cell.attributes,
+					)
 			}
 
-		updatedGrid =
-			updatedGrid
-				.clearRuleBreakingCells()
-				.markRuleBreakingCells()
-		return updatedGrid
+		return sudokuGrid
+			.withReplacedCell(row, column, updatedCell)
+			.clearRuleBreakingCells()
+			.markRuleBreakingCells()
 	}
 }
