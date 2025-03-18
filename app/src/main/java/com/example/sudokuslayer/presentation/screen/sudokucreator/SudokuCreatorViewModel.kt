@@ -4,16 +4,17 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
-import com.example.domain.core.GameRepository
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.creator.CreateNewGameUseCase
+import com.example.domain.creator.GetSavedGameUseCase
+import com.example.domain.creator.SaveGameUseCase
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -23,7 +24,7 @@ data class SudokuCreatorUiState(
 	val loadingState: ScreenState = ScreenState.INITIAL,
 	val selectedDifficulty: GameDifficulty = GameDifficulty.Easy,
 	val selectedGridSize: SudokuGridSize = SudokuGridSize.FOUR,
-	val savedGameData: SavedGameData? = null,
+	val savedGame: Game? = null,
 )
 
 @Stable
@@ -41,8 +42,9 @@ data class SavedGameData(
 )
 
 class SudokuCreatorViewModel(
-	private val dataStoreRepository: GameRepository,
 	private val createNewGameUseCase: CreateNewGameUseCase,
+	private val getSavedGameUseCase: GetSavedGameUseCase,
+	private val saveGameUseCase: SaveGameUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -67,22 +69,10 @@ class SudokuCreatorViewModel(
 
 	init {
 		viewModelScope.launch {
-			dataStoreRepository.getGame().firstOrNull()?.let { game ->
-				val gridSize =
-					when (game.grid.gridSize) {
-						4 -> 0
-						9 -> 1
-						16 -> 2
-						else -> return@launch
-					}
+			getSavedGameUseCase()?.let { savedGame ->
 				_uiState.update {
 					it.copy(
-						savedGameData =
-							SavedGameData(
-								elapsedTime = game.elapsedTime,
-								gridSize = SudokuGridSize.fromInt(gridSize),
-								difficulty = game.difficulty,
-							),
+						savedGame = savedGame,
 					)
 				}
 			}
@@ -142,8 +132,7 @@ class SudokuCreatorViewModel(
 					_uiState.value.selectedGridSize,
 					_uiState.value.selectedDifficulty,
 				)
-
-			dataStoreRepository.saveGame(newGame)
+			saveGameUseCase(newGame)
 
 			_uiState.update {
 				it.copy(

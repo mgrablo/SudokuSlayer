@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.domain.core.Game
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorViewModel.Event
 import com.example.sudokuslayer.presentation.screen.sudokucreator.components.HorizontalSelect
@@ -111,7 +112,7 @@ private fun SudokuCreatorContent(
 
 			GameControls(
 				screenState = uiState.loadingState,
-				savedGameData = uiState.savedGameData,
+				savedGame = uiState.savedGame,
 				onNewGame = { onEvent(Event.NewGame) },
 				onLoadSudoku = { onEvent(Event.LoadSudoku) },
 				onNavigateToGame = navigateToGame,
@@ -139,7 +140,7 @@ private fun PreviewBox() {
 @Composable
 private fun GameControls(
 	screenState: ScreenState,
-	savedGameData: SavedGameData?,
+	savedGame: Game?,
 	onNewGame: () -> Unit,
 	onLoadSudoku: () -> Unit,
 	onNavigateToGame: () -> Unit,
@@ -147,10 +148,10 @@ private fun GameControls(
 	val onNavigateToGame by rememberUpdatedState(onNavigateToGame)
 	when (screenState) {
 		ScreenState.INITIAL -> {
-			if (savedGameData != null) {
+			if (savedGame != null) {
 				GameButton(
 					onClick = onLoadSudoku,
-					text = "Continue ${savedGameData.difficulty}",
+					text = "Continue ${savedGame.difficulty}",
 				)
 			}
 			GameButton(
