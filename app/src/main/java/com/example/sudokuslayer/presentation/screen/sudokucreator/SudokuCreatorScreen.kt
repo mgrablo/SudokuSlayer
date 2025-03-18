@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,7 +61,7 @@ fun SudokuCreatorScreen(
 		openDrawer = openDrawer,
 		navigateToGame = { navController.navigate(Destination.SudokuGame) },
 		difficultyOptions = viewModel.difficulties,
-		gridSizeOptions = viewModel.gridSizeOptions
+		gridSizeOptions = viewModel.gridSizeOptions,
 	)
 }
 
@@ -78,6 +80,7 @@ private fun SudokuCreatorContent(
 		modifier = modifier.fillMaxSize(),
 		topBar = {
 			CenterAlignedTopAppBar(
+				windowInsets = WindowInsets.displayCutout,
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
@@ -222,7 +225,7 @@ private fun SudokuCreatorScreenPreview() {
 			onEvent = { },
 			openDrawer = { },
 			navigateToGame = { },
-			modifier = Modifier
+			modifier = Modifier,
 		)
 	}
 }

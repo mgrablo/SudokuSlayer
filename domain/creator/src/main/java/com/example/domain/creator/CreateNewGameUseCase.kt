@@ -1,11 +1,28 @@
 package com.example.domain.creator
 
+import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
+import com.example.sudoku.generator.ClassicSudokuGenerator
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
 class CreateNewGameUseCase {
-	operator fun invoke() {
+	suspend operator fun invoke(
+		gridSize: SudokuGridSize,
+		difficulty: GameDifficulty,
+	): Game {
+		val generator = ClassicSudokuGenerator(gridSize.toInt())
+		val cellsToRemove = calculateCellsToRemove(gridSize, difficulty)
+		val sudokuGrid = generator.createSudoku(cellsToRemove, Random.nextLong())
+
+		return Game(
+			grid = sudokuGrid,
+			difficulty = difficulty,
+			elapsedTime = 0,
+			hintsUsed = 0,
+			hintLogs = persistentListOf(),
+		)
 	}
 
 	private fun calculateCellsToRemove(
@@ -36,5 +53,12 @@ class CreateNewGameUseCase {
 					GameDifficulty.Hard -> Random.nextInt(141, 160)
 					GameDifficulty.Expert -> Random.nextInt(161, 180)
 				}
+		}
+
+	private fun SudokuGridSize.toInt() =
+		when (this) {
+			SudokuGridSize.FOUR -> 4
+			SudokuGridSize.NINE -> 9
+			SudokuGridSize.SIXTEEN -> 16
 		}
 }

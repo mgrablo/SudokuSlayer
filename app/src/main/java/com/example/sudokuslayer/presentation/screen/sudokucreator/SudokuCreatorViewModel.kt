@@ -4,12 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameRepository
 import com.example.domain.core.SudokuGridSize
-import com.example.sudoku.generator.ClassicSudokuGenerator
-import kotlinx.collections.immutable.persistentListOf
+import com.example.domain.creator.CreateNewGameUseCase
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Stable
 @Immutable
@@ -45,6 +42,7 @@ data class SavedGameData(
 
 class SudokuCreatorViewModel(
 	private val dataStoreRepository: GameRepository,
+	private val createNewGameUseCase: CreateNewGameUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -135,46 +133,27 @@ class SudokuCreatorViewModel(
 	}
 
 	private fun handleNewGame() {
-		_uiState.update {
-			it.copy(loadingState = ScreenState.LOADING)
-		}
 		viewModelScope.launch(Dispatchers.IO) {
-			val gridSize =
-				when (_uiState.value.selectedGridSize) {
-					SudokuGridSize.FOUR -> 4
-					SudokuGridSize.NINE -> 9
-					SudokuGridSize.SIXTEEN -> 16
-				}
-			val generator = ClassicSudokuGenerator(gridSize)
-			val cellsToRemove: Int =
-				calculateCellsToRemove(
-					_uiState.value.selectedDifficulty,
+			_uiState.update {
+				it.copy(loadingState = ScreenState.LOADING)
+			}
+			val newGame =
+				createNewGameUseCase(
 					_uiState.value.selectedGridSize,
+					_uiState.value.selectedDifficulty,
 				)
 
-			val sudoku = generator.createSudoku(cellsToRemove, Random.nextLong())
+			dataStoreRepository.saveGame(newGame)
+
 			_uiState.update {
 				it.copy(
 					loadingState = ScreenState.DONE,
 				)
 			}
-
-			dataStoreRepository.saveGame(
-				Game(
-					grid = sudoku,
-					difficulty = _uiState.value.selectedDifficulty,
-					elapsedTime = 0L,
-					hintsUsed = 0,
-					hintLogs = persistentListOf(),
-				),
-			)
 		}
 	}
 
 	private fun handleLoadGame() {
-		_uiState.update {
-			it.copy(loadingState = ScreenState.LOADING)
-		}
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
@@ -183,34 +162,4 @@ class SudokuCreatorViewModel(
 			}
 		}
 	}
-
-	private fun calculateCellsToRemove(
-		difficulty: GameDifficulty,
-		gridSize: SudokuGridSize,
-	): Int =
-		when (gridSize) {
-			SudokuGridSize.FOUR ->
-				when (difficulty) {
-					GameDifficulty.Easy -> Random.nextInt(2, 4)
-					GameDifficulty.Medium -> Random.nextInt(4, 6)
-					GameDifficulty.Hard -> Random.nextInt(6, 8)
-					GameDifficulty.Expert -> Random.nextInt(8, 10)
-				}
-
-			SudokuGridSize.NINE ->
-				when (difficulty) {
-					GameDifficulty.Easy -> Random.nextInt(30, 40)
-					GameDifficulty.Medium -> Random.nextInt(41, 50)
-					GameDifficulty.Hard -> Random.nextInt(51, 60)
-					GameDifficulty.Expert -> Random.nextInt(61, 64)
-				}
-
-			SudokuGridSize.SIXTEEN ->
-				when (difficulty) {
-					GameDifficulty.Easy -> Random.nextInt(100, 120)
-					GameDifficulty.Medium -> Random.nextInt(121, 140)
-					GameDifficulty.Hard -> Random.nextInt(141, 160)
-					GameDifficulty.Expert -> Random.nextInt(161, 180)
-				}
-		}
 }
