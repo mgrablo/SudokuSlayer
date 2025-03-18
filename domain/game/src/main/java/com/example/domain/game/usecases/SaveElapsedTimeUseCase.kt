@@ -1,6 +1,6 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.repositories.GameRepository
+import com.example.domain.core.GameRepository
 
 class SaveElapsedTimeUseCase(
 	private val gameRepository: GameRepository,

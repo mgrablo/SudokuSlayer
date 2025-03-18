@@ -1,6 +1,6 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.models.HintLog
+import com.example.domain.core.HintLog
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 

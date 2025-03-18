@@ -1,6 +1,6 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.models.HintLog
+import com.example.domain.core.HintLog
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintExplanationFactory

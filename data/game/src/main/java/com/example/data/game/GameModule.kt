@@ -1,6 +1,6 @@
 package com.example.data.game
 
-import com.example.domain.game.repositories.GameRepository
+import com.example.domain.core.GameRepository
 import com.example.domain.game.repositories.OperationRepository
 import org.koin.dsl.module
 

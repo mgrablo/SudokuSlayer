@@ -1,7 +1,7 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.models.Game
-import com.example.domain.game.repositories.GameRepository
+import com.example.domain.core.Game
+import com.example.domain.core.GameRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

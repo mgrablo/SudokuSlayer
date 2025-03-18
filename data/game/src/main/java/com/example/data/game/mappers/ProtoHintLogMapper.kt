@@ -1,6 +1,6 @@
 package com.example.data.game.mappers
 
-import com.example.domain.game.models.HintLog
+import com.example.domain.core.HintLog
 import data.game.ProtoHintLog
 import kotlinx.collections.immutable.toPersistentList
 

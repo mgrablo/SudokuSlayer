@@ -1,6 +1,6 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.models.Game
+import com.example.domain.core.Game
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintProvider

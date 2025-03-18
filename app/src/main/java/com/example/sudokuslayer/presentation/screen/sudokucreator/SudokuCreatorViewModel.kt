@@ -4,10 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.GameRepository
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.game.models.Game
-import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

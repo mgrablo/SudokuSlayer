@@ -40,7 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.domain.game.models.HintLog
+import com.example.domain.core.HintLog
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.NakedSingleExplanation

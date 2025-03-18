@@ -1,6 +1,5 @@
-package com.example.domain.game.models
+package com.example.domain.core
 
-import com.example.domain.core.GameDifficulty
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.PersistentList
 

@@ -14,7 +14,7 @@ kotlin {
 
 dependencies {
 	implementation(project(":sudoku-core"))
-	implementation(project(":domain:core"))
+	api(project(":domain:core"))
 	implementation(libs.koin.core)
 	implementation(libs.kotlinx.coroutines.core)
 }

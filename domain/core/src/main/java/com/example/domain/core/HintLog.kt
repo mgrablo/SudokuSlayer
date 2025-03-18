@@ -1,4 +1,4 @@
-package com.example.domain.game.models
+package com.example.domain.core
 
 import com.example.sudoku.solver.Hint
 import kotlinx.collections.immutable.PersistentList

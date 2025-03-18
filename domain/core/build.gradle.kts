@@ -11,3 +11,9 @@ kotlin {
 		jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 	}
 }
+
+dependencies {
+	implementation(project(":sudoku-core"))
+	implementation(libs.kotlinx.coroutines.core)
+	implementation(libs.kotlinx.collections.immutable)
+}

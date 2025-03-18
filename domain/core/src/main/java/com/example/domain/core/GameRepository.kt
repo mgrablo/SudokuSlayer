@@ -1,8 +1,5 @@
-package com.example.domain.game.repositories
+package com.example.domain.core
 
-import com.example.domain.core.GameDifficulty
-import com.example.domain.game.models.Game
-import com.example.domain.game.models.HintLog
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.coroutines.flow.Flow
