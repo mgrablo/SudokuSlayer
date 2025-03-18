@@ -14,6 +14,7 @@ import com.example.domain.game.usecases.RedoOperationUseCase
 import com.example.domain.game.usecases.ResetGameUseCase
 import com.example.domain.game.usecases.RevealHintOnGridUseCase
 import com.example.domain.game.usecases.RevealLastHintLogUseCase
+import com.example.domain.game.usecases.SaveElapsedTimeUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
@@ -27,6 +28,7 @@ val domainGameModule =
 		factory { GetGameUseCase(get()) }
 		factory { GetElapsedTimeUseCase(get()) }
 		factory { SaveGameUseCase(get()) }
+		factory { SaveElapsedTimeUseCase(get()) }
 
 		factory { SelectCellUseCase(get(), get(), get(), get()) }
 		factory { HighlightMatchingNumbersUseCase() }

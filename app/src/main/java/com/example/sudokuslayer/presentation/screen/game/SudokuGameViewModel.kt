@@ -3,6 +3,7 @@ package com.example.sudokuslayer.presentation.screen.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.settings.SettingsRepository
+import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.models.Game
 import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.repositories.Operation
@@ -32,9 +33,11 @@ import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -55,6 +58,7 @@ class SudokuGameViewModel(
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
 	private val resetGameUseCase: ResetGameUseCase,
+	private val elapsedTimerManager: ElapsedTimerManager,
 ) : ViewModel() {
 	private val mutex = Mutex()
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
@@ -71,6 +75,12 @@ class SudokuGameViewModel(
 			),
 		)
 	val game: StateFlow<Game> = _game
+	val elapsedTime =
+		elapsedTimerManager.elapsedTime.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000L),
+			initialValue = 0L,
+		)
 
 	init {
 		viewModelScope.launch {
@@ -85,8 +95,8 @@ class SudokuGameViewModel(
 					gameState = GameState.PLAYING,
 				)
 			}
+			elapsedTimerManager.startTracking()
 		}
-
 		viewModelScope.launch {
 			combine(
 				settingsRepository.leftHandMode,
@@ -102,9 +112,15 @@ class SudokuGameViewModel(
 		}
 		viewModelScope.launch {
 			game.collect { game ->
-				saveGameUseCase(game)
+				saveGameUseCase(
+					game.copy(elapsedTime = elapsedTime.firstOrNull() ?: 0L),
+				)
 			}
 		}
+	}
+
+	override fun onCleared() {
+		stopTrackingTime()
 	}
 
 	sealed interface Event {
@@ -139,7 +155,7 @@ class SudokuGameViewModel(
 
 		data object DismissVictoryDialog : Event
 
-		data object ResetTimer : Event
+		data object StopTimer : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -162,20 +178,18 @@ class SudokuGameViewModel(
 			is Event.Undo -> undoLastMove()
 			is Event.Redo -> redoLastMove()
 			is Event.ResetGame -> resetGame()
-			is Event.ProvideHint -> {
-				provideHint()
-			}
+			is Event.ProvideHint -> provideHint()
 
-			is Event.ExplainHint -> {
-				revealHint()
-			}
+			is Event.ExplainHint -> revealHint()
 
 			is Event.HintFillNotes -> fillNotes()
 			is Event.ShowMistakes -> {}
 			is Event.DismissVictoryDialog -> handleDismissVictoryDialog()
 			is Event.SwitchInputMode -> switchInputMode()
 			is Event.ResetNotes -> resetNotes()
-			is Event.ResetTimer -> {}
+			is Event.StopTimer -> {
+				stopTrackingTime()
+			}
 		}
 	}
 
@@ -254,12 +268,14 @@ class SudokuGameViewModel(
 					grid = updatedSudoku,
 				)
 			}
+			handleAllCellsFilled()
 		}
 	}
 
 	private fun resetGame() {
 		viewModelScope.launch {
 			_game.update { resetGameUseCase(it) }
+			elapsedTimerManager.resetTimer()
 			_uiState.update {
 				it.copy(
 					lastHint = null,
@@ -282,12 +298,15 @@ class SudokuGameViewModel(
 	}
 
 	private fun handleAllCellsFilled() {
-		val result = ClassicSudokuSolver.isValidSolution(_game.value.grid)
-		if (result) {
-			_uiState.update {
-				it.copy(
-					gameState = GameState.VICTORY,
-				)
+		viewModelScope.launch {
+			val result = ClassicSudokuSolver.isValidSolution(_game.value.grid)
+			if (result) {
+				_uiState.update {
+					it.copy(
+						gameState = GameState.VICTORY,
+					)
+				}
+				elapsedTimerManager.stopTracking()
 			}
 		}
 	}
@@ -373,11 +392,9 @@ class SudokuGameViewModel(
 
 	private fun fillNotes() {
 		viewModelScope.launch {
-			var updatedSudoku = _game.value.grid
-			updatedSudoku = updatedSudoku.fillNotes()
 			_game.update {
 				it.copy(
-					grid = updatedSudoku,
+					grid = _game.value.grid.fillNotes(),
 				)
 			}
 		}
@@ -386,10 +403,10 @@ class SudokuGameViewModel(
 	private fun provideHint() {
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
-			var updatedSudoku = _game.value.grid
 
 			val hint: Hint? = provideHintUseCase(_game.value)
 			if (hint != null) {
+				var updatedSudoku = _game.value.grid
 				updatedSudoku = focusOnHintCellsUseCase(hint, updatedSudoku)
 				selectCell(hint.row, hint.col)
 				val hintLog =
@@ -438,6 +455,12 @@ class SudokuGameViewModel(
 					hintLogs = updatedLogs,
 				)
 			}
+		}
+	}
+
+	private fun stopTrackingTime() {
+		viewModelScope.launch {
+			elapsedTimerManager.stopTracking()
 		}
 	}
 }

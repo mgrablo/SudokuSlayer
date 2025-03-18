@@ -1,5 +1,6 @@
 package com.example.sudokuslayer.presentation.screen.game
 
+import com.example.domain.game.ElapsedTimerManager
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -21,11 +22,8 @@ val gameModule =
 				undoOperationUseCase = get(),
 				redoOperationUseCase = get(),
 				resetGameUseCase = get(),
+				elapsedTimerManager = get(),
 			)
 		}
-		viewModel {
-			TimerViewModel(
-				dataStoreRepository = get(),
-			)
-		}
+		factory { ElapsedTimerManager(get(), get()) }
 	}
