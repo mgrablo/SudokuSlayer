@@ -34,13 +34,6 @@ enum class ScreenState {
 	DONE,
 }
 
-@Stable
-data class SavedGameData(
-	val elapsedTime: Long,
-	val difficulty: GameDifficulty,
-	val gridSize: SudokuGridSize,
-)
-
 class SudokuCreatorViewModel(
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,

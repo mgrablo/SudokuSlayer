@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sudokuslayer.presentation.screen.settings.components.SettingDropDownMenu
 import com.example.sudokuslayer.presentation.screen.settings.components.SettingSwitchItem
 import com.example.sudokuslayer.presentation.screen.settings.components.SettingsCategory
@@ -32,12 +31,13 @@ import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
 ) {
 	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
 	val lightColorScheme by viewModel.lightColorScheme.collectAsStateWithLifecycle()

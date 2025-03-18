@@ -35,7 +35,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -96,19 +95,6 @@ class SudokuGameViewModel(
 				)
 			}
 			elapsedTimerManager.startTracking()
-		}
-		viewModelScope.launch {
-			combine(
-				settingsRepository.leftHandMode,
-				settingsRepository.showActionButtonsOnTop,
-			) { isLeftHandMode, showActionButtonsOnTop ->
-				_uiState.update {
-					it.copy(
-						isLeftHandMode = isLeftHandMode,
-						showActionButtonsOnTop = showActionButtonsOnTop,
-					)
-				}
-			}
 		}
 		viewModelScope.launch {
 			game.collect { game ->
@@ -207,6 +193,16 @@ class SudokuGameViewModel(
 				}
 			}
 		} ?: throw Exception("Proto Sudoku not found!")
+		settingsRepository.leftHandMode.firstOrNull()?.let { leftHandMode ->
+			_uiState.update {
+				it.copy(isLeftHandMode = leftHandMode)
+			}
+		}
+		settingsRepository.showActionButtonsOnTop.firstOrNull()?.let { actionButtonsOnTop ->
+			_uiState.update {
+				it.copy(showActionButtonsOnTop = actionButtonsOnTop)
+			}
+		}
 	}
 
 	private fun selectCell(
