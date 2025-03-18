@@ -3,9 +3,9 @@ package com.example.sudokuslayer.presentation.screen.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.settings.SettingsRepository
+import com.example.domain.core.GameDifficulty
 import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.repositories.Operation
 import com.example.domain.game.repositories.OperationRepository
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase

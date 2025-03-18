@@ -1,7 +1,7 @@
 package com.example.data.game.mappers
 
+import com.example.domain.core.GameDifficulty
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
 import data.game.ProtoGame
 import kotlinx.collections.immutable.toPersistentList
 

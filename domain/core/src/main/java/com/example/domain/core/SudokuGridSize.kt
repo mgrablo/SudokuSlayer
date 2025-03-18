@@ -1,4 +1,4 @@
-package com.example.domain.game.models
+package com.example.domain.core
 
 enum class SudokuGridSize {
 	FOUR,

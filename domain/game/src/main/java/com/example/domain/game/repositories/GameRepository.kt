@@ -1,7 +1,7 @@
 package com.example.domain.game.repositories
 
+import com.example.domain.core.GameDifficulty
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.models.HintLog
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid

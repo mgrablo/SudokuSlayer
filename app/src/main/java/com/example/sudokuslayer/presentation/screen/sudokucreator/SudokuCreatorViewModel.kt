@@ -4,9 +4,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
-import com.example.domain.game.models.SudokuGridSize
 import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import kotlinx.collections.immutable.persistentListOf
@@ -109,13 +109,8 @@ class SudokuCreatorViewModel(
 		when (event) {
 			is Event.ChangeDifficulty -> handleChangeDifficulty(event.num)
 			is Event.ChangeGridSize -> handleChangeGridSize(event.num)
-			Event.NewGame -> {
-				handleNewGame()
-			}
-
-			Event.LoadSudoku -> {
-				handleLoadGame()
-			}
+			is Event.NewGame -> handleNewGame()
+			is Event.LoadSudoku -> handleLoadGame()
 		}
 	}
 

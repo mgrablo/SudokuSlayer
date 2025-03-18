@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.core.GameDifficulty
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameViewModel.Event
 import com.example.sudokuslayer.presentation.screen.game.components.HintBottomSheetScaffold

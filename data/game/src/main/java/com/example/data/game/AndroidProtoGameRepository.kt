@@ -7,8 +7,8 @@ import com.example.data.game.mappers.toProtoDifficulty
 import com.example.data.game.mappers.toProtoGame
 import com.example.data.game.mappers.toProtoGrid
 import com.example.data.game.mappers.toProtoHintLog
+import com.example.domain.core.GameDifficulty
 import com.example.domain.game.models.Game
-import com.example.domain.game.models.GameDifficulty
 import com.example.domain.game.models.HintLog
 import com.example.domain.game.repositories.GameRepository
 import com.example.sudoku.model.SudokuCellData
