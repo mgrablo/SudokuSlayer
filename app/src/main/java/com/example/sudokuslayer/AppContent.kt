@@ -18,10 +18,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.data.core.model.ColorScheme
-import com.example.data.core.model.DarkMode
 import com.example.data.core.preferences.PreferenceStorageSingleton
 import com.example.data.preferences.DataStorePreferenceStorageFactory
+import com.example.domain.settings.models.ColorScheme
+import com.example.domain.settings.models.DarkMode
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.navigation.SudokuNavHost
 import com.example.sudokuslayer.presentation.navigation.components.NavigationDrawer

@@ -104,6 +104,7 @@ dependencies {
 	api(project(":sudoku-core"))
 	implementation(project(":domain:game"))
 	implementation(project(":domain:creator"))
+	implementation(project(":domain:settings"))
 
 	// TODO: Replace with domain modules
 	implementation(project(":data:core"))

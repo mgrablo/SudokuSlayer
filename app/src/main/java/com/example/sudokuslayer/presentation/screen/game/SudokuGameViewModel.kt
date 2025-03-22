@@ -2,7 +2,6 @@ package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.settings.SettingsRepository
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.game.ElapsedTimerManager
@@ -20,6 +19,7 @@ import com.example.domain.game.usecases.RevealLastHintLogUseCase
 import com.example.domain.game.usecases.SaveGameUseCase
 import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
+import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
