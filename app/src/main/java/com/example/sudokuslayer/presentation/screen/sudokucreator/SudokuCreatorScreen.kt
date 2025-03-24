@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,19 +28,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.domain.core.Game
 import com.example.sudokuslayer.presentation.navigation.Destination
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorViewModel.Event
 import com.example.sudokuslayer.presentation.screen.sudokucreator.components.HorizontalSelect
+import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.koinViewModel
 
 private val PreviewBoxSize = 200.dp
@@ -59,6 +61,8 @@ fun SudokuCreatorScreen(
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
 		navigateToGame = { navController.navigate(Destination.SudokuGame) },
+		difficultyOptions = viewModel.difficulties,
+		gridSizeOptions = viewModel.gridSizeOptions,
 	)
 }
 
@@ -66,34 +70,18 @@ fun SudokuCreatorScreen(
 @Composable
 private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
+	difficultyOptions: PersistentList<String>,
+	gridSizeOptions: PersistentList<String>,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
 	navigateToGame: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val difficultyOptions =
-		remember {
-			SudokuDifficulty.entries
-				.map {
-					it.name.lowercase().replaceFirstChar { it.uppercase() }
-				}.toPersistentList()
-		}
-	val gridOptions =
-		remember {
-			SudokuGridSize.entries
-				.map {
-					when (it) {
-						SudokuGridSize.FOUR -> "4x4"
-						SudokuGridSize.NINE -> "9x9"
-						SudokuGridSize.SIXTEEN -> "16x16"
-					}
-				}.toPersistentList()
-		}
-
 	Scaffold(
 		modifier = modifier.fillMaxSize(),
 		topBar = {
 			CenterAlignedTopAppBar(
+				windowInsets = WindowInsets.displayCutout,
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
@@ -115,7 +103,7 @@ private fun SudokuCreatorContent(
 			Spacer(Modifier.height(SpacerHeight))
 
 			Selects(
-				gridSizeOptions = gridOptions,
+				gridSizeOptions = gridSizeOptions,
 				difficultyOptions = difficultyOptions,
 				onGridSizeChange = { onEvent(Event.ChangeGridSize(it)) },
 				onDifficultyChange = { onEvent(Event.ChangeDifficulty(it)) },
@@ -124,7 +112,7 @@ private fun SudokuCreatorContent(
 
 			GameControls(
 				screenState = uiState.loadingState,
-				savedGameData = uiState.savedGameData,
+				savedGame = uiState.savedGame,
 				onNewGame = { onEvent(Event.NewGame) },
 				onLoadSudoku = { onEvent(Event.LoadSudoku) },
 				onNavigateToGame = navigateToGame,
@@ -152,7 +140,7 @@ private fun PreviewBox() {
 @Composable
 private fun GameControls(
 	screenState: ScreenState,
-	savedGameData: SavedGameData?,
+	savedGame: Game?,
 	onNewGame: () -> Unit,
 	onLoadSudoku: () -> Unit,
 	onNavigateToGame: () -> Unit,
@@ -160,10 +148,10 @@ private fun GameControls(
 	val onNavigateToGame by rememberUpdatedState(onNavigateToGame)
 	when (screenState) {
 		ScreenState.INITIAL -> {
-			if (savedGameData != null) {
+			if (savedGame != null) {
 				GameButton(
 					onClick = onLoadSudoku,
-					text = "Continue ${savedGameData.difficulty}",
+					text = "Continue ${savedGame.difficulty}",
 				)
 			}
 			GameButton(
@@ -227,11 +215,18 @@ private fun Selects(
 	}
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun SudokuCreatorScreenPreview() {
-	SudokuCreatorScreen(
-		navController = rememberNavController(),
-		openDrawer = { },
-	)
+	SudokuSlayerTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(),
+			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
+			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
+			onEvent = { },
+			openDrawer = { },
+			navigateToGame = { },
+			modifier = Modifier,
+		)
+	}
 }

@@ -40,11 +40,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.domain.core.HintLog
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.NakedSingleExplanation
 import com.example.sudokuslayer.R
-import com.example.sudokuslayer.presentation.screen.game.model.HintLog
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -233,6 +233,7 @@ private fun HintBottomSheetScaffoldPreview() {
 			hintLogs =
 				persistentListOf(
 					HintLog(
+						id = 1,
 						hint =
 							Hint(
 								row = 1,

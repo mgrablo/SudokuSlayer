@@ -52,6 +52,7 @@ data class SudokuGrid(
 				number = cellData.number,
 				cornerNotes = cellData.cornerNotes,
 				candidates = cellData.candidates,
+				attributes = cellData.attributes,
 			)
 		}
 

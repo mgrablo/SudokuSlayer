@@ -6,16 +6,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.data.core.model.ColorScheme
-import com.example.data.core.model.DarkMode
-import com.example.data.settings.SettingsRepository
+import com.example.data.settings.AndroidSettingsRepository
+import com.example.domain.settings.models.ColorScheme
+import com.example.domain.settings.models.DarkMode
 import com.shifthackz.catppuccin.compose.CatppuccinMaterial
 import com.shifthackz.catppuccin.compose.CatppuccinTheme
 import com.shifthackz.catppuccin.palette.CatppuccinPalette
 import kotlinx.coroutines.flow.Flow
 
 object ThemeProvider {
-	private val settingsRepository by lazy { SettingsRepository() }
+	private val settingsRepository by lazy { AndroidSettingsRepository() }
 
 	fun getTheme(): Flow<DarkMode> = settingsRepository.darkMode
 
@@ -97,6 +97,5 @@ internal fun SudokuSlayerTheme(
 		) {
 			content()
 		}
-
 	}
 }

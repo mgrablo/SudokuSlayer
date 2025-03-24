@@ -3,19 +3,15 @@ package com.example.data.game.mappers
 import com.example.sudoku.model.SudokuGrid
 import data.game.ProtoGrid
 
-class ProtoGridMapper(
-	private val protoCellMapper: ProtoCellMapper = ProtoCellMapper(),
-) : Mapper<ProtoGrid, SudokuGrid> {
-	override fun invoke(input: ProtoGrid): SudokuGrid =
-		SudokuGrid
-			.fromCellData(input.cellList.map { protoCellMapper(it) })
-			.withSeed(input.seed)
+fun ProtoGrid.toSudokuGrid(): SudokuGrid =
+	SudokuGrid
+		.fromCellData(cellList.map { it.toSudokuCellData() })
+		.withSeed(seed)
 
-	fun toProtoGrid(input: SudokuGrid): ProtoGrid =
-		ProtoGrid
-			.newBuilder()
-			.addAllCell(input.getArray().map { protoCellMapper.toProtoCell(it) })
-			.setGridSize(input.gridSize)
-			.setSeed(input.seed ?: 0)
-			.build()
-}
+fun SudokuGrid.toProtoGrid(): ProtoGrid =
+	ProtoGrid
+		.newBuilder()
+		.addAllCell(getArray().map { it.toProtoCell() })
+		.setGridSize(gridSize)
+		.setSeed(seed ?: 0)
+		.build()

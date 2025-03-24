@@ -5,5 +5,5 @@ import org.koin.dsl.module
 
 val sudokuCreatorModule =
 	module {
-		viewModel { SudokuCreatorViewModel(get()) }
+		viewModel { SudokuCreatorViewModel(get(), get(), get()) }
 	}

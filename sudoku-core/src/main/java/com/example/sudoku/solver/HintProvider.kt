@@ -50,7 +50,7 @@ data class Hint(
 	val row: Int,
 	val col: Int,
 	val value: Int,
-	val type: HintType? = null,
+	val type: HintType,
 	val explanationStrategy: HintExplanationStrategy? = null,
 	val additionalInfo: String = "",
 	val affectedCells: PersistentList<SudokuCellData> = persistentListOf(),

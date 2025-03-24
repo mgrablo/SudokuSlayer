@@ -1,4 +1,6 @@
-package com.example.data.core.model
+package com.example.domain.settings.models
+
+import com.example.domain.settings.models.DarkMode.entries
 
 enum class DarkMode(
 	val displayName: String,

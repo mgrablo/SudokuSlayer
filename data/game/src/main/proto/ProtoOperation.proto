@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package data.game;
+import "ProtoCell.proto";
+
+option java_multiple_files = true;
+
+message ProtoOperation {
+	int64 id = 1;
+	ProtoCell cell = 4;
+	ProtoCell oldCell = 5;
+}
+
+message ProtoOperationHistory {
+	repeated ProtoOperation redoOperations = 1;
+	repeated ProtoOperation undoOperations = 2;
+}

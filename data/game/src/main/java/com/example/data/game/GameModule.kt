@@ -1,24 +1,24 @@
 package com.example.data.game
 
-import com.example.data.game.mappers.ProtoCellMapper
-import com.example.data.game.mappers.ProtoGameMapper
-import com.example.data.game.mappers.ProtoGridMapper
+import com.example.domain.core.GameRepository
+import com.example.domain.game.repositories.OperationRepository
 import org.koin.dsl.module
 
 val dataGameModule =
 	module {
-		factory { ProtoGameMapper() }
-		factory { ProtoCellMapper() }
-		factory { ProtoGridMapper() }
-
 		factory { ProtoGameSerializer() }
+		factory { ProtoOperationHistorySerializer() }
 
-		single {
-			ProtoGameRepository(
+		single<GameRepository> {
+			AndroidProtoGameRepository(
 				protoStorageFactory = get(),
 				serializer = get(),
-				gameMapper = get(),
-				cellMapper = get(),
+			)
+		}
+		single<OperationRepository> {
+			AndroidProtoOperationRepository(
+				protoStorageFactory = get(),
+				serializer = get(),
 			)
 		}
 	}

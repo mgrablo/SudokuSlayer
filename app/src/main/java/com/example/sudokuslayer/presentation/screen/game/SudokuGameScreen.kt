@@ -2,6 +2,8 @@ package com.example.sudokuslayer.presentation.screen.game
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -28,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.core.Game
+import com.example.domain.core.GameDifficulty
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.presentation.screen.game.SudokuGameViewModel.Event
 import com.example.sudokuslayer.presentation.screen.game.components.HintBottomSheetScaffold
@@ -40,6 +44,7 @@ import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialo
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
@@ -50,21 +55,18 @@ fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
-	timerViewModel: TimerViewModel = koinViewModel(),
 ) {
-	val elapsedTime by timerViewModel.elapsedTime.collectAsStateWithLifecycle()
+	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val game by viewModel.game.collectAsStateWithLifecycle()
 	SudokuGameContent(
 		uiState = uiState,
+		game = game,
 		onEvent = {
-			if (it is Event.ResetGame) {
-				timerViewModel.resetTimer()
-			}
 			viewModel.onEvent(it)
 		},
 		modifier = modifier,
 		elapsedTime = { elapsedTime },
-		saveTime = { timerViewModel.updateElapsedTime(it) },
 		openDrawer = openDrawer,
 	)
 }
@@ -73,9 +75,9 @@ fun SudokuGameScreen(
 @Composable
 fun SudokuGameContent(
 	uiState: SudokuGameUiState,
+	game: Game,
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
-	saveTime: (Long) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -138,16 +140,17 @@ fun SudokuGameContent(
 
 	HintBottomSheetScaffold(
 		sheetScaffoldState = scaffoldState,
-		hintLogs = uiState.hintLogs,
+		hintLogs = game.hintLogs,
 		showNextHint = uiState.lastHint == null,
 		explainHintClick = { onEvent(Event.ExplainHint) },
 		nextHintClick = { onEvent(Event.ProvideHint) },
 		topBar = {
 			CenterAlignedTopAppBar(
+				windowInsets = WindowInsets.displayCutout,
 				title = {
 					TimerDisplay(
 						elapsedTime = { elapsedTime() },
-						onPause = { saveTime(elapsedTime()) },
+						onPause = { onEvent(Event.StopTimer) },
 					)
 				},
 				colors =
@@ -173,7 +176,7 @@ fun SudokuGameContent(
 					horizontalAlignment = Alignment.CenterHorizontally,
 				) {
 					SudokuBoard(
-						sudoku = uiState.sudoku,
+						sudoku = game.grid,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
@@ -187,7 +190,7 @@ fun SudokuGameContent(
 						onResetClick = { resetDialogState = true },
 						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
-						gridSize = uiState.sudoku.gridSize,
+						gridSize = game.grid.gridSize,
 						isLeftHandMode = uiState.isLeftHandMode,
 						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
@@ -196,7 +199,7 @@ fun SudokuGameContent(
 			} else {
 				Row {
 					SudokuBoard(
-						sudoku = uiState.sudoku,
+						sudoku = game.grid,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
@@ -210,7 +213,7 @@ fun SudokuGameContent(
 						onResetClick = { resetDialogState = true },
 						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
 						noteMode = uiState.isInNoteMode,
-						gridSize = uiState.sudoku.gridSize,
+						gridSize = game.grid.gridSize,
 						isLeftHandMode = uiState.isLeftHandMode,
 						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
 						modifier = Modifier.weight(1f),
@@ -227,14 +230,18 @@ fun SudokuGameContent(
 private fun SudokuGameScreenPreview() {
 	SudokuSlayerTheme {
 		SudokuGameContent(
-			uiState =
-				SudokuGameUiState(
-					sudoku = createFilledSudokuGrid(9),
+			uiState = SudokuGameUiState(),
+			game =
+				Game(
+					grid = createFilledSudokuGrid(9),
+					elapsedTime = 0,
+					hintLogs = persistentListOf(),
+					hintsUsed = 0,
+					difficulty = GameDifficulty.Easy,
 				),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
-			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -245,14 +252,18 @@ private fun SudokuGameScreenPreview() {
 private fun SudokuGameScreenSixteenPreview() {
 	SudokuSlayerTheme {
 		SudokuGameContent(
-			uiState =
-				SudokuGameUiState(
-					sudoku = createFilledSudokuGrid(16),
+			uiState = SudokuGameUiState(),
+			game =
+				Game(
+					grid = createFilledSudokuGrid(16),
+					elapsedTime = 0,
+					hintLogs = persistentListOf(),
+					hintsUsed = 0,
+					difficulty = GameDifficulty.Easy,
 				),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
-			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -265,13 +276,19 @@ private fun SudokuGameScreenFourPreview() {
 		SudokuGameContent(
 			uiState =
 				SudokuGameUiState(
-					sudoku = createFilledSudokuGrid(4),
 					isLeftHandMode = true,
+				),
+			game =
+				Game(
+					grid = createFilledSudokuGrid(4),
+					elapsedTime = 0,
+					hintLogs = persistentListOf(),
+					hintsUsed = 0,
+					difficulty = GameDifficulty.Easy,
 				),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
-			saveTime = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

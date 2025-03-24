@@ -42,6 +42,7 @@ android {
 dependencies {
 	implementation(project(":data:core"))
 	implementation(project(":sudoku-core"))
+	implementation(project(":domain:game"))
 
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.androidx.proto.datastore)
@@ -62,6 +63,9 @@ protobuf {
 		all().forEach { task ->
 			task.builtins {
 				create("java") {
+					option("lite")
+				}
+				create("kotlin") {
 					option("lite")
 				}
 			}

@@ -6,7 +6,8 @@ import data.game.ProtoGame
 
 class ProtoGameSerializer : Serializer<ProtoGame> {
 	override val defaultValue: ProtoGame
-		get() = ProtoGame.getDefaultInstance()
+		get() =
+			ProtoGame.getDefaultInstance()
 
 	override suspend fun serialize(data: ProtoGame): ByteArray = data.toByteArray()
 

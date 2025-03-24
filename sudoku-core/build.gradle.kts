@@ -18,7 +18,11 @@ dependencies {
 	implementation(libs.annotations)
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.kotlinx.collections.immutable)
+
+	// For stable annotation
 	implementation(libs.androidx.runtime)
+
+	implementation(libs.koin.core)
 	testImplementation(libs.junit.jupiter)
 	testImplementation(libs.junit.jupiter.api)
 	compileOnly(libs.junit.jupiter.params)

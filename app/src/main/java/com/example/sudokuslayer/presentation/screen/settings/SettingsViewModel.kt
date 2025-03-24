@@ -2,13 +2,10 @@ package com.example.sudokuslayer.presentation.screen.settings
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.data.core.model.ColorScheme
-import com.example.data.core.model.DarkMode
-import com.example.data.settings.SettingsRepository
+import com.example.domain.settings.SettingsRepository
+import com.example.domain.settings.models.ColorScheme
+import com.example.domain.settings.models.DarkMode
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -135,25 +132,5 @@ class SettingsViewModel(
 		viewModelScope.launch {
 			settingsRepository.setShowActionButtonsOnTop(actionButtonsOnTop)
 		}
-	}
-
-
-	companion object {
-		val Factory:
-			ViewModelProvider.Factory =
-			object : ViewModelProvider.Factory {
-				@Suppress("UNCHECKED_CAST")
-				override fun <T : ViewModel> create(
-					modelClass: Class<T>,
-					extras: CreationExtras,
-				): T {
-					val savedStateHandle = extras.createSavedStateHandle()
-
-					return SettingsViewModel(
-						settingsRepository = SettingsRepository(),
-						savedStateHandle = savedStateHandle,
-					) as T
-				}
-			}
 	}
 }

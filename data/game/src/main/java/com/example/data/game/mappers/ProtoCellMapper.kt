@@ -3,42 +3,42 @@ package com.example.data.game.mappers
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import data.game.ProtoCell
+import data.game.protoCell
 import kotlinx.collections.immutable.toPersistentSet
 
-class ProtoCellMapper : Mapper<ProtoCell, SudokuCellData> {
-	override operator fun invoke(input: ProtoCell): SudokuCellData =
-		SudokuCellData(
-			row = input.row,
-			col = input.col,
-			number = input.number,
-			cornerNotes = input.cornerNotesList.toPersistentSet(),
-			attributes = input.attributesList.map { mapToDomainAttribute(it) }.toPersistentSet(),
-		)
+fun ProtoCell.toSudokuCellData(): SudokuCellData =
+	SudokuCellData(
+		row = row,
+		col = col,
+		number = number,
+		cornerNotes = cornerNotesList.toPersistentSet(),
+		candidates = candidatesList.toPersistentSet(),
+		attributes = attributesList.map { it.toCellAttributes() }.toPersistentSet(),
+	)
 
-	fun toProtoCell(input: SudokuCellData): ProtoCell =
-		ProtoCell
-			.newBuilder()
-			.setRow(input.row)
-			.setCol(input.col)
-			.setNumber(input.number)
-			.addAllCornerNotes(input.cornerNotes.toList())
-			.addAllAttributes(input.attributes.map { mapToProtoAttribute(it) })
-			.build()
+fun ProtoCell.Attributes.toCellAttributes(): CellAttributes =
+	when (this) {
+		ProtoCell.Attributes.GENERATED -> CellAttributes.GENERATED
+		ProtoCell.Attributes.HINT_REVEALED -> CellAttributes.HINT_REVEALED
+		ProtoCell.Attributes.BREAKING_RULE -> CellAttributes.RULE_BREAKING
+		ProtoCell.Attributes.UNSPECIFIED -> CellAttributes.UNSPECIFIED
+		ProtoCell.Attributes.UNRECOGNIZED -> CellAttributes.UNSPECIFIED
+	}
 
-	private fun mapToDomainAttribute(input: ProtoCell.Attributes): CellAttributes =
-		when (input) {
-			ProtoCell.Attributes.GENERATED -> CellAttributes.GENERATED
-			ProtoCell.Attributes.HINT_REVEALED -> CellAttributes.HINT_REVEALED
-			ProtoCell.Attributes.BREAKING_RULE -> CellAttributes.RULE_BREAKING
-			ProtoCell.Attributes.UNSPECIFIED -> CellAttributes.UNSPECIFIED
-			ProtoCell.Attributes.UNRECOGNIZED -> CellAttributes.UNSPECIFIED
-		}
+fun SudokuCellData.toProtoCell(): ProtoCell =
+	protoCell {
+		row = this@toProtoCell.row
+		col = this@toProtoCell.col
+		number = this@toProtoCell.number
+		candidates += this@toProtoCell.candidates
+		cornerNotes += this@toProtoCell.cornerNotes
+		attributes += this@toProtoCell.attributes.map { it.toProtoCellAttribute() }
+	}
 
-	private fun mapToProtoAttribute(input: CellAttributes): ProtoCell.Attributes =
-		when (input) {
-			CellAttributes.GENERATED -> ProtoCell.Attributes.GENERATED
-			CellAttributes.HINT_REVEALED -> ProtoCell.Attributes.HINT_REVEALED
-			CellAttributes.RULE_BREAKING -> ProtoCell.Attributes.BREAKING_RULE
-			else -> ProtoCell.Attributes.UNSPECIFIED
-		}
-}
+fun CellAttributes.toProtoCellAttribute(): ProtoCell.Attributes =
+	when (this) {
+		CellAttributes.GENERATED -> ProtoCell.Attributes.GENERATED
+		CellAttributes.HINT_REVEALED -> ProtoCell.Attributes.HINT_REVEALED
+		CellAttributes.RULE_BREAKING -> ProtoCell.Attributes.BREAKING_RULE
+		else -> ProtoCell.Attributes.UNSPECIFIED
+	}

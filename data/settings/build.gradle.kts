@@ -8,6 +8,7 @@ java {
 }
 dependencies {
 	implementation(project(":data:core"))
+	implementation(project(":domain:settings"))
 
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.koin.core)
