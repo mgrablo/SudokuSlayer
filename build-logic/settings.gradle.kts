@@ -18,20 +18,13 @@ dependencyResolutionManagement {
 		google()
 		mavenCentral()
 		maven { setUrl("https://jitpack.io") }
+		gradlePluginPortal()
 	}
 }
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-rootProject.name = "SudokuSlayer"
 
-includeBuild("build-logic")
-include(":app")
-include(":sudoku-core")
-include(":data:core")
-include(":data:settings")
-include(":data:preferences")
-include(":data:game")
-include(":data:coreandroid")
-include(":domain:game")
-include(":domain:creator")
-include(":domain:core")
-include(":domain:settings")
+rootProject.name = "buildLogic"
+plugins {
+	id("dev.panuszewski.typesafe-conventions") version "0.6.0-RC1"
+}
+
+include(":conventions")

@@ -1,5 +1,3 @@
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
-
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
@@ -111,11 +109,11 @@ dependencies {
 	implementation(project(":data:preferences"))
 	implementation(project(":data:settings"))
 	implementation(project(":data:game"))
-	implementation(project(":data:core-android"))
+	implementation(project(":data:coreandroid"))
 }
 
-configure<KtlintExtension> {
-	version.set("1.5.0")
-	android.set(true)
-	outputColorName.set("RED")
-}
+// configure<KtlintExtension> {
+// 	version.set("1.5.0")
+// 	android.set(true)
+// 	outputColorName.set("RED")
+// }

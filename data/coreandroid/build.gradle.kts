@@ -5,5 +5,5 @@ plugins {
 dependencies {
 	implementation(project(":data:core"))
 
-	implementation(libs.androidx.datastorePreferences)
+	implementation(libs.androidx.proto.datastore)
 }
