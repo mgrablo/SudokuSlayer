@@ -28,7 +28,7 @@ data class ThemeConfiguration(
 	val extendedColorScheme: ExtendedColorScheme,
 	val boardColors: SudokuBoardColors,
 	val keypadColors: KeypadColors,
-	val catppuccinPalette: CatppuccinPalette,
+	val catppuccinPalette: CatppuccinPalette
 )
 
 private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfiguration =
@@ -40,6 +40,7 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 				keypadColors = MochaKeypadColors,
 				catppuccinPalette = CatppuccinMaterial.Mocha(),
 			)
+
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
@@ -58,6 +59,7 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 				keypadColors = LatteKeypadColors,
 				catppuccinPalette = CatppuccinMaterial.Latte(),
 			)
+
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
@@ -73,8 +75,7 @@ internal fun SudokuSlayerTheme(
 	lightScheme: ColorScheme = ColorScheme.Latte(),
 	darkScheme: ColorScheme = ColorScheme.Mocha(),
 	content:
-		@Composable()
-		() -> Unit,
+	@Composable () -> Unit
 ) {
 	val themeConfig by
 		remember(darkTheme, darkScheme, lightScheme) {
@@ -86,7 +87,7 @@ internal fun SudokuSlayerTheme(
 				},
 			)
 		}
-	
+
 	CompositionLocalProvider(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
 		LocalSudokuBoardColors provides themeConfig.boardColors,

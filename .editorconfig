@@ -23,3 +23,6 @@ ij_kotlin_allow_trailing_comma_on_call_site = true
 
 trailing-comma-on-declaration-site = true
 trailing-comma-on-call-site = true
+
+[**/build/generated/*/main/]
+ktlint = disabled

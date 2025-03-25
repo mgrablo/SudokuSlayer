@@ -11,10 +11,9 @@ class ProtoGameSerializer : Serializer<ProtoGame> {
 
 	override suspend fun serialize(data: ProtoGame): ByteArray = data.toByteArray()
 
-	override suspend fun deserialize(data: ByteArray): ProtoGame =
-		try {
-			ProtoGame.parseFrom(data)
-		} catch (e: InvalidProtocolBufferException) {
-			throw IllegalArgumentException("Failed to parse ProtoGame", e)
-		}
+	override suspend fun deserialize(data: ByteArray): ProtoGame = try {
+		ProtoGame.parseFrom(data)
+	} catch (e: InvalidProtocolBufferException) {
+		throw IllegalArgumentException("Failed to parse ProtoGame", e)
+	}
 }

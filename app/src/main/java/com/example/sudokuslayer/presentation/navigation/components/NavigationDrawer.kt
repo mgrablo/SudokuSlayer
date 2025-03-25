@@ -20,6 +20,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.sudokuslayer.presentation.navigation.Destination
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -27,19 +28,22 @@ import kotlinx.coroutines.launch
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationDrawer(
-	destinations: List<Destination>,
+	destinations: PersistentList<Destination>,
 	drawerState: DrawerState,
 	navController: NavController,
 	scope: CoroutineScope,
-	content: @Composable () -> Unit,
+	modifier: Modifier = Modifier,
+	content: @Composable () -> Unit
 ) {
 	val navBackStackEntry by navController.currentBackStackEntryAsState()
 	val currentScreen = navBackStackEntry?.destination
 
 	ModalNavigationDrawer(
-		gesturesEnabled = currentScreen?.hierarchy?.none { it.hasRoute(Destination.SudokuGame::class) } == true || drawerState.isOpen,
+		gesturesEnabled =
+		currentScreen?.hierarchy?.none { it.hasRoute(Destination.SudokuGame::class) } == true ||
+			drawerState.isOpen,
 		drawerState = drawerState,
-		modifier = Modifier,
+		modifier = modifier,
 		drawerContent = {
 			ModalDrawerSheet(
 				drawerContainerColor = MaterialTheme.colorScheme.surfaceVariant,

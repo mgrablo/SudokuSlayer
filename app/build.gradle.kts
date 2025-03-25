@@ -5,7 +5,7 @@ plugins {
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.protobuf)
 	alias(libs.plugins.android.junit5)
-	alias(libs.plugins.ktlint)
+	id("KtlintConvention")
 }
 
 android {
@@ -111,9 +111,3 @@ dependencies {
 	implementation(project(":data:game"))
 	implementation(project(":data:coreandroid"))
 }
-
-// configure<KtlintExtension> {
-// 	version.set("1.5.0")
-// 	android.set(true)
-// 	outputColorName.set("RED")
-// }

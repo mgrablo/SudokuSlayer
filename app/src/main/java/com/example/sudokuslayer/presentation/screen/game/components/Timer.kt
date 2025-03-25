@@ -10,11 +10,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun TimerDisplay(
-	elapsedTime: () -> Long,
-	onPause: () -> Unit,
-	modifier: Modifier = Modifier,
-) {
+fun TimerDisplay(elapsedTime: () -> Long, onPause: () -> Unit, modifier: Modifier = Modifier) {
 	LifecycleResumeEffect(Unit) {
 		onPauseOrDispose {
 			onPause()

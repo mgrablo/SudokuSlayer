@@ -29,10 +29,18 @@ fun NumberPad(
 	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
-	textStyle: TextStyle = TextStyle(),
+	textStyle: TextStyle = TextStyle()
 ) {
-	val numbers by remember {  derivedStateOf { (1..gridSize).toList() } }
-	val keyboardRows = numbers.chunked(if(numbers.size > 4) sqrt(gridSize.toDouble()).toInt() else numbers.size)
+	val numbers by remember { derivedStateOf { (1..gridSize).toList() } }
+	val keyboardRows = numbers.chunked(
+		if (numbers.size >
+			4
+		) {
+			sqrt(gridSize.toDouble()).toInt()
+		} else {
+			numbers.size
+		},
+	)
 
 	val keyColor =
 		if (noteMode) {
@@ -50,7 +58,7 @@ fun NumberPad(
 
 	Column(
 		modifier =
-			modifier,
+		modifier,
 		verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
@@ -67,7 +75,7 @@ fun NumberPad(
 						textColor = textColor,
 						textStyle = textStyle,
 						modifier = Modifier
-							.size(itemSize)
+							.size(itemSize),
 					)
 				}
 			}

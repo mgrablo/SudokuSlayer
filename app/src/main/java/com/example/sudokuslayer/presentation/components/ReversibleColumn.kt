@@ -16,7 +16,7 @@ fun ReversibleColumn(
 	verticalArrangement: Arrangement.Vertical = Arrangement.Top,
 	horizontalAlignment: Alignment.Horizontal = Alignment.Start,
 	reverseLayout: Boolean = false,
-	content: @Composable ColumnScope.() -> Unit,
+	content: @Composable ColumnScope.() -> Unit
 ) {
 	val originDirection = LocalLayoutDirection.current
 	val direction = when {

@@ -36,43 +36,44 @@ import androidx.compose.ui.unit.dp
 import com.example.sudokuslayer.R
 import com.example.sudokuslayer.createAnnotatedString
 import com.example.sudokuslayer.presentation.ui.theme.catppuccinPalette
+import kotlinx.collections.immutable.PersistentList
 
 @Composable
 fun HintStepCard(
 	title: String,
-	cardContent: List<String>,
+	cardContent: PersistentList<String>,
 	onExplainClick: () -> Unit,
 	onExpandToggle: () -> Unit,
-	isRevealed: Boolean = false,
-	isUserGuessed: Boolean = false,
-	isExpanded: Boolean = false,
 	interactionSource: MutableInteractionSource,
 	modifier: Modifier = Modifier,
+	isRevealed: Boolean = false,
+	isUserGuessed: Boolean = false,
+	isExpanded: Boolean = false
 ) {
 	Card(
 		modifier =
-			modifier
-				.fillMaxWidth()
-				.clip(RoundedCornerShape(8.dp))
-				.clickable(
-					interactionSource = interactionSource,
-					indication = ripple(),
-					onClick = {
-						if (isRevealed || isUserGuessed) {
-							onExpandToggle()
-						}
-					},
-				),
-		colors =
-			CardDefaults.cardColors(
-				containerColor = MaterialTheme.colorScheme.surface,
+		modifier
+			.fillMaxWidth()
+			.clip(RoundedCornerShape(8.dp))
+			.clickable(
+				interactionSource = interactionSource,
+				indication = ripple(),
+				onClick = {
+					if (isRevealed || isUserGuessed) {
+						onExpandToggle()
+					}
+				},
 			),
+		colors =
+		CardDefaults.cardColors(
+			containerColor = MaterialTheme.colorScheme.surface,
+		),
 	) {
 		Column(
 			modifier =
-				Modifier
-					.fillMaxWidth()
-					.padding(16.dp),
+			Modifier
+				.fillMaxWidth()
+				.padding(16.dp),
 		) {
 			Row(
 				modifier = Modifier.padding(4.dp),
@@ -81,32 +82,32 @@ fun HintStepCard(
 			) {
 				Text(
 					text =
-						buildAnnotatedString {
-							withStyle(
-								SpanStyle(
-									color = MaterialTheme.colorScheme.onSurface,
-									fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-								),
-							) {
-								append(
-									createAnnotatedString(
-										input = title,
-										angleBracketStyle =
-											SpanStyle(
-												color = MaterialTheme.colorScheme.primary,
-												fontWeight = FontWeight.Bold,
-												fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-											),
-										asteriskStyle =
-											SpanStyle(
-												color = MaterialTheme.catppuccinPalette.Subtext1,
-												fontStyle = FontStyle.Italic,
-												fontSize = MaterialTheme.typography.bodySmall.fontSize,
-											),
+					buildAnnotatedString {
+						withStyle(
+							SpanStyle(
+								color = MaterialTheme.colorScheme.onSurface,
+								fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+							),
+						) {
+							append(
+								createAnnotatedString(
+									input = title,
+									angleBracketStyle =
+									SpanStyle(
+										color = MaterialTheme.colorScheme.primary,
+										fontWeight = FontWeight.Bold,
+										fontSize = MaterialTheme.typography.bodyMedium.fontSize,
 									),
-								)
-							}
-						},
+									asteriskStyle =
+									SpanStyle(
+										color = MaterialTheme.catppuccinPalette.Subtext1,
+										fontStyle = FontStyle.Italic,
+										fontSize = MaterialTheme.typography.bodySmall.fontSize,
+									),
+								),
+							)
+						}
+					},
 					style = MaterialTheme.typography.bodyMedium,
 					modifier = Modifier.weight(1f),
 				)
@@ -149,32 +150,32 @@ fun HintStepCard(
 					cardContent.forEach {
 						Text(
 							text =
-								buildAnnotatedString {
-									withStyle(
-										SpanStyle(
-											fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-										),
-									) {
-										append("\u2022 ")
-										append(
-											createAnnotatedString(
-												input = it,
-												angleBracketStyle =
-													SpanStyle(
-														color = MaterialTheme.colorScheme.primary,
-														fontWeight = FontWeight.Bold,
-														fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-													),
-												asteriskStyle =
-													SpanStyle(
-														color = MaterialTheme.catppuccinPalette.Subtext1,
-														fontStyle = FontStyle.Italic,
-														fontSize = MaterialTheme.typography.bodySmall.fontSize,
-													),
+							buildAnnotatedString {
+								withStyle(
+									SpanStyle(
+										fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+									),
+								) {
+									append("\u2022 ")
+									append(
+										createAnnotatedString(
+											input = it,
+											angleBracketStyle =
+											SpanStyle(
+												color = MaterialTheme.colorScheme.primary,
+												fontWeight = FontWeight.Bold,
+												fontSize = MaterialTheme.typography.bodyMedium.fontSize,
 											),
-										)
-									}
-								},
+											asteriskStyle =
+											SpanStyle(
+												color = MaterialTheme.catppuccinPalette.Subtext1,
+												fontStyle = FontStyle.Italic,
+												fontSize = MaterialTheme.typography.bodySmall.fontSize,
+											),
+										),
+									)
+								}
+							},
 							style = MaterialTheme.typography.bodySmall,
 						)
 					}

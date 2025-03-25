@@ -15,7 +15,7 @@ fun ResetDialog(
 	isVisible: Boolean,
 	onConfirmClick: () -> Unit,
 	onDismissClick: () -> Unit,
-	onClearNotesClick: () -> Unit,
+	onClearNotesClick: () -> Unit
 ) {
 	if (isVisible) {
 		AlertDialog(
@@ -36,9 +36,9 @@ fun ResetDialog(
 				TextButton(
 					onClick = onConfirmClick,
 					colors =
-						ButtonDefaults.textButtonColors(
-							contentColor = MaterialTheme.colorScheme.primary,
-						),
+					ButtonDefaults.textButtonColors(
+						contentColor = MaterialTheme.colorScheme.primary,
+					),
 				) {
 					Text(
 						text = "Yes",

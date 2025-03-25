@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 fun HorizontalSelect(
 	options: PersistentList<String>,
 	onChange: (Int) -> Unit,
-	modifier: Modifier = Modifier,
+	modifier: Modifier = Modifier
 ) {
 	val onChangeState by rememberUpdatedState(onChange)
 	val pagerState = rememberPagerState(initialPage = 0) { options.size }

@@ -35,17 +35,17 @@ fun KeyPadItem(
 	icon: AppIcon? = null,
 	textStyle: TextStyle = TextStyle(),
 	bgColor: Color = MaterialTheme.colorScheme.primaryContainer,
-	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ) {
 	Box(
 		modifier =
-			modifier
-				.aspectRatio(1f)
-				.clip(CircleShape)
-				.background(bgColor)
-				.clickable(
-					onClick = onClick,
-				),
+		modifier
+			.aspectRatio(1f)
+			.clip(CircleShape)
+			.background(bgColor)
+			.clickable(
+				onClick = onClick,
+			),
 		contentAlignment = Alignment.Center,
 	) {
 		if (icon != null) {
@@ -75,9 +75,9 @@ fun KeyPadItem(
 				textAlign = TextAlign.Center,
 				maxLines = 1,
 				modifier =
-					Modifier
-						.fillMaxSize()
-						.wrapContentHeight(Alignment.CenterVertically),
+				Modifier
+					.fillMaxSize()
+					.wrapContentHeight(Alignment.CenterVertically),
 			)
 		}
 	}

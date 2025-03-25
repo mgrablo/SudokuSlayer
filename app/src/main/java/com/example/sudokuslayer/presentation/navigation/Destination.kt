@@ -8,10 +8,7 @@ import com.example.sudokuslayer.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Destination(
-	val routeName: String,
-	val icon: AppIcon,
-) {
+sealed class Destination(val routeName: String, val icon: AppIcon) {
 	@Serializable
 	object SudokuGame : Destination("Current game", AppIcon.ResourceIcon(R.drawable.tag))
 
@@ -19,7 +16,10 @@ sealed class Destination(
 	object SudokuCreator : Destination("New game", AppIcon.VectorIcon(Icons.Default.Add, "Clear"))
 
 	@Serializable
-	object Settings : Destination("Settings", AppIcon.VectorIcon(Icons.Default.Settings, "Settings icon"))
+	object Settings : Destination(
+		"Settings",
+		AppIcon.VectorIcon(Icons.Default.Settings, "Settings icon"),
+	)
 }
 
 @Serializable
@@ -28,11 +28,9 @@ sealed class AppIcon {
 
 	data class VectorIcon(
 		val imageVector: ImageVector,
-		override val contentDescription: String? = null,
+		override val contentDescription: String? = null
 	) : AppIcon()
 
-	data class ResourceIcon(
-		val resourceId: Int,
-		override val contentDescription: String? = null,
-	) : AppIcon()
+	data class ResourceIcon(val resourceId: Int, override val contentDescription: String? = null) :
+		AppIcon()
 }

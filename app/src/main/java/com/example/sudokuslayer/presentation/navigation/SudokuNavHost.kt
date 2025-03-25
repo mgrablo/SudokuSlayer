@@ -12,10 +12,7 @@ import com.example.sudokuslayer.presentation.screen.settings.SettingsScreen
 import com.example.sudokuslayer.presentation.screen.sudokucreator.SudokuCreatorScreen
 
 @Composable
-fun SudokuNavHost(
-	navController: NavHostController,
-	openDrawer: () -> Unit,
-) {
+fun SudokuNavHost(navController: NavHostController, openDrawer: () -> Unit) {
 	NavHost(
 		navController = navController,
 		startDestination = SudokuCreator,

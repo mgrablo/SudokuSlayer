@@ -37,7 +37,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
+	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
 ) {
 	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
 	val lightColorScheme by viewModel.lightColorScheme.collectAsStateWithLifecycle()
@@ -71,7 +71,7 @@ private fun SettingsScreenContent(
 	leftHandMode: Boolean,
 	actionButtonsOnTop: Boolean,
 	darkMode: String,
-	modifier: Modifier = Modifier,
+	modifier: Modifier = Modifier
 ) {
 	Scaffold(
 		topBar = {
@@ -88,13 +88,13 @@ private fun SettingsScreenContent(
 	) { paddingValues ->
 		Column(
 			modifier =
-				Modifier
-					.fillMaxSize()
-					.displayCutoutPadding()
-					.systemBarsPadding()
-					.padding(paddingValues)
-					.padding(LocalPadding.current.normal)
-					.verticalScroll(rememberScrollState()),
+			Modifier
+				.fillMaxSize()
+				.displayCutoutPadding()
+				.systemBarsPadding()
+				.padding(paddingValues)
+				.padding(LocalPadding.current.normal)
+				.verticalScroll(rememberScrollState()),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
 			val themeOptions = persistentSetOf("System", "Dark", "Light")
@@ -157,7 +157,6 @@ private fun SettingsScreenContent(
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
-
 			}
 		}
 	}

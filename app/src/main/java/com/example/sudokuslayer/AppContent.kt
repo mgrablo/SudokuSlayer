@@ -27,6 +27,7 @@ import com.example.sudokuslayer.presentation.navigation.SudokuNavHost
 import com.example.sudokuslayer.presentation.navigation.components.NavigationDrawer
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.presentation.ui.theme.ThemeProvider
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 class MyApplication : Application() {
@@ -45,7 +46,7 @@ internal fun AppContent() {
 	val navController = rememberNavController()
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 	val destinations =
-		listOf(
+		persistentListOf(
 			Destination.SudokuGame,
 			Destination.SudokuCreator,
 			Destination.Settings,
@@ -64,15 +65,17 @@ internal fun AppContent() {
 	val themeMode by ThemeProvider.getTheme().collectAsState(initial = DarkMode.SYSTEM)
 
 	val darkScheme by ThemeProvider.getDarkColorScheme().collectAsState(initial = ColorScheme.Mocha())
-	val lightScheme by ThemeProvider.getLightColorScheme().collectAsState(initial = ColorScheme.Latte())
+	val lightScheme by ThemeProvider.getLightColorScheme().collectAsState(
+		initial = ColorScheme.Latte(),
+	)
 
 	SudokuSlayerTheme(
 		darkTheme =
-			when (themeMode) {
-				DarkMode.DARK -> true
-				DarkMode.LIGHT -> false
-				DarkMode.SYSTEM -> isSystemInDarkTheme()
-			},
+		when (themeMode) {
+			DarkMode.DARK -> true
+			DarkMode.LIGHT -> false
+			DarkMode.SYSTEM -> isSystemInDarkTheme()
+		},
 		lightScheme = lightScheme,
 		darkScheme = darkScheme,
 	) {

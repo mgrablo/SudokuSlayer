@@ -44,17 +44,17 @@ import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialo
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SudokuGameViewModel = koinViewModel(),
+	viewModel: SudokuGameViewModel = koinViewModel()
 ) {
 	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -79,7 +79,7 @@ fun SudokuGameContent(
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
-	modifier: Modifier = Modifier,
+	modifier: Modifier = Modifier
 ) {
 	val configuration = LocalConfiguration.current
 	val isPortrait = configuration.screenHeightDp > configuration.screenWidthDp
@@ -91,10 +91,10 @@ fun SudokuGameContent(
 	val scaffoldState =
 		rememberBottomSheetScaffoldState(
 			bottomSheetState =
-				rememberStandardBottomSheetState(
-					initialValue = SheetValue.Hidden,
-					skipHiddenState = false,
-				),
+			rememberStandardBottomSheetState(
+				initialValue = SheetValue.Hidden,
+				skipHiddenState = false,
+			),
 		)
 
 	VictoryDialog(
@@ -154,9 +154,9 @@ fun SudokuGameContent(
 					)
 				},
 				colors =
-					TopAppBarDefaults.centerAlignedTopAppBarColors(
-						containerColor = MaterialTheme.colorScheme.surfaceContainer,
-					),
+				TopAppBarDefaults.centerAlignedTopAppBarColors(
+					containerColor = MaterialTheme.colorScheme.surfaceContainer,
+				),
 				navigationIcon = {
 					IconButton(onClick = { openDrawer() }) {
 						Icon(Icons.Default.Menu, "")
@@ -171,8 +171,8 @@ fun SudokuGameContent(
 			if (isPortrait) {
 				Column(
 					modifier =
-						Modifier
-							.fillMaxSize(),
+					Modifier
+						.fillMaxSize(),
 					horizontalAlignment = Alignment.CenterHorizontally,
 				) {
 					SudokuBoard(
@@ -232,13 +232,13 @@ private fun SudokuGameScreenPreview() {
 		SudokuGameContent(
 			uiState = SudokuGameUiState(),
 			game =
-				Game(
-					grid = createFilledSudokuGrid(9),
-					elapsedTime = 0,
-					hintLogs = persistentListOf(),
-					hintsUsed = 0,
-					difficulty = GameDifficulty.Easy,
-				),
+			Game(
+				grid = createFilledSudokuGrid(9),
+				elapsedTime = 0,
+				hintLogs = persistentListOf(),
+				hintsUsed = 0,
+				difficulty = GameDifficulty.Easy,
+			),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
@@ -254,13 +254,13 @@ private fun SudokuGameScreenSixteenPreview() {
 		SudokuGameContent(
 			uiState = SudokuGameUiState(),
 			game =
-				Game(
-					grid = createFilledSudokuGrid(16),
-					elapsedTime = 0,
-					hintLogs = persistentListOf(),
-					hintsUsed = 0,
-					difficulty = GameDifficulty.Easy,
-				),
+			Game(
+				grid = createFilledSudokuGrid(16),
+				elapsedTime = 0,
+				hintLogs = persistentListOf(),
+				hintsUsed = 0,
+				difficulty = GameDifficulty.Easy,
+			),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
@@ -275,17 +275,17 @@ private fun SudokuGameScreenFourPreview() {
 	SudokuSlayerTheme {
 		SudokuGameContent(
 			uiState =
-				SudokuGameUiState(
-					isLeftHandMode = true,
-				),
+			SudokuGameUiState(
+				isLeftHandMode = true,
+			),
 			game =
-				Game(
-					grid = createFilledSudokuGrid(4),
-					elapsedTime = 0,
-					hintLogs = persistentListOf(),
-					hintsUsed = 0,
-					difficulty = GameDifficulty.Easy,
-				),
+			Game(
+				grid = createFilledSudokuGrid(4),
+				elapsedTime = 0,
+				hintLogs = persistentListOf(),
+				hintsUsed = 0,
+				difficulty = GameDifficulty.Easy,
+			),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},

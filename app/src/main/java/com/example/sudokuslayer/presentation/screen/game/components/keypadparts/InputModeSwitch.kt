@@ -24,7 +24,7 @@ fun InputModeSwitch(
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	iconSize: Dp = 40.dp,
-	inputMode: Boolean = false,
+	inputMode: Boolean = false
 ) {
 	IconToggleButton(
 		checked = inputMode,
@@ -33,17 +33,27 @@ fun InputModeSwitch(
 		colors = IconButtonDefaults.iconToggleButtonColors(
 			containerColor = LocalKeyPadColors.current.actionPadBackground,
 			checkedContainerColor = LocalKeyPadColors.current.actionPadBackground,
-		)
+		),
 	) {
 		val transition = updateTransition(inputMode)
 		val tint by transition.animateColor(
 			label = "tint",
 		) {
-			if (it) LocalKeyPadColors.current.noteModeSelectedBackground else LocalKeyPadColors.current.numberModeSelectedBackground
+			if (it) {
+				LocalKeyPadColors.current.noteModeSelectedBackground
+			} else {
+				LocalKeyPadColors.current.numberModeSelectedBackground
+			}
 		}
 
 		Icon(
-			painter = if(inputMode) painterResource(R.drawable.stylus_note) else painterResource(R.drawable.tag),
+			painter = if (inputMode) {
+				painterResource(
+					R.drawable.stylus_note,
+				)
+			} else {
+				painterResource(R.drawable.tag)
+			},
 			contentDescription = "Input mode switch",
 			modifier = Modifier.size(iconSize),
 			tint = tint,

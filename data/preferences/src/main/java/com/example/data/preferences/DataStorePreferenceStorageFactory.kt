@@ -8,9 +8,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.data.core.preferences.PreferenceStorage
 import com.example.data.core.preferences.PreferenceStorageFactory
 
-class DataStorePreferenceStorageFactory(
-	private val context: Context,
-) : PreferenceStorageFactory {
+class DataStorePreferenceStorageFactory(private val context: Context) : PreferenceStorageFactory {
 	private val dataStoreInstances = mutableMapOf<String, DataStore<Preferences>>()
 
 	@Synchronized

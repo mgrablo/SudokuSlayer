@@ -34,7 +34,7 @@ fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle(),
+	textStyle: TextStyle = TextStyle()
 ) {
 	val itemsInRow = remember { sudoku.gridSize }
 	val itemsInBlock = remember { sudoku.subgridSize }
@@ -87,10 +87,9 @@ fun SudokuBoard(
 			val lineThicknessPx = 2.dp.toPx()
 			val numBlocks = itemsInRow / itemsInBlock
 
-			fun dividerPosition(index: Int): Float =
-				index * (itemsInBlock * cellSize.toPx()) +
-					(index - 1) * blockPadding.toPx() +
-					blockPadding.toPx() / 2f
+			fun dividerPosition(index: Int): Float = index * (itemsInBlock * cellSize.toPx()) +
+				(index - 1) * blockPadding.toPx() +
+				blockPadding.toPx() / 2f
 
 			// Draw horizontal dividers
 			for (i in 1 until numBlocks) {

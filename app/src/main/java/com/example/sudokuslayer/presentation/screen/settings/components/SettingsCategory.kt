@@ -13,10 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 
 @Composable
-internal fun SettingsCategory(
-	title: String,
-	content: @Composable () -> Unit,
-) {
+internal fun SettingsCategory(title: String, content: @Composable () -> Unit) {
 	Column(
 		modifier = Modifier.fillMaxWidth().padding(bottom = LocalPadding.current.small),
 		verticalArrangement = Arrangement.spacedBy(12.dp),

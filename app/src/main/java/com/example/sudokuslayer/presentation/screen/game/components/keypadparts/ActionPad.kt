@@ -27,15 +27,11 @@ import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-data class ActionPadItem(
-	val icon: AppIcon,
-	val onClick: () -> Unit,
-	val contentDescription: String,
-)
+data class ActionPadItem(val icon: AppIcon, val onClick: () -> Unit, val contentDescription: String)
 
 enum class ActionPadOrientation {
 	HORIZONTAL,
-	VERTICAL,
+	VERTICAL
 }
 
 @Composable
@@ -46,7 +42,7 @@ fun ActionPad(
 	itemSize: Dp = 60.dp,
 	textStyle: TextStyle = TextStyle(),
 	itemBackgroundColor: Color = LocalKeyPadColors.current.actionPadBackground,
-	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground,
+	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground
 ) {
 	LayoutWithOrientation(
 		orientation = orientation,
@@ -61,8 +57,8 @@ fun ActionPad(
 				textColor = itemOnBackgroundColor,
 				textStyle = textStyle,
 				modifier =
-					Modifier
-						.size(itemSize)
+				Modifier
+					.size(itemSize),
 			)
 		}
 	}
@@ -72,7 +68,7 @@ fun ActionPad(
 private fun LayoutWithOrientation(
 	orientation: ActionPadOrientation,
 	modifier: Modifier = Modifier,
-	content: @Composable () -> Unit,
+	content: @Composable () -> Unit
 ) {
 	val movableContent = remember { movableContentOf { content() } }
 
@@ -126,21 +122,20 @@ private fun ActionPadVerticalPreview() {
 }
 
 @Composable
-private fun getPreviewItems() =
-	persistentListOf(
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowBack, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.Default.Clear, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowForward, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-	)
+private fun getPreviewItems() = persistentListOf(
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowBack, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.Default.Clear, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowForward, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+)

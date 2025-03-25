@@ -1,6 +1,6 @@
 package com.example.sudokuslayer
 
-import com.example.data.core_android.coreAndroidModule
+import com.example.data.coreandroid.coreAndroidModule
 import com.example.data.game.dataGameModule
 import com.example.data.settings.dataSettingsModule
 import com.example.domain.creator.domainCreatorModule

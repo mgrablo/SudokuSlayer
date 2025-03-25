@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 
 class AndroidProtoGameRepository(
 	protoStorageFactory: ProtoStorageFactory,
-	serializer: ProtoGameSerializer,
+	serializer: ProtoGameSerializer
 ) : GameRepository {
 	private val protoStorage =
 		protoStorageFactory.createProtoStorage(
@@ -62,11 +62,7 @@ class AndroidProtoGameRepository(
 		}
 	}
 
-	override suspend fun updateCell(
-		row: Int,
-		column: Int,
-		cellData: SudokuCellData,
-	) {
+	override suspend fun updateCell(row: Int, column: Int, cellData: SudokuCellData) {
 		protoStorage.updateData { protoGame ->
 			protoGame
 				.toBuilder()
