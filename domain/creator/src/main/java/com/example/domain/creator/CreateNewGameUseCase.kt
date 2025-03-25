@@ -8,10 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
 class CreateNewGameUseCase {
-	suspend operator fun invoke(
-		gridSize: SudokuGridSize,
-		difficulty: GameDifficulty,
-	): Game {
+	suspend operator fun invoke(gridSize: SudokuGridSize, difficulty: GameDifficulty): Game {
 		val generator = ClassicSudokuGenerator(gridSize.toInt())
 		val cellsToRemove = calculateCellsToRemove(gridSize, difficulty)
 		val sudokuGrid = generator.createSudoku(cellsToRemove, Random.nextLong())
@@ -25,10 +22,7 @@ class CreateNewGameUseCase {
 		)
 	}
 
-	private fun calculateCellsToRemove(
-		gridSize: SudokuGridSize,
-		difficulty: GameDifficulty,
-	): Int =
+	private fun calculateCellsToRemove(gridSize: SudokuGridSize, difficulty: GameDifficulty): Int =
 		when (gridSize) {
 			SudokuGridSize.FOUR ->
 				when (difficulty) {
@@ -55,10 +49,9 @@ class CreateNewGameUseCase {
 				}
 		}
 
-	private fun SudokuGridSize.toInt() =
-		when (this) {
-			SudokuGridSize.FOUR -> 4
-			SudokuGridSize.NINE -> 9
-			SudokuGridSize.SIXTEEN -> 16
-		}
+	private fun SudokuGridSize.toInt() = when (this) {
+		SudokuGridSize.FOUR -> 4
+		SudokuGridSize.NINE -> 9
+		SudokuGridSize.SIXTEEN -> 16
+	}
 }

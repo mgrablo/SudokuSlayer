@@ -52,7 +52,7 @@ private val SpacerHeight = 50.dp
 fun SudokuCreatorScreen(
 	navController: NavController,
 	openDrawer: () -> Unit,
-	viewModel: SudokuCreatorViewModel = koinViewModel()
+	viewModel: SudokuCreatorViewModel = koinViewModel(),
 ) {
 	val uiState by viewModel.uiState.collectAsState()
 
@@ -75,7 +75,7 @@ private fun SudokuCreatorContent(
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
 	navigateToGame: () -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
 		modifier = modifier.fillMaxSize(),
@@ -143,7 +143,7 @@ private fun GameControls(
 	savedGame: Game?,
 	onNewGame: () -> Unit,
 	onLoadSudoku: () -> Unit,
-	onNavigateToGame: () -> Unit
+	onNavigateToGame: () -> Unit,
 ) {
 	val onNavigateToGame by rememberUpdatedState(onNavigateToGame)
 	when (screenState) {
@@ -195,7 +195,7 @@ private fun Selects(
 	difficultyOptions: PersistentList<String>,
 	onGridSizeChange: (Int) -> Unit,
 	onDifficultyChange: (Int) -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	Column(modifier = modifier) {
 		HorizontalSelect(

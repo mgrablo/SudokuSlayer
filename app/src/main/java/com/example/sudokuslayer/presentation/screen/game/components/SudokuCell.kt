@@ -34,9 +34,9 @@ import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudokuslayer.presentation.ui.theme.LocalSudokuBoardColors
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
-import kotlin.math.sqrt
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.math.sqrt
 
 @Composable
 fun SudokuCell(
@@ -44,7 +44,7 @@ fun SudokuCell(
 	gridSize: Int,
 	onCellClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle()
+	textStyle: TextStyle = TextStyle(),
 ) {
 	val subgridSize by remember { derivedStateOf { sqrt(gridSize.toDouble()).toInt() } }
 	val isSelected = remember(data.attributes) { data.attributes.contains(CellAttributes.SELECTED) }

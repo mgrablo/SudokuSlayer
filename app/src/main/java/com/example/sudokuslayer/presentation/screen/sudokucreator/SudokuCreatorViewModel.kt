@@ -24,20 +24,20 @@ data class SudokuCreatorUiState(
 	val loadingState: ScreenState = ScreenState.INITIAL,
 	val selectedDifficulty: GameDifficulty = GameDifficulty.Easy,
 	val selectedGridSize: SudokuGridSize = SudokuGridSize.FOUR,
-	val savedGame: Game? = null
+	val savedGame: Game? = null,
 )
 
 @Stable
 enum class ScreenState {
 	INITIAL,
 	LOADING,
-	DONE
+	DONE,
 }
 
 class SudokuCreatorViewModel(
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,
-	private val saveGameUseCase: SaveGameUseCase
+	private val saveGameUseCase: SaveGameUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()

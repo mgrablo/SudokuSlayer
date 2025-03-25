@@ -28,7 +28,7 @@ sealed class AppIcon {
 
 	data class VectorIcon(
 		val imageVector: ImageVector,
-		override val contentDescription: String? = null
+		override val contentDescription: String? = null,
 	) : AppIcon()
 
 	data class ResourceIcon(val resourceId: Int, override val contentDescription: String? = null) :

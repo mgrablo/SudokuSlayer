@@ -62,7 +62,7 @@ fun HintBottomSheetScaffold(
 	hintLogs: PersistentList<HintLog> = persistentListOf(),
 	showNextHint: Boolean = false,
 	topBar: @Composable (() -> Unit)? = null,
-	content: @Composable (PaddingValues) -> Unit
+	content: @Composable (PaddingValues) -> Unit,
 ) {
 	BottomSheetScaffold(
 		scaffoldState = sheetScaffoldState,
@@ -93,7 +93,7 @@ fun SheetContent(
 	explainHintClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	showNextHint: Boolean = false,
-	logs: PersistentList<HintLog> = persistentListOf()
+	logs: PersistentList<HintLog> = persistentListOf(),
 ) {
 	val listState = rememberLazyListState()
 	val expandedItems = remember { mutableStateListOf<HintLog>() }
@@ -195,7 +195,7 @@ fun BottomSheetElevatedButton(
 	modifier: Modifier = Modifier,
 	icon: @Composable (() -> Unit)? = null,
 	containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-	contentColor: Color = MaterialTheme.colorScheme.primary
+	contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
 	ElevatedButton(
 		onClick = onClick,

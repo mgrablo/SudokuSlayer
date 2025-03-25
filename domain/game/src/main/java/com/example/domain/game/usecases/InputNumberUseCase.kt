@@ -20,42 +20,41 @@ class InputNumberUseCase {
 		column: Int,
 		isNote: Boolean,
 		isHint: Boolean,
-	): SudokuGrid =
-		mutex.withLock {
-			if (sudokuGrid.getCellAt(row, column).attributes.contains(CellAttributes.GENERATED)) {
-				return sudokuGrid
+	): SudokuGrid = mutex.withLock {
+		if (sudokuGrid.getCellAt(row, column).attributes.contains(CellAttributes.GENERATED)) {
+			return sudokuGrid
+		}
+
+		val cell = sudokuGrid.getCellAt(row, column)
+
+		val updatedCell =
+			when {
+				number == 0 ->
+					cell.copy(
+						number = 0,
+						cornerNotes = persistentSetOf(),
+					)
+
+				isNote ->
+					cell.copy(
+						cornerNotes =
+						if (cell.cornerNotes.contains(number)) {
+							cell.cornerNotes - number
+						} else {
+							cell.cornerNotes + number
+						},
+					)
+
+				else ->
+					cell.copy(
+						number = if (number == cell.number) 0 else number,
+						attributes = if (isHint) cell.attributes + CellAttributes.HINT_REVEALED else cell.attributes,
+					)
 			}
 
-			val cell = sudokuGrid.getCellAt(row, column)
-
-			val updatedCell =
-				when {
-					number == 0 ->
-						cell.copy(
-							number = 0,
-							cornerNotes = persistentSetOf(),
-						)
-
-					isNote ->
-						cell.copy(
-							cornerNotes =
-								if (cell.cornerNotes.contains(number)) {
-									cell.cornerNotes - number
-								} else {
-									cell.cornerNotes + number
-								},
-						)
-
-					else ->
-						cell.copy(
-							number = if (number == cell.number) 0 else number,
-							attributes = if (isHint) cell.attributes + CellAttributes.HINT_REVEALED else cell.attributes,
-						)
-				}
-
-			return sudokuGrid
-				.withReplacedCell(row, column, updatedCell)
-				.clearRuleBreakingCells()
-				.markRuleBreakingCells()
-		}
+		return sudokuGrid
+			.withReplacedCell(row, column, updatedCell)
+			.clearRuleBreakingCells()
+			.markRuleBreakingCells()
+	}
 }

@@ -12,7 +12,7 @@ fun createAnnotatedString(
 	asteriskStyle: SpanStyle = SpanStyle(color = Color.DarkGray),
 	angleBracketStyle: SpanStyle = SpanStyle(color = Color.Yellow),
 	squareBracketStyle: SpanStyle = SpanStyle(color = Color.LightGray),
-	curlyBracketStyle: SpanStyle = SpanStyle(color = Color.Magenta)
+	curlyBracketStyle: SpanStyle = SpanStyle(color = Color.Magenta),
 ): AnnotatedString {
 	val singleQuotePattern = "'(.*?)'".toRegex() // 'column 4'
 	val asteriskPattern = "\\*(.*?)\\*".toRegex() // *HintType*

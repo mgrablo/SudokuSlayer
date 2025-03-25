@@ -2,9 +2,9 @@ package com.example.data.coreandroid
 
 import androidx.datastore.core.DataStore
 import com.example.data.core.proto.ProtoStorage
-import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import java.io.IOException
 
 class ProtoStorageImpl<T>(private val dataStore: DataStore<T>, private val defaultValue: T) :
 	ProtoStorage<T> {

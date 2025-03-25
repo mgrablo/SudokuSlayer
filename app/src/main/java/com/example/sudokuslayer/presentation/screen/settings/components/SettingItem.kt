@@ -28,7 +28,7 @@ internal fun SettingItem(
 	title: String,
 	modifier: Modifier = Modifier,
 	description: String? = null,
-	content: @Composable () -> Unit
+	content: @Composable () -> Unit,
 ) {
 	Row(
 		modifier = modifier,
@@ -61,7 +61,7 @@ internal fun SettingSwitchItem(
 	value: Boolean,
 	onValueChange: (Boolean) -> Unit,
 	modifier: Modifier = Modifier,
-	description: String? = null
+	description: String? = null,
 ) {
 	SettingItem(
 		title = title,
@@ -86,7 +86,7 @@ internal fun SettingDropDownMenu(
 	selectedValue: String,
 	options: PersistentSet<String>,
 	modifier: Modifier = Modifier,
-	description: String? = null
+	description: String? = null,
 ) {
 	SettingItem(
 		title = title,

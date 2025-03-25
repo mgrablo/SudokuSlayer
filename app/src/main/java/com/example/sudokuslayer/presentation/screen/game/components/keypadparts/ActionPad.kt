@@ -31,7 +31,7 @@ data class ActionPadItem(val icon: AppIcon, val onClick: () -> Unit, val content
 
 enum class ActionPadOrientation {
 	HORIZONTAL,
-	VERTICAL
+	VERTICAL,
 }
 
 @Composable
@@ -42,7 +42,7 @@ fun ActionPad(
 	itemSize: Dp = 60.dp,
 	textStyle: TextStyle = TextStyle(),
 	itemBackgroundColor: Color = LocalKeyPadColors.current.actionPadBackground,
-	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground
+	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground,
 ) {
 	LayoutWithOrientation(
 		orientation = orientation,
@@ -68,7 +68,7 @@ fun ActionPad(
 private fun LayoutWithOrientation(
 	orientation: ActionPadOrientation,
 	modifier: Modifier = Modifier,
-	content: @Composable () -> Unit
+	content: @Composable () -> Unit,
 ) {
 	val movableContent = remember { movableContentOf { content() } }
 

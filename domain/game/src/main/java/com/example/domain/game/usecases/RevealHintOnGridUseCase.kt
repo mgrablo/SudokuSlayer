@@ -4,33 +4,24 @@ import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 
-class RevealHintOnGridUseCase(
-	private val inputNumberUseCase: InputNumberUseCase,
-) {
-	suspend operator fun invoke(
-		hint: Hint,
-		grid: SudokuGrid,
-	): SudokuGrid =
-		when (hint.type) {
-			is HintType.PointingCandidate -> revealPointingCandidate(hint, grid)
+class RevealHintOnGridUseCase(private val inputNumberUseCase: InputNumberUseCase) {
+	suspend operator fun invoke(hint: Hint, grid: SudokuGrid): SudokuGrid = when (hint.type) {
+		is HintType.PointingCandidate -> revealPointingCandidate(hint, grid)
 
-			is HintType.ClaimingCandidate -> revealClaimingCandidate(hint, grid)
+		is HintType.ClaimingCandidate -> revealClaimingCandidate(hint, grid)
 
-			is HintType.HiddenSingle, is HintType.NakedSingle ->
-				inputNumberUseCase(
-					sudokuGrid = grid,
-					number = hint.value,
-					row = hint.row,
-					column = hint.col,
-					isNote = false,
-					isHint = true,
-				)
-		}
+		is HintType.HiddenSingle, is HintType.NakedSingle ->
+			inputNumberUseCase(
+				sudokuGrid = grid,
+				number = hint.value,
+				row = hint.row,
+				column = hint.col,
+				isNote = false,
+				isHint = true,
+			)
+	}
 
-	private suspend fun revealPointingCandidate(
-		hint: Hint,
-		grid: SudokuGrid,
-	): SudokuGrid {
+	private suspend fun revealPointingCandidate(hint: Hint, grid: SudokuGrid): SudokuGrid {
 		val otherCells = hint.enforcingCells
 		var updatedGrid = grid
 		otherCells.forEach { cell ->
@@ -47,10 +38,7 @@ class RevealHintOnGridUseCase(
 		return updatedGrid
 	}
 
-	private suspend fun revealClaimingCandidate(
-		hint: Hint,
-		grid: SudokuGrid,
-	): SudokuGrid {
+	private suspend fun revealClaimingCandidate(hint: Hint, grid: SudokuGrid): SudokuGrid {
 		val otherCells = hint.enforcingCells
 		var updatedGrid = grid
 		otherCells.forEach { cell ->

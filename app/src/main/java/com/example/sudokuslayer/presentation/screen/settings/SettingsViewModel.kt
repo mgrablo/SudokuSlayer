@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
 	val settingsRepository: SettingsRepository,
-	val savedStateHandle: SavedStateHandle
+	val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	val darkMode: StateFlow<DarkMode> =
 		settingsRepository.darkMode.stateIn(

@@ -15,11 +15,7 @@ interface GameRepository {
 
 	suspend fun updateHintsUsed(hintsUsed: Int)
 
-	suspend fun updateCell(
-		row: Int,
-		column: Int,
-		cellData: SudokuCellData,
-	)
+	suspend fun updateCell(row: Int, column: Int, cellData: SudokuCellData)
 
 	suspend fun updateGameDifficulty(gameDifficulty: GameDifficulty)
 

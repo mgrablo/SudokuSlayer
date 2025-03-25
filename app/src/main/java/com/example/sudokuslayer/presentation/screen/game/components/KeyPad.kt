@@ -35,9 +35,9 @@ import com.example.sudokuslayer.presentation.screen.game.components.keypadparts.
 import com.example.sudokuslayer.presentation.ui.theme.LocalKeyPadColors
 import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
-import kotlin.math.sqrt
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.math.sqrt
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -55,7 +55,7 @@ fun KeyPad(
 	isLeftHandMode: Boolean,
 	showActionButtonsOnTop: Boolean,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle()
+	textStyle: TextStyle = TextStyle(),
 ) {
 	val middleActionPadItems =
 		getMiddleActionPadItems(
@@ -222,7 +222,7 @@ fun KeyPad(
 private fun getMiddleActionPadItems(
 	onUndoClick: () -> Unit,
 	onClearClick: () -> Unit,
-	onRedoClick: () -> Unit
+	onRedoClick: () -> Unit,
 ): PersistentList<ActionPadItem> = persistentListOf(
 	ActionPadItem(
 		icon = AppIcon.ResourceIcon(R.drawable.undo, "Undo icon"),

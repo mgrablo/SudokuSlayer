@@ -33,7 +33,7 @@ fun NavigationDrawer(
 	navController: NavController,
 	scope: CoroutineScope,
 	modifier: Modifier = Modifier,
-	content: @Composable () -> Unit
+	content: @Composable () -> Unit,
 ) {
 	val navBackStackEntry by navController.currentBackStackEntryAsState()
 	val currentScreen = navBackStackEntry?.destination

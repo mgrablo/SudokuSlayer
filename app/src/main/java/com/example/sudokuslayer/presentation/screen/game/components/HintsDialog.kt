@@ -43,7 +43,7 @@ fun HintsDialog(
 	onFillNotesClick: () -> Unit,
 	onHintClick: () -> Unit,
 	onShowLogsClick: () -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	val buttons =
 		listOf(
@@ -118,7 +118,7 @@ fun HintsDialog(
 data class HintDialogButton(
 	val text: String,
 	val onClick: () -> Unit,
-	val icon: @Composable () -> Unit = { }
+	val icon: @Composable () -> Unit = { },
 )
 
 @PreviewLightDark

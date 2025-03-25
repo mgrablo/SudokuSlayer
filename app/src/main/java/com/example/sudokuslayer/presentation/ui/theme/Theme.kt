@@ -19,7 +19,7 @@ data class ExtendedColorScheme(
 	val pink: ColorFamily,
 	val teal: ColorFamily,
 	val lavender: ColorFamily,
-	val yellow: ColorFamily
+	val yellow: ColorFamily,
 )
 
 private val lightScheme =
@@ -579,7 +579,7 @@ data class ColorFamily(
 	val color: Color,
 	val onColor: Color,
 	val colorContainer: Color,
-	val onColorContainer: Color
+	val onColorContainer: Color,
 )
 
 @Immutable
@@ -597,7 +597,7 @@ data class SudokuBoardColors(
 	val matchingMarkBackground: Color,
 	val onMatchingMarkBackground: Color,
 	val cellBorder: Color,
-	val blockBorder: Color
+	val blockBorder: Color,
 )
 
 @Immutable
@@ -609,7 +609,7 @@ data class KeypadColors(
 	val noteModeSelectedBackground: Color,
 	val noteModeSelectedOnBackground: Color,
 	val numberModeSelectedBackground: Color,
-	val numberModeSelectedOnBackground: Color
+	val numberModeSelectedOnBackground: Color,
 )
 
 val MochaSudokuBoard: SudokuBoardColors =

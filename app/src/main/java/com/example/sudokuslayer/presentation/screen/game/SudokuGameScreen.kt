@@ -44,17 +44,17 @@ import com.example.sudokuslayer.presentation.screen.game.components.VictoryDialo
 import com.example.sudokuslayer.presentation.screen.game.model.GameState
 import com.example.sudokuslayer.presentation.screen.game.model.SudokuGameUiState
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
-import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SudokuGameViewModel = koinViewModel()
+	viewModel: SudokuGameViewModel = koinViewModel(),
 ) {
 	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -79,7 +79,7 @@ fun SudokuGameContent(
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	val configuration = LocalConfiguration.current
 	val isPortrait = configuration.screenHeightDp > configuration.screenWidthDp

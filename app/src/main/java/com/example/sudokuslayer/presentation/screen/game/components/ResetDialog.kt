@@ -15,7 +15,7 @@ fun ResetDialog(
 	isVisible: Boolean,
 	onConfirmClick: () -> Unit,
 	onDismissClick: () -> Unit,
-	onClearNotesClick: () -> Unit
+	onClearNotesClick: () -> Unit,
 ) {
 	if (isVisible) {
 		AlertDialog(

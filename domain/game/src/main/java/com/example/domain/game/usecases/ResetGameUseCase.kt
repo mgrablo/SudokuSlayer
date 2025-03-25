@@ -8,9 +8,7 @@ import com.example.sudoku.model.clearRowColumnHighlight
 import com.example.sudoku.model.clearRuleBreakingCells
 import kotlinx.collections.immutable.persistentListOf
 
-class ResetGameUseCase(
-	private val operationRepository: OperationRepository,
-) {
+class ResetGameUseCase(private val operationRepository: OperationRepository) {
 	suspend operator fun invoke(game: Game): Game {
 		operationRepository.clearOperations()
 		val updatedGrid =

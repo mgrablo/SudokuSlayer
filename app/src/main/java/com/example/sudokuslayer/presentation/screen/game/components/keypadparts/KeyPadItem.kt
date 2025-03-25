@@ -35,7 +35,7 @@ fun KeyPadItem(
 	icon: AppIcon? = null,
 	textStyle: TextStyle = TextStyle(),
 	bgColor: Color = MaterialTheme.colorScheme.primaryContainer,
-	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer
+	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
 ) {
 	Box(
 		modifier =

@@ -24,7 +24,7 @@ fun InputModeSwitch(
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	iconSize: Dp = 40.dp,
-	inputMode: Boolean = false
+	inputMode: Boolean = false,
 ) {
 	IconToggleButton(
 		checked = inputMode,

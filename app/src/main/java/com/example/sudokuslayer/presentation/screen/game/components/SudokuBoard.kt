@@ -34,7 +34,7 @@ fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle()
+	textStyle: TextStyle = TextStyle(),
 ) {
 	val itemsInRow = remember { sudoku.gridSize }
 	val itemsInBlock = remember { sudoku.subgridSize }

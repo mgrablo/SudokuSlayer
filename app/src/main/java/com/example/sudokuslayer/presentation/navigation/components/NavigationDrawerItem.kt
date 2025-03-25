@@ -18,7 +18,7 @@ fun NavigationDrawerItem(
 	isSelected: Boolean,
 	destination: Destination,
 	onClick: () -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	NavigationDrawerItem(
 		icon = {

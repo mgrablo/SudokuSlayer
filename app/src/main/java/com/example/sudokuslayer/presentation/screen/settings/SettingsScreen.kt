@@ -37,7 +37,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
-	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>()
+	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
 ) {
 	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
 	val lightColorScheme by viewModel.lightColorScheme.collectAsStateWithLifecycle()
@@ -71,7 +71,7 @@ private fun SettingsScreenContent(
 	leftHandMode: Boolean,
 	actionButtonsOnTop: Boolean,
 	darkMode: String,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
 		topBar = {

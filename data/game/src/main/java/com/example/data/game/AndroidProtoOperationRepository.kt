@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 
 class AndroidProtoOperationRepository(
 	private val protoStorageFactory: ProtoStorageFactory,
-	private val serializer: ProtoOperationHistorySerializer
+	private val serializer: ProtoOperationHistorySerializer,
 ) : OperationRepository {
 	private val protoStorage =
 		protoStorageFactory.createProtoStorage(

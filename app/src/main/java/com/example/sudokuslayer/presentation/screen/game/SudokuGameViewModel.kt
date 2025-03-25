@@ -57,7 +57,7 @@ class SudokuGameViewModel(
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
 	private val resetGameUseCase: ResetGameUseCase,
-	private val elapsedTimerManager: ElapsedTimerManager
+	private val elapsedTimerManager: ElapsedTimerManager,
 ) : ViewModel() {
 	private val mutex = Mutex()
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
@@ -224,7 +224,7 @@ class SudokuGameViewModel(
 		number: Int,
 		selectedCell: Pair<Int, Int>?,
 		noteMode: Boolean,
-		isHint: Boolean = false
+		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
 			var updatedSudoku = _game.value.grid
@@ -343,7 +343,7 @@ class SudokuGameViewModel(
 	private fun handleNumberInput(
 		number: Int,
 		sudoku: SudokuGrid,
-		selectedCell: Pair<Int, Int>
+		selectedCell: Pair<Int, Int>,
 	): SudokuGrid {
 		val (row, col) = selectedCell
 		var updatedSudoku = sudoku

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 
 class AndroidProtoGameRepository(
 	protoStorageFactory: ProtoStorageFactory,
-	serializer: ProtoGameSerializer
+	serializer: ProtoGameSerializer,
 ) : GameRepository {
 	private val protoStorage =
 		protoStorageFactory.createProtoStorage(

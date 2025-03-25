@@ -6,10 +6,7 @@ import com.example.sudoku.model.addAttribute
 import com.example.sudoku.model.removeAttribute
 
 class HighlightMatchingNumbersUseCase {
-	operator fun invoke(
-		sudoku: SudokuGrid,
-		number: Int?,
-	): SudokuGrid {
+	operator fun invoke(sudoku: SudokuGrid, number: Int?): SudokuGrid {
 		var updatedSudoku =
 			sudoku.removeAttribute(
 				predicate = { cell -> cell.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) },
@@ -33,9 +30,8 @@ class HighlightMatchingNumbersUseCase {
 class ClearHighlightedNumbersUseCase(
 	private val highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase,
 ) {
-	operator fun invoke(sudoku: SudokuGrid): SudokuGrid =
-		highlightMatchingNumbersUseCase(
-			sudoku = sudoku,
-			number = null,
-		)
+	operator fun invoke(sudoku: SudokuGrid): SudokuGrid = highlightMatchingNumbersUseCase(
+		sudoku = sudoku,
+		number = null,
+	)
 }

@@ -48,7 +48,7 @@ fun HintStepCard(
 	modifier: Modifier = Modifier,
 	isRevealed: Boolean = false,
 	isUserGuessed: Boolean = false,
-	isExpanded: Boolean = false
+	isExpanded: Boolean = false,
 ) {
 	Card(
 		modifier =

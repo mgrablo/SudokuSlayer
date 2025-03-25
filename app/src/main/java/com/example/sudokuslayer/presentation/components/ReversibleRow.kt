@@ -17,7 +17,7 @@ fun ReversibleRow(
 	horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
 	verticalAlignment: Vertical = Alignment.Top,
 	reverseLayout: Boolean = false,
-	content: @Composable RowScope.() -> Unit
+	content: @Composable RowScope.() -> Unit,
 ) {
 	val originDirection = LocalLayoutDirection.current
 	val direction = when {

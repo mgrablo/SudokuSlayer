@@ -29,7 +29,7 @@ fun NumberPad(
 	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
-	textStyle: TextStyle = TextStyle()
+	textStyle: TextStyle = TextStyle(),
 ) {
 	val numbers by remember { derivedStateOf { (1..gridSize).toList() } }
 	val keyboardRows = numbers.chunked(

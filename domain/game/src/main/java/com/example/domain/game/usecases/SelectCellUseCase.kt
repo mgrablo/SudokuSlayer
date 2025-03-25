@@ -11,10 +11,7 @@ class SelectCellUseCase(
 	private val clearHighlightedNumbersUseCase: ClearHighlightedNumbersUseCase,
 	private val clearHighlightedRowAndColumnUseCase: ClearHighlightedRowAndColumnUseCase,
 ) {
-	operator fun invoke(
-		sudoku: SudokuGrid,
-		selectedCell: Pair<Int, Int>? = null,
-	): SudokuGrid {
+	operator fun invoke(sudoku: SudokuGrid, selectedCell: Pair<Int, Int>? = null): SudokuGrid {
 		var updatedSudoku =
 			sudoku.removeAttribute(
 				predicate = { cell -> cell.attributes.contains(CellAttributes.SELECTED) },
@@ -38,9 +35,9 @@ class SelectCellUseCase(
 					row = row,
 					col = col,
 					cellData =
-						cell.copy(
-							attributes = cell.attributes + CellAttributes.SELECTED,
-						),
+					cell.copy(
+						attributes = cell.attributes + CellAttributes.SELECTED,
+					),
 				)
 			updatedSudoku =
 				highlightRowAndColumnUseCase(
