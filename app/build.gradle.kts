@@ -51,22 +51,12 @@ android {
 	buildFeatures {
 		compose = true
 	}
+	testOptions {
+		unitTests.all {
+			it.useJUnitPlatform()
+		}
+	}
 }
-//
-// protobuf {
-// 	protoc {
-// 		artifact = "com.google.protobuf:protoc:4.29.1"
-// 	}
-// 	generateProtoTasks {
-// 		all().forEach { task ->
-// 			task.builtins {
-// 				create("java") {
-// 					option("lite")
-// 				}
-// 			}
-// 		}
-// 	}
-// }
 
 dependencies {
 	implementation(libs.bundles.koin.compose)
@@ -87,12 +77,10 @@ dependencies {
 	implementation(libs.kotlinx.collections.immutable)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
-	testImplementation(libs.junit.jupiter.api)
-	testRuntimeOnly(libs.junit.jupiter.engine)
+	testImplementation(platform(libs.junit.bom))
 	androidTestImplementation(libs.junit.jupiter.api)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
-	androidTestImplementation(libs.androidx.ui.test.junit4)
 
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
