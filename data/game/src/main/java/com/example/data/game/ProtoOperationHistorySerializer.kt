@@ -9,10 +9,9 @@ class ProtoOperationHistorySerializer : Serializer<ProtoOperationHistory> {
 
 	override suspend fun serialize(value: ProtoOperationHistory): ByteArray = value.toByteArray()
 
-	override suspend fun deserialize(data: ByteArray): ProtoOperationHistory =
-		try {
-			ProtoOperationHistory.parseFrom(data)
-		} catch (e: Exception) {
-			throw IllegalArgumentException("Failed to parse ProtoOperationHistory", e)
-		}
+	override suspend fun deserialize(data: ByteArray): ProtoOperationHistory = try {
+		ProtoOperationHistory.parseFrom(data)
+	} catch (e: Exception) {
+		throw IllegalArgumentException("Failed to parse ProtoOperationHistory", e)
+	}
 }

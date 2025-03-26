@@ -39,13 +39,13 @@ fun KeyPadItem(
 ) {
 	Box(
 		modifier =
-			modifier
-				.aspectRatio(1f)
-				.clip(CircleShape)
-				.background(bgColor)
-				.clickable(
-					onClick = onClick,
-				),
+		modifier
+			.aspectRatio(1f)
+			.clip(CircleShape)
+			.background(bgColor)
+			.clickable(
+				onClick = onClick,
+			),
 		contentAlignment = Alignment.Center,
 	) {
 		if (icon != null) {
@@ -75,9 +75,9 @@ fun KeyPadItem(
 				textAlign = TextAlign.Center,
 				maxLines = 1,
 				modifier =
-					Modifier
-						.fillMaxSize()
-						.wrapContentHeight(Alignment.CenterVertically),
+				Modifier
+					.fillMaxSize()
+					.wrapContentHeight(Alignment.CenterVertically),
 			)
 		}
 	}

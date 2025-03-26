@@ -64,15 +64,23 @@ fun KeyPad(
 			onRedoClick = onRedoClick,
 		)
 
-	val itemsInRow = remember { if (gridSize > 4) sqrt(gridSize.toFloat()).toInt() + 1 else gridSize + 1 }
+	val itemsInRow = remember {
+		if (gridSize >
+			4
+		) {
+			sqrt(gridSize.toFloat()).toInt() + 1
+		} else {
+			gridSize + 1
+		}
+	}
 	val itemsInColumn = remember { itemsInRow + 1 }
 
 	BoxWithConstraints(
 		contentAlignment = Alignment.Center,
 		modifier =
-			modifier
-				.fillMaxSize()
-				.padding(LocalPadding.current.small),
+		modifier
+			.fillMaxSize()
+			.padding(LocalPadding.current.small),
 	) {
 		val requiredRatio = itemsInRow.toFloat() / itemsInColumn
 		val currentRatio = maxWidth / maxHeight
@@ -96,7 +104,7 @@ fun KeyPad(
 		) {
 			if (gridSize > 4) {
 				// Keypad with 9-16 numbers
-				item() {
+				item {
 					ReversibleRow(
 						reverseLayout = isLeftHandMode,
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
@@ -215,24 +223,23 @@ private fun getMiddleActionPadItems(
 	onUndoClick: () -> Unit,
 	onClearClick: () -> Unit,
 	onRedoClick: () -> Unit,
-): PersistentList<ActionPadItem> =
-	persistentListOf(
-		ActionPadItem(
-			icon = AppIcon.ResourceIcon(R.drawable.undo, "Undo icon"),
-			onClick = onUndoClick,
-			contentDescription = "Undo last move",
-		),
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear icon"),
-			onClick = onClearClick,
-			contentDescription = "Clear cell",
-		),
-		ActionPadItem(
-			icon = AppIcon.ResourceIcon(R.drawable.redo, "Redo icon"),
-			onClick = onRedoClick,
-			contentDescription = "Redo last move",
-		),
-	)
+): PersistentList<ActionPadItem> = persistentListOf(
+	ActionPadItem(
+		icon = AppIcon.ResourceIcon(R.drawable.undo, "Undo icon"),
+		onClick = onUndoClick,
+		contentDescription = "Undo last move",
+	),
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear icon"),
+		onClick = onClearClick,
+		contentDescription = "Clear cell",
+	),
+	ActionPadItem(
+		icon = AppIcon.ResourceIcon(R.drawable.redo, "Redo icon"),
+		onClick = onRedoClick,
+		contentDescription = "Redo last move",
+	),
+)
 
 @PreviewLightDark
 @Composable

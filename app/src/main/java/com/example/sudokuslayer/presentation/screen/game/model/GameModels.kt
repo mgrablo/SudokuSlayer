@@ -12,10 +12,7 @@ data class SudokuGameUiState(
 	val showActionButtonsOnTop: Boolean = false,
 )
 
-data class SudokuMove(
-	val previousCellData: SudokuCellData,
-	val newCellData: SudokuCellData,
-)
+data class SudokuMove(val previousCellData: SudokuCellData, val newCellData: SudokuCellData)
 
 enum class GameState {
 	LOADING,

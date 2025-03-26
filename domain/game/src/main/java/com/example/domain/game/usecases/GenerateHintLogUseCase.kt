@@ -7,12 +7,9 @@ import com.example.sudoku.solver.HintExplanationFactory
 import kotlinx.collections.immutable.toPersistentList
 
 class GenerateHintLogUseCase {
-	operator fun invoke(
-		id: Int,
-		hint: Hint,
-		grid: SudokuGrid,
-	): HintLog {
-		val explanationStrategy = hint.explanationStrategy ?: HintExplanationFactory.createStrategyFor(hint.type)
+	operator fun invoke(id: Int, hint: Hint, grid: SudokuGrid): HintLog {
+		val explanationStrategy =
+			hint.explanationStrategy ?: HintExplanationFactory.createStrategyFor(hint.type)
 		val explanationSteps =
 			explanationStrategy
 				.generateHintExplanationSteps(

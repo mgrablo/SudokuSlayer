@@ -10,19 +10,16 @@ import kotlinx.collections.immutable.minus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ProvideHintUseCase(
-	private val hintProvider: HintProvider,
-) {
-	suspend operator fun invoke(game: Game): Hint? =
-		withContext(Dispatchers.Default) {
-			var grid = hintProvider.fillCandidates(game.grid.data)
-			grid =
-				removeCandidates(
-					gridData = grid,
-					hints = game.hintLogs.map { it.hint },
-				)
-			hintProvider.provideHint(data = grid)
-		}
+class ProvideHintUseCase(private val hintProvider: HintProvider) {
+	suspend operator fun invoke(game: Game): Hint? = withContext(Dispatchers.Default) {
+		var grid = hintProvider.fillCandidates(game.grid.data)
+		grid =
+			removeCandidates(
+				gridData = grid,
+				hints = game.hintLogs.map { it.hint },
+			)
+		hintProvider.provideHint(data = grid)
+	}
 
 	private fun removeCandidates(
 		gridData: List<SudokuCellData>,

@@ -12,13 +12,12 @@ object PreferenceStorageSingleton {
 	}
 
 	@Synchronized
-	fun getInstance(name: String = "default"): PreferenceStorage =
-		instances.getOrPut(name) {
-			checkNotNull(factory) {
-				"PreferenceStorageFactory is not initialized"
-			}
-			factory!!.create(name)
+	fun getInstance(name: String = "default"): PreferenceStorage = instances.getOrPut(name) {
+		checkNotNull(factory) {
+			"PreferenceStorageFactory is not initialized"
 		}
+		factory!!.create(name)
+	}
 
 	@Synchronized
 	fun reset() {

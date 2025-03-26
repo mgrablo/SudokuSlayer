@@ -11,6 +11,7 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
+
 dependencyResolutionManagement {
 	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 	repositories {
@@ -19,15 +20,19 @@ dependencyResolutionManagement {
 		maven { setUrl("https://jitpack.io") }
 	}
 }
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 rootProject.name = "SudokuSlayer"
+
+includeBuild("build-logic")
 include(":app")
 include(":sudoku-core")
 include(":data:core")
 include(":data:settings")
 include(":data:preferences")
 include(":data:game")
-include(":data:core-android")
+include(":data:coreandroid")
 include(":domain:game")
 include(":domain:creator")
 include(":domain:core")

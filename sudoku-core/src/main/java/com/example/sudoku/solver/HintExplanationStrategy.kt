@@ -13,17 +13,11 @@ import com.example.sudoku.model.SudokuGrid
 
 @Stable
 interface HintExplanationStrategy {
-	fun generateHintExplanationSteps(
-		grid: SudokuGrid,
-		hint: Hint,
-	): List<String>
+	fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String>
 }
 
 class NakedSingleExplanation : HintExplanationStrategy {
-	override fun generateHintExplanationSteps(
-		gird: SudokuGrid,
-		hint: Hint,
-	): List<String> {
+	override fun generateHintExplanationSteps(gird: SudokuGrid, hint: Hint): List<String> {
 		val (row, column, value) = hint
 		return listOf(
 			"Focus on the cell at [${row + 1}, ${column + 1}]!",
@@ -35,10 +29,7 @@ class NakedSingleExplanation : HintExplanationStrategy {
 }
 
 class HiddenSingleExplanation : HintExplanationStrategy {
-	override fun generateHintExplanationSteps(
-		grid: SudokuGrid,
-		hint: Hint,
-	): List<String> {
+	override fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String> {
 		val hintType = hint.type as HintType.HiddenSingle
 		val scope =
 			when (hintType.groupType) {
@@ -92,10 +83,7 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 }
 
 class ClaimingCandidateExplanation : HintExplanationStrategy {
-	override fun generateHintExplanationSteps(
-		grid: SudokuGrid,
-		hint: Hint,
-	): List<String> {
+	override fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String> {
 		val hintType = hint.type as HintType.ClaimingCandidate
 		// Collect coordinates from the affectedCells list
 		val affectedCoords =
@@ -121,11 +109,13 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			otherCells
 				.groupBy { if (groupType is GroupType.Row) it.row else it.col }
 				.map { (index, value) ->
-					index to value.map { "[${it.row + 1}, ${it.col + 1}]" }.joinToString()
+					index to value.joinToString { "[${it.row + 1}, ${it.col + 1}]" }
 				}
 		val cellsBasedOnScope =
 			otherCellsCoords
-				.map { "In '$scope ${it.first + 1}', <${hint.value}> can only be placed in the following cells: ${it.second}." }
+				.map {
+					"In '$scope ${it.first + 1}', <${hint.value}> can only be placed in the following cells: ${it.second}."
+				}
 				.toTypedArray()
 
 		return listOf(
@@ -138,12 +128,10 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 }
 
 class PointingCandidateExplanation : HintExplanationStrategy {
-	override fun generateHintExplanationSteps(
-		grid: SudokuGrid,
-		hint: Hint,
-	): List<String> {
+	override fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String> {
 		val hintType = hint.type as HintType.PointingCandidate
-		val affectedBlockId = (hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+		val affectedBlockId =
+			(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 		val scope = if (hintType.groupType is GroupType.Row) "row" else "column"
 
 		val enforcingCells = hint.enforcingCells
@@ -154,18 +142,29 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 				.map { (index, cells) ->
 					Pair<Int, Int?>(
 						index,
-						cells.firstOrNull()?.let { (it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1 },
+						cells.firstOrNull()?.let {
+							(it.row / grid.subgridSize) * grid.subgridSize +
+								(it.col / grid.subgridSize) +
+								1
+						},
 					)
 				}
 
 		val enforcingBlockId =
-			enforcingCells.firstOrNull()?.let { (it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1 }
+			enforcingCells.firstOrNull()?.let {
+				(it.row / grid.subgridSize) * grid.subgridSize +
+					(it.col / grid.subgridSize) +
+					1
+			}
 		val enforcingScopePart = getScopePartString(enforcingCells.firstOrNull(), hintType.groupType)
 
 		val enforcingCellsExplanation =
 			scopeAndBlockIdList
 				.map {
-					"In 'block ${it.second}', <${hint.value}> can only appear in the '${getScopePartString(it.first, hintType.groupType)} $scope'."
+					"In 'block ${it.second}', <${hint.value}> can only appear in the '${getScopePartString(
+						it.first,
+						hintType.groupType,
+					)} $scope'."
 				}.toTypedArray()
 
 		return listOf(
@@ -179,7 +178,7 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 
 fun HintExplanationStrategy.getScopePartString(
 	cell: SudokuCellData?,
-	groupType: GroupType,
+	groupType: GroupType
 ): String {
 	if (cell == null) return "null"
 	return when (groupType) {
@@ -203,10 +202,7 @@ fun HintExplanationStrategy.getScopePartString(
 	}
 }
 
-fun HintExplanationStrategy.getScopePartString(
-	number: Int,
-	groupType: GroupType,
-): String =
+fun HintExplanationStrategy.getScopePartString(number: Int, groupType: GroupType): String =
 	when (groupType) {
 		is GroupType.Row ->
 			when (number % 3) {

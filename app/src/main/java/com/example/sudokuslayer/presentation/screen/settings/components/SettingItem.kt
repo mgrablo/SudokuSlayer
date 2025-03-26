@@ -104,9 +104,9 @@ internal fun SettingDropDownMenu(
 					singleLine = true,
 					trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
 					modifier =
-						Modifier
-							.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
-							.width(200.dp),
+					Modifier
+						.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+						.width(200.dp),
 				)
 
 				ExposedDropdownMenu(
@@ -118,14 +118,14 @@ internal fun SettingDropDownMenu(
 						DropdownMenuItem(
 							text = { Text(option) },
 							colors =
-								MenuItemColors(
-									textColor = MaterialTheme.colorScheme.onSurface,
-									leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-									trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-									disabledTextColor = MaterialTheme.colorScheme.onSurface,
-									disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface,
-									disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
-								),
+							MenuItemColors(
+								textColor = MaterialTheme.colorScheme.onSurface,
+								leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+								trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+								disabledTextColor = MaterialTheme.colorScheme.onSurface,
+								disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+								disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+							),
 							onClick = {
 								onSelect(option)
 								onExpandedChange(false)

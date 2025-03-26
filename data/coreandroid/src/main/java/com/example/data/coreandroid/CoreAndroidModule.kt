@@ -1,4 +1,4 @@
-package com.example.data.core_android
+package com.example.data.coreandroid
 
 import com.example.data.core.proto.ProtoStorageFactory
 import org.koin.android.ext.koin.androidContext

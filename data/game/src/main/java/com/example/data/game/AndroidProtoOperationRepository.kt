@@ -19,13 +19,19 @@ class AndroidProtoOperationRepository(
 			serializer = serializer,
 		)
 
-	override fun getRedoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map { it.redoOperationsList.map { it.toOperation() } }
+	override fun getRedoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map {
+		it.redoOperationsList.map { it.toOperation() }
+	}
 
-	override fun getUndoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map { it.undoOperationsList.map { it.toOperation() } }
+	override fun getUndoOperationsFlow(): Flow<List<Operation>> = protoStorage.getData().map {
+		it.undoOperationsList.map { it.toOperation() }
+	}
 
-	override suspend fun getRedoOperations(): List<Operation> = getRedoOperationsFlow().firstOrNull() ?: emptyList()
+	override suspend fun getRedoOperations(): List<Operation> =
+		getRedoOperationsFlow().firstOrNull() ?: emptyList()
 
-	override suspend fun getUndoOperations(): List<Operation> = getUndoOperationsFlow().firstOrNull() ?: emptyList()
+	override suspend fun getUndoOperations(): List<Operation> =
+		getUndoOperationsFlow().firstOrNull() ?: emptyList()
 
 	override suspend fun addRedoOperation(operation: Operation) {
 		require(operation.cell.row == operation.oldCell.row)
@@ -99,7 +105,11 @@ class AndroidProtoOperationRepository(
 		}
 	}
 
-	override suspend fun findRedoOperation(id: Long): Operation? = getRedoOperations().firstOrNull { it.id == id }
+	override suspend fun findRedoOperation(id: Long): Operation? = getRedoOperations().firstOrNull {
+		it.id == id
+	}
 
-	override suspend fun findUndoOperation(id: Long): Operation? = getUndoOperations().firstOrNull { it.id == id }
+	override suspend fun findUndoOperation(id: Long): Operation? = getUndoOperations().firstOrNull {
+		it.id == id
+	}
 }

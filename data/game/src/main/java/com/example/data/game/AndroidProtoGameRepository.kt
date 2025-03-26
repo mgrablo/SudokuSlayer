@@ -62,11 +62,7 @@ class AndroidProtoGameRepository(
 		}
 	}
 
-	override suspend fun updateCell(
-		row: Int,
-		column: Int,
-		cellData: SudokuCellData,
-	) {
+	override suspend fun updateCell(row: Int, column: Int, cellData: SudokuCellData) {
 		protoStorage.updateData { protoGame ->
 			protoGame
 				.toBuilder()

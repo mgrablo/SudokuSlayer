@@ -20,31 +20,28 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
 
 @Composable
-fun VictoryDialog(
-	isVisible: Boolean,
-	onDismissRequest: () -> Unit,
-) {
+fun VictoryDialog(isVisible: Boolean, onDismissRequest: () -> Unit) {
 	if (isVisible) {
 		Dialog(
 			onDismissRequest = onDismissRequest,
 			properties =
-				DialogProperties(
-					dismissOnBackPress = true,
-					dismissOnClickOutside = true,
-					securePolicy = SecureFlagPolicy.Inherit,
-				),
+			DialogProperties(
+				dismissOnBackPress = true,
+				dismissOnClickOutside = true,
+				securePolicy = SecureFlagPolicy.Inherit,
+			),
 		) {
 			Card(
 				modifier =
-					Modifier
-						.fillMaxWidth()
-						.height(200.dp)
-						.padding(16.dp),
+				Modifier
+					.fillMaxWidth()
+					.height(200.dp)
+					.padding(16.dp),
 				shape = RoundedCornerShape(16.dp),
 				colors =
-					CardDefaults.cardColors(
-						containerColor = MaterialTheme.colorScheme.surface,
-					),
+				CardDefaults.cardColors(
+					containerColor = MaterialTheme.colorScheme.surface,
+				),
 				elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
 			) {
 				Column(

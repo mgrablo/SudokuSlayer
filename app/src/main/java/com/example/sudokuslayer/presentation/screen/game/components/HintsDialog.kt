@@ -43,12 +43,17 @@ fun HintsDialog(
 	onFillNotesClick: () -> Unit,
 	onHintClick: () -> Unit,
 	onShowLogsClick: () -> Unit,
+	modifier: Modifier = Modifier,
 ) {
 	val buttons =
 		listOf(
 			HintDialogButton("Hint cell", onHintClick, { Icon(Icons.Default.Face, null) }),
-			HintDialogButton("Show hint logs", onShowLogsClick, { Icon(Icons.AutoMirrored.Default.List, null) }),
-			HintDialogButton("Fill notes", onFillNotesClick, { Icon(painterResource(R.drawable.stylus_note), null) }),
+			HintDialogButton("Show hint logs", onShowLogsClick, {
+				Icon(Icons.AutoMirrored.Default.List, null)
+			}),
+			HintDialogButton("Fill notes", onFillNotesClick, {
+				Icon(painterResource(R.drawable.stylus_note), null)
+			}),
 		)
 
 	if (isVisible) {
@@ -57,18 +62,18 @@ fun HintsDialog(
 		) {
 			Box(
 				modifier =
-					Modifier
-						.widthIn(min = 280.dp, max = 560.dp)
-						.height(400.dp)
-						.padding(20.dp)
-						.clip(RoundedCornerShape(12.dp)),
+				Modifier
+					.widthIn(min = 280.dp, max = 560.dp)
+					.height(400.dp)
+					.padding(20.dp)
+					.clip(RoundedCornerShape(12.dp)),
 			) {
 				Card(
 					modifier = Modifier.fillMaxSize(),
 					colors =
-						CardDefaults.cardColors(
-							containerColor = MaterialTheme.colorScheme.surface,
-						),
+					CardDefaults.cardColors(
+						containerColor = MaterialTheme.colorScheme.surface,
+					),
 					elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
 				) {
 					Column(
@@ -82,10 +87,10 @@ fun HintsDialog(
 								Button(
 									onClick = button.onClick,
 									colors =
-										ButtonDefaults.buttonColors(
-											containerColor = MaterialTheme.colorScheme.primaryContainer,
-											contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-										),
+									ButtonDefaults.buttonColors(
+										containerColor = MaterialTheme.colorScheme.primaryContainer,
+										contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+									),
 								) {
 									Row(
 										Modifier.fillMaxWidth().padding(4.dp),

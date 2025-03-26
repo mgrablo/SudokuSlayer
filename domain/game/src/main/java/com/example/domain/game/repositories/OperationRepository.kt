@@ -31,8 +31,4 @@ interface OperationRepository {
 	suspend fun findUndoOperation(id: Long): Operation?
 }
 
-data class Operation(
-	val id: Long,
-	val cell: SudokuCellData,
-	val oldCell: SudokuCellData,
-)
+data class Operation(val id: Long, val cell: SudokuCellData, val oldCell: SudokuCellData)

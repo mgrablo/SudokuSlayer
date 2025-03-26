@@ -62,29 +62,17 @@ class SettingsViewModel(
 	val darkColorSchemes = settingsRepository.getDarkColorSchemes().toPersistentSet()
 
 	sealed interface Event {
-		data class SetDarkMode(
-			val darkMode: String,
-		) : Event
+		data class SetDarkMode(val darkMode: String) : Event
 
-		data class SetDarkColorScheme(
-			val scheme: String,
-		) : Event
+		data class SetDarkColorScheme(val scheme: String) : Event
 
-		data class SetLightColorScheme(
-			val scheme: String,
-		) : Event
+		data class SetLightColorScheme(val scheme: String) : Event
 
-		data class SetLanguage(
-			val language: String,
-		) : Event
+		data class SetLanguage(val language: String) : Event
 
-		data class ToggleLeftHandMode(
-			val leftHandMode: Boolean,
-		) : Event
+		data class ToggleLeftHandMode(val leftHandMode: Boolean) : Event
 
-		data class ToggleActionButtonsOnTop(
-			val actionButtonsOnTop: Boolean,
-		) : Event
+		data class ToggleActionButtonsOnTop(val actionButtonsOnTop: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {

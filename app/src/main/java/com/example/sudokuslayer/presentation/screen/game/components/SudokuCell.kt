@@ -36,7 +36,6 @@ import com.example.sudokuslayer.presentation.ui.theme.LocalSudokuBoardColors
 import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentSetOf
-import kotlin.collections.addAll
 import kotlin.math.sqrt
 
 @Composable
@@ -49,7 +48,8 @@ fun SudokuCell(
 ) {
 	val subgridSize by remember { derivedStateOf { sqrt(gridSize.toDouble()).toInt() } }
 	val isSelected = remember(data.attributes) { data.attributes.contains(CellAttributes.SELECTED) }
-	val isHighlighted = remember(data.attributes) { data.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED) }
+	val isHighlighted =
+		remember(data.attributes) { data.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED) }
 
 	val backgroundColor =
 		when {
@@ -63,11 +63,11 @@ fun SudokuCell(
 	Box(
 		contentAlignment = Alignment.Center,
 		modifier =
-			modifier
-				.clip(shape)
-				.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
-				.background(backgroundColor)
-				.clickable(onClick = { onCellClick(data.row, data.col) }),
+		modifier
+			.clip(shape)
+			.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
+			.background(backgroundColor)
+			.clickable(onClick = { onCellClick(data.row, data.col) }),
 	) {
 		when (data.number) {
 			0 -> {
@@ -89,37 +89,56 @@ fun SudokuCell(
 								style = textStyle.copy(fontSize = textStyle.fontSize / subgridSize),
 								textAlign = TextAlign.Center,
 								modifier =
-									Modifier
-										.fillMaxSize()
-										.wrapContentHeight(align = Alignment.CenterVertically),
+								Modifier
+									.fillMaxSize()
+									.wrapContentHeight(align = Alignment.CenterVertically),
 							)
 						}
 					}
 				}
 			}
+
 			else -> {
 				// Filled cell
 				val circleColor =
 					when {
-						data.attributes.contains(CellAttributes.RULE_BREAKING) -> LocalSudokuBoardColors.current.invalidMarkBackground
-						data.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) -> LocalSudokuBoardColors.current.matchingMarkBackground
-						data.attributes.contains(CellAttributes.HINT_REVEALED) -> LocalSudokuBoardColors.current.hintMarkBackground
+						data.attributes.contains(
+							CellAttributes.RULE_BREAKING,
+						) -> LocalSudokuBoardColors.current.invalidMarkBackground
+
+						data.attributes.contains(
+							CellAttributes.NUMBER_MATCH_HIGHLIGHTED,
+						) -> LocalSudokuBoardColors.current.matchingMarkBackground
+
+						data.attributes.contains(
+							CellAttributes.HINT_REVEALED,
+						) -> LocalSudokuBoardColors.current.hintMarkBackground
+
 						else -> Color.Transparent
 					}
 				val textColor =
 					when {
-						data.attributes.contains(CellAttributes.RULE_BREAKING) -> LocalSudokuBoardColors.current.onInvalidMarkBackground
-						data.attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) -> LocalSudokuBoardColors.current.onMatchingMarkBackground
-						data.attributes.contains(CellAttributes.HINT_REVEALED) -> LocalSudokuBoardColors.current.onHintMarkBackground
+						data.attributes.contains(
+							CellAttributes.RULE_BREAKING,
+						) -> LocalSudokuBoardColors.current.onInvalidMarkBackground
+
+						data.attributes.contains(
+							CellAttributes.NUMBER_MATCH_HIGHLIGHTED,
+						) -> LocalSudokuBoardColors.current.onMatchingMarkBackground
+
+						data.attributes.contains(
+							CellAttributes.HINT_REVEALED,
+						) -> LocalSudokuBoardColors.current.onHintMarkBackground
+
 						else -> LocalSudokuBoardColors.current.onDefaultBackground
 					}
 				Box(
 					contentAlignment = Alignment.Center,
 					modifier =
-						Modifier
-							.fillMaxSize(0.9f)
-							.clip(CircleShape)
-							.background(circleColor),
+					Modifier
+						.fillMaxSize(0.9f)
+						.clip(CircleShape)
+						.background(circleColor),
 				) {
 					Text(
 						text = data.number.toString(),
@@ -127,11 +146,11 @@ fun SudokuCell(
 						style = textStyle,
 						textAlign = TextAlign.Center,
 						modifier =
-							Modifier
-								.fillMaxSize()
-								.wrapContentHeight(
-									align = Alignment.CenterVertically,
-								),
+						Modifier
+							.fillMaxSize()
+							.wrapContentHeight(
+								align = Alignment.CenterVertically,
+							),
 					)
 				}
 			}
@@ -139,18 +158,17 @@ fun SudokuCell(
 	}
 }
 
-fun getRoundedBlockShape(
-	gridSize: Int,
-	row: Int,
-	column: Int,
-): Shape {
+fun getRoundedBlockShape(gridSize: Int, row: Int, column: Int): Shape {
 	val blockSize = sqrt(gridSize.toDouble()).toInt()
 	val shape =
 		when {
 			row % blockSize == 0 && column % blockSize == 0 -> TopLeftRoundedCornerShape
 			row % blockSize == 0 && column % blockSize == blockSize - 1 -> TopRightRoundedCornerShape
 			row % blockSize == blockSize - 1 && column % blockSize == 0 -> BottomLeftRoundedCornerShape
-			row % blockSize == blockSize - 1 && column % blockSize == blockSize - 1 -> BottomRightRoundedCornerShape
+			row % blockSize == blockSize - 1 && column % blockSize == blockSize - 1 -> {
+				BottomRightRoundedCornerShape
+			}
+
 			else -> RoundedCornerShape(0.dp)
 		}
 	return shape

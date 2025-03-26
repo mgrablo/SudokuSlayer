@@ -14,6 +14,14 @@ kotlin {
 	}
 }
 
+testing {
+	suites {
+		named<JvmTestSuite>("test") {
+			useJUnitJupiter()
+		}
+	}
+}
+
 dependencies {
 	implementation(libs.annotations)
 	implementation(libs.kotlinx.coroutines.core)
@@ -23,10 +31,8 @@ dependencies {
 	implementation(libs.androidx.runtime)
 
 	implementation(libs.koin.core)
-	testImplementation(libs.junit.jupiter)
-	testImplementation(libs.junit.jupiter.api)
-	compileOnly(libs.junit.jupiter.params)
-	testRuntimeOnly(libs.junit.jupiter.engine)
+
+	testImplementation(platform(libs.junit.bom))
 }
 
 tasks.withType<Test> {

@@ -93,9 +93,9 @@ private fun SudokuCreatorContent(
 	) { innerPadding ->
 		Column(
 			modifier =
-				Modifier
-					.fillMaxSize()
-					.padding(innerPadding),
+			Modifier
+				.fillMaxSize()
+				.padding(innerPadding),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center,
 		) {
@@ -126,9 +126,9 @@ private fun PreviewBox() {
 	Box(
 		contentAlignment = Alignment.Center,
 		modifier =
-			Modifier
-				.size(PreviewBoxSize)
-				.background(color = MaterialTheme.colorScheme.error),
+		Modifier
+			.size(PreviewBoxSize)
+			.background(color = MaterialTheme.colorScheme.error),
 	) {
 		Text(
 			"PREVIEW",
@@ -173,17 +173,13 @@ private fun GameControls(
 }
 
 @Composable
-private fun GameButton(
-	onClick: () -> Unit,
-	text: String,
-	modifier: Modifier = Modifier,
-) {
+private fun GameButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
 	Button(
 		onClick = onClick,
 		colors =
-			ButtonDefaults.buttonColors(
-				containerColor = MaterialTheme.colorScheme.primaryContainer,
-			),
+		ButtonDefaults.buttonColors(
+			containerColor = MaterialTheme.colorScheme.primaryContainer,
+		),
 		modifier = modifier,
 	) {
 		Text(

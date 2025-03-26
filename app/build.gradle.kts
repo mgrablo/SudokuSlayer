@@ -1,5 +1,3 @@
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
-
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.kotlin.android)
@@ -7,7 +5,7 @@ plugins {
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.protobuf)
 	alias(libs.plugins.android.junit5)
-	alias(libs.plugins.ktlint)
+	id("KtlintConvention")
 }
 
 android {
@@ -53,19 +51,9 @@ android {
 	buildFeatures {
 		compose = true
 	}
-}
-
-protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:4.29.1"
-	}
-	generateProtoTasks {
-		all().forEach { task ->
-			task.builtins {
-				create("java") {
-					option("lite")
-				}
-			}
+	testOptions {
+		unitTests.all {
+			it.useJUnitPlatform()
 		}
 	}
 }
@@ -83,39 +71,28 @@ dependencies {
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.navigation.compose)
 	implementation(libs.kotlinx.serialization.json)
-	implementation(libs.androidx.proto.datastore)
-	implementation(libs.protobuf.kotlin.lite)
 	implementation(libs.compose.unstyled)
 	implementation(libs.catppuccin.palette)
 	implementation(libs.catppuccin.compose)
 	implementation(libs.kotlinx.collections.immutable)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
-	testImplementation(libs.junit.jupiter.api)
-	testRuntimeOnly(libs.junit.jupiter.engine)
+	testImplementation(platform(libs.junit.bom))
 	androidTestImplementation(libs.junit.jupiter.api)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
-	androidTestImplementation(libs.androidx.ui.test.junit4)
 
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
-	api(project(":sudoku-core"))
-	implementation(project(":domain:game"))
-	implementation(project(":domain:creator"))
-	implementation(project(":domain:settings"))
+	api(projects.sudokuCore)
+	implementation(projects.domain.game)
+	implementation(projects.domain.creator)
+	implementation(projects.domain.settings)
 
-	// TODO: Replace with domain modules
-	implementation(project(":data:core"))
-	implementation(project(":data:preferences"))
-	implementation(project(":data:settings"))
-	implementation(project(":data:game"))
-	implementation(project(":data:core-android"))
-}
-
-configure<KtlintExtension> {
-	version.set("1.5.0")
-	android.set(true)
-	outputColorName.set("RED")
+	implementation(projects.data.core)
+	implementation(projects.data.preferences)
+	implementation(projects.data.settings)
+	implementation(projects.data.game)
+	implementation(projects.data.coreandroid)
 }

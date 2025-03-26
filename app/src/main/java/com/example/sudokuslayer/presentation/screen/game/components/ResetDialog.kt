@@ -36,9 +36,9 @@ fun ResetDialog(
 				TextButton(
 					onClick = onConfirmClick,
 					colors =
-						ButtonDefaults.textButtonColors(
-							contentColor = MaterialTheme.colorScheme.primary,
-						),
+					ButtonDefaults.textButtonColors(
+						contentColor = MaterialTheme.colorScheme.primary,
+					),
 				) {
 					Text(
 						text = "Yes",

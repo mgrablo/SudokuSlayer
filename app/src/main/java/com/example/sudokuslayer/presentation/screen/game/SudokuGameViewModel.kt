@@ -110,14 +110,9 @@ class SudokuGameViewModel(
 	}
 
 	sealed interface Event {
-		data class SelectCell(
-			val row: Int,
-			val col: Int,
-		) : Event
+		data class SelectCell(val row: Int, val col: Int) : Event
 
-		data class InputNumber(
-			val number: Int,
-		) : Event
+		data class InputNumber(val number: Int) : Event
 
 		data object SwitchInputMode : Event
 
@@ -205,18 +200,15 @@ class SudokuGameViewModel(
 		}
 	}
 
-	private fun selectCell(
-		row: Int,
-		col: Int,
-	) {
+	private fun selectCell(row: Int, col: Int) {
 		viewModelScope.launch {
 			_game.update {
 				it.copy(
 					grid =
-						selectCellUseCase(
-							sudoku = _game.value.grid,
-							selectedCell = row to col,
-						),
+					selectCellUseCase(
+						sudoku = _game.value.grid,
+						selectedCell = row to col,
+					),
 				)
 			}
 

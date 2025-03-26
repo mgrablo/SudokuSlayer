@@ -27,11 +27,7 @@ import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-data class ActionPadItem(
-	val icon: AppIcon,
-	val onClick: () -> Unit,
-	val contentDescription: String,
-)
+data class ActionPadItem(val icon: AppIcon, val onClick: () -> Unit, val contentDescription: String)
 
 enum class ActionPadOrientation {
 	HORIZONTAL,
@@ -61,8 +57,8 @@ fun ActionPad(
 				textColor = itemOnBackgroundColor,
 				textStyle = textStyle,
 				modifier =
-					Modifier
-						.size(itemSize)
+				Modifier
+					.size(itemSize),
 			)
 		}
 	}
@@ -126,21 +122,20 @@ private fun ActionPadVerticalPreview() {
 }
 
 @Composable
-private fun getPreviewItems() =
-	persistentListOf(
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowBack, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.Default.Clear, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-		ActionPadItem(
-			icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowForward, ""),
-			onClick = { },
-			contentDescription = "",
-		),
-	)
+private fun getPreviewItems() = persistentListOf(
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowBack, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.Default.Clear, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+	ActionPadItem(
+		icon = AppIcon.VectorIcon(Icons.AutoMirrored.Default.ArrowForward, ""),
+		onClick = { },
+		contentDescription = "",
+	),
+)

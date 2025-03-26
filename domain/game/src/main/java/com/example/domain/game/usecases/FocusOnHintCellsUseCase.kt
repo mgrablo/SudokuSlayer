@@ -7,10 +7,7 @@ import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 
 class FocusOnHintCellsUseCase {
-	operator fun invoke(
-		hint: Hint,
-		sudokuGrid: SudokuGrid,
-	): SudokuGrid {
+	operator fun invoke(hint: Hint, sudokuGrid: SudokuGrid): SudokuGrid {
 		var updatedSudoku = sudokuGrid
 		when (hint.type) {
 			is HintType.HiddenSingle, is HintType.NakedSingle -> {

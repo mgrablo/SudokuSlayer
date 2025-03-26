@@ -88,13 +88,13 @@ private fun SettingsScreenContent(
 	) { paddingValues ->
 		Column(
 			modifier =
-				Modifier
-					.fillMaxSize()
-					.displayCutoutPadding()
-					.systemBarsPadding()
-					.padding(paddingValues)
-					.padding(LocalPadding.current.normal)
-					.verticalScroll(rememberScrollState()),
+			Modifier
+				.fillMaxSize()
+				.displayCutoutPadding()
+				.systemBarsPadding()
+				.padding(paddingValues)
+				.padding(LocalPadding.current.normal)
+				.verticalScroll(rememberScrollState()),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
 			val themeOptions = persistentSetOf("System", "Dark", "Light")
@@ -157,7 +157,6 @@ private fun SettingsScreenContent(
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
-
 			}
 		}
 	}

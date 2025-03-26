@@ -73,13 +73,9 @@ class SudokuCreatorViewModel(
 	}
 
 	sealed interface Event {
-		data class ChangeDifficulty(
-			val num: Int,
-		) : Event
+		data class ChangeDifficulty(val num: Int) : Event
 
-		data class ChangeGridSize(
-			val num: Int,
-		) : Event
+		data class ChangeGridSize(val num: Int) : Event
 
 		data object NewGame : Event
 

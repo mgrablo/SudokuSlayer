@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class AndroidSettingsRepository : SettingsRepository {
-	private val preferenceStorage: PreferenceStorage = PreferenceStorageSingleton.getInstance("settings")
+	private val preferenceStorage: PreferenceStorage = PreferenceStorageSingleton.getInstance(
+		"settings",
+	)
 
 	override val darkMode: Flow<DarkMode> =
 		preferenceStorage
@@ -29,8 +31,16 @@ class AndroidSettingsRepository : SettingsRepository {
 			.map { it.orEmpty() }
 			.map { ColorScheme.fromName(it) }
 
-	override val language: Flow<String> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.Language).map { it.orEmpty() }
-	override val leftHandMode: Flow<Boolean> = preferenceStorage.getAsFlow(SettingsPreferenceKeys.LeftHandMode).map { it == true }
+	override val language: Flow<String> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.Language,
+	).map {
+		it.orEmpty()
+	}
+	override val leftHandMode: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.LeftHandMode,
+	).map {
+		it == true
+	}
 	override val showActionButtonsOnTop: Flow<Boolean> =
 		preferenceStorage.getAsFlow(SettingsPreferenceKeys.ShowActionButtonsOnTop).map { it == true }
 
