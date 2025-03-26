@@ -4,9 +4,9 @@ plugins {
 }
 
 dependencies {
-	implementation(project(":data:core"))
-	implementation(project(":sudoku-core"))
-	implementation(project(":domain:game"))
+	implementation(projects.data.core)
+	implementation(projects.sudokuCore)
+	implementation(projects.domain.game)
 
 	implementation(libs.androidx.proto.datastore)
 	implementation(libs.protobuf.kotlin.lite)

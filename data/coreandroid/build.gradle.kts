@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-	implementation(project(":data:core"))
+	implementation(projects.data.core)
 
 	implementation(libs.androidx.proto.datastore)
 	implementation(libs.koin.android)

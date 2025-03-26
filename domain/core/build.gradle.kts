@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-	implementation(project(":sudoku-core"))
+	implementation(projects.sudokuCore)
 }

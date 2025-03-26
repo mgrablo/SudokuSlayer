@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-	implementation(project(":data:core"))
-	implementation(project(":domain:settings"))
+	implementation(projects.data.core)
+	implementation(projects.domain.settings)
 }

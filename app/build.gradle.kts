@@ -52,21 +52,21 @@ android {
 		compose = true
 	}
 }
-
-protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:4.29.1"
-	}
-	generateProtoTasks {
-		all().forEach { task ->
-			task.builtins {
-				create("java") {
-					option("lite")
-				}
-			}
-		}
-	}
-}
+//
+// protobuf {
+// 	protoc {
+// 		artifact = "com.google.protobuf:protoc:4.29.1"
+// 	}
+// 	generateProtoTasks {
+// 		all().forEach { task ->
+// 			task.builtins {
+// 				create("java") {
+// 					option("lite")
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 dependencies {
 	implementation(libs.bundles.koin.compose)
@@ -81,8 +81,6 @@ dependencies {
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.navigation.compose)
 	implementation(libs.kotlinx.serialization.json)
-	implementation(libs.androidx.proto.datastore)
-	implementation(libs.protobuf.kotlin.lite)
 	implementation(libs.compose.unstyled)
 	implementation(libs.catppuccin.palette)
 	implementation(libs.catppuccin.compose)
@@ -99,15 +97,14 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
-	api(project(":sudoku-core"))
-	implementation(project(":domain:game"))
-	implementation(project(":domain:creator"))
-	implementation(project(":domain:settings"))
+	api(projects.sudokuCore)
+	implementation(projects.domain.game)
+	implementation(projects.domain.creator)
+	implementation(projects.domain.settings)
 
-	// TODO: Replace with domain modules
-	implementation(project(":data:core"))
-	implementation(project(":data:preferences"))
-	implementation(project(":data:settings"))
-	implementation(project(":data:game"))
-	implementation(project(":data:coreandroid"))
+	implementation(projects.data.core)
+	implementation(projects.data.preferences)
+	implementation(projects.data.settings)
+	implementation(projects.data.game)
+	implementation(projects.data.coreandroid)
 }

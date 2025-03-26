@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-	implementation(project(":sudoku-core"))
-	api(project(":domain:core"))
+	implementation(projects.sudokuCore)
+	api(projects.domain.core)
 }
