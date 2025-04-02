@@ -3,8 +3,8 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.protobuf)
 	alias(libs.plugins.android.junit5)
+	alias(libs.plugins.protobuf)
 	id("KtlintConvention")
 }
 

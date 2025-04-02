@@ -1,4 +1,4 @@
-package com.example.sudokuslayer.presentation.ui.theme
+package com.example.feature.uicore
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
