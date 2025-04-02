@@ -32,6 +32,7 @@ dependencies {
 	androidTestImplementation(libs.androidx.ui.test.android)
 	androidTestImplementation(libs.junit.jupiter.api)
 	debugImplementation(libs.androidx.ui.test.manifest)
+	debugImplementation(libs.androidx.ui.tooling)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 }
