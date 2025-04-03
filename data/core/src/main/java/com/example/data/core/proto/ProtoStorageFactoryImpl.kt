@@ -1,11 +1,8 @@
-package com.example.data.coreandroid
+package com.example.data.core.proto
 
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.example.data.core.proto.ProtoStorage
-import com.example.data.core.proto.ProtoStorageFactory
-import com.example.data.core.proto.Serializer
 import java.io.InputStream
 import java.io.OutputStream
 import androidx.datastore.core.Serializer as DataStoreSerializer

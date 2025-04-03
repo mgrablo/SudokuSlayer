@@ -1,7 +1,6 @@
 package com.example.sudokuslayer
 
 import com.example.data.core.dataCoreModule
-import com.example.data.coreandroid.coreAndroidModule
 import com.example.data.game.dataGameModule
 import com.example.data.settings.dataSettingsModule
 import com.example.feature.creator.sudokuCreatorModule
@@ -12,7 +11,6 @@ import org.koin.dsl.module
 val appModule =
 	module {
 		includes(
-			coreAndroidModule,
 			dataCoreModule,
 			dataSettingsModule,
 			dataGameModule,

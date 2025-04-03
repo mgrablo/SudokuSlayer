@@ -1,7 +1,6 @@
-package com.example.data.coreandroid
+package com.example.data.core.proto
 
 import androidx.datastore.core.DataStore
-import com.example.data.core.proto.ProtoStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import java.io.IOException
