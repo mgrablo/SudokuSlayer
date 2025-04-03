@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.feature.uicore.LocalPadding
+import com.example.feature.uicore.theme.LocalPadding
 
 @Composable
 internal fun SettingsCategory(title: String, content: @Composable () -> Unit) {

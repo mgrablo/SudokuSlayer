@@ -27,8 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.feature.settings.components.SettingDropDownMenu
 import com.example.feature.settings.components.SettingSwitchItem
 import com.example.feature.settings.components.SettingsCategory
-import com.example.feature.uicore.LocalPadding
-import com.example.feature.uicore.SudokuSlayerTheme
+import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import org.koin.androidx.compose.koinViewModel

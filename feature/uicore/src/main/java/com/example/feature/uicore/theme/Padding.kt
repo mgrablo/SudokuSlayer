@@ -1,4 +1,4 @@
-package com.example.feature.uicore
+package com.example.feature.uicore.theme
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp

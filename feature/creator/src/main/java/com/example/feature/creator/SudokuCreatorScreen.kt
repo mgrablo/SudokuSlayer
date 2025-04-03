@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.core.Game
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.HorizontalSelect
-import com.example.feature.uicore.LocalPadding
-import com.example.feature.uicore.SudokuSlayerTheme
+import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.koinViewModel
@@ -50,6 +50,7 @@ private const val SELECTS_MAX_WIDTH = 0.8f
 fun SudokuCreatorScreen(
 	navigateToGameScreen: () -> Unit,
 	openDrawer: () -> Unit,
+	modifier: Modifier = Modifier,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
 ) {
 	val uiState by viewModel.uiState.collectAsState()
@@ -61,6 +62,7 @@ fun SudokuCreatorScreen(
 		navigateToGameScreen = { navigateToGameScreen },
 		difficultyOptions = viewModel.difficulties,
 		gridSizeOptions = viewModel.gridSizeOptions,
+		modifier = modifier,
 	)
 }
 
@@ -76,7 +78,7 @@ private fun SudokuCreatorContent(
 	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
-		modifier = modifier.fillMaxSize(),
+		modifier = modifier,
 		topBar = {
 			CenterAlignedTopAppBar(
 				windowInsets = WindowInsets.displayCutout,
@@ -220,7 +222,7 @@ private fun SudokuCreatorScreenPreview() {
 			onEvent = { },
 			openDrawer = { },
 			navigateToGameScreen = { },
-			modifier = Modifier,
+			modifier = Modifier.fillMaxSize(),
 		)
 	}
 }

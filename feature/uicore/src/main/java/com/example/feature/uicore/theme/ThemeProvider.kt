@@ -1,4 +1,4 @@
-package com.example.feature.uicore
+package com.example.feature.uicore.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
