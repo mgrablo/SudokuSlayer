@@ -1,18 +1,14 @@
 package com.example.data.settings
 
 import com.example.data.core.preferences.PreferenceStorage
-import com.example.data.core.preferences.PreferenceStorageSingleton
 import com.example.domain.settings.SettingsRepository
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AndroidSettingsRepository : SettingsRepository {
-	private val preferenceStorage: PreferenceStorage = PreferenceStorageSingleton.getInstance(
-		"settings",
-	)
-
+class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage) :
+	SettingsRepository {
 	override val darkMode: Flow<DarkMode> =
 		preferenceStorage
 			.getAsFlow(SettingsPreferenceKeys.DarkMode)
