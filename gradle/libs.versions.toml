@@ -26,15 +26,12 @@ composeUnstyled = "1.20.1"
 catppuccinPalette = "0.1.2"
 junit5 = "5.12.1"
 androidJunit5 = "1.12.0.0"
+junit5TestCompose = "1.7.0"
 annotations = "1.9.1"
 immutableCollections = "0.3.8"
 ktlint = "12.2.0"
 ktlintCompose = "0.4.22"
 koin = "4.0.2"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-appcompat = "1.7.0"
-material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -67,6 +64,7 @@ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params" }
+junit5-android-test-compose = { group = "de.mannodermaus.junit5", name = "android-test-compose", version.ref = "junit5TestCompose"}
 annotations = { group = "androidx.annotation", name = "annotation", version.ref = "annotations" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "immutableCollections" }
 ktlint-ruleset-compose = { group = "io.nlopez.compose.rules", name="ktlint", version.ref = "ktlintCompose" }
@@ -80,10 +78,6 @@ koin-compose-navigation = { group = "io.insert-koin", name = "koin-androidx-navi
 ktlint-gradle-plugin = { group = "org.jlleitschuh.gradle.ktlint", name = "org.jlleitschuh.gradle.ktlint.gradle.plugin", version.ref = "ktlint" }
 android-gradle-plugin = { group= "com.android.library", name = "com.android.library.gradle.plugin", version.ref = "agp" }
 kotlinAndroid-gradle-plugin = { group = "org.jetbrains.kotlin.android", name = "org.jetbrains.kotlin.android.gradle.plugin", version.ref = "kotlin"}
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

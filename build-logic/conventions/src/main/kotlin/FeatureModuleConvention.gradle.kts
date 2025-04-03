@@ -12,6 +12,12 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+android {
+	defaultConfig {
+		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+	}
+}
+
 dependencies {
 	implementation(platform(libs.androidx.compose.bom))
 	implementation(libs.bundles.koin.compose)
@@ -31,6 +37,7 @@ dependencies {
 	androidTestImplementation(platform(libs.androidx.compose.bom))
 	androidTestImplementation(libs.androidx.ui.test.android)
 	androidTestImplementation(libs.junit.jupiter.api)
+	androidTestImplementation(libs.junit5.android.test.compose)
 	debugImplementation(libs.androidx.ui.test.manifest)
 	debugImplementation(libs.androidx.ui.tooling)
 
