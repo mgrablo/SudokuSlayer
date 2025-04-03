@@ -64,7 +64,6 @@ dependencies {
 	implementation(projects.feature.creator)
 	implementation(projects.feature.settings)
 	implementation(projects.data.core)
-	implementation(projects.data.preferences)
 	implementation(projects.data.settings)
 	implementation(projects.data.game)
 	implementation(projects.data.coreandroid)

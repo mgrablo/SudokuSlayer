@@ -5,5 +5,9 @@ import org.koin.dsl.module
 
 val dataSettingsModule =
 	module {
-		single<SettingsRepository> { AndroidSettingsRepository() }
+		single<SettingsRepository> {
+			AndroidSettingsRepository(
+				preferenceStorage = get(),
+			)
+		}
 	}
