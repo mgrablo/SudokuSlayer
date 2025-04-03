@@ -31,6 +31,7 @@ data class ThemeConfiguration(
 	val boardColors: SudokuBoardColors,
 	val keypadColors: KeypadColors,
 	val catppuccinPalette: CatppuccinPalette,
+	val hintSheetColors: HintSheetColors,
 )
 
 private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfiguration =
@@ -40,6 +41,7 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 				extendedColorScheme = extendedDark,
 				boardColors = MochaSudokuBoard,
 				keypadColors = MochaKeypadColors,
+				hintSheetColors = MochaHintSheetColors,
 				catppuccinPalette = CatppuccinMaterial.Mocha(),
 			)
 
@@ -48,6 +50,7 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 				extendedColorScheme = extendedDark,
 				boardColors = MacchiatoSudokuBoard,
 				keypadColors = MacchiatoKeypadColors,
+				hintSheetColors = MacchiatoHintSheetColors,
 				catppuccinPalette = CatppuccinMaterial.Macchiato(),
 			)
 	}
@@ -59,6 +62,7 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 				extendedColorScheme = extendedLight,
 				boardColors = LatteSudokuBoard,
 				keypadColors = LatteKeypadColors,
+				hintSheetColors = LatteHintSheetColors,
 				catppuccinPalette = CatppuccinMaterial.Latte(),
 			)
 
@@ -67,6 +71,7 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 				extendedColorScheme = extendedLight,
 				boardColors = FrappeSudokuBoard,
 				keypadColors = FrappeKeypadColors,
+				hintSheetColors = FrappeHintSheetColors,
 				catppuccinPalette = CatppuccinMaterial.Frappe(),
 			)
 	}
@@ -94,6 +99,7 @@ fun SudokuSlayerTheme(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
 		LocalSudokuBoardColors provides themeConfig.boardColors,
 		LocalKeyPadColors provides themeConfig.keypadColors,
+		LocalHintSheetColors provides themeConfig.hintSheetColors,
 	) {
 		CatppuccinTheme.Palette(
 			palette = themeConfig.catppuccinPalette,

@@ -7,7 +7,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.shifthackz.catppuccin.palette.Catppuccin
-import com.shifthackz.catppuccin.palette.CatppuccinPalette
 
 @Immutable
 data class ExtendedColorScheme(
@@ -295,8 +294,6 @@ internal val LocalExtendedColorScheme =
 		extendedLight
 	}
 
-val LocalCatppuccinPalette = staticCompositionLocalOf<CatppuccinPalette> { Catppuccin.Latte }
-
 val LocalSudokuBoardColors =
 	staticCompositionLocalOf<SudokuBoardColors> {
 		MochaSudokuBoard
@@ -311,8 +308,3 @@ val MaterialTheme.extendedColorScheme: ExtendedColorScheme
 	@Composable
 	@ReadOnlyComposable
 	get() = LocalExtendedColorScheme.current
-
-val MaterialTheme.catppuccinPalette: CatppuccinPalette
-	@Composable
-	@ReadOnlyComposable
-	get() = LocalCatppuccinPalette.current
