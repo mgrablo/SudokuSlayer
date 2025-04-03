@@ -14,7 +14,7 @@ import org.koin.androidx.compose.koinViewModel
 @Serializable
 data object Settings : Destination(
 	"Settings",
-	AppIcon.VectorIcon(Icons.Default.Settings, "Settings icon"),
+	AppIcon.VectorIcon(Icons.Default.Settings),
 )
 
 fun NavGraphBuilder.settingsRoute(openDrawer: () -> Unit) {

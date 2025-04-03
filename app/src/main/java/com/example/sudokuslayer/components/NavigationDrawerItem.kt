@@ -9,9 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
+import com.example.feature.uicore.theme.LocalPadding
 
 @Composable
 fun NavigationDrawerItem(
@@ -36,7 +36,7 @@ fun NavigationDrawerItem(
 		},
 		selected = isSelected,
 		onClick = onClick,
-		modifier = modifier.padding(8.dp),
+		modifier = modifier.padding(LocalPadding.current.tiny),
 		colors =
 		NavigationDrawerItemDefaults.colors(
 			selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
