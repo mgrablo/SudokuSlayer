@@ -1,4 +1,4 @@
-package com.example.sudokuslayer.presentation.navigation.components
+package com.example.sudokuslayer.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.sudokuslayer.presentation.navigation.AppIcon
-import com.example.sudokuslayer.presentation.navigation.Destination
+import com.example.feature.uicore.navigation.AppIcon
+import com.example.feature.uicore.navigation.Destination
 
 @Composable
 fun NavigationDrawerItem(
@@ -36,7 +36,7 @@ fun NavigationDrawerItem(
 		},
 		selected = isSelected,
 		onClick = onClick,
-		modifier = Modifier.padding(8.dp),
+		modifier = modifier.padding(8.dp),
 		colors =
 		NavigationDrawerItemDefaults.colors(
 			selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,

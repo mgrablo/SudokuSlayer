@@ -22,11 +22,12 @@ import com.example.data.core.preferences.PreferenceStorageSingleton
 import com.example.data.preferences.DataStorePreferenceStorageFactory
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
-import com.example.sudokuslayer.presentation.navigation.Destination
-import com.example.sudokuslayer.presentation.navigation.SudokuNavHost
-import com.example.sudokuslayer.presentation.navigation.components.NavigationDrawer
-import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
-import com.example.sudokuslayer.presentation.ui.theme.ThemeProvider
+import com.example.feature.creator.SudokuCreator
+import com.example.feature.game.SudokuGame
+import com.example.feature.settings.Settings
+import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.uicore.theme.ThemeProvider
+import com.example.sudokuslayer.components.NavigationDrawer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
@@ -47,9 +48,9 @@ internal fun AppContent() {
 	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 	val destinations =
 		persistentListOf(
-			Destination.SudokuGame,
-			Destination.SudokuCreator,
-			Destination.Settings,
+			SudokuGame,
+			SudokuCreator,
+			Settings,
 		)
 	val scope = rememberCoroutineScope()
 	val view = LocalView.current

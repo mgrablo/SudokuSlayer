@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-object Settings : Destination(
+data object Settings : Destination(
 	"Settings",
 	AppIcon.VectorIcon(Icons.Default.Settings, "Settings icon"),
 )

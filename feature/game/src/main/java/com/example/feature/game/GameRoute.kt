@@ -11,17 +11,15 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-object SudokuGame : Destination("Current game", AppIcon.ResourceIcon(R.drawable.tag))
+data object SudokuGame : Destination("Current game", AppIcon.ResourceIcon(R.drawable.tag))
 
-fun NavGraphBuilder.gameRoute(
-	openDrawer: () -> Unit,
-) {
+fun NavGraphBuilder.gameRoute(openDrawer: () -> Unit) {
 	composable<SudokuGame> {
 		val viewmodel = koinViewModel<SudokuGameViewModel>()
 		SudokuGameScreen(
 			openDrawer = openDrawer,
 			modifier = Modifier.fillMaxSize(),
-			viewModel = viewmodel
+			viewModel = viewmodel,
 		)
 	}
 }

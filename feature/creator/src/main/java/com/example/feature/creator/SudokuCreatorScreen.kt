@@ -59,7 +59,7 @@ fun SudokuCreatorScreen(
 		uiState = uiState,
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
-		navigateToGameScreen = { navigateToGameScreen },
+		navigateToGameScreen = navigateToGameScreen,
 		difficultyOptions = viewModel.difficulties,
 		gridSizeOptions = viewModel.gridSizeOptions,
 		modifier = modifier,

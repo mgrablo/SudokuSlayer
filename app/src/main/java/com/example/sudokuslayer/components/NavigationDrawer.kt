@@ -1,4 +1,4 @@
-package com.example.sudokuslayer.presentation.navigation.components
+package com.example.sudokuslayer.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,7 +19,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.sudokuslayer.presentation.navigation.Destination
+import com.example.feature.game.SudokuGame
+import com.example.feature.uicore.navigation.Destination
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -40,7 +41,7 @@ fun NavigationDrawer(
 
 	ModalNavigationDrawer(
 		gesturesEnabled =
-		currentScreen?.hierarchy?.none { it.hasRoute(Destination.SudokuGame::class) } == true ||
+		currentScreen?.hierarchy?.none { it.hasRoute(SudokuGame::class) } == true ||
 			drawerState.isOpen,
 		drawerState = drawerState,
 		modifier = modifier,

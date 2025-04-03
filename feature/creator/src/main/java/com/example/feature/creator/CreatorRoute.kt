@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-object SudokuCreator : Destination("New game", AppIcon.VectorIcon(Icons.Default.Add, "Clear"))
+data object SudokuCreator : Destination("New game", AppIcon.VectorIcon(Icons.Default.Add, "Clear"))
 
 fun NavGraphBuilder.creatorRoute(navigateToGameScreen: () -> Unit, openDrawer: () -> Unit) {
 	composable<SudokuCreator> {
