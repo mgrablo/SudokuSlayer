@@ -3,8 +3,8 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.protobuf)
 	alias(libs.plugins.android.junit5)
+	alias(libs.plugins.protobuf)
 	id("KtlintConvention")
 }
 
@@ -59,8 +59,17 @@ android {
 }
 
 dependencies {
-	implementation(libs.bundles.koin.compose)
+	implementation(projects.feature.uicore)
+	implementation(projects.feature.game)
+	implementation(projects.feature.creator)
+	implementation(projects.feature.settings)
+	implementation(projects.data.core)
+	implementation(projects.data.preferences)
+	implementation(projects.data.settings)
+	implementation(projects.data.game)
+	implementation(projects.data.coreandroid)
 
+	implementation(libs.bundles.koin.compose)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
 	implementation(libs.androidx.activity.compose)
@@ -81,18 +90,6 @@ dependencies {
 	androidTestImplementation(libs.junit.jupiter.api)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
-
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
-
-	api(projects.sudokuCore)
-	implementation(projects.domain.game)
-	implementation(projects.domain.creator)
-	implementation(projects.domain.settings)
-
-	implementation(projects.data.core)
-	implementation(projects.data.preferences)
-	implementation(projects.data.settings)
-	implementation(projects.data.game)
-	implementation(projects.data.coreandroid)
 }

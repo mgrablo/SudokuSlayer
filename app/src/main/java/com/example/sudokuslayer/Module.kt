@@ -3,23 +3,19 @@ package com.example.sudokuslayer
 import com.example.data.coreandroid.coreAndroidModule
 import com.example.data.game.dataGameModule
 import com.example.data.settings.dataSettingsModule
-import com.example.domain.creator.domainCreatorModule
-import com.example.domain.game.domainGameModule
-import com.example.sudokuslayer.presentation.screen.game.gameModule
-import com.example.sudokuslayer.presentation.screen.settings.settingsModule
-import com.example.sudokuslayer.presentation.screen.sudokucreator.sudokuCreatorModule
+import com.example.feature.creator.sudokuCreatorModule
+import com.example.feature.game.gameModule
+import com.example.feature.settings.settingsModule
 import org.koin.dsl.module
 
 val appModule =
 	module {
 		includes(
 			coreAndroidModule,
-			gameModule,
-			sudokuCreatorModule,
-			settingsModule,
 			dataSettingsModule,
 			dataGameModule,
-			domainGameModule,
-			domainCreatorModule,
+			sudokuCreatorModule,
+			gameModule,
+			settingsModule,
 		)
 	}
