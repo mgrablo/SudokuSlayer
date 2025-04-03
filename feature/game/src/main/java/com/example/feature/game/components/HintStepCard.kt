@@ -33,9 +33,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.example.sudokuslayer.R
-import com.example.sudokuslayer.createAnnotatedString
-import com.example.sudokuslayer.presentation.ui.theme.catppuccinPalette
+import com.example.feature.game.createAnnotatedString
+import com.example.feature.uicore.theme.LocalHintSheetColors
+import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
 
 @Composable
@@ -100,7 +100,7 @@ fun HintStepCard(
 									),
 									asteriskStyle =
 									SpanStyle(
-										color = MaterialTheme.catppuccinPalette.Subtext1,
+										color = LocalHintSheetColors.current.subtext,
 										fontStyle = FontStyle.Italic,
 										fontSize = MaterialTheme.typography.bodySmall.fontSize,
 									),
@@ -168,7 +168,7 @@ fun HintStepCard(
 											),
 											asteriskStyle =
 											SpanStyle(
-												color = MaterialTheme.catppuccinPalette.Subtext1,
+												color = LocalHintSheetColors.current.subtext,
 												fontStyle = FontStyle.Italic,
 												fontSize = MaterialTheme.typography.bodySmall.fontSize,
 											),

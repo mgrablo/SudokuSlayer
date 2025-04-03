@@ -41,11 +41,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.HintLog
+import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.NakedSingleExplanation
-import com.example.sudokuslayer.R
-import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -65,6 +65,7 @@ fun HintBottomSheetScaffold(
 	content: @Composable (PaddingValues) -> Unit,
 ) {
 	BottomSheetScaffold(
+		modifier = modifier,
 		scaffoldState = sheetScaffoldState,
 		sheetPeekHeight = 128.dp,
 		sheetContainerColor = MaterialTheme.colorScheme.surfaceTint,
@@ -198,6 +199,7 @@ fun BottomSheetElevatedButton(
 	contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
 	ElevatedButton(
+		modifier = modifier,
 		onClick = onClick,
 		colors =
 		ButtonDefaults.elevatedButtonColors(

@@ -24,9 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import com.example.sudokuslayer.presentation.navigation.AppIcon
-import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 
 @Composable
 fun KeyPadItem(

@@ -32,9 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.composables.core.rememberDialogState
-import com.example.sudokuslayer.R
-import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
+import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.game.R
 
 @Composable
 fun HintsDialog(
@@ -124,7 +123,6 @@ data class HintDialogButton(
 @PreviewLightDark
 @Composable
 private fun HintsDialogPreview() {
-	val dialogState = rememberDialogState(true)
 	SudokuSlayerTheme {
 		HintsDialog(
 			isVisible = true,

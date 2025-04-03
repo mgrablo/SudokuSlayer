@@ -19,12 +19,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.LocalSudokuBoardColors
+import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudokuslayer.presentation.ui.theme.LocalPadding
-import com.example.sudokuslayer.presentation.ui.theme.LocalSudokuBoardColors
-import com.example.sudokuslayer.presentation.ui.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -62,13 +62,13 @@ fun SudokuBoard(
 		Column {
 			repeat(itemsInRow) { row ->
 				if (row > 0 && row % itemsInBlock == 0) {
-					Spacer(modifier = height(blockPadding))
+					Spacer(modifier = Modifier.height(blockPadding))
 				}
 
 				Row {
 					repeat(itemsInRow) { col ->
 						if (col > 0 && col % itemsInBlock == 0) {
-							Spacer(modifier = width(blockPadding))
+							Spacer(modifier = Modifier.width(blockPadding))
 						}
 
 						SudokuCell(

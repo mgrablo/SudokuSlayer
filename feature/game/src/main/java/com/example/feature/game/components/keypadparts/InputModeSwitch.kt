@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.theme.LocalKeyPadColors
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.game.R
 
 @Composable
 fun InputModeSwitch(
