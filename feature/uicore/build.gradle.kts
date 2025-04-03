@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-	implementation(projects.domain.settings)
+	api(projects.domain.settings)
 
 	implementation(libs.koin.core)
 	implementation(libs.catppuccin.palette)

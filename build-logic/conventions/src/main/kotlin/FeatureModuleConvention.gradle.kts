@@ -12,12 +12,6 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-android {
-	defaultConfig {
-		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-	}
-}
-
 dependencies {
 	implementation(platform(libs.androidx.compose.bom))
 	implementation(libs.bundles.koin.compose)
