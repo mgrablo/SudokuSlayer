@@ -20,7 +20,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
 
 @Composable
-fun VictoryDialog(isVisible: Boolean, onDismissRequest: () -> Unit) {
+internal fun VictoryDialog(isVisible: Boolean, onDismissRequest: () -> Unit) {
 	if (isVisible) {
 		Dialog(
 			onDismissRequest = onDismissRequest,

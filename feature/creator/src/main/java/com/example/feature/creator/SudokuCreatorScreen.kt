@@ -47,7 +47,7 @@ private const val SELECTS_MAX_WIDTH = 0.8f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SudokuCreatorScreen(
+internal fun SudokuCreatorScreen(
 	navigateToGameScreen: () -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,

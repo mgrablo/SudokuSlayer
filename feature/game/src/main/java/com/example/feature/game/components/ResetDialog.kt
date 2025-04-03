@@ -11,7 +11,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ResetDialog(
+internal fun ResetDialog(
 	isVisible: Boolean,
 	onConfirmClick: () -> Unit,
 	onDismissClick: () -> Unit,

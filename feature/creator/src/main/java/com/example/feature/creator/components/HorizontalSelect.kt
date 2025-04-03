@@ -26,7 +26,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun HorizontalSelect(
+internal fun HorizontalSelect(
 	options: PersistentList<String>,
 	onChange: (Int) -> Unit,
 	modifier: Modifier = Modifier,

@@ -39,7 +39,7 @@ import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
 
 @Composable
-fun HintStepCard(
+internal fun HintStepCard(
 	title: String,
 	cardContent: PersistentList<String>,
 	onExplainClick: () -> Unit,

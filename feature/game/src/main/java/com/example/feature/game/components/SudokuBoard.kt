@@ -30,7 +30,7 @@ import kotlinx.collections.immutable.persistentSetOf
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun SudokuBoard(
+internal fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,

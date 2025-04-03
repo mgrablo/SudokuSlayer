@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class SudokuGameViewModel(
+internal class SudokuGameViewModel(
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
 	private val getGameUseCase: GetGameUseCase,

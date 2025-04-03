@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HintBottomSheetScaffold(
+internal fun HintBottomSheetScaffold(
 	sheetScaffoldState: BottomSheetScaffoldState,
 	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
@@ -88,7 +88,7 @@ fun HintBottomSheetScaffold(
 }
 
 @Composable
-fun SheetContent(
+internal fun SheetContent(
 	title: String,
 	nextHintClick: () -> Unit,
 	explainHintClick: () -> Unit,
@@ -190,7 +190,7 @@ fun SheetContent(
 }
 
 @Composable
-fun BottomSheetElevatedButton(
+internal fun BottomSheetElevatedButton(
 	text: String,
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @Stable
 @Immutable
-data class SudokuCreatorUiState(
+internal data class SudokuCreatorUiState(
 	val loadingState: ScreenState = ScreenState.INITIAL,
 	val selectedDifficulty: GameDifficulty = GameDifficulty.Easy,
 	val selectedGridSize: SudokuGridSize = SudokuGridSize.FOUR,
@@ -28,13 +28,13 @@ data class SudokuCreatorUiState(
 )
 
 @Stable
-enum class ScreenState {
+internal enum class ScreenState {
 	INITIAL,
 	LOADING,
 	DONE,
 }
 
-class SudokuCreatorViewModel(
+internal class SudokuCreatorViewModel(
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,

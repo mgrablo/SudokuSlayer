@@ -6,7 +6,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 
-fun createAnnotatedString(
+internal fun createAnnotatedString(
 	input: String,
 	singleQuoteStyle: SpanStyle = SpanStyle(color = Color.Red),
 	asteriskStyle: SpanStyle = SpanStyle(color = Color.DarkGray),

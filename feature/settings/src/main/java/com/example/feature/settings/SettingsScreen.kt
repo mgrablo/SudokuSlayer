@@ -34,7 +34,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SettingsScreen(
+internal fun SettingsScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
@@ -61,7 +61,7 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingsScreenContent(
+private fun SettingsScreenContent(
 	openDrawer: () -> Unit,
 	onEvent: (SettingsViewModel.Event) -> Unit,
 	lightColorSchemes: PersistentSet<String>,

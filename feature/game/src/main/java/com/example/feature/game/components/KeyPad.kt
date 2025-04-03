@@ -41,7 +41,7 @@ import kotlin.math.sqrt
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun KeyPad(
+internal fun KeyPad(
 	onNumberClick: (Int) -> Unit,
 	onClearClick: () -> Unit,
 	onUndoClick: () -> Unit,

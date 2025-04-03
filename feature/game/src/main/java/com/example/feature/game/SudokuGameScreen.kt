@@ -51,7 +51,7 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SudokuGameScreen(
+internal fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
@@ -59,7 +59,7 @@ fun SudokuGameScreen(
 	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState: SudokuGameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val game by viewModel.game.collectAsStateWithLifecycle()
-	SudokuGameContent(
+	SudokuGameScreenContent(
 		uiState = uiState,
 		game = game,
 		onEvent = {
@@ -73,7 +73,7 @@ fun SudokuGameScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SudokuGameContent(
+private fun SudokuGameScreenContent(
 	uiState: SudokuGameUiState,
 	game: Game,
 	onEvent: (Event) -> Unit,
@@ -229,7 +229,7 @@ fun SudokuGameContent(
 @Composable
 private fun SudokuGameScreenPreview() {
 	SudokuSlayerTheme {
-		SudokuGameContent(
+		SudokuGameScreenContent(
 			uiState = SudokuGameUiState(),
 			game =
 			Game(
@@ -251,7 +251,7 @@ private fun SudokuGameScreenPreview() {
 @Composable
 private fun SudokuGameScreenSixteenPreview() {
 	SudokuSlayerTheme {
-		SudokuGameContent(
+		SudokuGameScreenContent(
 			uiState = SudokuGameUiState(),
 			game =
 			Game(
@@ -273,7 +273,7 @@ private fun SudokuGameScreenSixteenPreview() {
 @Composable
 private fun SudokuGameScreenFourPreview() {
 	SudokuSlayerTheme {
-		SudokuGameContent(
+		SudokuGameScreenContent(
 			uiState =
 			SudokuGameUiState(
 				isLeftHandMode = true,

@@ -39,7 +39,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlin.math.sqrt
 
 @Composable
-fun SudokuCell(
+internal fun SudokuCell(
 	data: SudokuCellData,
 	gridSize: Int,
 	onCellClick: (Int, Int) -> Unit,

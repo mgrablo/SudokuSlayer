@@ -36,7 +36,7 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.game.R
 
 @Composable
-fun HintsDialog(
+internal fun HintsDialog(
 	isVisible: Boolean,
 	onDismissRequest: () -> Unit,
 	onFillNotesClick: () -> Unit,
@@ -61,7 +61,7 @@ fun HintsDialog(
 		) {
 			Box(
 				modifier =
-				Modifier
+				modifier
 					.widthIn(min = 280.dp, max = 560.dp)
 					.height(400.dp)
 					.padding(20.dp)
@@ -114,7 +114,7 @@ fun HintsDialog(
 	}
 }
 
-data class HintDialogButton(
+private data class HintDialogButton(
 	val text: String,
 	val onClick: () -> Unit,
 	val icon: @Composable () -> Unit = { },
