@@ -10,6 +10,7 @@ kotlin = "2.1.20"
 coreKtx = "1.15.0"
 espressoCore = "3.6.1"
 kotlinxCoroutinesCore = "1.10.1"
+kotlinxDatetime = "0.6.2"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.03.00"
@@ -32,10 +33,6 @@ immutableCollections = "0.3.8"
 ktlint = "12.2.0"
 ktlintCompose = "0.4.22"
 koin = "4.0.2"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-appcompat = "1.7.0"
-material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +50,7 @@ androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-andr
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name="navigation-compose", version.ref = "navVersion" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
 androidx-proto-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "protoDatastore"}
 google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
@@ -82,10 +80,6 @@ koin-compose-navigation = { group = "io.insert-koin", name = "koin-androidx-navi
 ktlint-gradle-plugin = { group = "org.jlleitschuh.gradle.ktlint", name = "org.jlleitschuh.gradle.ktlint.gradle.plugin", version.ref = "ktlint" }
 android-gradle-plugin = { group= "com.android.library", name = "com.android.library.gradle.plugin", version.ref = "agp" }
 kotlinAndroid-gradle-plugin = { group = "org.jetbrains.kotlin.android", name = "org.jetbrains.kotlin.android.gradle.plugin", version.ref = "kotlin"}
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
