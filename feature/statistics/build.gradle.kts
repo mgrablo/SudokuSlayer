@@ -4,4 +4,6 @@ plugins {
 
 dependencies {
 	implementation(projects.feature.uicore)
+	implementation(projects.domain.statistics)
+	implementation(libs.kotlinx.datetime)
 }

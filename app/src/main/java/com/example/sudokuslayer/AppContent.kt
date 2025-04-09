@@ -23,6 +23,7 @@ import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
 import com.example.feature.game.SudokuGame
 import com.example.feature.settings.Settings
+import com.example.feature.statistics.Statistics
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.ThemeProvider
 import com.example.sudokuslayer.components.NavigationDrawer
@@ -45,6 +46,7 @@ internal fun AppContent() {
 			SudokuGame,
 			SudokuCreator,
 			Settings,
+			Statistics,
 		)
 	val scope = rememberCoroutineScope()
 	val view = LocalView.current

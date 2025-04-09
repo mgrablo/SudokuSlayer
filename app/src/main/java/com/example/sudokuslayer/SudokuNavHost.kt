@@ -8,6 +8,7 @@ import com.example.feature.creator.creatorRoute
 import com.example.feature.game.SudokuGame
 import com.example.feature.game.gameRoute
 import com.example.feature.settings.settingsRoute
+import com.example.feature.statistics.statisticsRoute
 
 @Composable
 fun SudokuNavHost(navController: NavHostController, openDrawer: () -> Unit) {
@@ -21,5 +22,6 @@ fun SudokuNavHost(navController: NavHostController, openDrawer: () -> Unit) {
 		)
 		settingsRoute(openDrawer)
 		gameRoute(openDrawer)
+		statisticsRoute(openDrawer)
 	}
 }

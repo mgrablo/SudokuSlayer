@@ -16,7 +16,8 @@ data object Statistics : Destination("Statistics", AppIcon.VectorIcon(Icons.Defa
 fun NavGraphBuilder.statisticsRoute(openDrawer: () -> Unit) {
 	composable<Statistics> {
 		StatisticsScreen(
-			modifier = Modifier.fillMaxSize()
+			openDrawer = openDrawer,
+			modifier = Modifier.fillMaxSize(),
 		)
 	}
 }

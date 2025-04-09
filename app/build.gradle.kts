@@ -63,6 +63,7 @@ dependencies {
 	implementation(projects.feature.game)
 	implementation(projects.feature.creator)
 	implementation(projects.feature.settings)
+	implementation(projects.feature.statistics)
 	implementation(projects.data.core)
 	implementation(projects.data.settings)
 	implementation(projects.data.game)
