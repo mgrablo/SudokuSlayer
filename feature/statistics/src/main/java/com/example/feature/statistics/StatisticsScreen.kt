@@ -1,5 +1,12 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.example.feature.statistics
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,20 +17,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.FinishedGame
+import com.example.feature.statistics.components.SortState
 import com.example.feature.statistics.components.TableHeader
 import com.example.feature.statistics.components.TableRow
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDateTime
@@ -31,10 +46,15 @@ import kotlinx.datetime.LocalDateTime
 @Composable
 fun StatisticsScreen(
 	openDrawer: () -> Unit,
-	modifier: Modifier = Modifier
+	onFabClick: () -> Unit,
+	animatedVisibilityScope: AnimatedVisibilityScope,
+	sharedTransitionScope: SharedTransitionScope,
+	modifier: Modifier = Modifier,
 ) {
-	StatisticsScreenContent(
+	sharedTransitionScope.StatisticsScreenContent(
 		openDrawer = openDrawer,
+		onFabClick = onFabClick,
+		animatedVisibilityScope = animatedVisibilityScope,
 		statEntries = persistentListOf(),
 		modifier = modifier,
 	)
@@ -42,11 +62,15 @@ fun StatisticsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StatisticsScreenContent(
+private fun SharedTransitionScope.StatisticsScreenContent(
 	openDrawer: () -> Unit,
+	onFabClick: () -> Unit,
+	animatedVisibilityScope: AnimatedVisibilityScope,
 	statEntries: PersistentList<FinishedGame>,
 	modifier: Modifier = Modifier,
 ) {
+	var sortState by remember { mutableStateOf(SortState()) }
+
 	Scaffold(
 		modifier = modifier,
 		topBar = {
@@ -61,12 +85,29 @@ private fun StatisticsScreenContent(
 				},
 			)
 		},
+		floatingActionButton = {
+			FloatingActionButton(
+				onClick = onFabClick,
+				modifier = Modifier
+					.sharedBounds(
+						sharedContentState = rememberSharedContentState(
+							key = STATISTICS_FAB_EXPLODE_BOUNDS,
+						),
+						animatedVisibilityScope = animatedVisibilityScope,
+					),
+			) {
+				Icon(painterResource(R.drawable.filter), contentDescription = "Filter")
+			}
+		},
 	) { paddingValues ->
 		LazyColumn(
 			modifier = Modifier.padding(paddingValues),
 		) {
 			item {
-				TableHeader()
+				TableHeader(
+					sortState = sortState,
+					onSortChange = { sortState = it },
+				)
 			}
 			items(
 				items = statEntries,
@@ -109,10 +150,16 @@ private fun StatisticsScreenPreview() {
 		),
 	)
 	SudokuSlayerTheme {
-		StatisticsScreenContent(
-			openDrawer = { },
-			statEntries = entries,
-			modifier = Modifier.fillMaxSize(),
-		)
+		SharedTransitionLayout {
+			AnimatedVisibility(true) {
+				StatisticsScreenContent(
+					openDrawer = { },
+					onFabClick = { },
+					statEntries = entries,
+					animatedVisibilityScope = this,
+					modifier = Modifier.fillMaxSize(),
+				)
+			}
+		}
 	}
 }
