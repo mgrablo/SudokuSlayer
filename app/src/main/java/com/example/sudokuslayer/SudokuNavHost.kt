@@ -12,6 +12,7 @@ import com.example.feature.game.SudokuGame
 import com.example.feature.game.gameRoute
 import com.example.feature.settings.settingsRoute
 import com.example.feature.statistics.StatisticsFilter
+import com.example.feature.statistics.StatisticsTable
 import com.example.feature.statistics.statisticsRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -36,7 +37,13 @@ fun SudokuNavHost(
 			statisticsRoute(
 				navGraphBuilder = this@NavHost,
 				openDrawer = openDrawer,
-				navigateToFilterScreen = { navController.navigate(StatisticsFilter) },
+				navigateToStatisticsTable = {
+					navController.navigate(StatisticsTable) {
+						popUpTo(StatisticsTable) { inclusive = true }
+					}
+				},
+				navigateToStatisticsFilter = { navController.navigate(StatisticsFilter) },
+				navController = navController,
 			)
 		}
 	}

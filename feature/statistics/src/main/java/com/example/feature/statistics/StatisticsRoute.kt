@@ -5,7 +5,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -13,6 +15,7 @@ import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 data object Statistics : Destination("Statistics", AppIcon.VectorIcon(Icons.Default.DateRange))
@@ -31,22 +34,36 @@ const val STATISTICS_FAB_EXPLODE_BOUNDS = "STATISTICS_FAB_EXPLODE_BOUNDS"
 fun SharedTransitionScope.statisticsRoute(
 	navGraphBuilder: NavGraphBuilder,
 	openDrawer: () -> Unit,
-	navigateToFilterScreen: () -> Unit,
+	navigateToStatisticsTable: () -> Unit,
+	navigateToStatisticsFilter: () -> Unit,
+	navController: NavController,
 ) {
 	navGraphBuilder.apply {
 		navigation<Statistics>(startDestination = StatisticsTable) {
-			composable<StatisticsTable> {
+			composable<StatisticsTable> { backstack ->
+				val parentEntry = remember(backstack) { navController.getBackStackEntry<Statistics>() }
+				val viewModel = koinViewModel<StatisticsViewModel>(
+					viewModelStoreOwner = parentEntry,
+				)
 				StatisticsScreen(
+					viewModel = viewModel,
 					openDrawer = openDrawer,
-					onFabClick = navigateToFilterScreen,
+					onFabClick = navigateToStatisticsFilter,
 					animatedVisibilityScope = this,
 					sharedTransitionScope = this@statisticsRoute,
 					modifier = Modifier
 						.fillMaxSize(),
 				)
 			}
-			composable<StatisticsFilter> {
+			composable<StatisticsFilter> { backstack ->
+				val parentEntry = remember(backstack) { navController.getBackStackEntry<Statistics>() }
+				val viewModel = koinViewModel<StatisticsViewModel>(
+					viewModelStoreOwner = parentEntry,
+				)
+
 				FilterScreen(
+					viewModel = viewModel,
+					onFabClick = navigateToStatisticsTable,
 					modifier = Modifier
 						.fillMaxSize()
 						.sharedBounds(

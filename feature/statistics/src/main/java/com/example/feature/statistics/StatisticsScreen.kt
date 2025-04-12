@@ -25,33 +25,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.FinishedGame
-import com.example.feature.statistics.components.SortState
+import com.example.feature.statistics.StatisticsViewModel.Event
 import com.example.feature.statistics.components.TableHeader
 import com.example.feature.statistics.components.TableRow
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.datetime.LocalDateTime
 
 @Composable
-fun StatisticsScreen(
+internal fun StatisticsScreen(
+	viewModel: StatisticsViewModel,
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	sharedTransitionScope: SharedTransitionScope,
 	modifier: Modifier = Modifier,
 ) {
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	sharedTransitionScope.StatisticsScreenContent(
+		uiState = uiState,
+		onEvent = { viewModel.onEvent(it) },
 		openDrawer = openDrawer,
 		onFabClick = onFabClick,
 		animatedVisibilityScope = animatedVisibilityScope,
@@ -63,14 +66,14 @@ fun StatisticsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SharedTransitionScope.StatisticsScreenContent(
+	uiState: StatisticsUiState,
+	onEvent: (StatisticsViewModel.Event) -> Unit,
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	statEntries: PersistentList<FinishedGame>,
 	modifier: Modifier = Modifier,
 ) {
-	var sortState by remember { mutableStateOf(SortState()) }
-
 	Scaffold(
 		modifier = modifier,
 		topBar = {
@@ -105,8 +108,9 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 		) {
 			item {
 				TableHeader(
-					sortState = sortState,
-					onSortChange = { sortState = it },
+					sortState = uiState.sortState,
+					visibleColumns = uiState.columnsToShow,
+					onSortChange = { onEvent(Event.UpdateSorting(it)) },
 				)
 			}
 			items(
@@ -153,6 +157,11 @@ private fun StatisticsScreenPreview() {
 		SharedTransitionLayout {
 			AnimatedVisibility(true) {
 				StatisticsScreenContent(
+					uiState = StatisticsUiState(
+						columnsToShow = StatisticsColumn.entries.toPersistentSet(),
+						sortState = SortState(StatisticsColumn.Difficulty, SortDirection.ASC),
+					),
+					onEvent = { },
 					openDrawer = { },
 					onFabClick = { },
 					statEntries = entries,

@@ -2,6 +2,7 @@ package com.example.feature.statistics.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,16 +23,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.example.feature.statistics.SortDirection
+import com.example.feature.statistics.SortState
+import com.example.feature.statistics.StatisticsColumn
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 
-enum class SortDirection { NONE, ASC, DESC }
-
-data class SortState(val column: String = "", val direction: SortDirection = SortDirection.NONE)
 
 @Composable
 internal fun TableHeader(
+	visibleColumns: PersistentSet<StatisticsColumn>,
 	sortState: SortState,
-	onSortChange: (SortState) -> Unit,
+	onSortChange: (StatisticsColumn) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	Row(
@@ -39,111 +44,15 @@ internal fun TableHeader(
 		horizontalArrangement = Arrangement.SpaceBetween,
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		HeaderCell(
-			text = "Date",
-			weight = 1f,
-			isActive = sortState.column == "Date",
-			sortDirection = if (sortState.column == "Date") sortState.direction else SortDirection.NONE,
-			onClick = {
-				onSortChange(
-					when {
-						sortState.column != "Date" -> SortState("Date", SortDirection.ASC)
-						sortState.direction == SortDirection.ASC -> SortState(
-							"Date",
-							SortDirection.DESC,
-						)
-
-						else -> SortState("", SortDirection.NONE)
-					},
-				)
-			},
-		)
-		HeaderCell(
-			text = "Difficulty",
-			weight = 1f,
-			isActive = sortState.column == "Difficulty",
-			sortDirection = if (sortState.column ==
-				"Difficulty"
-			) {
-				sortState.direction
-			} else {
-				SortDirection.NONE
-			},
-			onClick = {
-				onSortChange(
-					when {
-						sortState.column != "Difficulty" -> SortState(
-							"Difficulty",
-							SortDirection.ASC,
-						)
-
-						sortState.direction == SortDirection.ASC -> SortState(
-							"Difficulty",
-							SortDirection.DESC,
-						)
-
-						else -> SortState("", SortDirection.NONE)
-					},
-				)
-			},
-		)
-		HeaderCell(
-			text = "Size",
-			weight = 0.8f,
-			isActive = sortState.column == "Size",
-			sortDirection = if (sortState.column == "Size") sortState.direction else SortDirection.NONE,
-			onClick = {
-				onSortChange(
-					when {
-						sortState.column != "Size" -> SortState("Size", SortDirection.ASC)
-						sortState.direction == SortDirection.ASC -> SortState(
-							"Size",
-							SortDirection.DESC,
-						)
-
-						else -> SortState("", SortDirection.NONE)
-					},
-				)
-			},
-		)
-		HeaderCell(
-			text = "Time",
-			weight = 0.8f,
-			isActive = sortState.column == "Time",
-			sortDirection = if (sortState.column == "Time") sortState.direction else SortDirection.NONE,
-			onClick = {
-				onSortChange(
-					when {
-						sortState.column != "Time" -> SortState("Time", SortDirection.ASC)
-						sortState.direction == SortDirection.ASC -> SortState(
-							"Time",
-							SortDirection.DESC,
-						)
-
-						else -> SortState("", SortDirection.NONE)
-					},
-				)
-			},
-		)
-		HeaderCell(
-			text = "Hints",
-			weight = 0.6f,
-			isActive = sortState.column == "Hints",
-			sortDirection = if (sortState.column == "Hints") sortState.direction else SortDirection.NONE,
-			onClick = {
-				onSortChange(
-					when {
-						sortState.column != "Hints" -> SortState("Hints", SortDirection.ASC)
-						sortState.direction == SortDirection.ASC -> SortState(
-							"Hints",
-							SortDirection.DESC,
-						)
-
-						else -> SortState("", SortDirection.NONE)
-					},
-				)
-			},
-		)
+		for (column in visibleColumns) {
+			HeaderCell(
+				text = column.getDisplayText(),
+				weight = 1f,
+				isActive = sortState.column == column,
+				sortDirection = if (sortState.column == column) sortState.direction else SortDirection.NONE,
+				onClick = { onSortChange(column) },
+			)
+		}
 	}
 }
 
@@ -203,11 +112,24 @@ private fun RowScope.HeaderCell(
 private fun TableHeaderPreview() {
 	SudokuSlayerTheme {
 		Surface {
-			TableHeader(
-				sortState = SortState("Time", SortDirection.DESC),
-				onSortChange = {},
-				modifier = Modifier.fillMaxWidth(),
-			)
+			Column {
+				TableHeader(
+					visibleColumns = StatisticsColumn.entries.toPersistentSet(),
+					sortState = SortState(StatisticsColumn.Time, SortDirection.DESC),
+					onSortChange = { },
+					modifier = Modifier.fillMaxWidth(),
+				)
+
+				TableHeader(
+					visibleColumns = persistentSetOf(
+						StatisticsColumn.Difficulty,
+						StatisticsColumn.Size,
+					),
+					sortState = SortState(StatisticsColumn.Time, SortDirection.DESC),
+					onSortChange = { },
+					modifier = Modifier.fillMaxWidth(),
+				)
+			}
 		}
 	}
 }
