@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.statistics.FinishedGame
+import com.example.domain.statistics.GameResult
 import com.example.feature.statistics.StatisticsViewModel.Event
 import com.example.feature.statistics.components.TableHeader
 import com.example.feature.statistics.components.TableRow
@@ -71,7 +71,7 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
-	statEntries: PersistentList<FinishedGame>,
+	statEntries: PersistentList<GameResult>,
 	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
@@ -127,8 +127,8 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 @PreviewLightDark
 @Composable
 private fun StatisticsScreenPreview() {
-	val entries = persistentListOf<FinishedGame>(
-		FinishedGame(
+	val entries = persistentListOf<GameResult>(
+		GameResult(
 			id = "1",
 			timeInSeconds = 124,
 			difficulty = GameDifficulty.Medium,
@@ -136,7 +136,7 @@ private fun StatisticsScreenPreview() {
 			hintsUsed = 4,
 			completedAt = LocalDateTime.parse("2010-06-21T22:19:44"),
 		),
-		FinishedGame(
+		GameResult(
 			id = "2",
 			timeInSeconds = 32,
 			difficulty = GameDifficulty.Easy,
@@ -144,7 +144,7 @@ private fun StatisticsScreenPreview() {
 			hintsUsed = 0,
 			completedAt = LocalDateTime.parse("2010-06-01T22:19:44"),
 		),
-		FinishedGame(
+		GameResult(
 			id = "3",
 			timeInSeconds = 1268,
 			difficulty = GameDifficulty.Expert,

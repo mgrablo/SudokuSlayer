@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-data class FinishedGame
+data class GameResult
 @OptIn(ExperimentalUuidApi::class)
 constructor(
 	val id: String = Uuid.random().toString(),

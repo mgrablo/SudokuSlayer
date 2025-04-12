@@ -17,12 +17,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.statistics.FinishedGame
+import com.example.domain.statistics.GameResult
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.datetime.LocalDateTime
 
 @Composable
-internal fun TableRow(tableEntry: FinishedGame, modifier: Modifier = Modifier) {
+internal fun TableRow(tableEntry: GameResult, modifier: Modifier = Modifier) {
 	Row(
 		modifier = modifier.fillMaxWidth(),
 		horizontalArrangement = Arrangement.SpaceBetween,
@@ -76,7 +76,7 @@ private fun TableRowPreview() {
 		Surface {
 			TableRow(
 				tableEntry =
-				FinishedGame(
+				GameResult(
 					id = "1",
 					timeInSeconds = 124,
 					difficulty = GameDifficulty.Easy,

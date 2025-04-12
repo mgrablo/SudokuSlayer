@@ -1,0 +1,19 @@
+import com.example.domain.core.GameDifficulty;
+import com.example.domain.core.SudokuGridSize;
+import kotlinx.datetime.LocalDateTime;
+
+CREATE TABLE IF NOT EXISTS GameResult (
+  id TEXT PRIMARY KEY NOT NULL,
+  timeInSeconds INTEGER NOT NULL,
+  difficulty TEXT AS GameDifficulty NOT NULL,
+  gridSize TEXT AS SudokuGridSize NOT NULL,
+  hintsUsed INTEGER NOT NULL,
+  completedAt TEXT AS LocalDateTime NOT NULL
+);
+
+-- Queries for statistics repository methods
+getAllGameResults:
+SELECT * FROM GameResult;
+
+getGameResultById:
+SELECT * FROM GameResult WHERE id = ?;

@@ -5,14 +5,14 @@ import com.example.domain.core.SudokuGridSize
 import kotlinx.coroutines.flow.Flow
 
 interface StatisticsRepository {
-	suspend fun saveGame(finishedGame: FinishedGame)
-	fun getAllGamesFlow(): Flow<List<FinishedGame>>
-	suspend fun getAllGames(): List<FinishedGame>
-	suspend fun getGameById(id: String): FinishedGame?
-	suspend fun deleteGame(id: String)
-	suspend fun getGamesByDifficulty(gameDifficulty: GameDifficulty): List<FinishedGame>
-	suspend fun getGamesByGridSize(gridSize: SudokuGridSize): List<FinishedGame>
-	suspend fun getTotalGamesFinished(): Int
+	suspend fun saveGameResult(gameResult: GameResult)
+	fun getAllGameResultsFlow(): Flow<List<GameResult>>
+	suspend fun getAllGameResults(): List<GameResult>
+	suspend fun getGameResultById(id: String): GameResult?
+	suspend fun deleteGameResult(id: String)
+	suspend fun getGameResultsByDifficulty(gameDifficulty: GameDifficulty): List<GameResult>
+	suspend fun getGameResultsByGridSize(gridSize: SudokuGridSize): List<GameResult>
+	suspend fun getTotalGameResults(): Int
 	suspend fun getTotalTimeSpent(): Long
 	suspend fun clearAll()
 }
