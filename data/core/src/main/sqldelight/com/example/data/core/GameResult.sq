@@ -2,18 +2,40 @@ import com.example.domain.core.GameDifficulty;
 import com.example.domain.core.SudokuGridSize;
 import kotlinx.datetime.LocalDateTime;
 
-CREATE TABLE IF NOT EXISTS GameResult (
+CREATE TABLE IF NOT EXISTS GameResultEntity (
   id TEXT PRIMARY KEY NOT NULL,
   timeInSeconds INTEGER NOT NULL,
   difficulty TEXT AS GameDifficulty NOT NULL,
   gridSize TEXT AS SudokuGridSize NOT NULL,
-  hintsUsed INTEGER NOT NULL,
+  hintsUsed INTEGER AS kotlin.Int NOT NULL,
   completedAt TEXT AS LocalDateTime NOT NULL
 );
 
--- Queries for statistics repository methods
+-- Queries for statistics module repository methods
 getAllGameResults:
-SELECT * FROM GameResult;
+SELECT * FROM GameResultEntity;
 
 getGameResultById:
-SELECT * FROM GameResult WHERE id = ?;
+SELECT * FROM GameResultEntity WHERE id = ?;
+
+getGameResultsByDifficulty:
+SELECT * FROM GameResultEntity WHERE difficulty = ?;
+
+getGameResultsByGridSize:
+SELECT * FROM GameResultEntity WHERE gridSize = ?;
+
+getTotalGameResults:
+SELECT COUNT(*) FROM GameResultEntity;
+
+getTotalTimeSpent:
+SELECT SUM(timeInSeconds) FROM GameResultEntity;
+
+deleteGameResult:
+DELETE FROM GameResultEntity WHERE id = ?;
+
+clearAll:
+DELETE FROM GameResultEntity;
+
+-- Queries for game module repository methods
+insertGameResult:
+INSERT OR IGNORE INTO GameResultEntity VALUES (?, ?, ?, ?, ?, ?);

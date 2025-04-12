@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.statistics.GameResult
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.datetime.LocalDateTime
 

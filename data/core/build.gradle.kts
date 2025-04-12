@@ -9,7 +9,8 @@ dependencies {
 	implementation(libs.koin.android)
 	implementation(libs.androidx.datastorePreferences)
 	implementation(libs.androidx.proto.datastore)
-	implementation(libs.android.driver)
+	implementation(libs.sqldelight.android.driver)
+	implementation(libs.sqldelight.primitive.adapters)
 }
 
 sqldelight {

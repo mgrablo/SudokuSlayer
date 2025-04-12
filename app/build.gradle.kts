@@ -67,6 +67,7 @@ dependencies {
 	implementation(projects.data.core)
 	implementation(projects.data.settings)
 	implementation(projects.data.game)
+	implementation(projects.data.statistics)
 
 	implementation(libs.bundles.koin.compose)
 	implementation(libs.androidx.core.ktx)

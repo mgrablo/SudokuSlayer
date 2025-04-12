@@ -30,8 +30,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.statistics.GameResult
 import com.example.feature.statistics.StatisticsViewModel.Event
 import com.example.feature.statistics.components.TableHeader
 import com.example.feature.statistics.components.TableRow
@@ -67,7 +67,7 @@ internal fun StatisticsScreen(
 @Composable
 private fun SharedTransitionScope.StatisticsScreenContent(
 	uiState: StatisticsUiState,
-	onEvent: (StatisticsViewModel.Event) -> Unit,
+	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
