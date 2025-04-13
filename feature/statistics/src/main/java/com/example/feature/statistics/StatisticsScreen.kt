@@ -37,7 +37,6 @@ import com.example.feature.statistics.components.TableHeader
 import com.example.feature.statistics.components.TableRow
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.datetime.LocalDateTime
@@ -58,7 +57,6 @@ internal fun StatisticsScreen(
 		openDrawer = openDrawer,
 		onFabClick = onFabClick,
 		animatedVisibilityScope = animatedVisibilityScope,
-		statEntries = persistentListOf(),
 		modifier = modifier,
 	)
 }
@@ -71,7 +69,6 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
-	statEntries: PersistentList<GameResult>,
 	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
@@ -114,7 +111,7 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 				)
 			}
 			items(
-				items = statEntries,
+				items = uiState.gameResults,
 				key = { it.id },
 			) { entry ->
 				TableRow(entry)
@@ -160,11 +157,14 @@ private fun StatisticsScreenPreview() {
 					uiState = StatisticsUiState(
 						columnsToShow = StatisticsColumn.entries.toPersistentSet(),
 						sortState = SortState(StatisticsColumn.Difficulty, SortDirection.ASC),
+						gameResults = entries,
+						isLoading = false,
+						totalGamesPlayed = 3,
+						totalTimeSpent = 125,
 					),
 					onEvent = { },
 					openDrawer = { },
 					onFabClick = { },
-					statEntries = entries,
 					animatedVisibilityScope = this,
 					modifier = Modifier.fillMaxSize(),
 				)

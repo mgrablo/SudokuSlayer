@@ -13,10 +13,17 @@ enum class SudokuGridSize {
 	}
 
 	companion object {
-		fun fromInt(size: Int): SudokuGridSize = when (size) {
+		fun fromIndex(index: Int): SudokuGridSize = when (index) {
 			0 -> FOUR
 			1 -> NINE
 			2 -> SIXTEEN
+			else -> throw IllegalArgumentException("Invalid index number: $index")
+		}
+
+		fun fromIntSize(size: Int) = when (size) {
+			4 -> FOUR
+			9 -> NINE
+			16 -> SIXTEEN
 			else -> throw IllegalArgumentException("Invalid grid size: $size")
 		}
 	}

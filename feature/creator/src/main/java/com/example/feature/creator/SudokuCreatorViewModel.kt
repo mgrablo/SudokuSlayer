@@ -95,7 +95,7 @@ internal class SudokuCreatorViewModel(
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					selectedGridSize = SudokuGridSize.fromInt(num),
+					selectedGridSize = SudokuGridSize.fromIndex(num),
 				)
 			}
 		}

@@ -20,7 +20,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.data.core.database.DatabaseProvider
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
@@ -36,8 +35,6 @@ import kotlinx.coroutines.launch
 class MyApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
-
-		DatabaseProvider.initialize(this)
 	}
 }
 
