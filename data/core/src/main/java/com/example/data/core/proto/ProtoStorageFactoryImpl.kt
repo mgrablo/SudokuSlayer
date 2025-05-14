@@ -5,14 +5,16 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.concurrent.ConcurrentHashMap
 import androidx.datastore.core.Serializer as DataStoreSerializer
 
 class ProtoStorageFactoryImpl(private val context: Context) : ProtoStorageFactory {
-	private val instances = mutableMapOf<String, ProtoStorage<*>>()
+	private val instances = ConcurrentHashMap<String, ProtoStorage<*>>()
+	private val datastoreLock = Any()
 
 	@Suppress("UNCHECKED_CAST")
 	override fun <T> createProtoStorage(filename: String, serializer: Serializer<T>): ProtoStorage<T> =
-		instances.getOrPut(filename) {
+		instances.computeIfAbsent(filename) {
 			val dataStoreSerializer =
 				object : DataStoreSerializer<T> {
 					override val defaultValue = serializer.defaultValue
@@ -26,11 +28,12 @@ class ProtoStorageFactoryImpl(private val context: Context) : ProtoStorageFactor
 					}
 				}
 
-			val dataStore =
+			val dataStore = synchronized(datastoreLock) {
 				DataStoreFactory.create(
 					serializer = dataStoreSerializer,
 					produceFile = { context.dataStoreFile(filename) },
 				)
+			}
 			ProtoStorageImpl(dataStore, serializer.defaultValue)
 		} as ProtoStorage<T>
 }

@@ -31,10 +31,19 @@ import com.example.feature.uicore.theme.ThemeProvider
 import com.example.sudokuslayer.components.NavigationDrawer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
 class MyApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
+
+		startKoin {
+			modules(appModule)
+			androidContext(this@MyApplication)
+			androidLogger()
+		}
 	}
 }
 

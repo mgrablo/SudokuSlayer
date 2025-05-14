@@ -1,6 +1,6 @@
 package com.example.data.game
 
-import com.example.data.core.proto.ProtoStorageFactory
+import com.example.data.core.proto.ProtoStorage
 import com.example.data.game.mappers.toGame
 import com.example.data.game.mappers.toProtoCell
 import com.example.data.game.mappers.toProtoDifficulty
@@ -13,19 +13,12 @@ import com.example.domain.core.GameRepository
 import com.example.domain.core.HintLog
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import data.game.ProtoGame
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AndroidProtoGameRepository(
-	protoStorageFactory: ProtoStorageFactory,
-	serializer: ProtoGameSerializer,
-) : GameRepository {
-	private val protoStorage =
-		protoStorageFactory.createProtoStorage(
-			filename = "game.pb",
-			serializer = serializer,
-		)
-
+class AndroidProtoGameRepository(private val protoStorage: ProtoStorage<ProtoGame>) :
+	GameRepository {
 	override fun getGame(): Flow<Game> = protoStorage.getData().map { it.toGame() }
 
 	override suspend fun saveGame(game: Game) {

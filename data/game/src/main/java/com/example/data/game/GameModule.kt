@@ -1,8 +1,11 @@
 package com.example.data.game
 
+import com.example.data.core.proto.ProtoStorage
+import com.example.data.core.proto.ProtoStorageFactory
 import com.example.domain.core.GameRepository
 import com.example.domain.game.repositories.GameResultWriter
 import com.example.domain.game.repositories.OperationRepository
+import data.game.ProtoGame
 import org.koin.dsl.module
 
 val dataGameModule =
@@ -10,10 +13,18 @@ val dataGameModule =
 		single { ProtoGameSerializer() }
 		single { ProtoOperationHistorySerializer() }
 
+		single<ProtoStorage<ProtoGame>> {
+			val protoStorageFactory: ProtoStorageFactory = get()
+			val serializer: ProtoGameSerializer = get()
+			protoStorageFactory.createProtoStorage(
+				filename = "game.pb",
+				serializer = serializer,
+			)
+		}
+
 		single<GameRepository> {
 			AndroidProtoGameRepository(
-				protoStorageFactory = get(),
-				serializer = get(),
+				protoStorage = get(),
 			)
 		}
 		single<OperationRepository> {

@@ -21,7 +21,7 @@ val dataCoreModule = module {
 	}
 
 	single<ProtoStorageFactory> { ProtoStorageFactoryImpl(androidContext()) }
-	single { AndroidDatabaseDriverFactory(get()) }
+	single { AndroidDatabaseDriverFactory(androidContext()) }
 	single { DatabaseProvider(get()) }
 	single<AppDatabase> {
 		val databaseProvider: DatabaseProvider = get()

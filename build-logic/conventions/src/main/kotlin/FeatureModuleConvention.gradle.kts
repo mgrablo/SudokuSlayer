@@ -34,6 +34,8 @@ dependencies {
 	androidTestImplementation(libs.junit5.android.test.compose)
 	debugImplementation(libs.androidx.ui.test.manifest)
 	debugImplementation(libs.androidx.ui.tooling)
+	testImplementation(libs.koin.test)
+	testImplementation(libs.koin.test.junit5)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 }
