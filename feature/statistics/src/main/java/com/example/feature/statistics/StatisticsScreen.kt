@@ -107,14 +107,17 @@ private fun SharedTransitionScope.StatisticsScreenContent(
 				TableHeader(
 					sortState = uiState.sortState,
 					visibleColumns = uiState.columnsToShow,
-					onSortChange = { onEvent(Event.UpdateSorting(it)) },
+					onSortChange = { onEvent(Event.ColumnHeaderClicked(it)) },
 				)
 			}
 			items(
 				items = uiState.gameResults,
 				key = { it.id },
 			) { entry ->
-				TableRow(entry)
+				TableRow(
+					gameResult = entry,
+					visibleColumns = uiState.columnsToShow,
+				)
 				HorizontalDivider()
 			}
 		}

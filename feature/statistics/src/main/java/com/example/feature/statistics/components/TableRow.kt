@@ -18,35 +18,45 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import com.example.feature.statistics.StatisticsColumn
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
 
+@OptIn(FormatStringsInDatetimeFormats::class)
 @Composable
-internal fun TableRow(tableEntry: GameResult, modifier: Modifier = Modifier) {
+internal fun TableRow(
+	gameResult: GameResult,
+	visibleColumns: PersistentSet<StatisticsColumn>,
+	modifier: Modifier = Modifier,
+) {
 	Row(
 		modifier = modifier.fillMaxWidth(),
 		horizontalArrangement = Arrangement.SpaceBetween,
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		// Format time (seconds -> minutes:seconds)
-		val minutes = tableEntry.timeInSeconds / 60
-		val seconds = tableEntry.timeInSeconds % 60
-		val formattedTime = "%d:%02d".format(minutes, seconds)
-
-		// Format date
-		val date = tableEntry.completedAt
-		val formattedDate = "${date.dayOfMonth}/${date.monthNumber}/${date.year}"
-
-		TableCell(text = formattedDate, weight = 1f)
-		TableCell(text = tableEntry.difficulty.name, weight = 1f)
-		TableCell(
-			text = tableEntry.gridSize.toText(),
-			weight = 0.8f,
-		)
-		TableCell(text = formattedTime, weight = 0.8f)
-		TableCell(text = tableEntry.hintsUsed.toString(), weight = 0.6f)
+		visibleColumns.forEach { column ->
+			CreateTableCell(column, gameResult)
+		}
 	}
 }
+
+@Composable
+private fun RowScope.CreateTableCell(column: StatisticsColumn, gameResult: GameResult) =
+	when (column) {
+		StatisticsColumn.Date -> TableCell(text = formatDate(gameResult.completedAt), weight = 1f)
+		StatisticsColumn.Difficulty -> TableCell(text = gameResult.difficulty.name, weight = 1f)
+		StatisticsColumn.Size -> TableCell(
+			text = gameResult.gridSize.toText(),
+			weight = 1f,
+		)
+		StatisticsColumn.Time -> TableCell(text = formatTime(gameResult.timeInSeconds), weight = 1f)
+		StatisticsColumn.HintsUsed -> TableCell(text = gameResult.hintsUsed.toString(), weight = 1f)
+	}
 
 @Composable
 private fun RowScope.TableCell(text: String, weight: Float, modifier: Modifier = Modifier) {
@@ -63,6 +73,19 @@ private fun RowScope.TableCell(text: String, weight: Float, modifier: Modifier =
 	)
 }
 
+private fun formatTime(totalSeconds: Long): String {
+	val minutes = totalSeconds / 60
+	val seconds = totalSeconds % 60
+	return "%d:%02d".format(minutes, seconds)
+}
+
+@OptIn(FormatStringsInDatetimeFormats::class)
+private fun formatDate(date: LocalDateTime) = date.format(
+	LocalDateTime.Format {
+		byUnicodePattern("yyyy-MM-dd")
+	},
+)
+
 private fun SudokuGridSize.toText(): String = when (this) {
 	SudokuGridSize.FOUR -> "4x4"
 	SudokuGridSize.NINE -> "9x9"
@@ -75,8 +98,7 @@ private fun TableRowPreview() {
 	SudokuSlayerTheme {
 		Surface {
 			TableRow(
-				tableEntry =
-				GameResult(
+				gameResult = GameResult(
 					id = "1",
 					timeInSeconds = 124,
 					difficulty = GameDifficulty.Easy,
@@ -84,6 +106,7 @@ private fun TableRowPreview() {
 					hintsUsed = 4,
 					completedAt = LocalDateTime.parse("2010-06-01T22:19:44"),
 				),
+				visibleColumns = StatisticsColumn.entries.toPersistentSet(),
 				modifier = Modifier.fillMaxWidth(),
 			)
 		}

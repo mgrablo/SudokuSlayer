@@ -64,13 +64,13 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 
 	sealed interface Event {
 		data class ToggleColumnVisibility(val column: StatisticsColumn) : Event
-		data class UpdateSorting(val column: StatisticsColumn) : Event
+		data class ColumnHeaderClicked(val column: StatisticsColumn) : Event
 	}
 
 	fun onEvent(event: Event) {
 		when (event) {
 			is Event.ToggleColumnVisibility -> toggleColumnVisibility(event.column)
-			is Event.UpdateSorting -> updateSorting(event.column)
+			is Event.ColumnHeaderClicked -> handleColumnHeaderClick(event.column)
 		}
 	}
 
@@ -87,6 +87,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 					gameResults = results,
 					totalGamesPlayed = totalGamesPlayed,
 					totalTimeSpent = totalTimeSpent,
+					isLoading = false,
 				)
 			}
 		}
@@ -106,25 +107,45 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		}
 	}
 
-	private suspend fun sortResults(sortState: SortState): List<GameResult> {
+	private fun applySorting(results: List<GameResult>, sortState: SortState): List<GameResult> {
 		if (sortState.column == null || sortState.direction == SortDirection.NONE) {
-			return statisticsRepository.getAllGameResults()
+			return results
 		}
-		TODO()
+
+		val sorted = when (sortState.column) {
+			StatisticsColumn.Date -> results.sortedBy { it.completedAt }
+			StatisticsColumn.Difficulty -> results.sortedBy { it.difficulty }
+			StatisticsColumn.Size -> results.sortedBy { it.gridSize }
+			StatisticsColumn.Time -> results.sortedBy { it.timeInSeconds }
+			StatisticsColumn.HintsUsed -> results.sortedBy { it.hintsUsed }
+		}
+
+		return if (sortState.direction == SortDirection.ASC) sorted else sorted.reversed()
 	}
 
-	private fun updateSorting(column: StatisticsColumn) {
+	private fun handleColumnHeaderClick(column: StatisticsColumn) {
 		viewModelScope.launch {
+			val currentSortState = _uiState.value.sortState
+			val newSortState = when {
+				currentSortState.column != column -> SortState(column, SortDirection.ASC)
+				currentSortState.direction == SortDirection.ASC -> SortState(
+					column,
+					SortDirection.DESC,
+				)
+				else -> SortState(null, SortDirection.NONE)
+			}
+
+			val currentResults = _uiState.value.gameResults
+			val sortedResults = applySorting(
+				results = currentResults,
+				sortState = newSortState,
+			).toPersistentList()
+
 			_uiState.update { uiState ->
-				val sortState = when {
-					uiState.sortState.column != column -> SortState(column, SortDirection.ASC)
-					uiState.sortState.direction == SortDirection.ASC -> SortState(
-						column,
-						SortDirection.DESC,
-					)
-					else -> SortState(null, SortDirection.NONE)
-				}
-				uiState.copy(sortState = sortState)
+				uiState.copy(
+					sortState = newSortState,
+					gameResults = sortedResults,
+				)
 			}
 		}
 	}

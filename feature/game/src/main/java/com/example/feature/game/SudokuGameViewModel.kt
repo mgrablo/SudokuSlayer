@@ -426,6 +426,7 @@ internal class SudokuGameViewModel(
 					it.copy(
 						grid = updatedSudoku,
 						hintLogs = it.hintLogs + hintLog,
+						hintsUsed = it.hintsUsed + 1,
 					)
 				}
 				_uiState.update {
