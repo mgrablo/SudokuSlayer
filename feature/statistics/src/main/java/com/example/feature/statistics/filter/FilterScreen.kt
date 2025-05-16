@@ -36,7 +36,9 @@ import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.filter.components.FilterActionButtons
 import com.example.feature.statistics.filter.components.FilterCategory
 import com.example.feature.statistics.filter.components.GenericFilterChip
+import com.example.feature.statistics.filter.components.HintsFilterView
 import com.example.feature.statistics.insights.components.toText
+import com.example.feature.uicore.consumeHorizontalDrag
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
@@ -162,6 +164,14 @@ private fun FilterScreenContent(
 							)
 						}
 					}
+				}
+				FilterCategory(
+					label = "Filter by Hints Used",
+					modifier = Modifier.consumeHorizontalDrag(),
+				) {
+					HintsFilterView(
+						currentMaxHints = uiState.maxHintsUsed,
+					)
 				}
 			}
 			FilterActionButtons(

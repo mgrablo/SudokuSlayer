@@ -34,7 +34,9 @@ SELECT * FROM GameResultEntity
 WHERE difficulty IN :difficulties
 	AND gridSize IN :gridSizes
 	AND (:minCompletionTime ISNULL OR timeInSeconds >= :minCompletionTime)
-	AND (:maxCompletionTime ISNULL OR timeInSeconds <= :maxCompletionTime);
+	AND (:maxCompletionTime ISNULL OR timeInSeconds <= :maxCompletionTime)
+	AND (:minHintsUsed ISNULL OR hintsUsed >= :minHintsUsed)
+	AND (:maxHintsUsed ISNULL OR hintsUsed <= :maxHintsUsed);
 
 getTotalGameResults:
 SELECT COUNT(*) FROM GameResultEntity;

@@ -18,6 +18,7 @@ dependencies {
 	implementation(libs.androidx.ui)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.material3)
+	implementation(libs.androidx.material.icons)
 	implementation(libs.androidx.navigation.compose)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
 	implementation(libs.androidx.activity.compose)

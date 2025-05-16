@@ -42,6 +42,8 @@ class AndroidStatisticsRepository(private val database: AppDatabase) : Statistic
 			gridSizes = filter.gridSizes,
 			minCompletionTime = filter.minCompletionTime,
 			maxCompletionTime = filter.maxCompletionTime,
+			minHintsUsed = filter.minHintsUsed,
+			maxHintsUsed = filter.maxHintsUsed,
 		).executeAsList().map { it.toGameResult() }
 
 	override suspend fun getTotalGameResults(): Long =

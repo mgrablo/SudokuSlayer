@@ -21,4 +21,6 @@ data class GameResultFilter(
 	val gridSizes: Set<SudokuGridSize> = SudokuGridSize.entries.toSet(),
 	val minCompletionTime: Long? = null,
 	val maxCompletionTime: Long? = null,
+	val minHintsUsed: Int? = null,
+	val maxHintsUsed: Int? = null,
 )

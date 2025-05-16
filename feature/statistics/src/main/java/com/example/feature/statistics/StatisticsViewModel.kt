@@ -47,6 +47,7 @@ internal data class StatisticsUiState(
 	val isLoading: Boolean = false,
 	val totalGamesPlayed: Long = 0,
 	val totalTimeSpent: Long = 0,
+	val maxHintsUsed: Int = 0,
 )
 
 internal class StatisticsViewModel(private val statisticsRepository: StatisticsRepository) :
@@ -82,6 +83,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		data class ColumnHeaderClicked(val column: StatisticsColumn) : StatisticsEvent
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
+		data class SetHintsUsedRangeFilter(val min: Int?, val max: Int?) : StatisticsEvent
 	}
 
 	fun onEvent(event: StatisticsEvent) {
@@ -90,6 +92,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 			is StatisticsEvent.ColumnHeaderClicked -> handleColumnHeaderClick(event.column)
 			is StatisticsEvent.ToggleDifficultyFilter -> toggleDifficultyFilter(event.difficulty)
 			is StatisticsEvent.ToggleGridSizeFilter -> toggleGridSizeFilter(event.gridSize)
+			is StatisticsEvent.SetHintsUsedRangeFilter -> setHintsUsedRangeFilter(event.min, event.max)
 		}
 	}
 
@@ -100,6 +103,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 			val results = statisticsRepository.getAllGameResults().toPersistentList()
 			val totalGamesPlayed = statisticsRepository.getTotalGameResults()
 			val totalTimeSpent = statisticsRepository.getTotalTimeSpent()
+			val maxHintsUsed = results.maxOf { it.hintsUsed }
 
 			_uiState.update { state ->
 				state.copy(
@@ -107,6 +111,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 					totalGamesPlayed = totalGamesPlayed,
 					totalTimeSpent = totalTimeSpent,
 					isLoading = false,
+					maxHintsUsed = maxHintsUsed,
 				)
 			}
 		}
@@ -200,6 +205,9 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 				)
 			}
 		}
+	}
+
+	private fun setHintsUsedRangeFilter(min: Int?, max: Int?) {
 	}
 }
 
