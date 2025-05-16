@@ -13,7 +13,7 @@ class AndroidGameResultWriter(private val database: AppDatabase) : GameResultWri
 				difficulty = gameResult.difficulty,
 				gridSize = gameResult.gridSize,
 				hintsUsed = gameResult.hintsUsed,
-				completedAt = gameResult.completedAt,
+				completionDate = gameResult.completionDate,
 			)
 	}
 }

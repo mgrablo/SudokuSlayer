@@ -1,4 +1,4 @@
-package com.example.feature.statistics.components
+package com.example.feature.statistics.insights.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,6 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
-
 
 @Composable
 internal fun TableHeader(

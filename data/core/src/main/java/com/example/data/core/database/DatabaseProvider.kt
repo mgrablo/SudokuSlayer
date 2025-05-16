@@ -14,7 +14,7 @@ class DatabaseProvider(databaseDriverFactory: AndroidDatabaseDriverFactory) {
 			difficultyAdapter = gameDifficultyAdapter,
 			gridSizeAdapter = sudokuGridSizeAdapter,
 			hintsUsedAdapter = IntColumnAdapter,
-			completedAtAdapter = localDateTimeAdapter,
+			completionDateAdapter = localDateTimeAdapter,
 		),
 	)
 

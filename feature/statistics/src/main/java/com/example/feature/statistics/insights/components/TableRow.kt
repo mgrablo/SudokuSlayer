@@ -1,4 +1,4 @@
-package com.example.feature.statistics.components
+package com.example.feature.statistics.insights.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -48,7 +48,7 @@ internal fun TableRow(
 @Composable
 private fun RowScope.CreateTableCell(column: StatisticsColumn, gameResult: GameResult) =
 	when (column) {
-		StatisticsColumn.Date -> TableCell(text = formatDate(gameResult.completedAt), weight = 1f)
+		StatisticsColumn.Date -> TableCell(text = formatDate(gameResult.completionDate), weight = 1f)
 		StatisticsColumn.Difficulty -> TableCell(text = gameResult.difficulty.name, weight = 1f)
 		StatisticsColumn.Size -> TableCell(
 			text = gameResult.gridSize.toText(),
@@ -86,7 +86,7 @@ private fun formatDate(date: LocalDateTime) = date.format(
 	},
 )
 
-private fun SudokuGridSize.toText(): String = when (this) {
+internal fun SudokuGridSize.toText(): String = when (this) {
 	SudokuGridSize.FOUR -> "4x4"
 	SudokuGridSize.NINE -> "9x9"
 	SudokuGridSize.SIXTEEN -> "16x16"
@@ -104,7 +104,7 @@ private fun TableRowPreview() {
 					difficulty = GameDifficulty.Easy,
 					gridSize = SudokuGridSize.NINE,
 					hintsUsed = 4,
-					completedAt = LocalDateTime.parse("2010-06-01T22:19:44"),
+					completionDate = LocalDateTime.parse("2010-06-01T22:19:44"),
 				),
 				visibleColumns = StatisticsColumn.entries.toPersistentSet(),
 				modifier = Modifier.fillMaxWidth(),

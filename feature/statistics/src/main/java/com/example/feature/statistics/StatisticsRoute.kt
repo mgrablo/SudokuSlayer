@@ -11,6 +11,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.example.feature.statistics.filter.FilterScreen
+import com.example.feature.statistics.insights.InsightsScreen
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
 import com.example.sudokuslayer.feature.statistics.R
@@ -45,7 +47,7 @@ fun SharedTransitionScope.statisticsRoute(
 				val viewModel = koinViewModel<StatisticsViewModel>(
 					viewModelStoreOwner = parentEntry,
 				)
-				StatisticsScreen(
+				InsightsScreen(
 					viewModel = viewModel,
 					openDrawer = openDrawer,
 					onFabClick = navigateToStatisticsFilter,

@@ -5,6 +5,7 @@ import com.example.data.core.GameResultEntity
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import com.example.domain.statistics.GameResultFilter
 import com.example.domain.statistics.StatisticsRepository
 
 class AndroidStatisticsRepository(private val database: AppDatabase) : StatisticsRepository {
@@ -35,6 +36,14 @@ class AndroidStatisticsRepository(private val database: AppDatabase) : Statistic
 			.executeAsList()
 			.map { it.toGameResult() }
 
+	override suspend fun getFilteredGameResults(filter: GameResultFilter): List<GameResult> =
+		database.gameResultQueries.getFilteredGameResults(
+			difficulties = filter.difficulties,
+			gridSizes = filter.gridSizes,
+			minCompletionTime = filter.minCompletionTime,
+			maxCompletionTime = filter.maxCompletionTime,
+		).executeAsList().map { it.toGameResult() }
+
 	override suspend fun getTotalGameResults(): Long =
 		database.gameResultQueries.getTotalGameResults().executeAsOne()
 
@@ -52,6 +61,6 @@ class AndroidStatisticsRepository(private val database: AppDatabase) : Statistic
 		difficulty = this.difficulty,
 		gridSize = this.gridSize,
 		hintsUsed = this.hintsUsed,
-		completedAt = this.completedAt,
+		completionDate = this.completionDate,
 	)
 }

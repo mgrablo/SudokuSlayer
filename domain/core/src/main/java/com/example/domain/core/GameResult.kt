@@ -12,5 +12,5 @@ constructor(
 	val difficulty: GameDifficulty,
 	val gridSize: SudokuGridSize,
 	val hintsUsed: Int,
-	val completedAt: LocalDateTime,
+	val completionDate: LocalDateTime,
 )

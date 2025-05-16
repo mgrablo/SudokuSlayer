@@ -8,8 +8,13 @@ CREATE TABLE IF NOT EXISTS GameResultEntity (
   difficulty TEXT AS GameDifficulty NOT NULL,
   gridSize TEXT AS SudokuGridSize NOT NULL,
   hintsUsed INTEGER AS kotlin.Int NOT NULL,
-  completedAt TEXT AS LocalDateTime NOT NULL
+  completionDate TEXT AS LocalDateTime NOT NULL
 );
+
+CREATE INDEX idx_difficulty ON GameResultEntity(difficulty);
+CREATE INDEX idx_gridSize ON GameResultEntity(gridSize);
+CREATE INDEX idx_timeInSeconds ON GameResultEntity(timeInSeconds);
+CREATE INDEX idx_hintsUsed ON GameResultEntity(hintsUsed);
 
 -- Queries for statistics module repository methods
 getAllGameResults:
@@ -23,6 +28,13 @@ SELECT * FROM GameResultEntity WHERE difficulty = ?;
 
 getGameResultsByGridSize:
 SELECT * FROM GameResultEntity WHERE gridSize = ?;
+
+getFilteredGameResults:
+SELECT * FROM GameResultEntity
+WHERE difficulty IN :difficulties
+	AND gridSize IN :gridSizes
+	AND (:minCompletionTime ISNULL OR timeInSeconds >= :minCompletionTime)
+	AND (:maxCompletionTime ISNULL OR timeInSeconds <= :maxCompletionTime);
 
 getTotalGameResults:
 SELECT COUNT(*) FROM GameResultEntity;

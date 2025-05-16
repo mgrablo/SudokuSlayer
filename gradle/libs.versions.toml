@@ -1,7 +1,7 @@
 [versions]
 
 # Android
-agp = "8.9.1"
+agp = "8.10.0"
 android-compileSdk = "35"
 android-minSdk = "26"
 android-targetSdk = "34"

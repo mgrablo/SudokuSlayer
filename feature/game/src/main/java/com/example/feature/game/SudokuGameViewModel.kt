@@ -309,7 +309,7 @@ internal class SudokuGameViewModel(
 						difficulty = game.value.difficulty,
 						gridSize = gridSize,
 						hintsUsed = game.value.hintsUsed,
-						completedAt = System.now().toLocalDateTime(
+						completionDate = System.now().toLocalDateTime(
 							TimeZone.currentSystemDefault(),
 						),
 					),

@@ -10,7 +10,15 @@ interface StatisticsRepository {
 	suspend fun deleteGameResult(id: String)
 	suspend fun getGameResultsByDifficulty(gameDifficulty: GameDifficulty): List<GameResult>
 	suspend fun getGameResultsByGridSize(gridSize: SudokuGridSize): List<GameResult>
+	suspend fun getFilteredGameResults(filter: GameResultFilter): List<GameResult>
 	suspend fun getTotalGameResults(): Long
 	suspend fun getTotalTimeSpent(): Long
 	suspend fun clearAll()
 }
+
+data class GameResultFilter(
+	val difficulties: Set<GameDifficulty> = GameDifficulty.entries.toSet(),
+	val gridSizes: Set<SudokuGridSize> = SudokuGridSize.entries.toSet(),
+	val minCompletionTime: Long? = null,
+	val maxCompletionTime: Long? = null,
+)
