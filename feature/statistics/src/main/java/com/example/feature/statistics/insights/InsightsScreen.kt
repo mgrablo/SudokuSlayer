@@ -32,11 +32,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.STATISTICS_FAB_EXPLODE_BOUNDS
 import com.example.feature.statistics.SortDirection
 import com.example.feature.statistics.SortState
 import com.example.feature.statistics.StatisticsColumn
-import com.example.feature.statistics.StatisticsUiState
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.insights.components.TableHeader
@@ -57,7 +57,7 @@ internal fun InsightsScreen(
 	sharedTransitionScope: SharedTransitionScope,
 	modifier: Modifier = Modifier,
 ) {
-	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.insightsUiState.collectAsStateWithLifecycle()
 	val visibleColumns by viewModel.visibleColumns.collectAsStateWithLifecycle()
 
 	sharedTransitionScope.InsightsScreenContent(
@@ -74,7 +74,7 @@ internal fun InsightsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SharedTransitionScope.InsightsScreenContent(
-	uiState: StatisticsUiState,
+	uiState: InsightsUiState,
 	visibleColumns: PersistentSet<StatisticsColumn>,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
@@ -168,7 +168,7 @@ private fun InsightsScreenPreview() {
 		SharedTransitionLayout {
 			AnimatedVisibility(true) {
 				InsightsScreenContent(
-					uiState = StatisticsUiState(
+					uiState = InsightsUiState(
 						sortState = SortState(StatisticsColumn.Difficulty, SortDirection.ASC),
 						gameResults = entries,
 						isLoading = false,

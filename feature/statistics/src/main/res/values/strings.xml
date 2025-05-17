@@ -6,4 +6,8 @@
 	<string name="apply_filters_content_description">Apply filters</string>
 	<string name="back_content_description">Go back</string>
 	<string name="screen_title">Filter results</string>
+	<string name="select_solvetime_range">Select range</string>
+	<string name="select_hintsused_range">Select range</string>
+    <string name="filter_by_hints_used">Filter by Hints Used</string>
+	<string name="filter_by_solve_time">Filter by Solve Time</string>
 </resources>

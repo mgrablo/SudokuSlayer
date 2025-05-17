@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,15 +30,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.GameResultFilter
-import com.example.feature.statistics.SortState
+import com.example.feature.statistics.FilterUiState
 import com.example.feature.statistics.StatisticsColumn
-import com.example.feature.statistics.StatisticsUiState
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.filter.components.FilterActionButtons
 import com.example.feature.statistics.filter.components.FilterCategory
 import com.example.feature.statistics.filter.components.GenericFilterChip
 import com.example.feature.statistics.filter.components.HintsFilterView
+import com.example.feature.statistics.filter.components.SolvingTimeFilterView
 import com.example.feature.statistics.insights.components.toText
 import com.example.feature.uicore.consumeHorizontalDrag
 import com.example.feature.uicore.theme.LocalPadding
@@ -52,7 +54,7 @@ internal fun FilterScreen(
 	onFabClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.filterUiState.collectAsStateWithLifecycle()
 	val visibleColumns by viewModel.visibleColumns.collectAsStateWithLifecycle()
 	val gameResultFilterState by viewModel.gameResultFilter.collectAsStateWithLifecycle()
 
@@ -69,7 +71,7 @@ internal fun FilterScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun FilterScreenContent(
-	uiState: StatisticsUiState,
+	uiState: FilterUiState,
 	visibleColumns: PersistentSet<StatisticsColumn>,
 	gameResultFilterState: GameResultFilter,
 	onEvent: (StatisticsEvent) -> Unit,
@@ -79,6 +81,8 @@ private fun FilterScreenContent(
 	val tableColumns = remember { StatisticsColumn.entries.toPersistentList() }
 	val gameDifficulties = remember { GameDifficulty.entries.toPersistentList() }
 	val sudokuGridSizes = remember { SudokuGridSize.entries.toPersistentList() }
+
+	val scrollState = rememberScrollState()
 
 	Scaffold(
 		modifier = modifier,
@@ -101,8 +105,8 @@ private fun FilterScreenContent(
 	) { paddingValues ->
 		Column(
 			modifier = Modifier
-				.fillMaxSize()
-				.padding(paddingValues),
+				.padding(paddingValues)
+				.fillMaxSize(),
 		) {
 			Column(
 				modifier = Modifier
@@ -110,7 +114,8 @@ private fun FilterScreenContent(
 					.padding(
 						horizontal = LocalPadding.current.normal,
 						vertical = LocalPadding.current.tiny,
-					),
+					)
+					.verticalScroll(scrollState),
 				verticalArrangement = Arrangement.spacedBy(LocalPadding.current.normal),
 			) {
 				FilterCategory(
@@ -166,11 +171,35 @@ private fun FilterScreenContent(
 					}
 				}
 				FilterCategory(
-					label = "Filter by Hints Used",
+					label = stringResource(R.string.filter_by_hints_used),
 					modifier = Modifier.consumeHorizontalDrag(),
 				) {
 					HintsFilterView(
-						currentMaxHints = uiState.maxHintsUsed,
+						currentMaxHints = uiState.maxHintsUsed.coerceAtLeast(2),
+						initialSliderStart = gameResultFilterState.minHintsUsed?.toFloat() ?: 0f,
+						initialSliderEnd = gameResultFilterState.maxHintsUsed?.toFloat()
+							?.coerceAtLeast(2f) ?: uiState.maxHintsUsed.coerceAtLeast(2).toFloat(),
+						isRangeEnabled = uiState.isHintsUsedRangeEnabled,
+						onValueChange = { min, max ->
+							onEvent(StatisticsEvent.SetHintsUsedRangeFilter(min, max))
+						},
+						onSwitchChange = { onEvent(StatisticsEvent.UpdateHintsUsedRangeEnabled(it)) },
+					)
+				}
+				FilterCategory(
+					label = stringResource(R.string.filter_by_solve_time),
+					modifier = Modifier.consumeHorizontalDrag(),
+				) {
+					SolvingTimeFilterView(
+						currentMaxTime = uiState.longestGame,
+						isRangeEnabled = uiState.isSolveTimeRangeEnabled,
+						initialSliderStart = gameResultFilterState.minCompletionTime?.toFloat() ?: 0f,
+						initialSliderEnd = gameResultFilterState.maxCompletionTime?.toFloat()
+							?.coerceAtLeast(2f) ?: uiState.longestGame.coerceAtLeast(2).toFloat(),
+						onValueChange = { min, max ->
+							onEvent(StatisticsEvent.SetSolveTimeRangeFilter(min, max))
+						},
+						onSwitchChange = { onEvent(StatisticsEvent.UpdateSolveTimeRangeEnabled(it)) },
 					)
 				}
 			}
@@ -187,9 +216,7 @@ private fun FilterScreenContent(
 private fun FilterScreenPreview() {
 	SudokuSlayerTheme {
 		FilterScreenContent(
-			uiState = StatisticsUiState(
-				sortState = SortState(StatisticsColumn.Difficulty),
-			),
+			uiState = FilterUiState(),
 			onEvent = { },
 			onFabClick = { },
 			modifier = Modifier.fillMaxSize(),

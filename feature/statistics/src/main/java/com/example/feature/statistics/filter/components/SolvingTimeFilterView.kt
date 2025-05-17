@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
@@ -24,42 +23,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.util.fastRoundToInt
 import com.example.feature.uicore.components.SliderThumbWithTooltip
+import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun HintsFilterView(
-	currentMaxHints: Int,
+fun SolvingTimeFilterView(
+	currentMaxTime: Long,
 	isRangeEnabled: Boolean,
 	initialSliderStart: Float,
 	initialSliderEnd: Float,
-	onValueChange: (Int, Int) -> Unit,
+	onValueChange: (Long, Long) -> Unit,
 	onSwitchChange: (Boolean) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val valueRange = remember(currentMaxHints) { 0f..currentMaxHints.toFloat() }
-	var selectedRange by remember(currentMaxHints) {
-		mutableStateOf(
-			initialSliderStart..initialSliderEnd,
-		)
+	val valueRange = remember(currentMaxTime) { 0f..currentMaxTime.toFloat() }
+	var selectedRange by remember(currentMaxTime) {
+		mutableStateOf(initialSliderStart..initialSliderEnd)
 	}
 
 	val startInteractionSource = remember { MutableInteractionSource() }
 	val endInteractionSource = remember { MutableInteractionSource() }
 	val singleInteractionSource = remember { MutableInteractionSource() }
 
-	val steps: Int = currentMaxHints - 1
+	val startTooltipText = rememberFormattedTime(selectedRange.start)
+	val endTooltipText = rememberFormattedTime(selectedRange.endInclusive)
 
 	Column(modifier = modifier.fillMaxWidth()) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 			modifier = Modifier.fillMaxWidth(),
 		) {
-			Text(stringResource(R.string.select_hintsused_range))
+			Text(stringResource(R.string.select_solvetime_range))
 			Spacer(Modifier.weight(1f))
 			Switch(
 				checked = isRangeEnabled,
@@ -68,30 +66,30 @@ internal fun HintsFilterView(
 				},
 			)
 		}
+
 		if (isRangeEnabled) {
 			RangeSlider(
 				value = selectedRange,
 				valueRange = valueRange,
-				steps = steps,
 				modifier = Modifier.padding(LocalPadding.current.tiny),
 				startInteractionSource = startInteractionSource,
 				endInteractionSource = endInteractionSource,
 				onValueChange = { selectedRange = it },
 				onValueChangeFinished = {
 					onValueChange(
-						selectedRange.start.toInt(),
-						selectedRange.endInclusive.toInt(),
+						selectedRange.start.toLong(),
+						selectedRange.endInclusive.toLong(),
 					)
 				},
 				startThumb = {
 					SliderThumbWithTooltip(
-						tooltipText = selectedRange.start.fastRoundToInt().toString(),
+						tooltipText = startTooltipText,
 						interactionSource = startInteractionSource,
 					)
 				},
 				endThumb = {
 					SliderThumbWithTooltip(
-						tooltipText = selectedRange.endInclusive.fastRoundToInt().toString(),
+						tooltipText = endTooltipText,
 						interactionSource = endInteractionSource,
 					)
 				},
@@ -103,16 +101,15 @@ internal fun HintsFilterView(
 				onValueChange = { selectedRange = 0f..it },
 				onValueChangeFinished = {
 					onValueChange(
-						selectedRange.endInclusive.toInt(),
-						selectedRange.endInclusive.toInt(),
+						selectedRange.endInclusive.toLong(),
+						selectedRange.endInclusive.toLong(),
 					)
 				},
-				steps = steps,
 				modifier = Modifier.padding(LocalPadding.current.tiny),
 				interactionSource = singleInteractionSource,
 				thumb = {
 					SliderThumbWithTooltip(
-						tooltipText = selectedRange.endInclusive.fastRoundToInt().toString(),
+						tooltipText = endTooltipText,
 						interactionSource = singleInteractionSource,
 					)
 				},
@@ -126,28 +123,18 @@ internal fun HintsFilterView(
 
 @PreviewLightDark
 @Composable
-private fun HintFilterViewPreview() {
+private fun SolvingTimeFilterViewPreview() {
 	SudokuSlayerTheme {
 		Surface {
-			Column {
-				HintsFilterView(
-					currentMaxHints = 10,
-					isRangeEnabled = false,
-					onValueChange = { min, max -> },
-					initialSliderEnd = 10f,
-					initialSliderStart = 0f,
-					onSwitchChange = { },
-				)
-				HorizontalDivider(Modifier.fillMaxWidth())
-				HintsFilterView(
-					currentMaxHints = 2,
-					isRangeEnabled = true,
-					initialSliderEnd = 2f,
-					initialSliderStart = 0f,
-					onValueChange = { min, max -> },
-					onSwitchChange = { },
-				)
-			}
+			SolvingTimeFilterView(
+				currentMaxTime = 124L,
+				isRangeEnabled = true,
+				onValueChange = { min, max -> },
+				onSwitchChange = { },
+				initialSliderStart = 3f,
+				initialSliderEnd = 150f,
+				modifier = Modifier,
+			)
 		}
 	}
 }
