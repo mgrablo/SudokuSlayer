@@ -12,7 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.sudokuslayer.feature.statistics.R
 
 @Composable
 internal fun GenericFilterChip(
@@ -20,6 +22,7 @@ internal fun GenericFilterChip(
 	label: String,
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
+	isDraggable: Boolean = false,
 ) {
 	AnimatedContent(isSelected) { selected ->
 		FilterChip(
@@ -36,6 +39,11 @@ internal fun GenericFilterChip(
 			leadingIcon = {
 				if (selected) {
 					Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+				}
+			},
+			trailingIcon = {
+				if (isDraggable) {
+					Icon(painter = painterResource(R.drawable.drag_indicator), contentDescription = "Drag handle")
 				}
 			},
 			colors = FilterChipDefaults.filterChipColors(

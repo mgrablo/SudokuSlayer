@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -18,10 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
-import com.example.feature.statistics.StatisticsColumn
+import com.example.feature.statistics.model.InsightsTableColumn
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.toPersistentSet
+import com.example.sudokuslayer.feature.statistics.R
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
@@ -31,7 +33,7 @@ import kotlinx.datetime.format.byUnicodePattern
 @Composable
 internal fun TableRow(
 	gameResult: GameResult,
-	visibleColumns: PersistentSet<StatisticsColumn>,
+	visibleColumns: PersistentList<InsightsTableColumn>,
 	modifier: Modifier = Modifier,
 ) {
 	Row(
@@ -46,16 +48,19 @@ internal fun TableRow(
 }
 
 @Composable
-private fun RowScope.CreateTableCell(column: StatisticsColumn, gameResult: GameResult) =
+private fun RowScope.CreateTableCell(column: InsightsTableColumn, gameResult: GameResult) =
 	when (column) {
-		StatisticsColumn.Date -> TableCell(text = formatDate(gameResult.completionDate), weight = 1f)
-		StatisticsColumn.Difficulty -> TableCell(text = gameResult.difficulty.name, weight = 1f)
-		StatisticsColumn.Size -> TableCell(
+		InsightsTableColumn.Date -> TableCell(text = formatDate(gameResult.completionDate), weight = 1f)
+		InsightsTableColumn.Difficulty -> TableCell(text = gameResult.difficulty.name, weight = 1f)
+		InsightsTableColumn.GridSize -> TableCell(
 			text = gameResult.gridSize.toText(),
 			weight = 1f,
 		)
-		StatisticsColumn.Time -> TableCell(text = formatTime(gameResult.timeInSeconds), weight = 1f)
-		StatisticsColumn.HintsUsed -> TableCell(text = gameResult.hintsUsed.toString(), weight = 1f)
+		InsightsTableColumn.SolvingTime -> TableCell(
+			text = formatTime(gameResult.timeInSeconds),
+			weight = 1f,
+		)
+		InsightsTableColumn.HintsUsed -> TableCell(text = gameResult.hintsUsed.toString(), weight = 1f)
 	}
 
 @Composable
@@ -86,10 +91,11 @@ private fun formatDate(date: LocalDateTime) = date.format(
 	},
 )
 
+@Composable
 internal fun SudokuGridSize.toText(): String = when (this) {
-	SudokuGridSize.FOUR -> "4x4"
-	SudokuGridSize.NINE -> "9x9"
-	SudokuGridSize.SIXTEEN -> "16x16"
+	SudokuGridSize.FOUR -> stringResource(R.string.gridsize_4x4)
+	SudokuGridSize.NINE -> stringResource(R.string.gridsize_9x9)
+	SudokuGridSize.SIXTEEN -> stringResource(R.string.gridsize_16x16)
 }
 
 @PreviewLightDark
@@ -106,7 +112,7 @@ private fun TableRowPreview() {
 					hintsUsed = 4,
 					completionDate = LocalDateTime.parse("2010-06-01T22:19:44"),
 				),
-				visibleColumns = StatisticsColumn.entries.toPersistentSet(),
+				visibleColumns = InsightsTableColumn.ALL.toPersistentList(),
 				modifier = Modifier.fillMaxWidth(),
 			)
 		}

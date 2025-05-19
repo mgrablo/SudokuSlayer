@@ -34,18 +34,19 @@ import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.STATISTICS_FAB_EXPLODE_BOUNDS
-import com.example.feature.statistics.SortDirection
-import com.example.feature.statistics.SortState
-import com.example.feature.statistics.StatisticsColumn
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.insights.components.TableHeader
 import com.example.feature.statistics.insights.components.TableRow
+import com.example.feature.statistics.model.ColumnDisplayState
+import com.example.feature.statistics.model.InsightsTableColumn
+import com.example.feature.statistics.model.SortDirection
+import com.example.feature.statistics.model.SortState
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
-import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -58,11 +59,11 @@ internal fun InsightsScreen(
 	modifier: Modifier = Modifier,
 ) {
 	val uiState by viewModel.insightsUiState.collectAsStateWithLifecycle()
-	val visibleColumns by viewModel.visibleColumns.collectAsStateWithLifecycle()
+	val tableColumnsState by viewModel.tableColumns.collectAsStateWithLifecycle()
 
 	sharedTransitionScope.InsightsScreenContent(
 		uiState = uiState,
-		visibleColumns = visibleColumns,
+		tableColumnsState = tableColumnsState,
 		onEvent = { viewModel.onEvent(it) },
 		openDrawer = openDrawer,
 		onFabClick = onFabClick,
@@ -75,7 +76,7 @@ internal fun InsightsScreen(
 @Composable
 private fun SharedTransitionScope.InsightsScreenContent(
 	uiState: InsightsUiState,
-	visibleColumns: PersistentSet<StatisticsColumn>,
+	tableColumnsState: PersistentList<ColumnDisplayState>,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
@@ -117,7 +118,7 @@ private fun SharedTransitionScope.InsightsScreenContent(
 			item {
 				TableHeader(
 					sortState = uiState.sortState,
-					visibleColumns = visibleColumns,
+					visibleColumns = tableColumnsState.filter { it.visible }.map { it.column }.toPersistentList(),
 					onSortChange = { onEvent(StatisticsEvent.ColumnHeaderClicked(it)) },
 				)
 			}
@@ -127,7 +128,7 @@ private fun SharedTransitionScope.InsightsScreenContent(
 			) { entry ->
 				TableRow(
 					gameResult = entry,
-					visibleColumns = visibleColumns,
+					visibleColumns = tableColumnsState.filter { it.visible }.map { it.column }.toPersistentList(),
 				)
 				HorizontalDivider()
 			}
@@ -169,13 +170,13 @@ private fun InsightsScreenPreview() {
 			AnimatedVisibility(true) {
 				InsightsScreenContent(
 					uiState = InsightsUiState(
-						sortState = SortState(StatisticsColumn.Difficulty, SortDirection.ASC),
+						sortState = SortState(InsightsTableColumn.Difficulty, SortDirection.ASC),
 						gameResults = entries,
 						isLoading = false,
 						totalGamesPlayed = 3,
 						totalTimeSpent = 125,
 					),
-					visibleColumns = StatisticsColumn.entries.toPersistentSet(),
+					tableColumnsState = ColumnDisplayState.getAll(),
 					onEvent = { },
 					openDrawer = { },
 					onFabClick = { },

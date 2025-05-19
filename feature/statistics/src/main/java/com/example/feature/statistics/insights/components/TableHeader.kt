@@ -23,19 +23,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.feature.statistics.SortDirection
-import com.example.feature.statistics.SortState
-import com.example.feature.statistics.StatisticsColumn
+import com.example.feature.statistics.model.InsightsTableColumn
+import com.example.feature.statistics.model.SortDirection
+import com.example.feature.statistics.model.SortState
+import com.example.feature.statistics.model.getDisplayText
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun TableHeader(
-	visibleColumns: PersistentSet<StatisticsColumn>,
+	visibleColumns: PersistentList<InsightsTableColumn>,
 	sortState: SortState,
-	onSortChange: (StatisticsColumn) -> Unit,
+	onSortChange: (InsightsTableColumn) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	Row(
@@ -47,7 +48,6 @@ internal fun TableHeader(
 			HeaderCell(
 				text = column.getDisplayText(),
 				weight = 1f,
-				isActive = sortState.column == column,
 				sortDirection = if (sortState.column == column) sortState.direction else SortDirection.NONE,
 				onClick = { onSortChange(column) },
 			)
@@ -59,7 +59,6 @@ internal fun TableHeader(
 private fun RowScope.HeaderCell(
 	text: String,
 	weight: Float,
-	isActive: Boolean,
 	sortDirection: SortDirection,
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
@@ -113,18 +112,18 @@ private fun TableHeaderPreview() {
 		Surface {
 			Column {
 				TableHeader(
-					visibleColumns = StatisticsColumn.entries.toPersistentSet(),
-					sortState = SortState(StatisticsColumn.Time, SortDirection.DESC),
+					visibleColumns = InsightsTableColumn.ALL.toPersistentList(),
+					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
 					modifier = Modifier.fillMaxWidth(),
 				)
 
 				TableHeader(
-					visibleColumns = persistentSetOf(
-						StatisticsColumn.Difficulty,
-						StatisticsColumn.Size,
+					visibleColumns = persistentListOf(
+						InsightsTableColumn.Difficulty,
+						InsightsTableColumn.GridSize,
 					),
-					sortState = SortState(StatisticsColumn.Time, SortDirection.DESC),
+					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
 					modifier = Modifier.fillMaxWidth(),
 				)

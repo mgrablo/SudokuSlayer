@@ -36,6 +36,7 @@ ktlint = "12.2.0"
 ktlintCompose = "0.4.22"
 koin = "4.0.4"
 sqldelight = "2.0.2"
+reorderable = "2.4.3"
 
 [libraries]
 sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
@@ -60,6 +61,7 @@ androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-andr
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-navigation-compose = { group = "androidx.navigation", name="navigation-compose", version.ref = "navVersion" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}

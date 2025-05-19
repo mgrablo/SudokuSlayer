@@ -7,8 +7,11 @@ import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.GameResultFilter
 import com.example.domain.statistics.StatisticsRepository
+import com.example.feature.statistics.model.ColumnDisplayState
+import com.example.feature.statistics.model.InsightsTableColumn
+import com.example.feature.statistics.model.SortDirection
+import com.example.feature.statistics.model.SortState
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
@@ -27,29 +30,6 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-internal enum class StatisticsColumn {
-	Date,
-	Difficulty,
-	Size,
-	Time,
-	HintsUsed,
-	;
-
-	fun getDisplayText(): String = when (this) {
-		Date -> "Date"
-		Difficulty -> "Difficulty"
-		Size -> "Size"
-		Time -> "Time"
-		HintsUsed -> "Hints"
-	}
-}
-
-internal data class SortState(
-	val column: StatisticsColumn? = null,
-	val direction: SortDirection = SortDirection.NONE,
-)
-
-internal enum class SortDirection { NONE, ASC, DESC }
 internal data class InsightsUiState(
 	val sortState: SortState,
 	val gameResults: PersistentList<GameResult> = persistentListOf(),
@@ -78,9 +58,8 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	private val _filterUiState = MutableStateFlow(FilterUiState())
 	val filterUiState: StateFlow<FilterUiState> = _filterUiState
 
-	private val _visibleColumns: MutableStateFlow<PersistentSet<StatisticsColumn>> =
-		MutableStateFlow(StatisticsColumn.entries.toPersistentSet())
-	val visibleColumns = _visibleColumns.asStateFlow()
+	private val _tableColumns = MutableStateFlow(ColumnDisplayState.getAll())
+	val tableColumns = _tableColumns.asStateFlow()
 
 	private val _gameResultFilter: MutableStateFlow<GameResultFilter> = MutableStateFlow(
 		GameResultFilter(),
@@ -88,7 +67,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	val gameResultFilter = _gameResultFilter.asStateFlow()
 
 	val activeFilterCount: StateFlow<Int> = combine(
-		_visibleColumns,
+		_tableColumns,
 		_gameResultFilter,
 	) { columns, filter ->
 		countActiveFilters(columns, filter)
@@ -110,8 +89,9 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	}
 
 	sealed interface StatisticsEvent {
-		data class ToggleColumnVisibility(val column: StatisticsColumn) : StatisticsEvent
-		data class ColumnHeaderClicked(val column: StatisticsColumn) : StatisticsEvent
+		data class ToggleColumnVisibility(val column: InsightsTableColumn) : StatisticsEvent
+		data class ReorderColumns(val from: Int, val to: Int) : StatisticsEvent
+		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
 		data class SetHintsUsedRangeFilter(val min: Int?, val max: Int?) : StatisticsEvent
@@ -126,6 +106,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	fun onEvent(event: StatisticsEvent) {
 		when (event) {
 			is StatisticsEvent.ToggleColumnVisibility -> toggleColumnVisibility(event.column)
+			is StatisticsEvent.ReorderColumns -> reorderColumns(event.from, event.to)
 			is StatisticsEvent.ColumnHeaderClicked -> handleColumnHeaderClick(event.column)
 			is StatisticsEvent.ToggleDifficultyFilter -> toggleDifficultyFilter(event.difficulty)
 			is StatisticsEvent.ToggleGridSizeFilter -> toggleGridSizeFilter(event.gridSize)
@@ -196,16 +177,23 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		}
 	}
 
-	private fun toggleColumnVisibility(column: StatisticsColumn) {
-		_visibleColumns.update {
-			it.toggleItem(column).toPersistentSet()
+	private fun toggleColumnVisibility(column: InsightsTableColumn) {
+		_tableColumns.update { list ->
+			list.map { if (it.column == column) it.copy(visible = !it.visible) else it }
+				.toPersistentList()
+		}
+	}
+
+	private fun reorderColumns(from: Int, to: Int) {
+		_tableColumns.update {
+			it.moveItem(from, to)
 		}
 	}
 
 	private fun toggleDifficultyFilter(difficulty: GameDifficulty) {
 		_gameResultFilter.update {
 			it.copy(
-				difficulties = it.difficulties.toggleItem(difficulty),
+				difficulties = it.difficulties.toggleItem(difficulty).toPersistentSet(),
 			)
 		}
 	}
@@ -213,7 +201,7 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	private fun toggleGridSizeFilter(size: SudokuGridSize) {
 		_gameResultFilter.update {
 			it.copy(
-				gridSizes = it.gridSizes.toggleItem(size),
+				gridSizes = it.gridSizes.toggleItem(size).toPersistentSet(),
 			)
 		}
 	}
@@ -224,17 +212,17 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		}
 
 		val sortedResults = when (sortState.column) {
-			StatisticsColumn.Date -> results.sortedBy { it.completionDate }
-			StatisticsColumn.Difficulty -> results.sortedBy { it.difficulty }
-			StatisticsColumn.Size -> results.sortedBy { it.gridSize }
-			StatisticsColumn.Time -> results.sortedBy { it.timeInSeconds }
-			StatisticsColumn.HintsUsed -> results.sortedBy { it.hintsUsed }
+			InsightsTableColumn.Date -> results.sortedBy { it.completionDate }
+			InsightsTableColumn.Difficulty -> results.sortedBy { it.difficulty }
+			InsightsTableColumn.GridSize -> results.sortedBy { it.gridSize }
+			InsightsTableColumn.SolvingTime -> results.sortedBy { it.timeInSeconds }
+			InsightsTableColumn.HintsUsed -> results.sortedBy { it.hintsUsed }
 		}
 
 		return if (sortState.direction == SortDirection.ASC) sortedResults else sortedResults.reversed()
 	}
 
-	private fun handleColumnHeaderClick(column: StatisticsColumn) {
+	private fun handleColumnHeaderClick(column: InsightsTableColumn) {
 		viewModelScope.launch {
 			val currentSortState = _insightsUiState.value.sortState
 			val newSortState = when {
@@ -315,22 +303,18 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	}
 
 	private fun clearFilters() {
-		_gameResultFilter.update {
-			GameResultFilter()
-		}
-		_visibleColumns.update {
-			StatisticsColumn.entries.toPersistentSet()
-		}
+		_gameResultFilter.update { GameResultFilter() }
+		_tableColumns.update { ColumnDisplayState.getAll() }
 	}
 
 	private fun countActiveFilters(
-		columns: PersistentSet<StatisticsColumn>,
+		columns: Collection<ColumnDisplayState>,
 		filter: GameResultFilter,
 	): Int {
 		var count = 0
 
 		// Count hidden columns (default is all visible)
-		count += StatisticsColumn.entries.size - columns.size
+		count += columns.count { !it.visible }
 
 		// Count difficulty filters
 		count += GameDifficulty.entries.size - filter.difficulties.size
@@ -357,10 +341,23 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	}
 }
 
-private fun <T> Set<T>.toggleItem(item: T): Set<T> = if (item in this) {
+private fun <T> Collection<T>.toggleItem(item: T): Collection<T> = if (item in this) {
 	this - item
 } else {
 	this + item
+}
+
+fun <T> PersistentList<T>.moveItem(fromIndex: Int, toIndex: Int): PersistentList<T> {
+	if (fromIndex !in indices || toIndex !in 0..size) {
+		throw IndexOutOfBoundsException()
+	}
+	if (fromIndex == toIndex) {
+		return this
+	}
+
+	return this.toMutableList().apply {
+		add(toIndex, removeAt(fromIndex))
+	}.toPersistentList()
 }
 
 internal fun LocalDateTime.toLong(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {

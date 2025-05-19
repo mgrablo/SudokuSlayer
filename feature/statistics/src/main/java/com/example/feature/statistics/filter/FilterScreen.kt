@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -44,7 +43,6 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.GameResultFilter
 import com.example.feature.statistics.FilterUiState
-import com.example.feature.statistics.StatisticsColumn
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.filter.components.CompletionDateFilterView
@@ -53,14 +51,16 @@ import com.example.feature.statistics.filter.components.FilterCategory
 import com.example.feature.statistics.filter.components.GenericFilterChip
 import com.example.feature.statistics.filter.components.HintsFilterView
 import com.example.feature.statistics.filter.components.SolvingTimeFilterView
+import com.example.feature.statistics.filter.components.VisibleColumnsView
 import com.example.feature.statistics.insights.components.toText
+import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.toLong
 import com.example.feature.uicore.consumeHorizontalDrag
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Duration.Companion.seconds
 
@@ -71,13 +71,13 @@ internal fun FilterScreen(
 	modifier: Modifier = Modifier,
 ) {
 	val uiState by viewModel.filterUiState.collectAsStateWithLifecycle()
-	val visibleColumns by viewModel.visibleColumns.collectAsStateWithLifecycle()
+	val tableColumnsState by viewModel.tableColumns.collectAsStateWithLifecycle()
 	val gameResultFilterState by viewModel.gameResultFilter.collectAsStateWithLifecycle()
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 
 	FilterScreenContent(
 		uiState = uiState,
-		visibleColumns = visibleColumns,
+		tableColumns = tableColumnsState,
 		gameResultFilterState = gameResultFilterState,
 		activeFilterCount = activeFilterCount,
 		onEvent = { viewModel.onEvent(it) },
@@ -90,14 +90,13 @@ internal fun FilterScreen(
 @Composable
 private fun FilterScreenContent(
 	uiState: FilterUiState,
-	visibleColumns: PersistentSet<StatisticsColumn>,
+	tableColumns: PersistentList<ColumnDisplayState>,
 	gameResultFilterState: GameResultFilter,
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
 	onFabClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val tableColumns = remember { StatisticsColumn.entries.toPersistentList() }
 	val gameDifficulties = remember { GameDifficulty.entries.toPersistentList() }
 	val sudokuGridSizes = remember { SudokuGridSize.entries.toPersistentList() }
 
@@ -146,24 +145,21 @@ private fun FilterScreenContent(
 					FilterCategory(
 						label = stringResource(R.string.visible_columns),
 					) {
-						FlowRow(
-							horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-							maxItemsInEachRow = 3,
-						) {
-							for (column in tableColumns) {
-								GenericFilterChip(
-									isSelected = column in visibleColumns,
-									label = column.getDisplayText(),
-									onClick = {
-										onEvent(
-											StatisticsEvent.ToggleColumnVisibility(
-												column,
-											),
-										)
-									},
+						VisibleColumnsView(
+							allTableColumns = tableColumns,
+							toggleVisibility = { column ->
+								onEvent(
+									StatisticsEvent.ToggleColumnVisibility(
+										column,
+									),
 								)
-							}
-						}
+							},
+							onReorder = { from, to ->
+								onEvent(
+									StatisticsEvent.ReorderColumns(from, to),
+								)
+							},
+						)
 					}
 					FilterCategory(
 						label = stringResource(R.string.filter_by_difficulty),
@@ -313,7 +309,7 @@ private fun FilterScreenPreview() {
 			onEvent = { },
 			onFabClick = { },
 			modifier = Modifier.fillMaxSize(),
-			visibleColumns = persistentSetOf(),
+			tableColumns = persistentListOf(),
 			gameResultFilterState = GameResultFilter(),
 			activeFilterCount = 2,
 		)
