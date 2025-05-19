@@ -13,10 +13,19 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 internal enum class StatisticsColumn {
 	Date,
@@ -52,6 +61,7 @@ internal data class InsightsUiState(
 internal data class FilterUiState(
 	val isSolveTimeRangeEnabled: Boolean = false,
 	val isHintsUsedRangeEnabled: Boolean = false,
+	val isCompletionDateRangeEnabled: Boolean = false,
 	val maxHintsUsed: Int = 0,
 	val longestGame: Long = 0,
 )
@@ -77,6 +87,17 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 	)
 	val gameResultFilter = _gameResultFilter.asStateFlow()
 
+	val activeFilterCount: StateFlow<Int> = combine(
+		_visibleColumns,
+		_gameResultFilter,
+	) { columns, filter ->
+		countActiveFilters(columns, filter)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.Lazily,
+		initialValue = 0,
+	)
+
 	init {
 		loadInitialData()
 
@@ -95,8 +116,11 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
 		data class SetHintsUsedRangeFilter(val min: Int?, val max: Int?) : StatisticsEvent
 		data class SetSolveTimeRangeFilter(val min: Long?, val max: Long?) : StatisticsEvent
+		data class SetCompletionDateRangeFilter(val dateRange: Pair<Long?, Long?>) : StatisticsEvent
 		data class UpdateHintsUsedRangeEnabled(val value: Boolean) : StatisticsEvent
 		data class UpdateSolveTimeRangeEnabled(val value: Boolean) : StatisticsEvent
+		data class UpdateCompletionDateRangeEnabled(val value: Boolean) : StatisticsEvent
+		data object ClearFilters : StatisticsEvent
 	}
 
 	fun onEvent(event: StatisticsEvent) {
@@ -115,8 +139,14 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 				event.max,
 			)
 
+			is StatisticsEvent.SetCompletionDateRangeFilter -> setCompletionDateRangeFilter(event.dateRange)
 			is StatisticsEvent.UpdateHintsUsedRangeEnabled -> updateHintsUsedRangeEnabled(event.value)
 			is StatisticsEvent.UpdateSolveTimeRangeEnabled -> updateSolveTimeRangeEnabled(event.value)
+			is StatisticsEvent.UpdateCompletionDateRangeEnabled -> updateCompletionDateRangeEnabled(
+				event.value,
+			)
+
+			is StatisticsEvent.ClearFilters -> clearFilters()
 		}
 	}
 
@@ -248,6 +278,14 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		}
 	}
 
+	private fun updateCompletionDateRangeEnabled(value: Boolean) {
+		_filterUiState.update { state ->
+			state.copy(
+				isCompletionDateRangeEnabled = value,
+			)
+		}
+	}
+
 	private fun setHintsUsedRangeFilter(min: Int?, max: Int?) {
 		_gameResultFilter.update {
 			it.copy(
@@ -265,10 +303,82 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 			)
 		}
 	}
+
+	private fun setCompletionDateRangeFilter(dateRange: Pair<Long?, Long?>) {
+		_gameResultFilter.update {
+			it.copy(
+				dateRangeStart = dateRange.first?.toLocalDateTime(),
+				dateRangeEnd = dateRange.second?.toLocalDateTime()
+					?: dateRange.first?.toLocalDateTime()?.atEndOfDay(),
+			)
+		}
+	}
+
+	private fun clearFilters() {
+		_gameResultFilter.update {
+			GameResultFilter()
+		}
+		_visibleColumns.update {
+			StatisticsColumn.entries.toPersistentSet()
+		}
+	}
+
+	private fun countActiveFilters(
+		columns: PersistentSet<StatisticsColumn>,
+		filter: GameResultFilter,
+	): Int {
+		var count = 0
+
+		// Count hidden columns (default is all visible)
+		count += StatisticsColumn.entries.size - columns.size
+
+		// Count difficulty filters
+		count += GameDifficulty.entries.size - filter.difficulties.size
+
+		// Count grid size filters
+		count += SudokuGridSize.entries.size - filter.gridSizes.size
+
+		// Count hints filters
+		if (filter.minHintsUsed != null || filter.maxHintsUsed != null) {
+			count++
+		}
+
+		// Count time filters
+		if (filter.minCompletionTime != null || filter.maxCompletionTime != null) {
+			count++
+		}
+
+		// Count completion date
+		if (filter.dateRangeStart != null || filter.dateRangeEnd != null) {
+			count++
+		}
+
+		return count
+	}
 }
 
 private fun <T> Set<T>.toggleItem(item: T): Set<T> = if (item in this) {
 	this - item
 } else {
 	this + item
+}
+
+internal fun LocalDateTime.toLong(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {
+	val instant = this.toInstant(timeZone)
+	return instant.toEpochMilliseconds()
+}
+
+internal fun LocalDateTime.atEndOfDay(
+	timeZone: TimeZone = TimeZone.currentSystemDefault(),
+): LocalDateTime = this.date.atTime(
+	hour = 23,
+	minute = 59,
+	second = 59,
+)
+
+internal fun Long.toLocalDateTime(
+	timeZone: TimeZone = TimeZone.currentSystemDefault(),
+): LocalDateTime {
+	val instant = Instant.fromEpochMilliseconds(this)
+	return instant.toLocalDateTime(timeZone)
 }

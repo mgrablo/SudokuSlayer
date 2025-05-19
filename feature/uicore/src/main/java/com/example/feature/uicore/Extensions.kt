@@ -7,6 +7,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import com.example.sudokuslayer.feature.uicore.R
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 /**
  * Extension function for `Modifier` to consume horizontal drag gestures.
@@ -15,13 +16,14 @@ import java.util.concurrent.TimeUnit
  *
  * @return A `Modifier` that consumes horizontal drag gestures.
  */
-fun Modifier.consumeHorizontalDrag(): Modifier = this.pointerInput(Unit) {
-	detectDragGestures { change, dragAmount ->
-		if (dragAmount.x != 0f) {
-			change.consume()
+fun Modifier.consumeHorizontalDrag(minimalVerticalDragThreshold: Float = 1.0f): Modifier =
+	this.pointerInput(Unit) {
+		detectDragGestures { change, dragAmount ->
+			if (dragAmount.x != 0f && abs(dragAmount.y) < minimalVerticalDragThreshold) {
+				change.consume()
+			}
 		}
 	}
-}
 
 /**
  * Formats a Float value representing total seconds into a human-readable time string.

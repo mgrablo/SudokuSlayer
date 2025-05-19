@@ -41,7 +41,7 @@ fun SolvingTimeFilterView(
 	modifier: Modifier = Modifier,
 ) {
 	val valueRange = remember(currentMaxTime) { 0f..currentMaxTime.toFloat() }
-	var selectedRange by remember(currentMaxTime) {
+	var selectedRange by remember(initialSliderStart, initialSliderEnd) {
 		mutableStateOf(initialSliderStart..initialSliderEnd)
 	}
 

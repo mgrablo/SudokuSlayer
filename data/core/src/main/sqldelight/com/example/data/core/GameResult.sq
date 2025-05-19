@@ -36,7 +36,9 @@ WHERE difficulty IN :difficulties
 	AND (:minCompletionTime ISNULL OR timeInSeconds >= :minCompletionTime)
 	AND (:maxCompletionTime ISNULL OR timeInSeconds <= :maxCompletionTime)
 	AND (:minHintsUsed ISNULL OR hintsUsed >= :minHintsUsed)
-	AND (:maxHintsUsed ISNULL OR hintsUsed <= :maxHintsUsed);
+	AND (:maxHintsUsed ISNULL OR hintsUsed <= :maxHintsUsed)
+	AND (:dateRangeStart ISNULL OR completionDate >= :dateRangeStart)
+	AND (:dateRangeEnd ISNULL OR completionDate <= :dateRangeEnd);
 
 getTotalGameResults:
 SELECT COUNT(*) FROM GameResultEntity;

@@ -3,6 +3,7 @@ package com.example.domain.statistics
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import kotlinx.datetime.LocalDateTime
 
 interface StatisticsRepository {
 	suspend fun getAllGameResults(): List<GameResult>
@@ -23,4 +24,6 @@ data class GameResultFilter(
 	val maxCompletionTime: Long? = null,
 	val minHintsUsed: Int? = null,
 	val maxHintsUsed: Int? = null,
+	val dateRangeStart: LocalDateTime? = null,
+	val dateRangeEnd: LocalDateTime? = null,
 )

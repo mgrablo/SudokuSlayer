@@ -42,7 +42,7 @@ internal fun HintsFilterView(
 	modifier: Modifier = Modifier,
 ) {
 	val valueRange = remember(currentMaxHints) { 0f..currentMaxHints.toFloat() }
-	var selectedRange by remember(currentMaxHints) {
+	var selectedRange by remember(initialSliderStart, initialSliderEnd) {
 		mutableStateOf(
 			initialSliderStart..initialSliderEnd,
 		)
