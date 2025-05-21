@@ -92,6 +92,8 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 		data class ToggleColumnVisibility(val column: InsightsTableColumn) : StatisticsEvent
 		data class ReorderColumns(val from: Int, val to: Int) : StatisticsEvent
 		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
+		data class PlayGameClicked(val gameSeed: Long) : StatisticsEvent
+
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
 		data class SetHintsUsedRangeFilter(val min: Int?, val max: Int?) : StatisticsEvent
@@ -126,9 +128,13 @@ internal class StatisticsViewModel(private val statisticsRepository: StatisticsR
 			is StatisticsEvent.UpdateCompletionDateRangeEnabled -> updateCompletionDateRangeEnabled(
 				event.value,
 			)
-
+			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
 		}
+	}
+
+	private fun handlePlayGameClicked(gameSeed: Long) {
+		// TODO
 	}
 
 	private fun loadInitialData() {

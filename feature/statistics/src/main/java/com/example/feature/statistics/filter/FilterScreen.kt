@@ -108,7 +108,7 @@ private fun FilterScreenContent(
 		modifier = modifier,
 		topBar = {
 			TopAppBar(
-				title = { Text(stringResource(R.string.screen_title)) },
+				title = { Text(stringResource(R.string.filter_screen_title)) },
 				windowInsets = WindowInsets.displayCutout,
 				navigationIcon = {
 					IconButton(

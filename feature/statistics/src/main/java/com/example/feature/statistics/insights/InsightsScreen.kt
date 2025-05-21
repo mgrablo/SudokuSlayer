@@ -7,18 +7,16 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -27,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.core.GameDifficulty
@@ -36,17 +35,16 @@ import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.STATISTICS_FAB_EXPLODE_BOUNDS
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
-import com.example.feature.statistics.insights.components.TableHeader
-import com.example.feature.statistics.insights.components.TableRow
+import com.example.feature.statistics.insights.components.InsightsTable
 import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
 import com.example.feature.statistics.model.SortDirection
 import com.example.feature.statistics.model.SortState
+import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -87,12 +85,17 @@ private fun SharedTransitionScope.InsightsScreenContent(
 		modifier = modifier,
 		topBar = {
 			CenterAlignedTopAppBar(
-				title = { Text("Statistics") },
+				title = { Text(stringResource(R.string.insights_screen_title)) },
 				modifier = Modifier,
 				windowInsets = WindowInsets.displayCutout,
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
-						Icon(Icons.Default.Menu, contentDescription = "Open menu")
+						Icon(
+							Icons.Default.Menu,
+							contentDescription = stringResource(
+								R.string.open_menu_content_description,
+							),
+						)
 					}
 				},
 			)
@@ -108,30 +111,28 @@ private fun SharedTransitionScope.InsightsScreenContent(
 						animatedVisibilityScope = animatedVisibilityScope,
 					),
 			) {
-				Icon(painterResource(R.drawable.filter), contentDescription = "Filter")
+				Icon(
+					painterResource(R.drawable.filter),
+					contentDescription = stringResource(
+						R.string.filter_fab_content_description,
+					),
+				)
 			}
 		},
 	) { paddingValues ->
-		LazyColumn(
-			modifier = Modifier.padding(paddingValues),
+		Column(
+			modifier = Modifier
+				.padding(paddingValues)
+				.fillMaxSize(),
 		) {
-			item {
-				TableHeader(
-					sortState = uiState.sortState,
-					visibleColumns = tableColumnsState.filter { it.visible }.map { it.column }.toPersistentList(),
-					onSortChange = { onEvent(StatisticsEvent.ColumnHeaderClicked(it)) },
-				)
-			}
-			items(
-				items = uiState.gameResults,
-				key = { it.id },
-			) { entry ->
-				TableRow(
-					gameResult = entry,
-					visibleColumns = tableColumnsState.filter { it.visible }.map { it.column }.toPersistentList(),
-				)
-				HorizontalDivider()
-			}
+			InsightsTable(
+				gameResults = uiState.gameResults,
+				sortState = uiState.sortState,
+				tableColumnsState = tableColumnsState,
+				onColumnHeaderClick = { onEvent(StatisticsEvent.ColumnHeaderClicked(it)) },
+				onPlayClick = { onEvent(StatisticsEvent.PlayGameClicked(it)) },
+				modifier = Modifier.padding(vertical = LocalPadding.current.tiny),
+			)
 		}
 	}
 }
@@ -147,6 +148,7 @@ private fun InsightsScreenPreview() {
 			gridSize = SudokuGridSize.NINE,
 			hintsUsed = 4,
 			completionDate = LocalDateTime.parse("2010-06-21T22:19:44"),
+			seed = null,
 		),
 		GameResult(
 			id = "2",
@@ -155,6 +157,7 @@ private fun InsightsScreenPreview() {
 			gridSize = SudokuGridSize.FOUR,
 			hintsUsed = 0,
 			completionDate = LocalDateTime.parse("2010-06-01T22:19:44"),
+			seed = 1,
 		),
 		GameResult(
 			id = "3",
@@ -163,6 +166,7 @@ private fun InsightsScreenPreview() {
 			gridSize = SudokuGridSize.SIXTEEN,
 			hintsUsed = 45,
 			completionDate = LocalDateTime.parse("2010-12-29T22:19:44"),
+			seed = 2,
 		),
 	)
 	SudokuSlayerTheme {

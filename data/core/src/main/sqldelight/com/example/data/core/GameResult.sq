@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS GameResultEntity (
   difficulty TEXT AS GameDifficulty NOT NULL,
   gridSize TEXT AS SudokuGridSize NOT NULL,
   hintsUsed INTEGER AS kotlin.Int NOT NULL,
-  completionDate TEXT AS LocalDateTime NOT NULL
+  completionDate TEXT AS LocalDateTime NOT NULL,
+  seed INTEGER AS kotlin.Long
 );
 
 CREATE INDEX idx_difficulty ON GameResultEntity(difficulty);
@@ -54,4 +55,4 @@ DELETE FROM GameResultEntity;
 
 -- Queries for game module repository methods
 insertGameResult:
-INSERT OR IGNORE INTO GameResultEntity VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO GameResultEntity VALUES (?, ?, ?, ?, ?, ?, ?);

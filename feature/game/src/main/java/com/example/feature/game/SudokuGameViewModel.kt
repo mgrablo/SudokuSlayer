@@ -312,6 +312,7 @@ internal class SudokuGameViewModel(
 						completionDate = System.now().toLocalDateTime(
 							TimeZone.currentSystemDefault(),
 						),
+						seed = game.value.grid.seed,
 					),
 				)
 			}

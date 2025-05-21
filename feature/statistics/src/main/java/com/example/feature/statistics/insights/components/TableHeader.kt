@@ -1,13 +1,18 @@
 package com.example.feature.statistics.insights.components
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -18,60 +23,82 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
 import com.example.feature.statistics.model.SortDirection
 import com.example.feature.statistics.model.SortState
 import com.example.feature.statistics.model.getDisplayText
+import com.example.feature.statistics.model.getPreferredWidth
+import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun TableHeader(
-	visibleColumns: PersistentList<InsightsTableColumn>,
+	columns: PersistentList<ColumnDisplayState>,
 	sortState: SortState,
 	onSortChange: (InsightsTableColumn) -> Unit,
 	modifier: Modifier = Modifier,
+	scrollStateProvider: () -> ScrollState,
 ) {
 	Row(
-		modifier = modifier.fillMaxWidth(),
-		horizontalArrangement = Arrangement.SpaceBetween,
+		modifier = modifier
+			.horizontalScroll(scrollStateProvider())
+			.padding(horizontal = LocalPadding.current.tiny)
+			.clip(MaterialTheme.shapes.medium)
+			.background(MaterialTheme.colorScheme.surfaceVariant),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		for (column in visibleColumns) {
+		columns.filter { it.visible }.forEach { columnState ->
 			HeaderCell(
-				text = column.getDisplayText(),
-				weight = 1f,
-				sortDirection = if (sortState.column == column) sortState.direction else SortDirection.NONE,
-				onClick = { onSortChange(column) },
+				column = columnState.column,
+				sortDirection = if (sortState.column ==
+					columnState.column
+				) {
+					sortState.direction
+				} else {
+					SortDirection.NONE
+				},
+				onClick = { onSortChange(columnState.column) },
 			)
 		}
+		Spacer(Modifier.width(120.dp))
 	}
 }
 
 @Composable
-private fun RowScope.HeaderCell(
-	text: String,
-	weight: Float,
+private fun HeaderCell(
+	column: InsightsTableColumn,
 	sortDirection: SortDirection,
 	onClick: () -> Unit,
-	modifier: Modifier = Modifier,
 ) {
-	Row(
-		modifier = modifier
-			.weight(weight)
+	val cellModifier = column.getPreferredWidth()?.let {
+		Modifier.width(it)
+	} ?: Modifier.wrapContentWidth(unbounded = true)
+
+	Box(
+		modifier = cellModifier
 			.height(48.dp)
-			.clickable(onClick = onClick)
-			.padding(vertical = 12.dp, horizontal = 4.dp),
-		horizontalArrangement = Arrangement.Center,
-		verticalAlignment = Alignment.CenterVertically,
+			.clickable(onClick = onClick),
+		contentAlignment = Alignment.Center,
 	) {
+		Text(
+			text = column.getDisplayText(),
+			style = MaterialTheme.typography.titleSmall,
+			fontWeight = FontWeight.Bold,
+			color = MaterialTheme.colorScheme.onSurface,
+			textAlign = TextAlign.Center,
+			maxLines = 1,
+			overflow = TextOverflow.Ellipsis,
+		)
 		if (sortDirection != SortDirection.NONE) {
 			Icon(
 				imageVector = if (sortDirection ==
@@ -84,48 +111,38 @@ private fun RowScope.HeaderCell(
 				contentDescription = if (sortDirection ==
 					SortDirection.ASC
 				) {
-					"Sort ascending"
+					stringResource(R.string.sort_ascending)
 				} else {
-					"Sort descending"
+					stringResource(R.string.sort_descending)
 				},
 				tint = MaterialTheme.colorScheme.onSurface,
-				modifier = Modifier.padding(start = 2.dp),
+				modifier = Modifier
+					.align(Alignment.CenterStart)
+					.padding(horizontal = LocalPadding.current.tiny),
 			)
 		}
-
-		Text(
-			text = text,
-			style = MaterialTheme.typography.bodyMedium,
-			fontWeight = FontWeight.Bold,
-			color = MaterialTheme.colorScheme.onSurface,
-			textAlign = TextAlign.Center,
-			maxLines = 1,
-			overflow = TextOverflow.Ellipsis,
-		)
 	}
 }
 
 @PreviewLightDark
 @Composable
 private fun TableHeaderPreview() {
+	val scrollState = rememberScrollState()
 	SudokuSlayerTheme {
 		Surface {
 			Column {
 				TableHeader(
-					visibleColumns = InsightsTableColumn.ALL.toPersistentList(),
+					columns = ColumnDisplayState.getAll(),
 					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
-					modifier = Modifier.fillMaxWidth(),
+					scrollStateProvider = { scrollState },
 				)
 
 				TableHeader(
-					visibleColumns = persistentListOf(
-						InsightsTableColumn.Difficulty,
-						InsightsTableColumn.GridSize,
-					),
+					columns = ColumnDisplayState.getAll(),
 					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
-					modifier = Modifier.fillMaxWidth(),
+					scrollStateProvider = { scrollState },
 				)
 			}
 		}

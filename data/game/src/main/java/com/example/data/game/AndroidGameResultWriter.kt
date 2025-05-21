@@ -14,6 +14,7 @@ class AndroidGameResultWriter(private val database: AppDatabase) : GameResultWri
 				gridSize = gameResult.gridSize,
 				hintsUsed = gameResult.hintsUsed,
 				completionDate = gameResult.completionDate,
+				seed = gameResult.seed,
 			)
 	}
 }

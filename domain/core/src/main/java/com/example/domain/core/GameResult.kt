@@ -13,4 +13,5 @@ constructor(
 	val gridSize: SudokuGridSize,
 	val hintsUsed: Int,
 	val completionDate: LocalDateTime,
+	val seed: Long?,
 )

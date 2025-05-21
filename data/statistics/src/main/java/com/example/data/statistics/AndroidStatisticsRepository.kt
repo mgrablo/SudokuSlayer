@@ -7,9 +7,6 @@ import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.GameResultFilter
 import com.example.domain.statistics.StatisticsRepository
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 class AndroidStatisticsRepository(private val database: AppDatabase) : StatisticsRepository {
 	override suspend fun getAllGameResults(): List<GameResult> = database.gameResultQueries
@@ -69,10 +66,6 @@ class AndroidStatisticsRepository(private val database: AppDatabase) : Statistic
 		gridSize = this.gridSize,
 		hintsUsed = this.hintsUsed,
 		completionDate = this.completionDate,
+		seed = seed,
 	)
-
-	private fun Long.toLocalDateTime(): kotlinx.datetime.LocalDateTime {
-		val instant = Instant.fromEpochMilliseconds(this)
-		return instant.toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
-	}
 }
