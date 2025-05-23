@@ -1,10 +1,12 @@
 package com.example.feature.uicore
 
+import androidx.collection.FloatFloatPair
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.graphics.shapes.RoundedPolygon
 import com.example.sudokuslayer.feature.uicore.R
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -84,4 +86,8 @@ fun rememberFormattedTime(totalSeconds: Float, compact: Boolean = false): String
 	} else {
 		parts.joinToString(" ")
 	}
+}
+
+fun RoundedPolygon.mirrorVertically(): RoundedPolygon = this.transformed { x, y ->
+	FloatFloatPair(x, 1f - y)
 }

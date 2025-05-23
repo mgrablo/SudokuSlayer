@@ -7,6 +7,7 @@ val statisticsModule = module {
 	viewModel {
 		StatisticsViewModel(
 			statisticsRepository = get(),
+			settingsRepository = get(),
 		)
 	}
 }

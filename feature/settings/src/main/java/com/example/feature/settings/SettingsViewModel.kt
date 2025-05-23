@@ -7,55 +7,55 @@ import com.example.domain.settings.SettingsRepository
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-	val settingsRepository: SettingsRepository,
-	val savedStateHandle: SavedStateHandle,
+	private val settingsRepository: SettingsRepository,
+	private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+	private fun <T> Flow<T>.stateInViewModel(initialValue: T): StateFlow<T> = this.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000L),
+		initialValue = initialValue,
+	)
+
 	val darkMode: StateFlow<DarkMode> =
-		settingsRepository.darkMode.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.darkMode.stateInViewModel(
 			initialValue = DarkMode.SYSTEM,
 		)
 
 	val darkColorScheme: StateFlow<ColorScheme> =
-		settingsRepository.darkModeColorScheme.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.darkModeColorScheme.stateInViewModel(
 			initialValue = ColorScheme.fromName("mocha"),
 		)
 
 	val lightColorScheme: StateFlow<ColorScheme> =
-		settingsRepository.lightModeColorScheme.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.lightModeColorScheme.stateInViewModel(
 			initialValue = ColorScheme.fromName("latte"),
 		)
 
 	val language: StateFlow<String> =
-		settingsRepository.language.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.language.stateInViewModel(
 			initialValue = "system",
 		)
 
 	val leftHandMode: StateFlow<Boolean> =
-		settingsRepository.leftHandMode.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.leftHandMode.stateInViewModel(
 			initialValue = false,
 		)
 
 	val actionButtonsOnTop: StateFlow<Boolean> =
-		settingsRepository.showActionButtonsOnTop.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5000L),
+		settingsRepository.showActionButtonsOnTop.stateInViewModel(
 			initialValue = false,
+		)
+
+	val insightsSummaryCompactLayout: StateFlow<Boolean> =
+		settingsRepository.insightsSummaryCompactLayout.stateInViewModel(
+			initialValue = true,
 		)
 
 	val lightColorSchemes = settingsRepository.getLightColorSchemes().toPersistentSet()
@@ -73,6 +73,8 @@ class SettingsViewModel(
 		data class ToggleLeftHandMode(val leftHandMode: Boolean) : Event
 
 		data class ToggleActionButtonsOnTop(val actionButtonsOnTop: Boolean) : Event
+
+		data class ToggleInsightsSummaryCompactLayout(val compactLayout: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -83,6 +85,15 @@ class SettingsViewModel(
 			is Event.SetLanguage -> setLanguage(event.language)
 			is Event.ToggleLeftHandMode -> toggleLeftHandMode(event.leftHandMode)
 			is Event.ToggleActionButtonsOnTop -> toggleActionButtonsOnTop(event.actionButtonsOnTop)
+			is Event.ToggleInsightsSummaryCompactLayout -> toggleInsightsSummaryCompactLayout(
+				event.compactLayout,
+			)
+		}
+	}
+
+	private fun toggleInsightsSummaryCompactLayout(compactLayout: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setInsightsSummaryCompactLayout(compactLayout)
 		}
 	}
 

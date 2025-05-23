@@ -40,6 +40,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 	override val showActionButtonsOnTop: Flow<Boolean> =
 		preferenceStorage.getAsFlow(SettingsPreferenceKeys.ShowActionButtonsOnTop).map { it == true }
 
+	override val insightsSummaryCompactLayout: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.InsightsSummaryCompactLayout,
+	).map { it == true }
+
 	override suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
 	}
@@ -62,6 +66,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 
 	override suspend fun setShowActionButtonsOnTop(actionButtonsOnTop: Boolean) {
 		preferenceStorage.set(SettingsPreferenceKeys.ShowActionButtonsOnTop, actionButtonsOnTop)
+	}
+
+	override suspend fun setInsightsSummaryCompactLayout(compactLayout: Boolean) {
+		preferenceStorage.set(SettingsPreferenceKeys.InsightsSummaryCompactLayout, compactLayout)
 	}
 
 	override fun getAvailableColorSchemes(): List<String> = ColorScheme.getAvailableColorSchemes()

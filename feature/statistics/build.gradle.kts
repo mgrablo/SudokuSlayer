@@ -7,4 +7,5 @@ dependencies {
 	implementation(projects.domain.statistics)
 	implementation(libs.kotlinx.datetime)
 	implementation(libs.reorderable)
+	implementation(libs.androidx.graphics.shapes)
 }

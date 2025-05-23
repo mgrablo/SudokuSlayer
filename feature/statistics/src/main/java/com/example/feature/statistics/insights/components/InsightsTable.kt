@@ -4,11 +4,14 @@ import android.content.ClipData
 import android.widget.Toast
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +25,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.composables.core.HorizontalScrollbar
 import com.composables.core.ScrollArea
 import com.composables.core.Thumb
@@ -79,13 +83,13 @@ internal fun InsightsTable(
 			)
 		}
 		LazyColumn(
-			modifier = modifier
+			modifier = modifier.height(600.dp)
 				.fillMaxWidth(),
 		) {
 			item {
 				TableHeader(
 					sortState = sortState,
-					columns = tableColumnsState,
+					columns = visibleColumns,
 					onSortChange = onColumnHeaderClick,
 					scrollStateProvider = { scrollState },
 				)
@@ -113,6 +117,37 @@ internal fun InsightsTable(
 				)
 			}
 		}
+	}
+}
+
+internal fun LazyListScope.insightsTableContent(
+	gameResults: PersistentList<GameResult>,
+	visibleColumns: PersistentList<InsightsTableColumn>,
+	sortState: SortState,
+	scrollState: ScrollState,
+	onColumnHeaderClick: (InsightsTableColumn) -> Unit,
+	onCopySeedClick: (Long) -> Unit,
+	onPlayClick: (Long) -> Unit,
+) {
+	item {
+		TableHeader(
+			sortState = sortState,
+			columns = visibleColumns,
+			onSortChange = onColumnHeaderClick,
+			scrollStateProvider = { scrollState },
+		)
+	}
+	items(
+		items = gameResults,
+		key = { it.id },
+	) { entry ->
+		TableRow(
+			gameResult = entry,
+			visibleColumns = visibleColumns,
+			scrollStateProvider = { scrollState },
+			onPlayClick = onPlayClick,
+			onCopySeedClick = onCopySeedClick,
+		)
 	}
 }
 

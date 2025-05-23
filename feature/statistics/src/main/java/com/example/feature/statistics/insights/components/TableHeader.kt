@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
 import com.example.feature.statistics.model.SortDirection
 import com.example.feature.statistics.model.SortState
@@ -40,10 +39,11 @@ import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun TableHeader(
-	columns: PersistentList<ColumnDisplayState>,
+	columns: PersistentList<InsightsTableColumn>,
 	sortState: SortState,
 	onSortChange: (InsightsTableColumn) -> Unit,
 	modifier: Modifier = Modifier,
@@ -57,17 +57,17 @@ internal fun TableHeader(
 			.background(MaterialTheme.colorScheme.surfaceVariant),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		columns.filter { it.visible }.forEach { columnState ->
+		columns.forEach { column ->
 			HeaderCell(
-				column = columnState.column,
+				column = column,
 				sortDirection = if (sortState.column ==
-					columnState.column
+					column
 				) {
 					sortState.direction
 				} else {
 					SortDirection.NONE
 				},
-				onClick = { onSortChange(columnState.column) },
+				onClick = { onSortChange(column) },
 			)
 		}
 		Spacer(Modifier.width(120.dp))
@@ -132,14 +132,14 @@ private fun TableHeaderPreview() {
 		Surface {
 			Column {
 				TableHeader(
-					columns = ColumnDisplayState.getAll(),
+					columns = InsightsTableColumn.ALL.toPersistentList(),
 					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
 					scrollStateProvider = { scrollState },
 				)
 
 				TableHeader(
-					columns = ColumnDisplayState.getAll(),
+					columns = InsightsTableColumn.ALL.toPersistentList(),
 					sortState = SortState(InsightsTableColumn.SolvingTime, SortDirection.DESC),
 					onSortChange = { },
 					scrollStateProvider = { scrollState },

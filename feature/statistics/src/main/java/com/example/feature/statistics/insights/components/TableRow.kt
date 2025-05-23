@@ -68,8 +68,11 @@ internal fun TableRow(
 				IconButton(
 					onClick = { onPlayClick(it) },
 				) {
-					Icon(Icons.Default.PlayArrow, contentDescription = stringResource(
-						R.string.play_again_content_description)
+					Icon(
+						Icons.Default.PlayArrow,
+						contentDescription = stringResource(
+							R.string.play_again_content_description,
+						),
 					)
 				}
 				IconButton(

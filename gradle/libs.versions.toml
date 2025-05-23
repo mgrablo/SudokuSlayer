@@ -14,10 +14,6 @@ espressoCore = "3.6.1"
 kotlinxCoroutinesCore = "1.10.1"
 kotlinxDatetime = "0.6.2"
 lifecycleRuntimeKtx = "2.9.0"
-activityCompose = "1.10.1"
-composeBom = "2025.05.00"
-navVersion = "2.9.0"
-runtime = "1.8.1"
 serializationJson = "1.8.0"
 protoDatastore = "1.1.6"
 preferencesDatastore = "1.1.6"
@@ -25,8 +21,16 @@ protobufPlugin = "0.9.4"
 protobufKotlinLite = "4.30.1"
 protobufJavaLite = "4.30.1"
 protoc = "4.30.1"
+
+composeBom = "2025.05.00"
+activityCompose = "1.10.1"
+runtime = "1.8.1"
+navVersion = "2.9.0"
 composeUnstyled = "1.20.1"
 catppuccinPalette = "0.1.2"
+reorderable = "2.4.3"
+graphics-shapes = "1.1.0-alpha01"
+
 junit5 = "5.12.1"
 androidJunit5 = "1.12.0.0"
 junit5TestCompose = "1.7.0"
@@ -36,7 +40,6 @@ ktlint = "12.2.0"
 ktlintCompose = "0.4.22"
 koin = "4.0.4"
 sqldelight = "2.0.2"
-reorderable = "2.4.3"
 
 [libraries]
 sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
@@ -62,6 +65,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-navigation-compose = { group = "androidx.navigation", name="navigation-compose", version.ref = "navVersion" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
+
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
