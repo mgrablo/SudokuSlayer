@@ -53,6 +53,8 @@ internal fun CompactSummaryLayout(
 	formattedSlowest: String,
 	formattedFastest: String,
 	formattedAvgTime: String,
+	mostPlayedDifficulty: String,
+	mostPlayedGridSize: String,
 	modifier: Modifier = Modifier,
 ) {
 	Column(
@@ -147,6 +149,31 @@ internal fun CompactSummaryLayout(
 				),
 				modifier = Modifier.weight(1f),
 			)
+			SummaryCarousel(
+				summaries = persistentListOf(
+					SummaryCardData(
+						id = "mostPlayedDifficulty",
+						value = mostPlayedDifficulty,
+						label = "Most Played",
+						style = SummaryCardStyleDefaults.defaults(
+							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
+							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
+							shape = RoundedCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
+						),
+					),
+					SummaryCardData(
+						id = "mostPlayedGridSize",
+						value = mostPlayedGridSize,
+						label = "Most Played",
+						style = SummaryCardStyleDefaults.defaults(
+							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
+							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
+							shape = RoundedCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
+						),
+					),
+				),
+				modifier = Modifier.weight(1f),
+			)
 		}
 	}
 }
@@ -213,6 +240,8 @@ private fun CompactSummaryLayoutPreview() {
 				formattedSlowest = rememberFormattedTime(1000f),
 				formattedFastest = rememberFormattedTime(9f),
 				formattedAvgTime = rememberFormattedTime(300f),
+				mostPlayedDifficulty = "Easy",
+				mostPlayedGridSize = "16x16",
 				modifier = Modifier,
 			)
 		}

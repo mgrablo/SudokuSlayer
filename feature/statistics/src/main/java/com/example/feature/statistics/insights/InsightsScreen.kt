@@ -70,6 +70,7 @@ import com.example.feature.statistics.model.SortState
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -189,6 +190,8 @@ private fun SharedTransitionScope.InsightsScreenContent(
 				val formattedAvgTime = rememberFormattedTime(uiState.avgTime.toFloat())
 				val formattedFastest = rememberFormattedTime(uiState.fastestGame.toFloat())
 				val formattedSlowest = rememberFormattedTime(uiState.longestGame.toFloat())
+				val difficultyText = uiState.mostPlayedDifficulty?.toLocalizedString() ?: ""
+				val gridSizeText = uiState.mostPlayedGridSize.toString()
 				val visibleColumns = remember(tableColumnsState) {
 					tableColumnsState.filter { it.visible }.map(
 						ColumnDisplayState::column,
@@ -238,6 +241,8 @@ private fun SharedTransitionScope.InsightsScreenContent(
 									formattedSlowest = formattedSlowest,
 									formattedFastest = formattedFastest,
 									formattedAvgTime = formattedAvgTime,
+									mostPlayedDifficulty = difficultyText,
+									mostPlayedGridSize = gridSizeText,
 									modifier = Modifier,
 								)
 

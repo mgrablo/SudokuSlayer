@@ -44,6 +44,8 @@ internal data class InsightsUiState(
 	val totalHintsUsed: Int = 0,
 	val fastestGame: Long = 0,
 	val longestGame: Long = 0,
+	val mostPlayedDifficulty: GameDifficulty? = null,
+	val mostPlayedGridSize: SudokuGridSize? = null,
 	val summariesCompactLayout: Boolean = true,
 )
 
@@ -162,6 +164,8 @@ internal class StatisticsViewModel(
 			val fastestGame = results.minOfOrNull { it.timeInSeconds } ?: 0L
 			val totalHints = results.sumOf { it.hintsUsed }
 			val avgTime = results.map { it.timeInSeconds }.average().toLong()
+			val mostPlayedDifficulty = results.groupBy { it.difficulty }.maxByOrNull { it.value.size }?.key
+			val mostPlayedGridSize = results.groupBy { it.gridSize }.maxByOrNull { it.value.size }?.key
 
 			_insightsUiState.update { state ->
 				state.copy(
@@ -173,6 +177,8 @@ internal class StatisticsViewModel(
 					totalHintsUsed = totalHints,
 					avgTime = avgTime,
 					summariesCompactLayout = initialCompactLayoutValue,
+					mostPlayedDifficulty = mostPlayedDifficulty,
+					mostPlayedGridSize = mostPlayedGridSize,
 				)
 			}
 

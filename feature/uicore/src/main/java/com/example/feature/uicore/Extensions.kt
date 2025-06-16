@@ -7,9 +7,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.graphics.shapes.RoundedPolygon
+import com.example.domain.core.GameDifficulty
 import com.example.sudokuslayer.feature.uicore.R
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
+
+@Composable
+fun GameDifficulty.toLocalizedString(): String {
+	return when(this) {
+		GameDifficulty.Easy -> stringResource(R.string.difficulty_easy)
+		GameDifficulty.Medium -> stringResource(R.string.difficulty_medium)
+		GameDifficulty.Hard -> stringResource(R.string.difficulty_hard)
+		GameDifficulty.Expert -> stringResource(R.string.difficulty_expert)
+	}
+}
 
 /**
  * Extension function for `Modifier` to consume horizontal drag gestures.
