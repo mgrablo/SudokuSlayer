@@ -56,8 +56,8 @@ internal fun AppContent() {
 		persistentListOf(
 			SudokuGame,
 			SudokuCreator,
-			Settings,
 			Statistics,
+			Settings,
 		)
 	val scope = rememberCoroutineScope()
 	val view = LocalView.current
