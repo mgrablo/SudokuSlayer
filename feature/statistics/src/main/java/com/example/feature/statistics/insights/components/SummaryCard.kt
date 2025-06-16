@@ -1,5 +1,7 @@
 package com.example.feature.statistics.insights.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,13 +34,23 @@ internal fun SummaryCard(
 	modifier: Modifier = Modifier,
 	style: SummaryCardStyle = SummaryCardStyleDefaults.defaults(),
 ) {
+	val animatedBackgroundColor by animateColorAsState(
+		targetValue = style.backgroundColor,
+		animationSpec = tween(durationMillis = 300),
+		label = "SummaryCardBackgroundColorAnimation",
+	)
+	val animatedContentColor by animateColorAsState(
+		targetValue = style.contentColor,
+		animationSpec = tween(durationMillis = 300),
+		label = "SummaryCardContentColorAnimation",
+	)
 	Card(
 		modifier = modifier
 			.height(IntrinsicSize.Min),
 		shape = style.shape,
 		colors = CardDefaults.cardColors(
-			containerColor = style.backgroundColor,
-			contentColor = style.contentColor,
+			containerColor = animatedBackgroundColor,
+			contentColor = animatedContentColor,
 		),
 	) {
 		Column(

@@ -3,11 +3,13 @@ package com.example.feature.statistics.insights.components
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 
+@Immutable
 data class SummaryCardStyle(
 	val backgroundColor: Color,
 	val contentColor: Color,
