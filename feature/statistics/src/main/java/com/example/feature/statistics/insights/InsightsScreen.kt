@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Badge
@@ -101,7 +104,6 @@ internal fun InsightsScreen(
 		onFabClick = onFabClick,
 		animatedVisibilityScope = animatedVisibilityScope,
 		modifier = modifier,
-		isLoading = viewModel.isLoading,
 	)
 }
 
@@ -109,7 +111,6 @@ internal fun InsightsScreen(
 @Composable
 private fun SharedTransitionScope.InsightsScreenContent(
 	uiState: InsightsUiState,
-	isLoading: Boolean,
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
@@ -136,143 +137,171 @@ private fun SharedTransitionScope.InsightsScreenContent(
 			)
 		},
 		floatingActionButton = {
-			BadgedBox(
-				badge = {
-					if (activeFilterCount > 0) {
-						Badge(
-							modifier = Modifier.clip(CircleShape),
-							contentColor = MaterialTheme.colorScheme.onError,
-							containerColor = MaterialTheme.colorScheme.error,
-						) {
-							Text(
-								text = activeFilterCount.toString(),
-								color = MaterialTheme.colorScheme.onErrorContainer,
-							)
+			if (uiState is InsightsUiState.Success) {
+				BadgedBox(
+					badge = {
+						if (activeFilterCount > 0) {
+							Badge(
+								modifier = Modifier.clip(CircleShape),
+								contentColor = MaterialTheme.colorScheme.onError,
+								containerColor = MaterialTheme.colorScheme.error,
+							) {
+								Text(
+									text = activeFilterCount.toString(),
+									color = MaterialTheme.colorScheme.onErrorContainer,
+								)
+							}
 						}
-					}
-				},
-				modifier = Modifier.sharedBounds(
-					sharedContentState = rememberSharedContentState(
-						key = STATISTICS_FAB_EXPLODE_BOUNDS,
-					),
-					animatedVisibilityScope = animatedVisibilityScope,
-				),
-			) {
-				FloatingActionButton(
-					onClick = onFabClick,
-					modifier = Modifier,
-
-				) {
-					Icon(
-						painterResource(R.drawable.filter),
-						contentDescription = stringResource(
-							R.string.filter_fab_content_description,
+					},
+					modifier = Modifier.sharedBounds(
+						sharedContentState = rememberSharedContentState(
+							key = STATISTICS_FAB_EXPLODE_BOUNDS,
 						),
-					)
+						animatedVisibilityScope = animatedVisibilityScope,
+					),
+				) {
+					FloatingActionButton(
+						onClick = onFabClick,
+						modifier = Modifier,
+
+					) {
+						Icon(
+							painterResource(R.drawable.filter),
+							contentDescription = stringResource(
+								R.string.filter_fab_content_description,
+							),
+						)
+					}
 				}
 			}
 		},
 	) { paddingValues ->
 		Crossfade(
-			targetState = isLoading,
+			targetState = uiState,
 			modifier = Modifier.padding(paddingValues),
-		) { loading ->
-			if (loading) {
-				Box(
-					modifier = Modifier
-						.fillMaxSize(),
-					contentAlignment = Alignment.Center,
-				) {
-					ContainedLoadingIndicator()
-				}
-			} else {
-				val formattedTimeSpent = rememberFormattedTime(uiState.totalTimeSpent.toFloat())
-				val formattedAvgTime = rememberFormattedTime(uiState.avgTime.toFloat())
-				val formattedFastest = rememberFormattedTime(uiState.fastestGame.toFloat())
-				val formattedSlowest = rememberFormattedTime(uiState.longestGame.toFloat())
-				val difficultyText = uiState.mostPlayedDifficulty?.toLocalizedString() ?: ""
-				val gridSizeText = uiState.mostPlayedGridSize.toString()
-				val visibleColumns = remember(tableColumnsState) {
-					tableColumnsState.filter { it.visible }.map(
-						ColumnDisplayState::column,
-					).toPersistentList()
-				}
-
-				val lazyListState = rememberLazyListState()
-				val scrollAreaState = rememberScrollAreaState(lazyListState)
-				val horizontalScrollState = rememberScrollState()
-
-				ScrollArea(
-					state = scrollAreaState,
-					modifier = Modifier
-						.fillMaxSize(),
-				) {
-					VerticalScrollbar(
+		) { state ->
+			when (state) {
+				is InsightsUiState.Loading -> {
+					Box(
 						modifier = Modifier
-							.fillMaxHeight()
-							.align(Alignment.TopEnd)
-							.zIndex(1f),
+							.fillMaxSize(),
+						contentAlignment = Alignment.Center,
 					) {
-						Thumb(
-							modifier = Modifier.background(
-								MaterialTheme.colorScheme.onSurface.copy(0.2f),
-								RoundedCornerShape(100),
-							),
-							thumbVisibility = ThumbVisibility.HideWhileIdle(
-								enter = fadeIn(),
-								exit = fadeOut(),
-								hideDelay = 0.5.seconds,
-							),
+						ContainedLoadingIndicator()
+					}
+				}
+
+				is InsightsUiState.NoData -> {
+					Column(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(LocalPadding.current.big),
+						verticalArrangement = Arrangement.spacedBy(
+							LocalPadding.current.small,
+							Alignment.CenterVertically,
+						),
+						horizontalAlignment = Alignment.CenterHorizontally,
+					) {
+						BasicText(":(", autoSize = TextAutoSize.StepBased(), maxLines = 1)
+						BasicText(
+							stringResource(R.string.no_data_message),
+							autoSize = TextAutoSize.StepBased(),
+							maxLines = 1,
 						)
 					}
-					LazyColumn(
-						modifier = Modifier
-							.fillMaxWidth(),
-						state = lazyListState,
-						contentPadding = PaddingValues(vertical = LocalPadding.current.normal),
-						verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
-					) {
-						item {
-							when (uiState.summariesCompactLayout) {
-								true -> CompactSummaryLayout(
-									totalGamesPlayed = uiState.totalGamesPlayed.toString(),
-									totalHintsUsed = uiState.totalHintsUsed.toString(),
-									formattedTimeSpent = formattedTimeSpent,
-									formattedSlowest = formattedSlowest,
-									formattedFastest = formattedFastest,
-									formattedAvgTime = formattedAvgTime,
-									mostPlayedDifficulty = difficultyText,
-									mostPlayedGridSize = gridSizeText,
-									modifier = Modifier,
-								)
+				}
 
-								false -> ExpandedSummaryLayout(
-									totalGamesPlayed = uiState.totalGamesPlayed.toString(),
-									totalHintsUsed = uiState.totalHintsUsed.toString(),
-									formattedTimeSpent = formattedTimeSpent,
-									formattedSlowest = formattedSlowest,
-									formattedFastest = formattedFastest,
-									formattedAvgTime = formattedAvgTime,
-									modifier = Modifier,
-								)
-							}
+				is InsightsUiState.Success -> {
+					val formattedTimeSpent = rememberFormattedTime(state.totalTimeSpent.toFloat())
+					val formattedAvgTime = rememberFormattedTime(state.avgTime.toFloat())
+					val formattedFastest = rememberFormattedTime(state.fastestGame.toFloat())
+					val formattedSlowest = rememberFormattedTime(state.longestGame.toFloat())
+					val difficultyText = state.mostPlayedDifficulty?.toLocalizedString() ?: ""
+					val gridSizeText = state.mostPlayedGridSize.toString()
+					val visibleColumns = remember(tableColumnsState) {
+						tableColumnsState.filter { it.visible }.map(
+							ColumnDisplayState::column,
+						).toPersistentList()
+					}
+
+					val lazyListState = rememberLazyListState()
+					val scrollAreaState = rememberScrollAreaState(lazyListState)
+					val horizontalScrollState = rememberScrollState()
+
+					ScrollArea(
+						state = scrollAreaState,
+						modifier = Modifier
+							.fillMaxSize(),
+					) {
+						VerticalScrollbar(
+							modifier = Modifier
+								.fillMaxHeight()
+								.align(Alignment.TopEnd)
+								.zIndex(1f),
+						) {
+							Thumb(
+								modifier = Modifier.background(
+									MaterialTheme.colorScheme.onSurface.copy(0.2f),
+									RoundedCornerShape(100),
+								),
+								thumbVisibility = ThumbVisibility.HideWhileIdle(
+									enter = fadeIn(),
+									exit = fadeOut(),
+									hideDelay = 0.5.seconds,
+								),
+							)
 						}
-						insightsTableContent(
-							gameResults = uiState.gameResults,
-							sortState = uiState.sortState,
-							visibleColumns = visibleColumns,
-							scrollState = horizontalScrollState,
-							onPlayClick = { onEvent(StatisticsEvent.PlayGameClicked(it)) },
-							onCopySeedClick = {
-							},
-							onColumnHeaderClick = { column ->
-								onEvent(
-									StatisticsEvent.ColumnHeaderClicked(
-										column,
-									),
-								)
-							},
-						)
+						LazyColumn(
+							modifier = Modifier
+								.fillMaxWidth(),
+							state = lazyListState,
+							contentPadding = PaddingValues(vertical = LocalPadding.current.normal),
+							verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
+						) {
+							item {
+								when (state.summariesCompactLayout) {
+									true -> CompactSummaryLayout(
+										totalGamesPlayed = state.totalGamesPlayed.toString(),
+										totalHintsUsed = state.totalHintsUsed.toString(),
+										formattedTimeSpent = formattedTimeSpent,
+										formattedSlowest = formattedSlowest,
+										formattedFastest = formattedFastest,
+										formattedAvgTime = formattedAvgTime,
+										mostPlayedDifficulty = difficultyText,
+										mostPlayedGridSize = gridSizeText,
+										modifier = Modifier,
+									)
+
+									false -> ExpandedSummaryLayout(
+										totalGamesPlayed = state.totalGamesPlayed.toString(),
+										totalHintsUsed = state.totalHintsUsed.toString(),
+										formattedTimeSpent = formattedTimeSpent,
+										formattedSlowest = formattedSlowest,
+										formattedFastest = formattedFastest,
+										formattedAvgTime = formattedAvgTime,
+										mostPlayedDifficulty = difficultyText,
+										mostPlayedGridSize = gridSizeText,
+										modifier = Modifier,
+									)
+								}
+							}
+							insightsTableContent(
+								gameResults = state.gameResults,
+								sortState = state.sortState,
+								visibleColumns = visibleColumns,
+								scrollState = horizontalScrollState,
+								onPlayClick = { onEvent(StatisticsEvent.PlayGameClicked(it)) },
+								onCopySeedClick = {
+								},
+								onColumnHeaderClick = { column ->
+									onEvent(
+										StatisticsEvent.ColumnHeaderClicked(
+											column,
+										),
+									)
+								},
+							)
+						}
 					}
 				}
 			}
@@ -316,7 +345,7 @@ private fun InsightsScreenPreview() {
 		SharedTransitionLayout {
 			AnimatedVisibility(true) {
 				InsightsScreenContent(
-					uiState = InsightsUiState(
+					uiState = InsightsUiState.Success(
 						sortState = SortState(InsightsTableColumn.Difficulty, SortDirection.ASC),
 						gameResults = entries,
 						totalGamesPlayed = 3,
@@ -329,7 +358,6 @@ private fun InsightsScreenPreview() {
 					onFabClick = { },
 					animatedVisibilityScope = this,
 					modifier = Modifier.fillMaxSize(),
-					isLoading = false,
 				)
 			}
 		}

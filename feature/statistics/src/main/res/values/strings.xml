@@ -34,4 +34,5 @@
 	<string name="sort_ascending">Sort ascending</string>
 	<string name="sort_descending">Sort descending</string>
 	<string name="copied_seed_to_clipboard">Copied seed to clipboard!</string>
+    <string name="no_data_message">Finish sudoku to see your insights here!</string>
 </resources>

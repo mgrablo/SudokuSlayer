@@ -1,8 +1,6 @@
 package com.example.feature.statistics
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.GameDifficulty
@@ -35,7 +33,7 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-internal data class InsightsUiState(
+internal data class InsightsData(
 	val sortState: SortState = SortState(null, SortDirection.NONE),
 	val gameResults: PersistentList<GameResult> = persistentListOf(),
 	val totalGamesPlayed: Long = 0,
@@ -57,14 +55,31 @@ internal data class FilterUiState(
 	val longestGame: Long = 0,
 )
 
+internal sealed interface InsightsUiState {
+	object Loading : InsightsUiState
+	data class Success(
+		val sortState: SortState = SortState(null, SortDirection.NONE),
+		val gameResults: PersistentList<GameResult> = persistentListOf(),
+		val totalGamesPlayed: Long = 0,
+		val totalTimeSpent: Long = 0,
+		val avgTime: Long = 0,
+		val totalHintsUsed: Int = 0,
+		val fastestGame: Long = 0,
+		val longestGame: Long = 0,
+		val mostPlayedDifficulty: GameDifficulty? = null,
+		val mostPlayedGridSize: SudokuGridSize? = null,
+		val summariesCompactLayout: Boolean = true,
+	) : InsightsUiState
+
+	object NoData : InsightsUiState
+}
+
 internal class StatisticsViewModel(
 	private val statisticsRepository: StatisticsRepository,
 	private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
-	private val _insightsUiState = MutableStateFlow(InsightsUiState())
+	private val _insightsUiState = MutableStateFlow<InsightsUiState>(InsightsUiState.Loading)
 	val insightsUiState: StateFlow<InsightsUiState> = _insightsUiState
-
-	var isLoading by mutableStateOf(true)
 
 	private val _filterUiState = MutableStateFlow(FilterUiState())
 	val filterUiState: StateFlow<FilterUiState> = _filterUiState
@@ -114,6 +129,7 @@ internal class StatisticsViewModel(
 		data class UpdateSolveTimeRangeEnabled(val value: Boolean) : StatisticsEvent
 		data class UpdateCompletionDateRangeEnabled(val value: Boolean) : StatisticsEvent
 		data object ClearFilters : StatisticsEvent
+		data object ClearData : StatisticsEvent
 	}
 
 	fun onEvent(event: StatisticsEvent) {
@@ -139,8 +155,10 @@ internal class StatisticsViewModel(
 			is StatisticsEvent.UpdateCompletionDateRangeEnabled -> updateCompletionDateRangeEnabled(
 				event.value,
 			)
+
 			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
+			is StatisticsEvent.ClearData -> {}
 		}
 	}
 
@@ -150,13 +168,19 @@ internal class StatisticsViewModel(
 
 	private fun loadInitialData() {
 		viewModelScope.launch {
-			isLoading = true
 			val initialCompactLayoutValue = try {
 				settingsRepository.insightsSummaryCompactLayout.first()
 			} catch (e: NoSuchElementException) {
-				_insightsUiState.value.summariesCompactLayout
+				InsightsUiState.Success().summariesCompactLayout
 			}
 			val results = statisticsRepository.getAllGameResults().toPersistentList()
+			if (results.isEmpty()) {
+				_insightsUiState.update {
+					InsightsUiState.NoData
+				}
+				Log.d("TAG", "loadInitialData: $results")
+				return@launch
+			}
 			val totalGamesPlayed = statisticsRepository.getTotalGameResults()
 			val totalTimeSpent = statisticsRepository.getTotalTimeSpent()
 			val maxHintsUsed = results.maxOfOrNull { it.hintsUsed } ?: 0
@@ -164,11 +188,13 @@ internal class StatisticsViewModel(
 			val fastestGame = results.minOfOrNull { it.timeInSeconds } ?: 0L
 			val totalHints = results.sumOf { it.hintsUsed }
 			val avgTime = results.map { it.timeInSeconds }.average().toLong()
-			val mostPlayedDifficulty = results.groupBy { it.difficulty }.maxByOrNull { it.value.size }?.key
-			val mostPlayedGridSize = results.groupBy { it.gridSize }.maxByOrNull { it.value.size }?.key
+			val mostPlayedDifficulty =
+				results.groupBy { it.difficulty }.maxByOrNull { it.value.size }?.key
+			val mostPlayedGridSize =
+				results.groupBy { it.gridSize }.maxByOrNull { it.value.size }?.key
 
 			_insightsUiState.update { state ->
-				state.copy(
+				InsightsUiState.Success(
 					gameResults = results,
 					totalGamesPlayed = totalGamesPlayed,
 					totalTimeSpent = totalTimeSpent,
@@ -188,14 +214,18 @@ internal class StatisticsViewModel(
 					maxHintsUsed = maxHintsUsed,
 				)
 			}
-			isLoading = false
 		}
 	}
 
 	private fun updateGameResults() {
 		viewModelScope.launch {
+			val currentUiState = _insightsUiState.value
+			if (currentUiState !is InsightsUiState.Success) {
+				return@launch
+			}
+
 			val currentFilter = _gameResultFilter.value
-			val currentSortState = _insightsUiState.value.sortState
+			val currentSortState = currentUiState.sortState
 
 			val results =
 				applySorting(
@@ -211,15 +241,19 @@ internal class StatisticsViewModel(
 			val avgTime = results.map { it.timeInSeconds }.average().toLong()
 
 			_insightsUiState.update {
-				it.copy(
-					gameResults = results,
-					totalGamesPlayed = totalGamesPlayed,
-					totalTimeSpent = totalTimeSpent,
-					fastestGame = fastestGame,
-					longestGame = longestGame,
-					totalHintsUsed = totalHints,
-					avgTime = avgTime,
-				)
+				if (it is InsightsUiState.Success) {
+					it.copy(
+						gameResults = results,
+						totalGamesPlayed = totalGamesPlayed,
+						totalTimeSpent = totalTimeSpent,
+						fastestGame = fastestGame,
+						longestGame = longestGame,
+						totalHintsUsed = totalHints,
+						avgTime = avgTime,
+					)
+				} else {
+					it
+				}
 			}
 		}
 	}
@@ -271,7 +305,11 @@ internal class StatisticsViewModel(
 
 	private fun handleColumnHeaderClick(column: InsightsTableColumn) {
 		viewModelScope.launch {
-			val currentSortState = _insightsUiState.value.sortState
+			val currentUiState = _insightsUiState.value
+			if (currentUiState !is InsightsUiState.Success) {
+				return@launch
+			}
+			val currentSortState = currentUiState.sortState
 			val newSortState = when {
 				currentSortState.column != column -> SortState(column, SortDirection.ASC)
 				currentSortState.direction == SortDirection.ASC -> SortState(
@@ -282,17 +320,21 @@ internal class StatisticsViewModel(
 				else -> SortState(null, SortDirection.NONE)
 			}
 
-			val currentResults = _insightsUiState.value.gameResults
+			val currentResults = currentUiState.gameResults
 			val sortedResults = applySorting(
 				results = currentResults,
 				sortState = newSortState,
 			).toPersistentList()
 
 			_insightsUiState.update { uiState ->
-				uiState.copy(
-					sortState = newSortState,
-					gameResults = sortedResults,
-				)
+				if (uiState is InsightsUiState.Success) {
+					uiState.copy(
+						sortState = newSortState,
+						gameResults = sortedResults,
+					)
+				} else {
+					uiState
+				}
 			}
 		}
 	}

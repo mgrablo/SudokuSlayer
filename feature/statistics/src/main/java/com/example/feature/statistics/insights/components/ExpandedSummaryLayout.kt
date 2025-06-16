@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +33,8 @@ internal fun ExpandedSummaryLayout(
 	formattedSlowest: String,
 	formattedFastest: String,
 	formattedAvgTime: String,
+	mostPlayedDifficulty: String,
+	mostPlayedGridSize: String,
 	modifier: Modifier = Modifier,
 ) {
 	Column {
@@ -100,7 +103,7 @@ internal fun ExpandedSummaryLayout(
 					.height(120.dp)
 					.weight(1f),
 				style = SummaryCardStyleDefaults.defaults(
-					shape = CutCornerShape(16.dp),
+					shape = CutCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
 					contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
 					backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
 				),
@@ -112,7 +115,42 @@ internal fun ExpandedSummaryLayout(
 					.height(120.dp)
 					.weight(1f),
 				style = SummaryCardStyleDefaults.defaults(
-					shape = CutCornerShape(16.dp),
+					shape = CutCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
+					contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
+					backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
+				),
+			)
+		}
+		Row(
+			horizontalArrangement = Arrangement.spacedBy(
+				LocalPadding.current.tiny,
+			),
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(
+					horizontal = LocalPadding.current.normal,
+				),
+		) {
+			SummaryCard(
+				label = "Favourite Difficulty",
+				value = mostPlayedDifficulty,
+				modifier = Modifier
+					.height(120.dp)
+					.weight(1f),
+				style = SummaryCardStyleDefaults.defaults(
+					shape = RoundedCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
+					contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
+					backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
+				),
+			)
+			SummaryCard(
+				label = "Favourite Grid Size",
+				value = mostPlayedGridSize,
+				modifier = Modifier
+					.height(120.dp)
+					.weight(1f),
+				style = SummaryCardStyleDefaults.defaults(
+					shape = RoundedCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
 					contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
 					backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
 				),
@@ -123,7 +161,7 @@ internal fun ExpandedSummaryLayout(
 			value = formattedAvgTime,
 			modifier = Modifier
 				.padding(horizontal = LocalPadding.current.normal)
-				.padding(bottom = LocalPadding.current.small)
+				.padding(vertical = LocalPadding.current.small)
 				.height(150.dp),
 			style = SummaryCardStyleDefaults.defaults(
 				shape = MaterialShapes.Arch.mirrorVertically().toShape(),
@@ -146,6 +184,8 @@ private fun ExpandedSummaryLayoutPreview() {
 				formattedSlowest = rememberFormattedTime(1000f),
 				formattedFastest = rememberFormattedTime(9f),
 				formattedAvgTime = rememberFormattedTime(300f),
+				mostPlayedDifficulty = "Easy",
+				mostPlayedGridSize = "4x4",
 				modifier = Modifier,
 			)
 		}

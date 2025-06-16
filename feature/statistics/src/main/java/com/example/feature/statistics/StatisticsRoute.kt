@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-data object Statistics : Destination("Statistics", AppIcon.VectorIcon(Icons.Default.DateRange))
+data object Statistics : Destination("Insights", AppIcon.VectorIcon(Icons.Default.DateRange))
 
 @Serializable
 data object StatisticsTable :
