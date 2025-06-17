@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.mirrorVertically
@@ -23,6 +24,7 @@ import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
+import com.example.sudokuslayer.feature.statistics.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -37,7 +39,7 @@ internal fun ExpandedSummaryLayout(
 	mostPlayedGridSize: String,
 	modifier: Modifier = Modifier,
 ) {
-	Column {
+	Column(modifier) {
 		Row(
 			horizontalArrangement = Arrangement.spacedBy(
 				LocalPadding.current.tiny,
@@ -50,7 +52,7 @@ internal fun ExpandedSummaryLayout(
 				.padding(bottom = LocalPadding.current.tiny),
 		) {
 			SummaryCard(
-				label = "Games played",
+				label = stringResource(R.string.card_games_played),
 				value = totalGamesPlayed,
 				modifier = Modifier
 					.weight(1f)
@@ -62,7 +64,7 @@ internal fun ExpandedSummaryLayout(
 				),
 			)
 			SummaryCard(
-				label = "Hints used",
+				label = stringResource(R.string.card_hints_used),
 				value = totalHintsUsed,
 				modifier = Modifier
 					.weight(1f)
@@ -75,7 +77,7 @@ internal fun ExpandedSummaryLayout(
 			)
 		}
 		SummaryCard(
-			label = "Total time spent",
+			label = stringResource(R.string.card_total_time_spent),
 			value = formattedTimeSpent,
 			modifier = Modifier
 				.padding(horizontal = LocalPadding.current.normal)
@@ -97,7 +99,7 @@ internal fun ExpandedSummaryLayout(
 				),
 		) {
 			SummaryCard(
-				label = "Fastest game",
+				label = stringResource(R.string.card_fastest_game),
 				value = formattedFastest,
 				modifier = Modifier
 					.height(120.dp)
@@ -109,7 +111,7 @@ internal fun ExpandedSummaryLayout(
 				),
 			)
 			SummaryCard(
-				label = "Slowest game",
+				label = stringResource(R.string.card_slowest_game),
 				value = formattedSlowest,
 				modifier = Modifier
 					.height(120.dp)
@@ -132,7 +134,7 @@ internal fun ExpandedSummaryLayout(
 				),
 		) {
 			SummaryCard(
-				label = "Favourite Difficulty",
+				label = stringResource(R.string.card_most_played),
 				value = mostPlayedDifficulty,
 				modifier = Modifier
 					.height(120.dp)
@@ -144,7 +146,7 @@ internal fun ExpandedSummaryLayout(
 				),
 			)
 			SummaryCard(
-				label = "Favourite Grid Size",
+				label = stringResource(R.string.card_most_played),
 				value = mostPlayedGridSize,
 				modifier = Modifier
 					.height(120.dp)
@@ -157,7 +159,7 @@ internal fun ExpandedSummaryLayout(
 			)
 		}
 		SummaryCard(
-			label = "Avg. Time",
+			label = stringResource(R.string.card_avg_time),
 			value = formattedAvgTime,
 			modifier = Modifier
 				.padding(horizontal = LocalPadding.current.normal)

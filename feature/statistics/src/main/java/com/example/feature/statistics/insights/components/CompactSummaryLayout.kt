@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.rememberFormattedTime
@@ -33,6 +34,7 @@ import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.theme.rememberAnimatedShape
+import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -68,7 +70,7 @@ internal fun CompactSummaryLayout(
 			modifier = Modifier.fillMaxWidth(),
 		) {
 			SummaryCard(
-				label = "Games played",
+				label = stringResource(R.string.card_games_played),
 				value = totalGamesPlayed,
 				modifier = Modifier
 					.weight(1f)
@@ -80,7 +82,7 @@ internal fun CompactSummaryLayout(
 				),
 			)
 			SummaryCard(
-				label = "Hints used",
+				label = stringResource(R.string.card_hints_used),
 				value = totalHintsUsed,
 				modifier = Modifier
 					.weight(1f)
@@ -98,7 +100,7 @@ internal fun CompactSummaryLayout(
 				SummaryCardData(
 					id = "totalTimeSpent",
 					value = formattedTimeSpent,
-					label = "Total time spent",
+					label = stringResource(R.string.card_total_time_spent),
 					style = SummaryCardStyleDefaults.defaults(
 						contentColor = MaterialTheme.colorScheme.onSecondary,
 						backgroundColor = MaterialTheme.colorScheme.secondary,
@@ -106,7 +108,7 @@ internal fun CompactSummaryLayout(
 				),
 				SummaryCardData(
 					id = "avgTime",
-					label = "Avg. Time",
+					label = stringResource(R.string.card_avg_time),
 					value = formattedAvgTime,
 					style = SummaryCardStyleDefaults.defaults(
 						shape = RoundedCornerShape(percent = 50),
@@ -129,7 +131,7 @@ internal fun CompactSummaryLayout(
 					SummaryCardData(
 						id = "slowestGame",
 						value = formattedSlowest,
-						label = "Slowest game",
+						label = stringResource(R.string.card_slowest_game),
 						style = SummaryCardStyleDefaults.defaults(
 							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
@@ -139,7 +141,7 @@ internal fun CompactSummaryLayout(
 					SummaryCardData(
 						id = "fastestGame",
 						value = formattedFastest,
-						label = "Fastest game",
+						label = stringResource(R.string.card_fastest_game),
 						style = SummaryCardStyleDefaults.defaults(
 							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
@@ -154,7 +156,7 @@ internal fun CompactSummaryLayout(
 					SummaryCardData(
 						id = "mostPlayedDifficulty",
 						value = mostPlayedDifficulty,
-						label = "Most Played",
+						label = stringResource(R.string.card_most_played),
 						style = SummaryCardStyleDefaults.defaults(
 							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
@@ -164,7 +166,7 @@ internal fun CompactSummaryLayout(
 					SummaryCardData(
 						id = "mostPlayedGridSize",
 						value = mostPlayedGridSize,
-						label = "Most Played",
+						label = stringResource(R.string.card_most_played),
 						style = SummaryCardStyleDefaults.defaults(
 							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,

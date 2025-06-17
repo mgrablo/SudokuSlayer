@@ -2,6 +2,7 @@
 
 package com.example.feature.statistics.insights
 
+import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -39,13 +41,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -53,16 +67,19 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.core.ScrollArea
 import com.composables.core.Thumb
-import com.composables.core.ThumbVisibility
+import com.composables.core.ThumbVisibility.HideWhileIdle
 import com.composables.core.VerticalScrollbar
 import com.composables.core.rememberScrollAreaState
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.InsightsUiState
+import com.example.feature.statistics.LoadingState
 import com.example.feature.statistics.STATISTICS_FAB_EXPLODE_BOUNDS
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
+import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.ColumnHeaderClicked
+import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGameClicked
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
 import com.example.feature.statistics.insights.components.insightsTableContent
@@ -78,6 +95,7 @@ import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration.Companion.seconds
@@ -92,16 +110,33 @@ internal fun InsightsScreen(
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
 ) {
 	val uiState by viewModel.insightsUiState.collectAsStateWithLifecycle()
+	val loadingState by viewModel.loadingState.collectAsStateWithLifecycle()
 	val tableColumnsState by viewModel.tableColumns.collectAsStateWithLifecycle()
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
+	val coroutineScope = rememberCoroutineScope()
+	val clipboard = LocalClipboard.current
 
 	sharedTransitionScope.InsightsScreenContent(
 		uiState = uiState,
+		loadingState = loadingState,
 		tableColumnsState = tableColumnsState,
 		activeFilterCount = activeFilterCount,
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
 		onFabClick = onFabClick,
+		onCopySeedClick = {
+			coroutineScope.launch {
+				clipboard.setClipEntry(
+					ClipEntry(
+						ClipData(
+							"Game Seed",
+							arrayOf("text/plain"),
+							ClipData.Item(it.toString()),
+						),
+					),
+				)
+			}
+		},
 		animatedVisibilityScope = animatedVisibilityScope,
 		modifier = modifier,
 	)
@@ -111,16 +146,70 @@ internal fun InsightsScreen(
 @Composable
 private fun SharedTransitionScope.InsightsScreenContent(
 	uiState: InsightsUiState,
+	loadingState: LoadingState,
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
+	onCopySeedClick: (Long) -> Unit,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
+	val coroutineScope = rememberCoroutineScope()
+	val snackBarHostState = remember { SnackbarHostState() }
+	val dismissState = rememberSwipeToDismissBoxState(
+		confirmValueChange = { value ->
+			if (value != SwipeToDismissBoxValue.Settled) {
+				snackBarHostState.currentSnackbarData?.dismiss()
+				true
+			} else {
+				false
+			}
+		},
+	)
+
+	LaunchedEffect(dismissState.currentValue) {
+		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+			dismissState.reset()
+		}
+	}
+
 	Scaffold(
 		modifier = modifier,
+		snackbarHost = {
+			SnackbarHost(
+				hostState = snackBarHostState,
+				modifier = Modifier.imePadding(),
+				snackbar = {
+					SwipeToDismissBox(
+						state = dismissState,
+						backgroundContent = {
+						},
+					) {
+						Snackbar(
+							modifier = Modifier.padding(horizontal = LocalPadding.current.small),
+							containerColor = MaterialTheme.colorScheme.inverseSurface,
+							contentColor = MaterialTheme.colorScheme.inversePrimary,
+							dismissAction = {
+								TextButton(
+									onClick = {
+										snackBarHostState.currentSnackbarData?.dismiss()
+									},
+								) {
+									Text("Dismiss")
+								}
+							},
+						) {
+							Text(
+								it.visuals.message,
+								color = MaterialTheme.colorScheme.inversePrimary,
+							)
+						}
+					}
+				},
+			)
+		},
 		topBar = {
 			CenterAlignedTopAppBar(
 				title = { Text(stringResource(R.string.insights_screen_title)) },
@@ -137,7 +226,7 @@ private fun SharedTransitionScope.InsightsScreenContent(
 			)
 		},
 		floatingActionButton = {
-			if (uiState is InsightsUiState.Success) {
+			if (loadingState is LoadingState.Success) {
 				BadgedBox(
 					badge = {
 						if (activeFilterCount > 0) {
@@ -177,11 +266,11 @@ private fun SharedTransitionScope.InsightsScreenContent(
 		},
 	) { paddingValues ->
 		Crossfade(
-			targetState = uiState,
+			targetState = loadingState,
 			modifier = Modifier.padding(paddingValues),
-		) { state ->
-			when (state) {
-				is InsightsUiState.Loading -> {
+		) { loadingState ->
+			when (loadingState) {
+				is LoadingState.Loading -> {
 					Box(
 						modifier = Modifier
 							.fillMaxSize(),
@@ -191,7 +280,7 @@ private fun SharedTransitionScope.InsightsScreenContent(
 					}
 				}
 
-				is InsightsUiState.NoData -> {
+				is LoadingState.NoData -> {
 					Column(
 						modifier = Modifier
 							.fillMaxSize()
@@ -211,13 +300,13 @@ private fun SharedTransitionScope.InsightsScreenContent(
 					}
 				}
 
-				is InsightsUiState.Success -> {
-					val formattedTimeSpent = rememberFormattedTime(state.totalTimeSpent.toFloat())
-					val formattedAvgTime = rememberFormattedTime(state.avgTime.toFloat())
-					val formattedFastest = rememberFormattedTime(state.fastestGame.toFloat())
-					val formattedSlowest = rememberFormattedTime(state.longestGame.toFloat())
-					val difficultyText = state.mostPlayedDifficulty?.toLocalizedString() ?: ""
-					val gridSizeText = state.mostPlayedGridSize.toString()
+				is LoadingState.Success -> {
+					val formattedTimeSpent = rememberFormattedTime(uiState.totalTimeSpent.toFloat())
+					val formattedAvgTime = rememberFormattedTime(uiState.avgTime.toFloat())
+					val formattedFastest = rememberFormattedTime(uiState.fastestGame.toFloat())
+					val formattedSlowest = rememberFormattedTime(uiState.longestGame.toFloat())
+					val difficultyText = uiState.mostPlayedDifficulty?.toLocalizedString() ?: ""
+					val gridSizeText = uiState.mostPlayedGridSize.toString()
 					val visibleColumns = remember(tableColumnsState) {
 						tableColumnsState.filter { it.visible }.map(
 							ColumnDisplayState::column,
@@ -244,7 +333,7 @@ private fun SharedTransitionScope.InsightsScreenContent(
 									MaterialTheme.colorScheme.onSurface.copy(0.2f),
 									RoundedCornerShape(100),
 								),
-								thumbVisibility = ThumbVisibility.HideWhileIdle(
+								thumbVisibility = HideWhileIdle(
 									enter = fadeIn(),
 									exit = fadeOut(),
 									hideDelay = 0.5.seconds,
@@ -253,16 +342,17 @@ private fun SharedTransitionScope.InsightsScreenContent(
 						}
 						LazyColumn(
 							modifier = Modifier
-								.fillMaxWidth(),
+								.fillMaxWidth()
+								.padding(bottom = LocalPadding.current.large),
 							state = lazyListState,
 							contentPadding = PaddingValues(vertical = LocalPadding.current.normal),
 							verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
 						) {
 							item {
-								when (state.summariesCompactLayout) {
+								when (uiState.summariesCompactLayout) {
 									true -> CompactSummaryLayout(
-										totalGamesPlayed = state.totalGamesPlayed.toString(),
-										totalHintsUsed = state.totalHintsUsed.toString(),
+										totalGamesPlayed = uiState.totalGamesPlayed.toString(),
+										totalHintsUsed = uiState.totalHintsUsed.toString(),
 										formattedTimeSpent = formattedTimeSpent,
 										formattedSlowest = formattedSlowest,
 										formattedFastest = formattedFastest,
@@ -273,8 +363,8 @@ private fun SharedTransitionScope.InsightsScreenContent(
 									)
 
 									false -> ExpandedSummaryLayout(
-										totalGamesPlayed = state.totalGamesPlayed.toString(),
-										totalHintsUsed = state.totalHintsUsed.toString(),
+										totalGamesPlayed = uiState.totalGamesPlayed.toString(),
+										totalHintsUsed = uiState.totalHintsUsed.toString(),
 										formattedTimeSpent = formattedTimeSpent,
 										formattedSlowest = formattedSlowest,
 										formattedFastest = formattedFastest,
@@ -286,16 +376,25 @@ private fun SharedTransitionScope.InsightsScreenContent(
 								}
 							}
 							insightsTableContent(
-								gameResults = state.gameResults,
-								sortState = state.sortState,
+								gameResults = uiState.gameResults,
+								sortState = uiState.sortState,
 								visibleColumns = visibleColumns,
 								scrollState = horizontalScrollState,
-								onPlayClick = { onEvent(StatisticsEvent.PlayGameClicked(it)) },
+								onPlayClick = { onEvent(PlayGameClicked(it)) },
 								onCopySeedClick = {
+									onCopySeedClick(it)
+									coroutineScope.launch {
+										snackBarHostState.currentSnackbarData?.dismiss()
+										snackBarHostState.showSnackbar(
+											"Copied seed!",
+											duration = SnackbarDuration.Short,
+											withDismissAction = true,
+										)
+									}
 								},
 								onColumnHeaderClick = { column ->
 									onEvent(
-										StatisticsEvent.ColumnHeaderClicked(
+										ColumnHeaderClicked(
 											column,
 										),
 									)
@@ -304,6 +403,8 @@ private fun SharedTransitionScope.InsightsScreenContent(
 						}
 					}
 				}
+
+				is LoadingState.Error -> TODO()
 			}
 		}
 	}
@@ -345,17 +446,19 @@ private fun InsightsScreenPreview() {
 		SharedTransitionLayout {
 			AnimatedVisibility(true) {
 				InsightsScreenContent(
-					uiState = InsightsUiState.Success(
+					uiState = InsightsUiState(
 						sortState = SortState(InsightsTableColumn.Difficulty, SortDirection.ASC),
 						gameResults = entries,
 						totalGamesPlayed = 3,
 						totalTimeSpent = 125,
 					),
+					loadingState = LoadingState.Success,
 					activeFilterCount = 1,
 					tableColumnsState = ColumnDisplayState.getAll(),
 					onEvent = { },
 					openDrawer = { },
 					onFabClick = { },
+					onCopySeedClick = { },
 					animatedVisibilityScope = this,
 					modifier = Modifier.fillMaxSize(),
 				)

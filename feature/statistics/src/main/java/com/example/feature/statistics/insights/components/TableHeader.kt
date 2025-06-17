@@ -52,7 +52,7 @@ internal fun TableHeader(
 	Row(
 		modifier = modifier
 			.horizontalScroll(scrollStateProvider())
-			.padding(horizontal = LocalPadding.current.tiny)
+			.padding(horizontal = LocalPadding.current.small)
 			.clip(MaterialTheme.shapes.medium)
 			.background(MaterialTheme.colorScheme.surfaceVariant),
 		verticalAlignment = Alignment.CenterVertically,

@@ -35,4 +35,11 @@
 	<string name="sort_descending">Sort descending</string>
 	<string name="copied_seed_to_clipboard">Copied seed to clipboard!</string>
     <string name="no_data_message">Finish sudoku to see your insights here!</string>
+	<string name="card_most_played">Most Played</string>
+	<string name="card_fastest_game">Fastest Game</string>
+	<string name="card_slowest_game">Slowest Game</string>
+	<string name="card_avg_time">Avg. Time</string>
+	<string name="card_total_time_spent">Total Time Spent</string>
+	<string name="card_hints_used">Hints Used</string>
+	<string name="card_games_played">Games Played</string>
 </resources>

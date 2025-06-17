@@ -54,7 +54,7 @@ internal fun TableRow(
 	Row(
 		modifier = modifier
 			.horizontalScroll(scrollStateProvider())
-			.padding(horizontal = LocalPadding.current.tiny),
+			.padding(horizontal = LocalPadding.current.small),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		visibleColumns.forEach { column ->
