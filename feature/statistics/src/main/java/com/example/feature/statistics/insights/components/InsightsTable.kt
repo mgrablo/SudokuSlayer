@@ -128,6 +128,7 @@ internal fun LazyListScope.insightsTableContent(
 	onColumnHeaderClick: (InsightsTableColumn) -> Unit,
 	onCopySeedClick: (Long) -> Unit,
 	onPlayClick: (Long) -> Unit,
+	modifier: Modifier = Modifier,
 ) {
 	item {
 		TableHeader(
@@ -135,6 +136,7 @@ internal fun LazyListScope.insightsTableContent(
 			columns = visibleColumns,
 			onSortChange = onColumnHeaderClick,
 			scrollStateProvider = { scrollState },
+			modifier = modifier,
 		)
 	}
 	items(
@@ -147,6 +149,7 @@ internal fun LazyListScope.insightsTableContent(
 			scrollStateProvider = { scrollState },
 			onPlayClick = onPlayClick,
 			onCopySeedClick = onCopySeedClick,
+			modifier = modifier,
 		)
 	}
 }

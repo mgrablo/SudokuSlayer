@@ -1,7 +1,7 @@
 package com.example.feature.statistics.insights.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -16,32 +16,37 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun SummaryCard(
 	label: String,
 	value: String,
 	modifier: Modifier = Modifier,
+	animationSpec: AnimationSpec<Color> = MotionScheme.expressive().fastEffectsSpec(),
 	style: SummaryCardStyle = SummaryCardStyleDefaults.defaults(),
 ) {
 	val animatedBackgroundColor by animateColorAsState(
 		targetValue = style.backgroundColor,
-		animationSpec = tween(durationMillis = 300),
+		animationSpec = animationSpec,
 		label = "SummaryCardBackgroundColorAnimation",
 	)
 	val animatedContentColor by animateColorAsState(
 		targetValue = style.contentColor,
-		animationSpec = tween(durationMillis = 300),
+		animationSpec = animationSpec,
 		label = "SummaryCardContentColorAnimation",
 	)
 	Card(

@@ -115,7 +115,6 @@ internal fun InsightsScreen(
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
 	val clipboard = LocalClipboard.current
-
 	sharedTransitionScope.InsightsScreenContent(
 		uiState = uiState,
 		loadingState = loadingState,

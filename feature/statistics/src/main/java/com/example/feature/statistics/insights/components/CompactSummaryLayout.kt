@@ -1,9 +1,11 @@
 package com.example.feature.statistics.insights.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
@@ -25,12 +28,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.LocalTypography
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.theme.rememberAnimatedShape
@@ -96,6 +102,8 @@ internal fun CompactSummaryLayout(
 		}
 		SummaryCarousel(
 			modifier = Modifier.height(150.dp),
+			shapeAnimationSpec = MotionScheme.expressive().defaultSpatialSpec(),
+			colorAnimationSpec = MotionScheme.expressive().defaultEffectsSpec(),
 			summaries = persistentListOf(
 				SummaryCardData(
 					id = "totalTimeSpent",
@@ -104,6 +112,7 @@ internal fun CompactSummaryLayout(
 					style = SummaryCardStyleDefaults.defaults(
 						contentColor = MaterialTheme.colorScheme.onSecondary,
 						backgroundColor = MaterialTheme.colorScheme.secondary,
+						valueTextStyle = LocalTypography.current.displayMediumEmphasized,
 					),
 				),
 				SummaryCardData(
@@ -180,44 +189,32 @@ internal fun CompactSummaryLayout(
 	}
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SummaryCarousel(
 	summaries: PersistentList<SummaryCardData>,
 	modifier: Modifier = Modifier,
+	shapeAnimationSpec: FiniteAnimationSpec<Float> = MotionScheme.expressive().fastSpatialSpec(),
+	colorAnimationSpec: AnimationSpec<Color> = MotionScheme.expressive().fastEffectsSpec(),
 ) {
 	var currentIndex by remember { mutableIntStateOf(0) }
 	val summary = remember(currentIndex, summaries) { summaries[currentIndex] }
-	if (summaries.all { it.style.shape is CornerBasedShape }) {
-		val animatedShape = rememberAnimatedShape(
-			currentShape = summary.style.shape.let {
-				it as? CornerBasedShape ?: RoundedCornerShape(32.dp)
-			},
-			animationSpec = tween(300),
-		)
-		SummaryCard(
-			label = summary.label,
-			value = summary.value,
-			style = summary.style.copy(
-				shape = animatedShape,
-			),
-			modifier = modifier
-				.fillMaxSize()
-				.clickable(
-					onClick = {
-						currentIndex = (currentIndex + 1) % summaries.size
-					},
-				),
-		)
-	} else {
-		AnimatedContent(
-			targetState = summary,
-			modifier = modifier,
-			contentKey = { it.id },
-		) { cardData ->
+
+	Box(modifier) {
+		if (summaries.all { it.style.shape is CornerBasedShape }) {
+			val animatedShape = rememberAnimatedShape(
+				currentShape = summary.style.shape.let {
+					it as? CornerBasedShape ?: RoundedCornerShape(32.dp)
+				},
+				animationSpec = shapeAnimationSpec,
+			)
 			SummaryCard(
-				label = cardData.label,
-				value = cardData.value,
-				style = cardData.style,
+				label = summary.label,
+				value = summary.value,
+				animationSpec = colorAnimationSpec,
+				style = summary.style.copy(
+					shape = animatedShape,
+				),
 				modifier = Modifier
 					.fillMaxSize()
 					.clickable(
@@ -226,7 +223,32 @@ private fun SummaryCarousel(
 						},
 					),
 			)
+		} else {
+			AnimatedContent(
+				targetState = summary,
+				modifier = Modifier,
+				contentKey = { it.id },
+			) { cardData ->
+				SummaryCard(
+					label = cardData.label,
+					value = cardData.value,
+					animationSpec = colorAnimationSpec,
+					style = cardData.style,
+					modifier = Modifier
+						.fillMaxSize()
+						.clickable(
+							onClick = {
+								currentIndex = (currentIndex + 1) % summaries.size
+							},
+						),
+				)
+			}
 		}
+		PageIndicator(
+			currentPageIndex = currentIndex,
+			pageCount = summaries.size,
+			modifier = Modifier.align(Alignment.BottomCenter),
+		)
 	}
 }
 
