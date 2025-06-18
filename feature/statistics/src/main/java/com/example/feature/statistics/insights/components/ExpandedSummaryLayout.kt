@@ -7,24 +7,16 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.feature.uicore.mirrorVertically
+import com.example.feature.statistics.model.SummaryCardDataProvider
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import com.example.feature.uicore.theme.extendedColorScheme
-import com.example.sudokuslayer.feature.statistics.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -52,40 +44,23 @@ internal fun ExpandedSummaryLayout(
 				.padding(bottom = LocalPadding.current.tiny),
 		) {
 			SummaryCard(
-				label = stringResource(R.string.card_games_played),
-				value = totalGamesPlayed,
+				data = SummaryCardDataProvider.totalGamesPlayed(totalGamesPlayed),
 				modifier = Modifier
 					.weight(1f)
 					.aspectRatio(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = MaterialShapes.Cookie12Sided.toShape(),
-					contentColor = MaterialTheme.colorScheme.onPrimary,
-					backgroundColor = MaterialTheme.colorScheme.primary,
-				),
 			)
 			SummaryCard(
-				label = stringResource(R.string.card_hints_used),
-				value = totalHintsUsed,
+				data = SummaryCardDataProvider.totalHintsUsed(totalHintsUsed),
 				modifier = Modifier
 					.weight(1f)
 					.aspectRatio(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = MaterialShapes.Slanted.toShape(),
-					contentColor = MaterialTheme.extendedColorScheme.maroon.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.maroon.colorContainer,
-				),
 			)
 		}
 		SummaryCard(
-			label = stringResource(R.string.card_total_time_spent),
-			value = formattedTimeSpent,
+			data = SummaryCardDataProvider.totalTimeSpent(formattedTimeSpent),
 			modifier = Modifier
 				.padding(horizontal = LocalPadding.current.normal)
 				.height(150.dp),
-			style = SummaryCardStyleDefaults.defaults(
-				contentColor = MaterialTheme.colorScheme.onSecondary,
-				backgroundColor = MaterialTheme.colorScheme.secondary,
-			),
 		)
 		Row(
 			horizontalArrangement = Arrangement.spacedBy(
@@ -99,28 +74,16 @@ internal fun ExpandedSummaryLayout(
 				),
 		) {
 			SummaryCard(
-				label = stringResource(R.string.card_fastest_game),
-				value = formattedFastest,
+				data = SummaryCardDataProvider.fastestGame(formattedFastest),
 				modifier = Modifier
 					.height(120.dp)
 					.weight(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = CutCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
-					contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
-				),
 			)
 			SummaryCard(
-				label = stringResource(R.string.card_slowest_game),
-				value = formattedSlowest,
+				data = SummaryCardDataProvider.slowestGame(formattedSlowest),
 				modifier = Modifier
 					.height(120.dp)
 					.weight(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = CutCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
-					contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
-				),
 			)
 		}
 		Row(
@@ -134,42 +97,24 @@ internal fun ExpandedSummaryLayout(
 				),
 		) {
 			SummaryCard(
-				label = stringResource(R.string.card_most_played),
-				value = mostPlayedDifficulty,
+				data = SummaryCardDataProvider.mostPlayedDifficulty(mostPlayedDifficulty),
 				modifier = Modifier
 					.height(120.dp)
 					.weight(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = RoundedCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
-					contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
-				),
 			)
 			SummaryCard(
-				label = stringResource(R.string.card_most_played),
-				value = mostPlayedGridSize,
+				data = SummaryCardDataProvider.mostPlayedGridSize(mostPlayedGridSize),
 				modifier = Modifier
 					.height(120.dp)
 					.weight(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = RoundedCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
-					contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
-				),
 			)
 		}
 		SummaryCard(
-			label = stringResource(R.string.card_avg_time),
-			value = formattedAvgTime,
+			data = SummaryCardDataProvider.avgPlayTime(formattedAvgTime),
 			modifier = Modifier
 				.padding(horizontal = LocalPadding.current.normal)
 				.padding(vertical = LocalPadding.current.small)
 				.height(150.dp),
-			style = SummaryCardStyleDefaults.defaults(
-				shape = MaterialShapes.Arch.mirrorVertically().toShape(),
-				backgroundColor = MaterialTheme.extendedColorScheme.rosewater.color,
-				contentColor = MaterialTheme.extendedColorScheme.rosewater.onColor,
-			),
 		)
 	}
 }
@@ -180,7 +125,7 @@ private fun ExpandedSummaryLayoutPreview() {
 	SudokuSlayerTheme {
 		Surface {
 			ExpandedSummaryLayout(
-				totalGamesPlayed = "10",
+				totalGamesPlayed = "1000",
 				totalHintsUsed = "12",
 				formattedTimeSpent = rememberFormattedTime(2555f),
 				formattedSlowest = rememberFormattedTime(1000f),

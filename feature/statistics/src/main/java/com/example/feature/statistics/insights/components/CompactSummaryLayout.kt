@@ -3,7 +3,6 @@ package com.example.feature.statistics.insights.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,16 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,26 +25,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.example.feature.statistics.model.SummaryCardData
+import com.example.feature.statistics.model.SummaryCardDataProvider
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.theme.rememberAnimatedShape
-import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-
-@Stable
-data class SummaryCardData(
-	val id: String,
-	val value: String,
-	val label: String,
-	val style: SummaryCardStyle,
-)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -76,28 +60,16 @@ internal fun CompactSummaryLayout(
 			modifier = Modifier.fillMaxWidth(),
 		) {
 			SummaryCard(
-				label = stringResource(R.string.card_games_played),
-				value = totalGamesPlayed,
+				data = SummaryCardDataProvider.totalGamesPlayed(totalGamesPlayed),
 				modifier = Modifier
 					.weight(1f)
 					.aspectRatio(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = MaterialShapes.Cookie12Sided.toShape(),
-					contentColor = MaterialTheme.colorScheme.onPrimary,
-					backgroundColor = MaterialTheme.colorScheme.primary,
-				),
 			)
 			SummaryCard(
-				label = stringResource(R.string.card_hints_used),
-				value = totalHintsUsed,
+				data = SummaryCardDataProvider.totalHintsUsed(totalHintsUsed),
 				modifier = Modifier
 					.weight(1f)
 					.aspectRatio(1f),
-				style = SummaryCardStyleDefaults.defaults(
-					shape = MaterialShapes.Slanted.toShape(),
-					contentColor = MaterialTheme.extendedColorScheme.maroon.onColorContainer,
-					backgroundColor = MaterialTheme.extendedColorScheme.maroon.colorContainer,
-				),
 			)
 		}
 		SummaryCarousel(
@@ -105,27 +77,8 @@ internal fun CompactSummaryLayout(
 			shapeAnimationSpec = MotionScheme.expressive().defaultSpatialSpec(),
 			colorAnimationSpec = MotionScheme.expressive().defaultEffectsSpec(),
 			summaries = persistentListOf(
-				SummaryCardData(
-					id = "totalTimeSpent",
-					value = formattedTimeSpent,
-					label = stringResource(R.string.card_total_time_spent),
-					style = SummaryCardStyleDefaults.defaults(
-						contentColor = MaterialTheme.colorScheme.onSecondary,
-						backgroundColor = MaterialTheme.colorScheme.secondary,
-						valueTextStyle = LocalSudokuTypography.current.displayLargeEmphasized,
-					),
-				),
-				SummaryCardData(
-					id = "avgTime",
-					label = stringResource(R.string.card_avg_time),
-					value = formattedAvgTime,
-					style = SummaryCardStyleDefaults.defaults(
-						shape = RoundedCornerShape(percent = 50),
-						backgroundColor = MaterialTheme.extendedColorScheme.rosewater.color,
-						contentColor = MaterialTheme.extendedColorScheme.rosewater.onColor,
-						valueTextStyle = LocalSudokuTypography.current.displayLargeEmphasized,
-					),
-				),
+				SummaryCardDataProvider.totalTimeSpent(formattedTimeSpent),
+				SummaryCardDataProvider.avgPlayTime(formattedAvgTime),
 			),
 		)
 		Row(
@@ -138,55 +91,15 @@ internal fun CompactSummaryLayout(
 		) {
 			SummaryCarousel(
 				summaries = persistentListOf(
-					SummaryCardData(
-						id = "slowestGame",
-						value = formattedSlowest,
-						label = stringResource(R.string.card_slowest_game),
-						style = SummaryCardStyleDefaults.defaults(
-							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
-							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
-							shape = CutCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
-							valueTextStyle = LocalSudokuTypography.current.displayLarge,
-						),
-					),
-					SummaryCardData(
-						id = "fastestGame",
-						value = formattedFastest,
-						label = stringResource(R.string.card_fastest_game),
-						style = SummaryCardStyleDefaults.defaults(
-							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
-							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
-							shape = CutCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
-							valueTextStyle = LocalSudokuTypography.current.displayLarge,
-						),
-					),
+					SummaryCardDataProvider.fastestGame(formattedFastest),
+					SummaryCardDataProvider.slowestGame(formattedSlowest),
 				),
 				modifier = Modifier.weight(1f),
 			)
 			SummaryCarousel(
 				summaries = persistentListOf(
-					SummaryCardData(
-						id = "mostPlayedDifficulty",
-						value = mostPlayedDifficulty,
-						label = stringResource(R.string.card_most_played),
-						style = SummaryCardStyleDefaults.defaults(
-							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
-							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
-							shape = RoundedCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
-							valueTextStyle = LocalSudokuTypography.current.displayMediumEmphasized,
-						),
-					),
-					SummaryCardData(
-						id = "mostPlayedGridSize",
-						value = mostPlayedGridSize,
-						label = stringResource(R.string.card_most_played),
-						style = SummaryCardStyleDefaults.defaults(
-							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
-							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
-							shape = RoundedCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
-							valueTextStyle = LocalSudokuTypography.current.displayMediumEmphasized,
-						),
-					),
+					SummaryCardDataProvider.mostPlayedDifficulty(mostPlayedDifficulty),
+					SummaryCardDataProvider.mostPlayedGridSize(mostPlayedGridSize),
 				),
 				modifier = Modifier.weight(1f),
 			)
@@ -220,13 +133,11 @@ private fun SummaryCarousel(
 				style = summary.style.copy(
 					shape = animatedShape,
 				),
+				onClick = {
+					currentIndex = (currentIndex + 1) % summaries.size
+				},
 				modifier = Modifier
-					.fillMaxSize()
-					.clickable(
-						onClick = {
-							currentIndex = (currentIndex + 1) % summaries.size
-						},
-					),
+					.fillMaxSize(),
 			)
 		} else {
 			AnimatedContent(
@@ -239,13 +150,11 @@ private fun SummaryCarousel(
 					value = cardData.value,
 					animationSpec = colorAnimationSpec,
 					style = cardData.style,
+					onClick = {
+						currentIndex = (currentIndex + 1) % summaries.size
+					},
 					modifier = Modifier
-						.fillMaxSize()
-						.clickable(
-							onClick = {
-								currentIndex = (currentIndex + 1) % summaries.size
-							},
-						),
+						.fillMaxSize(),
 				)
 			}
 		}
@@ -253,6 +162,8 @@ private fun SummaryCarousel(
 			currentPageIndex = currentIndex,
 			pageCount = summaries.size,
 			modifier = Modifier.align(Alignment.BottomCenter),
+			activeColor = summary.style.contentColor.copy(alpha = 0.8f),
+			inactiveColor = summary.style.contentColor.copy(alpha = 0.5f),
 		)
 	}
 }
