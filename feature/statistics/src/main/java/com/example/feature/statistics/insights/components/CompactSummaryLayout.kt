@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.LocalTypography
+import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.theme.rememberAnimatedShape
@@ -112,7 +112,7 @@ internal fun CompactSummaryLayout(
 					style = SummaryCardStyleDefaults.defaults(
 						contentColor = MaterialTheme.colorScheme.onSecondary,
 						backgroundColor = MaterialTheme.colorScheme.secondary,
-						valueTextStyle = LocalTypography.current.displayMediumEmphasized,
+						valueTextStyle = LocalSudokuTypography.current.displayLargeEmphasized,
 					),
 				),
 				SummaryCardData(
@@ -123,6 +123,7 @@ internal fun CompactSummaryLayout(
 						shape = RoundedCornerShape(percent = 50),
 						backgroundColor = MaterialTheme.extendedColorScheme.rosewater.color,
 						contentColor = MaterialTheme.extendedColorScheme.rosewater.onColor,
+						valueTextStyle = LocalSudokuTypography.current.displayLargeEmphasized,
 					),
 				),
 			),
@@ -145,6 +146,7 @@ internal fun CompactSummaryLayout(
 							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
 							shape = CutCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
+							valueTextStyle = LocalSudokuTypography.current.displayLarge,
 						),
 					),
 					SummaryCardData(
@@ -155,6 +157,7 @@ internal fun CompactSummaryLayout(
 							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
 							shape = CutCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
+							valueTextStyle = LocalSudokuTypography.current.displayLarge,
 						),
 					),
 				),
@@ -170,6 +173,7 @@ internal fun CompactSummaryLayout(
 							backgroundColor = MaterialTheme.extendedColorScheme.lavender.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer,
 							shape = RoundedCornerShape(8.dp, 32.dp, 8.dp, 32.dp),
+							valueTextStyle = LocalSudokuTypography.current.displayMediumEmphasized,
 						),
 					),
 					SummaryCardData(
@@ -180,6 +184,7 @@ internal fun CompactSummaryLayout(
 							backgroundColor = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							contentColor = MaterialTheme.extendedColorScheme.peach.onColorContainer,
 							shape = RoundedCornerShape(32.dp, 8.dp, 32.dp, 8.dp),
+							valueTextStyle = LocalSudokuTypography.current.displayMediumEmphasized,
 						),
 					),
 				),

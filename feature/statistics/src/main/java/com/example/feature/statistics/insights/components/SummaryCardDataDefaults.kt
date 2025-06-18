@@ -28,7 +28,9 @@ object SummaryCardStyleDefaults {
 		valueTextStyle: TextStyle = MaterialTheme.typography.displayMediumEmphasized.copy(
 			fontWeight = FontWeight.Bold,
 		),
-		labelTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
+		labelTextStyle: TextStyle = MaterialTheme.typography.labelLarge.copy(
+			fontWeight = FontWeight.Bold,
+		),
 	): SummaryCardStyle = SummaryCardStyle(
 		backgroundColor = backgroundColor,
 		contentColor = contentColor,
