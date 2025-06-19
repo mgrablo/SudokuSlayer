@@ -3,12 +3,8 @@
 package com.example.feature.statistics.insights
 
 import android.content.ClipData
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -75,7 +71,6 @@ import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.LoadingState
-import com.example.feature.statistics.STATISTICS_FAB_EXPLODE_BOUNDS
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.ColumnHeaderClicked
@@ -104,8 +99,6 @@ import kotlin.time.Duration.Companion.seconds
 internal fun InsightsScreen(
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
-	animatedVisibilityScope: AnimatedVisibilityScope,
-	sharedTransitionScope: SharedTransitionScope,
 	modifier: Modifier = Modifier,
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
 ) {
@@ -115,7 +108,7 @@ internal fun InsightsScreen(
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
 	val clipboard = LocalClipboard.current
-	sharedTransitionScope.InsightsScreenContent(
+	InsightsScreenContent(
 		uiState = uiState,
 		loadingState = loadingState,
 		tableColumnsState = tableColumnsState,
@@ -136,14 +129,13 @@ internal fun InsightsScreen(
 				)
 			}
 		},
-		animatedVisibilityScope = animatedVisibilityScope,
 		modifier = modifier,
 	)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun SharedTransitionScope.InsightsScreenContent(
+private fun InsightsScreenContent(
 	uiState: InsightsUiState,
 	loadingState: LoadingState,
 	tableColumnsState: PersistentList<ColumnDisplayState>,
@@ -152,7 +144,6 @@ private fun SharedTransitionScope.InsightsScreenContent(
 	openDrawer: () -> Unit,
 	onFabClick: () -> Unit,
 	onCopySeedClick: (Long) -> Unit,
-	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
 	val coroutineScope = rememberCoroutineScope()
@@ -241,12 +232,6 @@ private fun SharedTransitionScope.InsightsScreenContent(
 							}
 						}
 					},
-					modifier = Modifier.sharedBounds(
-						sharedContentState = rememberSharedContentState(
-							key = STATISTICS_FAB_EXPLODE_BOUNDS,
-						),
-						animatedVisibilityScope = animatedVisibilityScope,
-					),
 				) {
 					FloatingActionButton(
 						onClick = onFabClick,
@@ -442,26 +427,21 @@ private fun InsightsScreenPreview() {
 		),
 	)
 	SudokuSlayerTheme {
-		SharedTransitionLayout {
-			AnimatedVisibility(true) {
-				InsightsScreenContent(
-					uiState = InsightsUiState(
-						sortState = SortState(InsightsTableColumn.Difficulty, SortDirection.ASC),
-						gameResults = entries,
-						totalGamesPlayed = 3,
-						totalTimeSpent = 125,
-					),
-					loadingState = LoadingState.Success,
-					activeFilterCount = 1,
-					tableColumnsState = ColumnDisplayState.getAll(),
-					onEvent = { },
-					openDrawer = { },
-					onFabClick = { },
-					onCopySeedClick = { },
-					animatedVisibilityScope = this,
-					modifier = Modifier.fillMaxSize(),
-				)
-			}
-		}
+		InsightsScreenContent(
+			uiState = InsightsUiState(
+				sortState = SortState(InsightsTableColumn.Difficulty, SortDirection.ASC),
+				gameResults = entries,
+				totalGamesPlayed = 3,
+				totalTimeSpent = 125,
+			),
+			loadingState = LoadingState.Success,
+			activeFilterCount = 1,
+			tableColumnsState = ColumnDisplayState.getAll(),
+			onEvent = { },
+			openDrawer = { },
+			onFabClick = { },
+			onCopySeedClick = { },
+			modifier = Modifier.fillMaxSize(),
+		)
 	}
 }

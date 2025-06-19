@@ -2,7 +2,7 @@
 
 # Android
 agp = "8.10.0"
-android-compileSdk = "35"
+android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "34"
 
@@ -25,7 +25,7 @@ protoc = "4.30.1"
 composeBom = "2025.06.00"
 activityCompose = "1.10.1"
 runtime = "1.8.2"
-navVersion = "2.9.0"
+nav3core = "1.0.0-alpha04"
 composeUnstyled = "1.32.0"
 catppuccinPalette = "0.1.2"
 reorderable = "2.5.1"
@@ -63,7 +63,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
-androidx-navigation-compose = { group = "androidx.navigation", name="navigation-compose", version.ref = "navVersion" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3core"}
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3core"}
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 

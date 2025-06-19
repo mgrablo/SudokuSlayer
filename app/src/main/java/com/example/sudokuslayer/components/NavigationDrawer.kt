@@ -13,16 +13,11 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.feature.game.SudokuGame
 import com.example.feature.uicore.navigation.Destination
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -30,19 +25,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationDrawer(
 	destinations: PersistentList<Destination>,
+	isSelected: (Destination) -> Boolean,
+	navigateToScreen: (Destination) -> Unit,
 	drawerState: DrawerState,
-	navController: NavController,
-	scope: CoroutineScope,
 	modifier: Modifier = Modifier,
 	content: @Composable () -> Unit,
 ) {
-	val navBackStackEntry by navController.currentBackStackEntryAsState()
-	val currentScreen = navBackStackEntry?.destination
-
+	val coroutineScope = rememberCoroutineScope()
 	ModalNavigationDrawer(
-		gesturesEnabled =
-		currentScreen?.hierarchy?.none { it.hasRoute(SudokuGame::class) } == true ||
-			drawerState.isOpen,
 		drawerState = drawerState,
 		modifier = modifier,
 		drawerContent = {
@@ -57,11 +47,11 @@ fun NavigationDrawer(
 				HorizontalDivider()
 				destinations.forEach { destination ->
 					NavigationDrawerItem(
-						isSelected = currentScreen?.hierarchy?.any { it.hasRoute(destination::class) } == true,
+						isSelected = isSelected(destination),
 						destination = destination,
 						onClick = {
-							navController.navigate(destination)
-							scope.launch {
+							navigateToScreen(destination)
+							coroutineScope.launch {
 								drawerState.close()
 							}
 						},
