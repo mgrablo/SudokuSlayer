@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="filter_by_grid_size">Filter by Grid Size</string>
+	<string name="filter_by_difficulty">Filter by Difficulty</string>
+	<string name="visible_columns">Visible columns</string>
+	<string name="apply_filters_content_description">Apply filters</string>
+	<string name="back_content_description">Go back</string>
+	<string name="filter_screen_title">Filter results</string>
+	<string name="select_solvetime_range">Select range</string>
+	<string name="select_hintsused_range">Select range</string>
+    <string name="filter_by_hints_used">Filter by Hints Used</string>
+	<string name="filter_by_solve_time">Filter by Solve Time</string>
+	<string name="clear_filters_button">Clear</string>
+	<string name="apply_filters_button">Apply</string>
+    <string name="select_date_content_description">Select date</string>
+	<string name="start_day">Start day</string>
+	<string name="selected_date">Selected date</string>
+	<string name="end_day">End day</string>
+	<string name="ok_button">OK</string>
+	<string name="cancel_button">Cancel</string>
+	<string name="gridsize_4x4">4x4</string>
+	<string name="gridsize_9x9">9x9</string>
+	<string name="gridsize_16x16">16x16</string>
+	<string name="table_header_date">Date</string>
+	<string name="table_header_difficulty">Difficulty</string>
+	<string name="table_header_size">Size</string>
+	<string name="table_header_time">Time</string>
+	<string name="table_header_hints">Hints</string>
+	<string name="insights_screen_title">Insights</string>
+	<string name="open_menu_content_description">Open menu</string>
+	<string name="filter_fab_content_description">Filter</string>
+    <string name="copy_seed_content_description">Copy seed</string>
+	<string name="play_again_content_description">Play again</string>
+	<string name="sort_ascending">Sort ascending</string>
+	<string name="sort_descending">Sort descending</string>
+	<string name="copied_seed_to_clipboard">Copied seed to clipboard!</string>
+    <string name="no_data_message">Finish sudoku to see your insights here!</string>
+	<string name="card_most_played">Most Played</string>
+	<string name="card_fastest_game">Fastest Game</string>
+	<string name="card_slowest_game">Slowest Game</string>
+	<string name="card_avg_time">Avg. Time</string>
+	<string name="card_total_time_spent">Total Time Spent</string>
+	<string name="card_hints_used">Hints Used</string>
+	<string name="card_games_played">Games Played</string>
+</resources>

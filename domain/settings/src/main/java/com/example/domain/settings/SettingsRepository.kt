@@ -11,6 +11,7 @@ interface SettingsRepository {
 	val language: Flow<String>
 	val leftHandMode: Flow<Boolean>
 	val showActionButtonsOnTop: Flow<Boolean>
+	val insightsSummaryCompactLayout: Flow<Boolean>
 
 	suspend fun setDarkMode(darkMode: DarkMode)
 
@@ -23,6 +24,8 @@ interface SettingsRepository {
 	suspend fun setLeftHandMode(leftHandMode: Boolean)
 
 	suspend fun setShowActionButtonsOnTop(actionButtonsOnTop: Boolean)
+
+	suspend fun setInsightsSummaryCompactLayout(compactLayout: Boolean)
 
 	fun getAvailableColorSchemes(): List<String>
 

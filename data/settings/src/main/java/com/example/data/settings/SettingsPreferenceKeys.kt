@@ -26,4 +26,9 @@ interface SettingsPreferenceKeys {
 		name = "action_buttons_on_top",
 		defaultValue = false,
 	)
+
+	data object InsightsSummaryCompactLayout : PreferenceStorage.Key.BooleanKey(
+		name = "insights_summary_compact_layout",
+		defaultValue = true,
+	)
 }

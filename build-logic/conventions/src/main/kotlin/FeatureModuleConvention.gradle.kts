@@ -17,7 +17,9 @@ dependencies {
 	implementation(libs.bundles.koin.compose)
 	implementation(libs.androidx.ui)
 	implementation(libs.androidx.core.ktx)
+	implementation(libs.compose.unstyled)
 	implementation(libs.androidx.material3)
+	implementation(libs.androidx.material.icons)
 	implementation(libs.androidx.navigation.compose)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
 	implementation(libs.androidx.activity.compose)
@@ -34,6 +36,8 @@ dependencies {
 	androidTestImplementation(libs.junit5.android.test.compose)
 	debugImplementation(libs.androidx.ui.test.manifest)
 	debugImplementation(libs.androidx.ui.tooling)
+	testImplementation(libs.koin.test)
+	testImplementation(libs.koin.test.junit5)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 }

@@ -25,6 +25,7 @@ val gameModule =
 				redoOperationUseCase = get(),
 				resetGameUseCase = get(),
 				elapsedTimerManager = get(),
+				gameResultWriter = get(),
 			)
 		}
 		factory { ElapsedTimerManager(get(), get()) }

@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.GameResult
+import com.example.domain.core.SudokuGridSize
 import com.example.domain.game.ElapsedTimerManager
+import com.example.domain.game.repositories.GameResultWriter
 import com.example.domain.game.repositories.Operation
 import com.example.domain.game.repositories.OperationRepository
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
@@ -41,6 +44,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock.System
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal class SudokuGameViewModel(
 	private val settingsRepository: SettingsRepository,
@@ -58,6 +64,7 @@ internal class SudokuGameViewModel(
 	private val redoOperationUseCase: RedoOperationUseCase,
 	private val resetGameUseCase: ResetGameUseCase,
 	private val elapsedTimerManager: ElapsedTimerManager,
+	private val gameResultWriter: GameResultWriter,
 ) : ViewModel() {
 	private val mutex = Mutex()
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
@@ -295,6 +302,19 @@ internal class SudokuGameViewModel(
 					)
 				}
 				elapsedTimerManager.stopTracking()
+				val gridSize = SudokuGridSize.fromIntSize(game.value.grid.gridSize)
+				gameResultWriter.saveGameResult(
+					GameResult(
+						timeInSeconds = elapsedTime.value,
+						difficulty = game.value.difficulty,
+						gridSize = gridSize,
+						hintsUsed = game.value.hintsUsed,
+						completionDate = System.now().toLocalDateTime(
+							TimeZone.currentSystemDefault(),
+						),
+						seed = game.value.grid.seed,
+					),
+				)
 			}
 		}
 	}
@@ -407,6 +427,7 @@ internal class SudokuGameViewModel(
 					it.copy(
 						grid = updatedSudoku,
 						hintLogs = it.hintLogs + hintLog,
+						hintsUsed = it.hintsUsed + 1,
 					)
 				}
 				_uiState.update {

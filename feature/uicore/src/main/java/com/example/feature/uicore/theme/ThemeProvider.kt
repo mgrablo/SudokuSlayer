@@ -100,6 +100,7 @@ fun SudokuSlayerTheme(
 		LocalSudokuBoardColors provides themeConfig.boardColors,
 		LocalKeyPadColors provides themeConfig.keypadColors,
 		LocalHintSheetColors provides themeConfig.hintSheetColors,
+		LocalSudokuTypography provides AppTypography,
 	) {
 		CatppuccinTheme.Palette(
 			palette = themeConfig.catppuccinPalette,

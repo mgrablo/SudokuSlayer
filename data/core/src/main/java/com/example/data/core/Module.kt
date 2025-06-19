@@ -2,6 +2,8 @@ package com.example.data.core
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.example.data.core.database.AndroidDatabaseDriverFactory
+import com.example.data.core.database.DatabaseProvider
 import com.example.data.core.preferences.DataStorePreferenceStorage
 import com.example.data.core.preferences.PreferenceStorage
 import com.example.data.core.preferences.createDataStore
@@ -19,4 +21,10 @@ val dataCoreModule = module {
 	}
 
 	single<ProtoStorageFactory> { ProtoStorageFactoryImpl(androidContext()) }
+	single { AndroidDatabaseDriverFactory(androidContext()) }
+	single { DatabaseProvider(get()) }
+	single<AppDatabase> {
+		val databaseProvider: DatabaseProvider = get()
+		databaseProvider.getDatabase()
+	}
 }

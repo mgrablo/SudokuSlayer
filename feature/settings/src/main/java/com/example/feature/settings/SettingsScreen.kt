@@ -1,11 +1,9 @@
 package com.example.feature.settings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,6 +42,8 @@ internal fun SettingsScreen(
 	val darkColorScheme by viewModel.darkColorScheme.collectAsStateWithLifecycle()
 	val leftHandMode by viewModel.leftHandMode.collectAsStateWithLifecycle()
 	val actionButtonsOnTop by viewModel.actionButtonsOnTop.collectAsStateWithLifecycle()
+	val insightsSummaryCompactLayout by
+		viewModel.insightsSummaryCompactLayout.collectAsStateWithLifecycle()
 
 	SettingsScreenContent(
 		openDrawer = openDrawer,
@@ -55,6 +55,7 @@ internal fun SettingsScreen(
 		darkMode = darkMode.displayName,
 		leftHandMode = leftHandMode,
 		actionButtonsOnTop = actionButtonsOnTop,
+		insightsSummaryCompactLayout = insightsSummaryCompactLayout,
 		modifier = modifier.fillMaxSize(),
 	)
 }
@@ -70,6 +71,7 @@ private fun SettingsScreenContent(
 	selectedDarkColorScheme: String,
 	leftHandMode: Boolean,
 	actionButtonsOnTop: Boolean,
+	insightsSummaryCompactLayout: Boolean,
 	darkMode: String,
 	modifier: Modifier = Modifier,
 ) {
@@ -90,8 +92,6 @@ private fun SettingsScreenContent(
 			modifier =
 			Modifier
 				.fillMaxSize()
-				.displayCutoutPadding()
-				.systemBarsPadding()
 				.padding(paddingValues)
 				.padding(LocalPadding.current.normal)
 				.verticalScroll(rememberScrollState()),
@@ -139,6 +139,15 @@ private fun SettingsScreenContent(
 					options = darkColorSchemes,
 					modifier = Modifier.fillMaxWidth(),
 				)
+
+				SettingSwitchItem(
+					title = "Compact Insights summaries",
+					value = insightsSummaryCompactLayout,
+					onValueChange = {
+						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
+					},
+					modifier = Modifier.fillMaxWidth(),
+				)
 			}
 
 			SettingsCategory("Accessibility") {
@@ -176,6 +185,7 @@ private fun SettingsScreenPreview() {
 			leftHandMode = true,
 			darkMode = "System",
 			actionButtonsOnTop = false,
+			insightsSummaryCompactLayout = false,
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

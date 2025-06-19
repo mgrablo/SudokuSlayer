@@ -3,7 +3,6 @@ package com.example.sudokuslayer
 import android.app.Activity
 import android.app.Application
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,15 +22,25 @@ import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
 import com.example.feature.game.SudokuGame
 import com.example.feature.settings.Settings
+import com.example.feature.statistics.Statistics
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.ThemeProvider
 import com.example.sudokuslayer.components.NavigationDrawer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
 class MyApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
+
+		startKoin {
+			modules(appModule)
+			androidContext(this@MyApplication)
+			androidLogger()
+		}
 	}
 }
 
@@ -44,6 +53,7 @@ internal fun AppContent() {
 		persistentListOf(
 			SudokuGame,
 			SudokuCreator,
+			Statistics,
 			Settings,
 		)
 	val scope = rememberCoroutineScope()
@@ -59,7 +69,8 @@ internal fun AppContent() {
 
 	val themeMode by ThemeProvider.getTheme().collectAsState(initial = DarkMode.SYSTEM)
 
-	val darkScheme by ThemeProvider.getDarkColorScheme().collectAsState(initial = ColorScheme.Mocha())
+	val darkScheme by ThemeProvider.getDarkColorScheme()
+		.collectAsState(initial = ColorScheme.Mocha())
 	val lightScheme by ThemeProvider.getLightColorScheme().collectAsState(
 		initial = ColorScheme.Latte(),
 	)
@@ -79,13 +90,14 @@ internal fun AppContent() {
 			drawerState = drawerState,
 			navController = navController,
 			scope = scope,
+			modifier = Modifier,
 		) {
-			Column(modifier = Modifier.fillMaxSize()) {
-				SudokuNavHost(
-					navController = navController,
-					openDrawer = { scope.launch { drawerState.open() } },
-				)
-			}
+			SudokuNavHost(
+				navController = navController,
+				openDrawer = { scope.launch { drawerState.open() } },
+				modifier = Modifier
+					.fillMaxSize(),
+			)
 		}
 	}
 }
