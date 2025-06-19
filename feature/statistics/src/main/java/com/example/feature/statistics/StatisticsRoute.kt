@@ -18,16 +18,12 @@ import org.koin.androidx.compose.koinViewModel
 data object Insights : Destination("Insights", AppIcon.VectorIcon(Icons.Default.DateRange))
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderBuilder<NavKey>.insightsEntry(
-	openDrawer: () -> Unit,
-	navigateToStatisticsFilter: () -> Unit,
-) {
+fun EntryProviderBuilder<NavKey>.insightsEntry(openDrawer: () -> Unit) {
 	entry<Insights> {
 		val viewModel = koinViewModel<StatisticsViewModel>()
 		InsightsScreen(
 			viewModel = viewModel,
 			openDrawer = openDrawer,
-			onFabClick = navigateToStatisticsFilter,
 			modifier = Modifier
 				.fillMaxSize(),
 		)

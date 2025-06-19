@@ -5,10 +5,11 @@ import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.WideNavigationRailValue
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,10 +32,10 @@ import com.example.feature.settings.Settings
 import com.example.feature.settings.settingsEntry
 import com.example.feature.statistics.Insights
 import com.example.feature.statistics.insightsEntry
+import com.example.feature.uicore.components.SudokuNavigationRail
 import com.example.feature.uicore.navigation.Destination
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.ThemeProvider
-import com.example.sudokuslayer.components.NavigationDrawer
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
@@ -53,11 +54,13 @@ class MyApplication : Application() {
 	}
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent() {
 	val backstack = rememberNavBackStack<Destination>(SudokuCreator)
-	val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+	val navigationRailState = rememberWideNavigationRailState(
+		initialValue = WideNavigationRailValue.Collapsed,
+	)
 	val destinations =
 		persistentListOf(
 			SudokuGame,
@@ -66,6 +69,7 @@ internal fun AppContent() {
 			Settings,
 		)
 	val scope = rememberCoroutineScope()
+
 	val view = LocalView.current
 	val window = (view.context as Activity).window
 	val insertsController = WindowCompat.getInsetsController(window, view)
@@ -94,35 +98,54 @@ internal fun AppContent() {
 		lightScheme = lightScheme,
 		darkScheme = darkScheme,
 	) {
-		NavigationDrawer(
+		SudokuNavigationRail(
+			state = navigationRailState,
 			destinations = destinations,
-			drawerState = drawerState,
 			isSelected = { backstack.last() == it },
-			navigateToScreen = { backstack.add(it) },
-			modifier = Modifier,
-		) {
-			NavDisplay(
-				modifier = Modifier.fillMaxSize().background(
-					MaterialTheme.colorScheme.background,
-				),
-				backStack = backstack,
-				entryProvider = entryProvider {
-					sudokuCreatorEntry(
-						navigateToGameScreen = { backstack.add(SudokuGame) },
-						openDrawer = { scope.launch { drawerState.open() } },
-					)
-					gameEntry(
-						openDrawer = { scope.launch { drawerState.open() } },
-					)
-					insightsEntry(
-						openDrawer = { scope.launch { drawerState.open() } },
-						navigateToStatisticsFilter = { },
-					)
-					settingsEntry(
-						openDrawer = { scope.launch { drawerState.open() } },
-					)
-				},
-			)
-		}
+			navigateToScreen = {
+				backstack.add(it)
+				scope.launch {
+					navigationRailState.collapse()
+				}
+			},
+			onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
+		)
+		NavDisplay(
+			modifier = Modifier.fillMaxSize().background(
+				MaterialTheme.colorScheme.background,
+			),
+			backStack = backstack,
+			entryProvider = entryProvider {
+				sudokuCreatorEntry(
+					navigateToGameScreen = { backstack.add(SudokuGame) },
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+				gameEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+				insightsEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+				settingsEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+			},
+		)
 	}
 }

@@ -104,7 +104,6 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 internal fun InsightsScreen(
 	openDrawer: () -> Unit,
-	onFabClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
 ) {
