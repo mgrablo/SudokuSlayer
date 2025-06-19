@@ -45,12 +45,15 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,12 +72,15 @@ import com.composables.core.rememberScrollAreaState
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import com.example.domain.statistics.GameResultFilter
+import com.example.feature.statistics.FilterUiState
 import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.LoadingState
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.ColumnHeaderClicked
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGameClicked
+import com.example.feature.statistics.filter.FilterBottomSheet
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
 import com.example.feature.statistics.insights.components.insightsTableContent
@@ -103,19 +109,23 @@ internal fun InsightsScreen(
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
 ) {
 	val uiState by viewModel.insightsUiState.collectAsStateWithLifecycle()
+	val filterUiState by viewModel.filterUiState.collectAsStateWithLifecycle()
+	val gameResultFilter by viewModel.gameResultFilter.collectAsStateWithLifecycle()
 	val loadingState by viewModel.loadingState.collectAsStateWithLifecycle()
 	val tableColumnsState by viewModel.tableColumns.collectAsStateWithLifecycle()
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
 	val clipboard = LocalClipboard.current
+
 	InsightsScreenContent(
 		uiState = uiState,
+		filterUiState = filterUiState,
+		gameResultFilter = gameResultFilter,
 		loadingState = loadingState,
 		tableColumnsState = tableColumnsState,
 		activeFilterCount = activeFilterCount,
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
-		onFabClick = onFabClick,
 		onCopySeedClick = {
 			coroutineScope.launch {
 				clipboard.setClipEntry(
@@ -137,12 +147,13 @@ internal fun InsightsScreen(
 @Composable
 private fun InsightsScreenContent(
 	uiState: InsightsUiState,
+	filterUiState: FilterUiState,
+	gameResultFilter: GameResultFilter,
 	loadingState: LoadingState,
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
-	onFabClick: () -> Unit,
 	onCopySeedClick: (Long) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -158,6 +169,11 @@ private fun InsightsScreenContent(
 			}
 		},
 	)
+
+	val filterSheetState = rememberModalBottomSheetState(
+		skipPartiallyExpanded = true,
+	)
+	var showBottomSheet by remember { mutableStateOf(false) }
 
 	LaunchedEffect(dismissState.currentValue) {
 		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
@@ -234,7 +250,11 @@ private fun InsightsScreenContent(
 					},
 				) {
 					FloatingActionButton(
-						onClick = onFabClick,
+						onClick = {
+							coroutineScope.launch {
+								showBottomSheet = true
+							}
+						},
 						modifier = Modifier,
 
 					) {
@@ -301,6 +321,25 @@ private fun InsightsScreenContent(
 					val scrollAreaState = rememberScrollAreaState(lazyListState)
 					val horizontalScrollState = rememberScrollState()
 
+					if (showBottomSheet) {
+						FilterBottomSheet(
+							uiState = filterUiState,
+							sheetState = filterSheetState,
+							tableColumns = tableColumnsState,
+							gameResultFilterState = gameResultFilter,
+							activeFilterCount = activeFilterCount,
+							onEvent = onEvent,
+							onApplyClick = {
+								coroutineScope.launch {
+									filterSheetState.hide()
+									showBottomSheet = false
+								}
+							},
+							onDismissRequest = {
+								showBottomSheet = false
+							},
+						)
+					}
 					ScrollArea(
 						state = scrollAreaState,
 						modifier = Modifier
@@ -434,12 +473,13 @@ private fun InsightsScreenPreview() {
 				totalGamesPlayed = 3,
 				totalTimeSpent = 125,
 			),
+			filterUiState = FilterUiState(),
+			gameResultFilter = GameResultFilter(),
 			loadingState = LoadingState.Success,
 			activeFilterCount = 1,
 			tableColumnsState = ColumnDisplayState.getAll(),
 			onEvent = { },
 			openDrawer = { },
-			onFabClick = { },
 			onCopySeedClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)

@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.theme.LocalPadding
 
 @Composable
@@ -22,7 +21,7 @@ internal fun FilterCategory(
 ) {
 	Surface(
 		modifier = modifier.fillMaxWidth(),
-		tonalElevation = 1.dp,
+		color = MaterialTheme.colorScheme.background,
 		shape = RoundedCornerShape(LocalPadding.current.normal),
 	) {
 		Column(
