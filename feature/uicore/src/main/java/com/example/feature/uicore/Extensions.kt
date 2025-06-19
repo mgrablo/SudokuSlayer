@@ -13,13 +13,11 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 @Composable
-fun GameDifficulty.toLocalizedString(): String {
-	return when(this) {
-		GameDifficulty.Easy -> stringResource(R.string.difficulty_easy)
-		GameDifficulty.Medium -> stringResource(R.string.difficulty_medium)
-		GameDifficulty.Hard -> stringResource(R.string.difficulty_hard)
-		GameDifficulty.Expert -> stringResource(R.string.difficulty_expert)
-	}
+fun GameDifficulty.toLocalizedString(): String = when (this) {
+	GameDifficulty.Easy -> stringResource(R.string.difficulty_easy)
+	GameDifficulty.Medium -> stringResource(R.string.difficulty_medium)
+	GameDifficulty.Hard -> stringResource(R.string.difficulty_hard)
+	GameDifficulty.Expert -> stringResource(R.string.difficulty_expert)
 }
 
 /**

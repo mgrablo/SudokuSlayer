@@ -42,7 +42,8 @@ internal fun SettingsScreen(
 	val darkColorScheme by viewModel.darkColorScheme.collectAsStateWithLifecycle()
 	val leftHandMode by viewModel.leftHandMode.collectAsStateWithLifecycle()
 	val actionButtonsOnTop by viewModel.actionButtonsOnTop.collectAsStateWithLifecycle()
-	val insightsSummaryCompactLayout by viewModel.insightsSummaryCompactLayout.collectAsStateWithLifecycle()
+	val insightsSummaryCompactLayout by
+		viewModel.insightsSummaryCompactLayout.collectAsStateWithLifecycle()
 
 	SettingsScreenContent(
 		openDrawer = openDrawer,
@@ -142,7 +143,9 @@ private fun SettingsScreenContent(
 				SettingSwitchItem(
 					title = "Compact Insights summaries",
 					value = insightsSummaryCompactLayout,
-					onValueChange = { onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it)) },
+					onValueChange = {
+						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
+					},
 					modifier = Modifier.fillMaxWidth(),
 				)
 			}
