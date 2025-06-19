@@ -179,6 +179,7 @@ internal interface ShapeWithHorizontalCenterOptically : Shape {
 	fun offset(): Float
 }
 
+@Suppress("ktlint:standard:property-naming")
 internal const val CenterOpticallyCoefficient = 0.11f
 
 @Stable
