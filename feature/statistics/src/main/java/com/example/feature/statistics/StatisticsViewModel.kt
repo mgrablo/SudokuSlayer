@@ -102,6 +102,15 @@ internal class StatisticsViewModel(
 					updateGameResults()
 				}
 		}
+		viewModelScope.launch {
+			settingsRepository.insightsSummaryCompactLayout.collect { isCompact ->
+				_insightsUiState.update {
+					it.copy(
+						summariesCompactLayout = isCompact,
+					)
+				}
+			}
+		}
 	}
 
 	sealed interface StatisticsEvent {
@@ -159,11 +168,6 @@ internal class StatisticsViewModel(
 	private fun loadInitialData() {
 		viewModelScope.launch {
 			_loadingState.update { LoadingState.Loading }
-			val initialCompactLayoutValue = try {
-				settingsRepository.insightsSummaryCompactLayout.first()
-			} catch (e: NoSuchElementException) {
-				_insightsUiState.value.summariesCompactLayout
-			}
 			val results = statisticsRepository.getAllGameResults().toPersistentList()
 			if (results.isEmpty()) {
 				_loadingState.update { LoadingState.NoData }
@@ -191,7 +195,6 @@ internal class StatisticsViewModel(
 					longestGame = longestGame,
 					totalHintsUsed = totalHints,
 					avgTime = avgTime,
-					summariesCompactLayout = initialCompactLayoutValue,
 					mostPlayedDifficulty = mostPlayedDifficulty,
 					mostPlayedGridSize = mostPlayedGridSize,
 				)

@@ -364,8 +364,7 @@ private fun InsightsScreenContent(
 						}
 						LazyColumn(
 							modifier = Modifier
-								.fillMaxWidth()
-								.padding(bottom = LocalPadding.current.large),
+								.fillMaxWidth(),
 							state = lazyListState,
 							contentPadding = PaddingValues(vertical = LocalPadding.current.normal),
 							verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
