@@ -1,7 +1,7 @@
 [versions]
 
 # Android
-agp = "8.10.0"
+agp = "8.10.1"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "34"
@@ -26,6 +26,7 @@ composeBom = "2025.06.00"
 activityCompose = "1.10.1"
 runtime = "1.8.2"
 nav3core = "1.0.0-alpha04"
+lifecycleViewmodelNav3 = "1.0.0-alpha02"
 composeUnstyled = "1.32.0"
 catppuccinPalette = "0.1.2"
 reorderable = "2.5.1"
@@ -65,6 +66,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3core"}
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3core"}
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 

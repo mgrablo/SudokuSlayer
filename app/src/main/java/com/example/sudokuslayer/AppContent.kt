@@ -19,9 +19,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
@@ -115,6 +118,11 @@ internal fun AppContent() {
 				MaterialTheme.colorScheme.background,
 			),
 			backStack = backstack,
+			entryDecorators = listOf(
+				rememberSceneSetupNavEntryDecorator(),
+				rememberSavedStateNavEntryDecorator(),
+				rememberViewModelStoreNavEntryDecorator(),
+			),
 			entryProvider = entryProvider {
 				sudokuCreatorEntry(
 					navigateToGameScreen = { backstack.add(SudokuGame) },
