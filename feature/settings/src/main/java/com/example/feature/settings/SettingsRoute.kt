@@ -9,14 +9,16 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
+import com.example.sudokuslayer.feature.settings.R
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-data object Settings : Destination(
-	"Settings",
-	AppIcon.VectorIcon(Icons.Default.Settings),
-)
+data object Settings : Destination {
+	override val routeId: String = "settings"
+	override val displayNameRes: Int = R.string.settings_screen_title
+	override val icon: AppIcon = AppIcon.VectorIcon(Icons.Default.Settings)
+}
 
 fun EntryProviderBuilder<NavKey>.settingsEntry(openDrawer: () -> Unit) {
 	entry<Settings> {

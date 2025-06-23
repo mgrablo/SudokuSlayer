@@ -1,7 +1,14 @@
 package com.example.feature.uicore.navigation
 
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 import androidx.navigation3.runtime.NavKey
-import kotlinx.serialization.Serializable
 
-@Serializable
-open class Destination(val routeName: String, val icon: AppIcon) : NavKey
+@Stable
+interface Destination : NavKey {
+	val routeId: String
+
+	@get:StringRes
+	val displayNameRes: Int
+	val icon: AppIcon
+}

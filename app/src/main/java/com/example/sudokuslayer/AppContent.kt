@@ -106,7 +106,9 @@ internal fun AppContent() {
 			destinations = destinations,
 			isSelected = { backstack.last() == it },
 			navigateToScreen = {
-				backstack.add(it)
+				if (backstack.last() != it) {
+					backstack.add(it)
+				}
 				scope.launch {
 					navigationRailState.collapse()
 				}

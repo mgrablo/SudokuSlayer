@@ -33,8 +33,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogState
-import com.composables.core.LocalModalWindow
 import com.composables.core.Scrim
+import com.composeunstyled.LocalModalWindow
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R

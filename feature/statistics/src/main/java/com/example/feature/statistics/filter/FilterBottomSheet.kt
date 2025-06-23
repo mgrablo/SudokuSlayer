@@ -108,7 +108,7 @@ private fun FilterBottomSheetContent(
 	val scrollState = rememberScrollState()
 	val scrollAreaState = rememberScrollAreaState(scrollState)
 	val completionDateBringIntoViewRequester = remember { BringIntoViewRequester() }
-	
+
 	Column(
 		modifier = modifier
 			.fillMaxSize()

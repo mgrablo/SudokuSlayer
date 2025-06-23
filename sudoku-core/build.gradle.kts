@@ -28,6 +28,7 @@ dependencies {
 	implementation(libs.kotlinx.collections.immutable)
 
 	// For stable annotation
+	implementation(platform(libs.androidx.compose.bom))
 	implementation(libs.androidx.runtime)
 
 	implementation(libs.koin.core)

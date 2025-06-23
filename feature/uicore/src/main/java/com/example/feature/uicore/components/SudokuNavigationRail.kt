@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -21,9 +20,14 @@ import androidx.compose.material3.WideNavigationRailState
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -95,7 +99,7 @@ fun SudokuNavigationRail(
 				),
 				label = {
 					Text(
-						text = it.routeName,
+						text = stringResource(it.displayNameRes),
 						color = if (selected) {
 							MaterialTheme.colorScheme.onSecondary
 						} else {
@@ -108,6 +112,12 @@ fun SudokuNavigationRail(
 	}
 }
 
+private data class PreviewDestination(
+	override val routeId: String,
+	override val displayNameRes: Int = R.string.preview_destination_name,
+	override val icon: AppIcon = AppIcon.VectorIcon(Icons.Default.Settings),
+) : Destination
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @PreviewLightDark
 @Composable
@@ -116,18 +126,22 @@ private fun SudokuNavigationRailPreview() {
 		initialValue = WideNavigationRailValue.Expanded,
 	)
 	val destinations = persistentListOf(
-		Destination("Home", AppIcon.VectorIcon(Icons.Default.Home)),
-		Destination("Settings", AppIcon.VectorIcon(Icons.Default.Settings)),
-		Destination("Home", AppIcon.VectorIcon(Icons.Default.Home)),
-		Destination("Home", AppIcon.VectorIcon(Icons.Default.Home)),
+		PreviewDestination("preview1"),
+		PreviewDestination("preview2"),
+		PreviewDestination("preview3"),
+		PreviewDestination("preview4"),
+		PreviewDestination("preview5"),
 	)
+	var selectedDestination by remember { mutableStateOf(destinations.first()) }
 	SudokuSlayerTheme {
 		SudokuNavigationRail(
 			state = state,
 			destinations = destinations,
-			isSelected = { it == destinations.first() },
+			isSelected = { it == selectedDestination },
 			onCloseDrawer = { },
-			navigateToScreen = { },
+			navigateToScreen = {
+				selectedDestination = it as PreviewDestination
+			},
 		)
 	}
 }

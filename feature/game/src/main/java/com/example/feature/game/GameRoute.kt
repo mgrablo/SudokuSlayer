@@ -12,7 +12,11 @@ import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
-data object SudokuGame : Destination("Current game", AppIcon.ResourceIcon(R.drawable.tag))
+data object SudokuGame : Destination {
+	override val routeId: String = "sudoku_game"
+	override val displayNameRes: Int = R.string.game_screen_title
+	override val icon: AppIcon = AppIcon.ResourceIcon(R.drawable.tag)
+}
 
 fun EntryProviderBuilder<NavKey>.gameEntry(openDrawer: () -> Unit) {
 	entry<SudokuGame> {
