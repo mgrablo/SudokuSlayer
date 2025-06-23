@@ -27,7 +27,7 @@ fun EntryProviderBuilder<NavKey>.sudokuCreatorEntry(
 	entry<SudokuCreator> {
 		val viewModel = koinViewModel<SudokuCreatorViewModel>()
 		SudokuCreatorScreen(
-			navigateToGameScreen = navigateToGameScreen,
+			onNavigateToGameScreen = navigateToGameScreen,
 			openDrawer = openDrawer,
 			viewModel = viewModel,
 			modifier = Modifier.fillMaxSize(),

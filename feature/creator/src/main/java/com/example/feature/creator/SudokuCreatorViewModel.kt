@@ -31,7 +31,6 @@ internal data class SudokuCreatorUiState(
 internal enum class ScreenState {
 	INITIAL,
 	LOADING,
-	DONE,
 }
 
 internal class SudokuCreatorViewModel(
@@ -39,7 +38,7 @@ internal class SudokuCreatorViewModel(
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
 ) : ViewModel() {
-	private val _uiState = MutableStateFlow<SudokuCreatorUiState>(SudokuCreatorUiState())
+	private val _uiState = MutableStateFlow(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
 
 	val difficulties
@@ -125,7 +124,7 @@ internal class SudokuCreatorViewModel(
 
 			_uiState.update {
 				it.copy(
-					loadingState = ScreenState.DONE,
+					loadingState = ScreenState.INITIAL,
 				)
 			}
 		}
@@ -133,11 +132,6 @@ internal class SudokuCreatorViewModel(
 
 	private fun handleLoadGame() {
 		viewModelScope.launch {
-			_uiState.update {
-				it.copy(
-					loadingState = ScreenState.DONE,
-				)
-			}
 		}
 	}
 }

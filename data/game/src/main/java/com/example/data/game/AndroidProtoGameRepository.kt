@@ -21,6 +21,10 @@ class AndroidProtoGameRepository(private val protoStorage: ProtoStorage<ProtoGam
 	GameRepository {
 	override fun getGame(): Flow<Game> = protoStorage.getData().map { it.toGame() }
 
+	override fun hasActiveGame(): Flow<Boolean> = protoStorage.getData().map {
+		it.grid.cellCount != 0
+	}
+
 	override suspend fun saveGame(game: Game) {
 		protoStorage.updateData {
 			game.toProtoGame()

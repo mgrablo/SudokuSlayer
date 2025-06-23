@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -43,6 +44,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.context.startKoin
 
 class MyApplication : Application() {
@@ -59,7 +61,8 @@ class MyApplication : Application() {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun AppContent() {
+internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val backstack = rememberNavBackStack<Destination>(SudokuCreator)
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
@@ -104,9 +107,13 @@ internal fun AppContent() {
 		SudokuNavigationRail(
 			state = navigationRailState,
 			destinations = destinations,
+			hasActiveGame = uiState.hasActiveGame,
 			isSelected = { backstack.last() == it },
 			navigateToScreen = {
-				if (backstack.last() != it) {
+				if (it == SudokuCreator) {
+					backstack.clear()
+					backstack.add(it)
+				} else if (backstack.last() != it) {
 					backstack.add(it)
 				}
 				scope.launch {
@@ -127,7 +134,12 @@ internal fun AppContent() {
 			),
 			entryProvider = entryProvider {
 				sudokuCreatorEntry(
-					navigateToGameScreen = { backstack.add(SudokuGame) },
+					navigateToGameScreen = {
+						scope.launch {
+							backstack.clear()
+							backstack.addAll(listOf(SudokuCreator, SudokuGame))
+						}
+					},
 					openDrawer = {
 						scope.launch {
 							navigationRailState.expand()

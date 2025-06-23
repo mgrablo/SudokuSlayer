@@ -17,8 +17,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,11 +29,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import com.example.domain.core.Game
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.HorizontalSelect
@@ -40,6 +47,7 @@ import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 private val PreviewBoxSize = 200.dp
@@ -48,7 +56,7 @@ private const val SELECTS_MAX_WIDTH = 0.8f
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SudokuCreatorScreen(
-	navigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: () -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
@@ -59,14 +67,14 @@ internal fun SudokuCreatorScreen(
 		uiState = uiState,
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
-		navigateToGameScreen = navigateToGameScreen,
+		onNavigateToGameScreen = onNavigateToGameScreen,
 		difficultyOptions = viewModel.difficulties,
 		gridSizeOptions = viewModel.gridSizeOptions,
 		modifier = modifier,
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
@@ -74,9 +82,26 @@ private fun SudokuCreatorContent(
 	gridSizeOptions: PersistentList<String>,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
-	navigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
+	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
+
+	if (gameCreationInProgress) {
+		val lifecycle = LocalLifecycleOwner.current.lifecycle
+		val currentNavigateToGameScreen by rememberUpdatedState(onNavigateToGameScreen)
+
+		LaunchedEffect(uiState, lifecycle) {
+			snapshotFlow { uiState }
+				.filter {
+					it.savedGame != null && it.loadingState != ScreenState.LOADING
+				}.flowWithLifecycle(lifecycle).collect {
+					gameCreationInProgress = false
+					currentNavigateToGameScreen()
+				}
+		}
+	}
+
 	Scaffold(
 		modifier = modifier,
 		topBar = {
@@ -110,13 +135,21 @@ private fun SudokuCreatorContent(
 				modifier = Modifier.fillMaxWidth(SELECTS_MAX_WIDTH),
 			)
 
-			GameControls(
-				screenState = uiState.loadingState,
-				savedGame = uiState.savedGame,
-				onNewGame = { onEvent(Event.NewGame) },
-				onLoadSudoku = { onEvent(Event.LoadSudoku) },
-				onNavigateToGame = navigateToGameScreen,
-			)
+			if (uiState.loadingState == ScreenState.LOADING) {
+				ContainedLoadingIndicator()
+			} else {
+				GameControls(
+					savedGame = uiState.savedGame,
+					onNewGame = {
+						onEvent(Event.NewGame)
+						gameCreationInProgress = true
+					},
+					onLoadSudoku = {
+						onEvent(Event.LoadSudoku)
+						gameCreationInProgress = true
+					},
+				)
+			}
 		}
 	}
 }
@@ -138,38 +171,17 @@ private fun PreviewBox() {
 }
 
 @Composable
-private fun GameControls(
-	screenState: ScreenState,
-	savedGame: Game?,
-	onNewGame: () -> Unit,
-	onLoadSudoku: () -> Unit,
-	onNavigateToGame: () -> Unit,
-) {
-	val onNavigateToGame by rememberUpdatedState(onNavigateToGame)
-	when (screenState) {
-		ScreenState.INITIAL -> {
-			if (savedGame != null) {
-				GameButton(
-					onClick = onLoadSudoku,
-					text = "Continue ${savedGame.difficulty}",
-				)
-			}
-			GameButton(
-				onClick = onNewGame,
-				text = "New game",
-			)
-		}
-
-		ScreenState.LOADING -> {
-			CircularProgressIndicator()
-		}
-
-		ScreenState.DONE -> {
-			LaunchedEffect(Unit) {
-				onNavigateToGame()
-			}
-		}
+private fun GameControls(savedGame: Game?, onNewGame: () -> Unit, onLoadSudoku: () -> Unit) {
+	if (savedGame != null) {
+		GameButton(
+			onClick = onLoadSudoku,
+			text = "Continue ${savedGame.difficulty}",
+		)
 	}
+	GameButton(
+		onClick = onNewGame,
+		text = "New game",
+	)
 }
 
 @Composable
@@ -221,7 +233,7 @@ private fun SudokuCreatorScreenPreview() {
 			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
 			onEvent = { },
 			openDrawer = { },
-			navigateToGameScreen = { },
+			onNavigateToGameScreen = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

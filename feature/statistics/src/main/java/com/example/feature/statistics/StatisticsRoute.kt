@@ -2,8 +2,6 @@ package com.example.feature.statistics
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderBuilder
 import androidx.navigation3.runtime.NavKey
@@ -19,7 +17,7 @@ import org.koin.androidx.compose.koinViewModel
 data object Insights : Destination {
 	override val routeId: String = "insights"
 	override val displayNameRes: Int = R.string.insights_screen_title
-	override val icon: AppIcon = AppIcon.VectorIcon(Icons.Default.DateRange)
+	override val icon: AppIcon = AppIcon.ResourceIcon(R.drawable.trophy)
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

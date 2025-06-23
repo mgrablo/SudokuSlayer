@@ -50,6 +50,7 @@ fun SudokuNavigationRail(
 	navigateToScreen: (Destination) -> Unit,
 	onCloseDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
+	hasActiveGame: Boolean = false,
 ) {
 	ModalWideNavigationRail(
 		modifier = modifier.widthIn(max = 240.dp),
@@ -84,10 +85,24 @@ fun SudokuNavigationRail(
 		},
 	) {
 		destinations.forEach {
-			val selected = isSelected(it)
+			val isSelected = isSelected(it)
+			val isEnabled = if (it.routeId == "sudoku_game") {
+				hasActiveGame
+			} else {
+				true
+			}
+			val textColor =
+				if (isSelected) {
+					MaterialTheme.colorScheme.onSecondary
+				} else if (!isEnabled) {
+					MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+				} else {
+					MaterialTheme.colorScheme.onSurfaceVariant
+				}
 			WideNavigationRailItem(
 				railExpanded = state.currentValue == WideNavigationRailValue.Expanded,
-				selected = selected,
+				selected = isSelected,
+				enabled = isEnabled,
 				onClick = { navigateToScreen(it) },
 				icon = {
 					DestinationIcon(it.icon)
@@ -100,11 +115,7 @@ fun SudokuNavigationRail(
 				label = {
 					Text(
 						text = stringResource(it.displayNameRes),
-						color = if (selected) {
-							MaterialTheme.colorScheme.onSecondary
-						} else {
-							MaterialTheme.colorScheme.onSurfaceVariant
-						},
+						color = textColor,
 					)
 				},
 			)
