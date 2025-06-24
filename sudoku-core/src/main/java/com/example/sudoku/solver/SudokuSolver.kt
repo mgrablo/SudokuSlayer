@@ -14,14 +14,9 @@ interface SudokuSolver {
 
 	fun checkSubgrid(subgrid: IntArray): Boolean
 
-	fun isValidMove(
-		sudoku: SudokuGrid,
-		rowNum: Int,
-		colNum: Int,
-		num: Int,
-	): Boolean
+	fun isValidMove(sudoku: SudokuGrid, rowNum: Int, colNum: Int, num: Int): Boolean
 
-	fun checkGrid(sudoku: SudokuGrid): Boolean
+	fun checkGrid(sudokuGrid: SudokuGrid): Boolean
 
 	fun isValidSolution(sudokuGrid: SudokuGrid): Boolean
 
@@ -50,11 +45,11 @@ fun Collection<Int>.toSudokuGrid(inputGrid: SudokuGrid = SudokuGrid()): SudokuGr
 	return resultGrid
 }
 
-fun DancingLinksMatrix.Companion.fromSudoku(sudoku: SudokuGrid): DancingLinksMatrix {
+fun DancingLinksMatrix.Companion.fromSudoku(sudokuGrid: SudokuGrid): DancingLinksMatrix {
 	// Convert existing numbers in the Sudoku grid to constraints
-	val filledCells = getFilledCells(sudoku.data)
+	val filledCells = getFilledCells(sudokuGrid.data)
 	val exactCoverMatrix =
-		SudokuExactCoverMatrix.create(sudoku.gridSize, sudoku.subgridSize).apply {
+		SudokuExactCoverMatrix.create(sudokuGrid.gridSize, sudokuGrid.subgridSize).apply {
 			coverAll(filledCells)
 		}
 	val dancingLinksMatrix = exactCoverMatrix.toDancingLinksMatrix()
@@ -72,39 +67,18 @@ fun getFilledCells(sudokuGrid: Collection<SudokuCellData>): List<Triple<Int, Int
 	return filledCells
 }
 
-fun createConstraints(
-	row: Int,
-	col: Int,
-	num: Int,
-	gridSize: Int,
-): List<Int> {
+fun createConstraints(row: Int, col: Int, num: Int, gridSize: Int): List<Int> {
 	val subgridSize = sqrt(gridSize.toDouble()).toInt()
 
-	fun getBoxIndex(
-		row: Int,
-		col: Int,
-	): Int = (row / subgridSize) * subgridSize + (col / subgridSize)
+	fun getBoxIndex(row: Int, col: Int): Int = (row / subgridSize) * subgridSize + (col / subgridSize)
 
-	fun getCellConstraintIndex(
-		row: Int,
-		col: Int,
-		num: Int,
-	): Int = row * gridSize + col
+	fun getCellConstraintIndex(row: Int, col: Int, num: Int): Int = row * gridSize + col
 
-	fun getRowConstraintIndex(
-		row: Int,
-		num: Int,
-	): Int = gridSize * gridSize + row * gridSize + num
+	fun getRowConstraintIndex(row: Int, num: Int): Int = gridSize * gridSize + row * gridSize + num
 
-	fun getColConstraintIndex(
-		col: Int,
-		num: Int,
-	): Int = 2 * gridSize * gridSize + col * gridSize + num
+	fun getColConstraintIndex(col: Int, num: Int): Int = 2 * gridSize * gridSize + col * gridSize + num
 
-	fun getBoxConstraintIndex(
-		box: Int,
-		num: Int,
-	): Int = 3 * gridSize * gridSize + box * gridSize + num
+	fun getBoxConstraintIndex(box: Int, num: Int): Int = 3 * gridSize * gridSize + box * gridSize + num
 
 	val cellConstraint = getCellConstraintIndex(row, col, num)
 	val rowConstraint = getRowConstraintIndex(row, num)

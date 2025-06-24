@@ -11,7 +11,10 @@ object ClassicSudokuSolver : SudokuSolver {
 	// Bitwise mask for numbers 1 to gridSize
 	private fun getValidMask(gridSize: Int): Long = (1L shl (gridSize + 1)) - 2L
 
-	private fun numbersToMask(numbers: Iterable<Int>): Long = numbers.fold(0L) { acc, num -> acc or (1L shl num) }
+	private fun numbersToMask(numbers: Iterable<Int>): Long = numbers.fold(0L) { acc, num ->
+		acc or
+			(1L shl num)
+	}
 
 	override fun checkRow(row: IntArray): Boolean {
 		var mask = 0
@@ -28,12 +31,7 @@ object ClassicSudokuSolver : SudokuSolver {
 
 	override fun checkSubgrid(subgrid: IntArray): Boolean = checkRow(subgrid)
 
-	override fun isValidMove(
-		sudoku: SudokuGrid,
-		rowNum: Int,
-		colNum: Int,
-		num: Int,
-	): Boolean {
+	override fun isValidMove(sudoku: SudokuGrid, rowNum: Int, colNum: Int, num: Int): Boolean {
 		val gridSize = sudoku.gridSize
 		val subgridSize = sudoku.subgridSize
 		val rowMask = numbersToMask(sudoku.getRow(rowNum).map { it.number })
@@ -49,27 +47,28 @@ object ClassicSudokuSolver : SudokuSolver {
 		return subgridMask and (1L shl num) == 0L
 	}
 
-	override fun checkGrid(sudoku: SudokuGrid): Boolean {
+	override fun checkGrid(sudokuGrid: SudokuGrid): Boolean {
 		// Check rows and columns
-		for (i in 0 until sudoku.gridSize) {
-			if (!checkRow(sudoku.getRow(i).map { it.number }.toIntArray())) return false
-			if (!checkColumn(sudoku.getColumn(i).map { it.number }.toIntArray())) return false
+		for (i in 0 until sudokuGrid.gridSize) {
+			if (!checkRow(sudokuGrid.getRow(i).map { it.number }.toIntArray())) return false
+			if (!checkColumn(sudokuGrid.getColumn(i).map { it.number }.toIntArray())) return false
 		}
 
 		// Check subgrids
-		val subgridSize = sudoku.subgridSize
-		for (row in 0 until sudoku.gridSize step subgridSize) {
-			for (col in 0 until sudoku.gridSize step subgridSize) {
-				val subgrid = sudoku.getSubgrid(row, col, subgridSize).map { it.number }.toIntArray()
+		val subgridSize = sudokuGrid.subgridSize
+		for (row in 0 until sudokuGrid.gridSize step subgridSize) {
+			for (col in 0 until sudokuGrid.gridSize step subgridSize) {
+				val subgrid =
+					sudokuGrid.getSubgrid(row, col, subgridSize).map { it.number }.toIntArray()
 				if (!checkSubgrid(subgrid)) return false
 			}
 		}
 		return true
 	}
 
-	override fun isValidSolution(sudoku: SudokuGrid): Boolean {
-		val validGrid = checkGrid(sudoku)
-		val noZeros = 0 !in sudoku.getArray().map { it.number }
+	override fun isValidSolution(sudokuGrid: SudokuGrid): Boolean {
+		val validGrid = checkGrid(sudokuGrid)
+		val noZeros = 0 !in sudokuGrid.getArray().map { it.number }
 		return validGrid && noZeros
 	}
 
@@ -130,43 +129,37 @@ object ClassicSudokuSolver : SudokuSolver {
 		return true
 	}
 
-	override suspend fun fillGrid(sudoku: SudokuGrid): SudokuGrid? =
-		coroutineScope {
-			if (!isSolvable(sudoku)) {
-				return@coroutineScope null
-			}
-
-			val result = solve(sudoku)
-			return@coroutineScope result
+	override suspend fun fillGrid(sudokuGrid: SudokuGrid): SudokuGrid? = coroutineScope {
+		if (!isSolvable(sudokuGrid)) {
+			return@coroutineScope null
 		}
 
-	override suspend fun solve(sudoku: SudokuGrid): SudokuGrid? =
-		coroutineScope {
-			val dlxMatrix = DancingLinksMatrix.fromSudoku(sudoku)
-			val result = mutableListOf<Int>()
-			dlxMatrix.rootNode.printNotEmptyNodes()
+		val result = solve(sudokuGrid)
+		return@coroutineScope result
+	}
 
-			val channel = solveSuspend(dlxMatrix.rootNode, 1)
+	override suspend fun solve(sudokuGrid: SudokuGrid): SudokuGrid? = coroutineScope {
+		val dlxMatrix = DancingLinksMatrix.fromSudoku(sudokuGrid)
+		val result = mutableListOf<Int>()
+		dlxMatrix.rootNode.printNotEmptyNodes()
 
-			channel.consumeAsFlow()
-				.take(1)
-				.collect {
-					result.addAll(it)
-				}
-			channel.cancel()
+		val channel = solveSuspend(dlxMatrix.rootNode, 1)
 
-			if (result.isEmpty()) {
-				null
-			} else {
-				result.toSudokuGrid(sudoku)
+		channel.consumeAsFlow()
+			.take(1)
+			.collect {
+				result.addAll(it)
 			}
-		}
+		channel.cancel()
 
-	fun getValidMoves(
-		sudoku: SudokuGrid,
-		row: Int,
-		col: Int,
-	): List<Int> {
+		if (result.isEmpty()) {
+			null
+		} else {
+			result.toSudokuGrid(sudokuGrid)
+		}
+	}
+
+	fun getValidMoves(sudoku: SudokuGrid, row: Int, col: Int): List<Int> {
 		val rowMask = numbersToMask(sudoku.getRow(row).map { it.number })
 		val colMask = numbersToMask(sudoku.getColumn(col).map { it.number })
 		val subgridMask =
@@ -177,16 +170,15 @@ object ClassicSudokuSolver : SudokuSolver {
 		return (1..sudoku.gridSize).filter { validMask and (1L shl it) != 0L }
 	}
 
-	override suspend fun hasUniqueSolution(sudoku: SudokuGrid): Boolean =
-		coroutineScope {
-			val dancingLinksMatrix = DancingLinksMatrix.fromSudoku(sudoku)
-			val result = mutableListOf<List<Int>>()
+	override suspend fun hasUniqueSolution(sudokuGrid: SudokuGrid): Boolean = coroutineScope {
+		val dancingLinksMatrix = DancingLinksMatrix.fromSudoku(sudokuGrid)
+		val result = mutableListOf<List<Int>>()
 
-			solveSuspend(dancingLinksMatrix.rootNode)
-				.consumeAsFlow()
-				.take(2)
-				.collect { result.add(it) }
+		solveSuspend(dancingLinksMatrix.rootNode)
+			.consumeAsFlow()
+			.take(2)
+			.collect { result.add(it) }
 
-			result.size == 1
-		}
+		result.size == 1
+	}
 }
