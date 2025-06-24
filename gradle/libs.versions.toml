@@ -1,10 +1,10 @@
 [versions]
 
 # Android
-agp = "8.10.0"
-android-compileSdk = "35"
+agp = "8.10.1"
+android-compileSdk = "36"
 android-minSdk = "26"
-android-targetSdk = "34"
+android-targetSdk = "35"
 
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
@@ -24,9 +24,9 @@ protoc = "4.30.1"
 
 composeBom = "2025.06.00"
 activityCompose = "1.10.1"
-runtime = "1.8.2"
-navVersion = "2.9.0"
-composeUnstyled = "1.32.0"
+nav3core = "1.0.0-alpha04"
+lifecycleViewmodelNav3 = "1.0.0-alpha02"
+composeUnstyled = "1.34.0"
 catppuccinPalette = "0.1.2"
 reorderable = "2.5.1"
 graphics-shapes = "1.1.0-alpha01"
@@ -54,7 +54,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "composeBom" }
-androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -63,7 +63,9 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
-androidx-navigation-compose = { group = "androidx.navigation", name="navigation-compose", version.ref = "navVersion" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3core"}
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3core"}
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 

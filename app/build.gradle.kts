@@ -40,6 +40,9 @@ android {
 			)
 			signingConfig = signingConfigs.getByName("debug")
 		}
+		debug {
+			applicationIdSuffix = ".debug"
+		}
 	}
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_11
@@ -78,7 +81,10 @@ dependencies {
 	implementation(libs.androidx.ui.graphics)
 	implementation(libs.androidx.ui.tooling.preview)
 	implementation(libs.androidx.material3)
-	implementation(libs.androidx.navigation.compose)
+	implementation(libs.androidx.material.icons)
+	implementation(libs.androidx.navigation3.ui)
+	implementation(libs.androidx.navigation3.runtime)
+	implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.compose.unstyled)
 	implementation(libs.catppuccin.palette)

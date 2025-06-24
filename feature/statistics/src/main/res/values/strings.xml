@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="insights_screen_title">Insights</string>
 	<string name="filter_by_grid_size">Filter by Grid Size</string>
 	<string name="filter_by_difficulty">Filter by Difficulty</string>
 	<string name="visible_columns">Visible columns</string>
@@ -26,7 +27,6 @@
 	<string name="table_header_size">Size</string>
 	<string name="table_header_time">Time</string>
 	<string name="table_header_hints">Hints</string>
-	<string name="insights_screen_title">Insights</string>
 	<string name="open_menu_content_description">Open menu</string>
 	<string name="filter_fab_content_description">Filter</string>
     <string name="copy_seed_content_description">Copy seed</string>

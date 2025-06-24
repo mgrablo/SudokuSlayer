@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface GameRepository {
 	fun getGame(): Flow<Game>
 
+	fun hasActiveGame(): Flow<Boolean>
+
 	suspend fun saveGame(game: Game)
 
 	suspend fun updateGrid(sudokuGrid: SudokuGrid)
