@@ -15,12 +15,6 @@ kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.6.2"
 lifecycleRuntimeKtx = "2.9.1"
 serializationJson = "1.8.1"
-protoDatastore = "1.1.6"
-preferencesDatastore = "1.1.6"
-protobufPlugin = "0.9.4"
-protobufKotlinLite = "4.30.1"
-protobufJavaLite = "4.30.1"
-protoc = "4.30.1"
 
 composeBom = "2025.06.00"
 activityCompose = "1.10.1"
@@ -39,11 +33,17 @@ immutableCollections = "0.4.0"
 ktlint = "12.3.0"
 ktlintCompose = "0.4.22"
 koin = "4.0.4"
-sqldelight = "2.0.2"
+
+# Data
+protoDatastore = "1.1.7"
+preferencesDatastore = "1.1.7"
+protobufPlugin = "0.9.5"
+protobufKotlinLite = "4.31.1"
+protobufJavaLite = "4.31.1"
+protoc = "4.31.1"
+sqldelight = "2.1.0"
 
 [libraries]
-sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
-sqldelight-primitive-adapters = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "testCoreKtx" }
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "testCoreKtx" }
@@ -72,11 +72,16 @@ androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shape
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
-androidx-proto-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "protoDatastore"}
+
+# Data
 google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
+androidx-proto-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "protoDatastore"}
 androidx-datastorePreferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "preferencesDatastore"}
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
 protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobufJavaLite" }
+sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-primitive-adapters = { group = "app.cash.sqldelight", name = "primitive-adapters", version.ref = "sqldelight" }
+
 compose-unstyled = { group = "com.composables", name = "core", version.ref = "composeUnstyled"}
 catppuccin-palette = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "palette", version.ref = "catppuccinPalette"}
 catppuccin-compose = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "compose", version.ref = "catppuccinPalette"}
@@ -109,11 +114,12 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
-protobuf = {id = "com.google.protobuf", version.ref = "protobufPlugin"}
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "androidJunit5" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+
+protobuf = {id = "com.google.protobuf", version.ref = "protobufPlugin"}
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight"}
 
 [bundles]
