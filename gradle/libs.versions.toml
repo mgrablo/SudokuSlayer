@@ -19,6 +19,7 @@ composeUnstyled = "1.36.0"
 catppuccinPalette = "0.1.2"
 reorderable = "2.5.1"
 graphics-shapes = "1.1.0-alpha01"
+confettikit = "0.5.0"
 
 # Kotlinx
 kotlinxImmutableCollections = "0.4.0"
@@ -77,6 +78,7 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 compose-unstyled = { group = "com.composables", name = "core", version.ref = "composeUnstyled"}
 catppuccin-palette = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "palette", version.ref = "catppuccinPalette"}
 catppuccin-compose = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "compose", version.ref = "catppuccinPalette"}
+confettikit = { group = "io.github.vinceglb", name = "confettikit", version.ref = "confettikit" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }

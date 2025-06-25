@@ -1,5 +1,9 @@
 package com.example.feature.game.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +22,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -43,6 +52,11 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.game.R
+import io.github.vinceglb.confettikit.compose.ConfettiKit
+import io.github.vinceglb.confettikit.core.Party
+import io.github.vinceglb.confettikit.core.Position
+import io.github.vinceglb.confettikit.core.emitter.Emitter
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun VictoryDialog(
@@ -62,6 +76,7 @@ internal fun VictoryDialog(
 	) {
 		Scrim()
 		VictoryDialogContent(
+			visible = dialogState.visible,
 			timeSpent = timeSpent,
 			difficulty = difficulty,
 			gridSize = gridSize,
@@ -76,6 +91,7 @@ internal fun VictoryDialog(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun DialogScope.VictoryDialogContent(
+	visible: Boolean,
 	timeSpent: Long,
 	difficulty: GameDifficulty,
 	gridSize: SudokuGridSize,
@@ -87,29 +103,62 @@ private fun DialogScope.VictoryDialogContent(
 	val formattedTime = rememberFormattedTime(timeSpent.toFloat())
 	val localizedDifficulty = difficulty.toLocalizedString()
 	val localizedGridSize = gridSize.toLocalizedString()
+	var isAnimating by remember(visible) { mutableStateOf(visible) }
 
+	if (isAnimating) {
+		ConfettiKit(
+			modifier = Modifier
+				.fillMaxSize()
+				.zIndex(11f),
+			parties = listOf(
+				Party(
+					speed = 0f,
+					maxSpeed = 30f,
+					damping = 0.9f,
+					spread = 360,
+					colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+					emitter = Emitter(duration = 100.milliseconds).max(100),
+					position = Position.Relative(0.5, 0.35),
+				),
+			),
+			onParticleSystemEnded = { _, activeSystems ->
+				if (activeSystems == 0) {
+					isAnimating = false
+				}
+			},
+		)
+	}
 	Box(
 		contentAlignment = Alignment.TopCenter,
 		modifier = modifier.widthIn(max = 340.dp),
 	) {
-		Icon(
-			painterResource(R.drawable.trophy_filled),
-			contentDescription = "",
-			tint = MaterialTheme.extendedColorScheme.peach.color,
-			modifier = Modifier
-				.zIndex(10f)
-				.size(60.dp)
-				.offset(y = (-40).dp),
-		)
+		AnimatedVisibility(
+			visible = visible,
+			enter = fadeIn() + slideIn(
+				initialOffset = { fullSize ->
+					IntOffset(-100, -fullSize.height / 2)
+				},
+			),
+			modifier = Modifier.zIndex(10f),
+		) {
+			Icon(
+				painterResource(R.drawable.trophy_filled),
+				contentDescription = "",
+				tint = MaterialTheme.extendedColorScheme.peach.color,
+				modifier = Modifier
+					.size(60.dp)
+					.offset(y = (-40).dp),
+			)
+		}
 		DialogPanel(
 			backgroundColor = MaterialTheme.colorScheme.surface,
 			contentColor = MaterialTheme.colorScheme.onSurface,
-// 			enter = fadeIn(
-// 				animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
-// 			),
-// 			exit = fadeOut(
-// 				animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
-// 			),
+			enter = fadeIn(
+				animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+			),
+			exit = fadeOut(
+				animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+			),
 			shape = MaterialTheme.shapes.medium,
 			contentPadding = PaddingValues(
 				LocalPadding.current.large,

@@ -1,7 +1,10 @@
 package com.example.feature.uicore.navigation
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import kotlinx.serialization.Serializable
@@ -20,9 +23,24 @@ sealed class AppIcon {
 }
 
 @Composable
-internal fun DestinationIcon(icon: AppIcon) {
+internal fun DestinationIcon(
+	icon: AppIcon,
+	modifier: Modifier = Modifier,
+	tint: Color = LocalContentColor.current,
+) {
 	when (icon) {
-		is AppIcon.ResourceIcon -> Icon(painterResource(icon.resourceId), "")
-		is AppIcon.VectorIcon -> Icon(icon.imageVector, "")
+		is AppIcon.ResourceIcon -> Icon(
+			painter = painterResource(icon.resourceId),
+			contentDescription = icon.contentDescription,
+			modifier = modifier,
+			tint = tint,
+		)
+
+		is AppIcon.VectorIcon -> Icon(
+			imageVector = icon.imageVector,
+			contentDescription = icon.contentDescription,
+			modifier = modifier,
+			tint = tint,
+		)
 	}
 }
