@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +33,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.core.rememberDialogState
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.SudokuGameViewModel.Event
 import com.example.feature.game.components.HintBottomSheetScaffold
 import com.example.feature.game.components.HintsDialog
@@ -90,6 +93,13 @@ private fun SudokuGameScreenContent(
 	val scope = rememberCoroutineScope()
 	var resetDialogState by remember { mutableStateOf(false) }
 	var hintsDialogState by remember { mutableStateOf(false) }
+	val victoryDialogState = rememberDialogState(false)
+
+	LaunchedEffect(uiState.gameState) {
+		if (uiState.gameState == GameState.VICTORY) {
+			victoryDialogState.visible = true
+		}
+	}
 
 	val scaffoldState =
 		rememberBottomSheetScaffoldState(
@@ -101,8 +111,17 @@ private fun SudokuGameScreenContent(
 		)
 
 	VictoryDialog(
-		isVisible = uiState.gameState == GameState.VICTORY,
-		onDismissRequest = { onEvent(Event.DismissVictoryDialog) },
+		dialogState = victoryDialogState,
+		timeSpent = elapsedTime(),
+		difficulty = game.difficulty,
+		gridSize = SudokuGridSize.fromIntSize(game.grid.gridSize),
+		isNewBest = false,
+		onDismissRequest = {
+			onEvent(Event.DismissVictoryDialog)
+			victoryDialogState.visible = false
+		},
+		onMainMenuClick = { },
+		onShowBoardClick = { },
 	)
 
 	ResetDialog(
