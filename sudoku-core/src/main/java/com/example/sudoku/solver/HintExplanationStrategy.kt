@@ -17,7 +17,7 @@ interface HintExplanationStrategy {
 }
 
 class NakedSingleExplanation : HintExplanationStrategy {
-	override fun generateHintExplanationSteps(gird: SudokuGrid, hint: Hint): List<String> {
+	override fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String> {
 		val (row, column, value) = hint
 		return listOf(
 			"Focus on the cell at [${row + 1}, ${column + 1}]!",
@@ -178,7 +178,7 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 
 fun HintExplanationStrategy.getScopePartString(
 	cell: SudokuCellData?,
-	groupType: GroupType
+	groupType: GroupType,
 ): String {
 	if (cell == null) return "null"
 	return when (groupType) {

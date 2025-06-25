@@ -23,7 +23,7 @@ testing {
 }
 
 dependencies {
-	implementation(libs.annotations)
+	implementation(libs.androidx.annotations)
 	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.kotlinx.collections.immutable)
 

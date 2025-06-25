@@ -13,5 +13,6 @@ ktlint {
 				path.contains("/generated/") ||
 				element.file.relativeTo(projectDir).startsWith(File("build"))
 		}
+		exclude { it.file.path.contains("build/generated-sources/typesafe-conventions") }
 	}
 }
