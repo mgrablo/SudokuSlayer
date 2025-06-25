@@ -1,12 +1,12 @@
 [versions]
 
 # Android
-agp = "8.10.1"
+agp = "8.11.0"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "35"
 
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 coreKtx = "1.16.0"
 testCoreKtx = "1.6.1"
 testExt = "1.2.1"
