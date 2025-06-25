@@ -7,20 +7,12 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.game.ElapsedTimerManager
+import com.example.domain.game.GameManagementUseCases
+import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
 import com.example.domain.game.repositories.Operation
 import com.example.domain.game.repositories.OperationRepository
-import com.example.domain.game.usecases.FocusOnHintCellsUseCase
-import com.example.domain.game.usecases.GenerateHintLogUseCase
-import com.example.domain.game.usecases.GetGameUseCase
-import com.example.domain.game.usecases.InputNumberUseCase
-import com.example.domain.game.usecases.ProvideHintUseCase
 import com.example.domain.game.usecases.RedoOperationUseCase
-import com.example.domain.game.usecases.ResetGameUseCase
-import com.example.domain.game.usecases.RevealHintOnGridUseCase
-import com.example.domain.game.usecases.RevealLastHintLogUseCase
-import com.example.domain.game.usecases.SaveGameUseCase
-import com.example.domain.game.usecases.SelectCellUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
@@ -51,18 +43,10 @@ import kotlinx.datetime.toLocalDateTime
 internal class SudokuGameViewModel(
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
-	private val getGameUseCase: GetGameUseCase,
-	private val saveGameUseCase: SaveGameUseCase,
-	private val selectCellUseCase: SelectCellUseCase,
-	private val inputNumberUseCase: InputNumberUseCase,
-	private val provideHintUseCase: ProvideHintUseCase,
-	private val focusOnHintCellsUseCase: FocusOnHintCellsUseCase,
-	private val generateHintLogUseCase: GenerateHintLogUseCase,
-	private val revealHintOnGridUseCase: RevealHintOnGridUseCase,
-	private val revealLastHintLogUseCase: RevealLastHintLogUseCase,
+	private val gameManagementUseCases: GameManagementUseCases,
+	private val hintUseCases: HintUseCases,
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
-	private val resetGameUseCase: ResetGameUseCase,
 	private val elapsedTimerManager: ElapsedTimerManager,
 	private val gameResultWriter: GameResultWriter,
 ) : ViewModel() {
@@ -105,7 +89,7 @@ internal class SudokuGameViewModel(
 		}
 		viewModelScope.launch {
 			game.collect { game ->
-				saveGameUseCase(
+				gameManagementUseCases.saveGame(
 					game.copy(elapsedTime = elapsedTime.firstOrNull() ?: 0L),
 				)
 			}
@@ -141,8 +125,6 @@ internal class SudokuGameViewModel(
 
 		data object ResetNotes : Event
 
-		data object DismissVictoryDialog : Event
-
 		data object StopTimer : Event
 	}
 
@@ -172,7 +154,6 @@ internal class SudokuGameViewModel(
 
 			is Event.HintFillNotes -> fillNotes()
 			is Event.ShowMistakes -> {}
-			is Event.DismissVictoryDialog -> handleDismissVictoryDialog()
 			is Event.SwitchInputMode -> switchInputMode()
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
@@ -182,7 +163,7 @@ internal class SudokuGameViewModel(
 	}
 
 	private suspend fun loadData() {
-		getGameUseCase().firstOrNull()?.let { game ->
+		gameManagementUseCases.getGame().firstOrNull()?.let { game ->
 			viewModelScope.launch(Dispatchers.IO) {
 				_game.update {
 					it.copy(
@@ -212,7 +193,7 @@ internal class SudokuGameViewModel(
 			_game.update {
 				it.copy(
 					grid =
-					selectCellUseCase(
+					gameManagementUseCases.selectCell(
 						sudoku = _game.value.grid,
 						selectedCell = row to col,
 					),
@@ -234,12 +215,13 @@ internal class SudokuGameViewModel(
 		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
+			if (uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _game.value.grid
 			val (row, col) = selectedCell ?: return@launch
 
 			val backupCell = updatedSudoku.getCellAt(row, col)
 			updatedSudoku =
-				inputNumberUseCase(
+				gameManagementUseCases.inputNumber(
 					sudokuGrid = updatedSudoku,
 					number = number,
 					row = row,
@@ -269,7 +251,8 @@ internal class SudokuGameViewModel(
 
 	private fun resetGame() {
 		viewModelScope.launch {
-			_game.update { resetGameUseCase(it) }
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
+			_game.update { gameManagementUseCases.resetGame(it) }
 			elapsedTimerManager.resetTimer()
 			_uiState.update {
 				it.copy(
@@ -282,6 +265,7 @@ internal class SudokuGameViewModel(
 
 	private fun resetNotes() {
 		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _game.value.grid
 			updatedSudoku = updatedSudoku.clearAllCornerNotes()
 			_game.update {
@@ -315,15 +299,8 @@ internal class SudokuGameViewModel(
 						seed = game.value.grid.seed,
 					),
 				)
+				gameManagementUseCases.clearActiveGame()
 			}
-		}
-	}
-
-	private fun handleDismissVictoryDialog() {
-		_uiState.update {
-			it.copy(
-				gameState = GameState.PLAYING,
-			)
 		}
 	}
 
@@ -337,6 +314,7 @@ internal class SudokuGameViewModel(
 
 	private fun undoLastMove() {
 		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			mutex.withLock {
 				if (operationRepository.getUndoOperations().isEmpty()) return@withLock
 
@@ -350,6 +328,7 @@ internal class SudokuGameViewModel(
 
 	private fun redoLastMove() {
 		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			mutex.withLock {
 				if (operationRepository.getRedoOperations().isEmpty()) return@withLock
 				val grid = redoOperationUseCase(_game.value.grid)
@@ -366,7 +345,7 @@ internal class SudokuGameViewModel(
 		selectedCell: Pair<Int, Int>,
 	): SudokuGrid {
 		val (row, col) = selectedCell
-		var updatedSudoku = sudoku
+		val updatedSudoku = sudoku
 		if (updatedSudoku.getCellAt(row, col).attributes.contains(CellAttributes.GENERATED)) {
 			return updatedSudoku
 		}
@@ -400,6 +379,7 @@ internal class SudokuGameViewModel(
 
 	private fun fillNotes() {
 		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			_game.update {
 				it.copy(
 					grid = _game.value.grid.fillNotes(),
@@ -412,13 +392,13 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 
-			val hint: Hint? = provideHintUseCase(_game.value)
+			val hint: Hint? = hintUseCases.provideHint(_game.value)
 			if (hint != null) {
 				var updatedSudoku = _game.value.grid
-				updatedSudoku = focusOnHintCellsUseCase(hint, updatedSudoku)
+				updatedSudoku = hintUseCases.focusOnCells(hint, updatedSudoku)
 				selectCell(hint.row, hint.col)
 				val hintLog =
-					generateHintLogUseCase(
+					hintUseCases.generateLog(
 						id = _game.value.hintLogs.size,
 						hint = hint,
 						grid = updatedSudoku,
@@ -441,6 +421,7 @@ internal class SudokuGameViewModel(
 
 	private fun revealHint() {
 		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			val hint: Hint = _uiState.value.lastHint ?: return@launch
 			if (_game.value.grid
 					.getCellAt(hint.row, hint.col)
@@ -450,8 +431,8 @@ internal class SudokuGameViewModel(
 			}
 			selectCell(hint.row, hint.col)
 
-			val updatedSudoku = revealHintOnGridUseCase(hint, _game.value.grid)
-			val updatedLogs = revealLastHintLogUseCase(_game.value.hintLogs)
+			val updatedSudoku = hintUseCases.revealOnGrid(hint, _game.value.grid)
+			val updatedLogs = hintUseCases.revealLastLog(_game.value.hintLogs)
 
 			_uiState.update {
 				it.copy(

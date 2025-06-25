@@ -1,5 +1,6 @@
 package com.example.domain.game
 
+import com.example.domain.game.usecases.ClearActiveGameUseCase
 import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
 import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
@@ -29,6 +30,7 @@ val domainGameModule =
 		factory { GetElapsedTimeUseCase(get()) }
 		factory { SaveGameUseCase(get()) }
 		factory { SaveElapsedTimeUseCase(get()) }
+		factory { ClearActiveGameUseCase(get()) }
 
 		factory { SelectCellUseCase(get(), get(), get(), get()) }
 		factory { HighlightMatchingNumbersUseCase() }
@@ -47,4 +49,25 @@ val domainGameModule =
 
 		factory { UndoOperationUseCase(get(), get()) }
 		factory { RedoOperationUseCase(get(), get()) }
+
+		factory {
+			HintUseCases(
+				provideHint = get(),
+				focusOnCells = get(),
+				revealOnGrid = get(),
+				revealLastLog = get(),
+				generateLog = get(),
+			)
+		}
+
+		factory {
+			GameManagementUseCases(
+				getGame = get(),
+				saveGame = get(),
+				selectCell = get(),
+				inputNumber = get(),
+				resetGame = get(),
+				clearActiveGame = get(),
+			)
+		}
 	}

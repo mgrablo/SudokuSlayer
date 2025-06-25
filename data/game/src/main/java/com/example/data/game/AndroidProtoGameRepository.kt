@@ -93,13 +93,19 @@ class AndroidProtoGameRepository(private val protoStorage: ProtoStorage<ProtoGam
 		}
 	}
 
-	override suspend fun updateGameDifficulty(difficulty: GameDifficulty) {
+	override suspend fun updateGameDifficulty(gameDifficulty: GameDifficulty) {
 		protoStorage.updateData {
 			it
 				.toBuilder()
 				.setDifficulty(
-					difficulty.toProtoDifficulty(),
+					gameDifficulty.toProtoDifficulty(),
 				).build()
+		}
+	}
+
+	override suspend fun clearActiveGame() {
+		protoStorage.updateData {
+			it.toBuilder().clear().build()
 		}
 	}
 }

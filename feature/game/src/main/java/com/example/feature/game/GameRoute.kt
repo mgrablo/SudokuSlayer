@@ -18,12 +18,13 @@ data object SudokuGame : Destination {
 	override val icon: AppIcon = AppIcon.ResourceIcon(R.drawable.tag)
 }
 
-fun EntryProviderBuilder<NavKey>.gameEntry(openDrawer: () -> Unit) {
+fun EntryProviderBuilder<NavKey>.gameEntry(openDrawer: () -> Unit, onPlayAgainClick: () -> Unit) {
 	entry<SudokuGame> {
 		val viewmodel = koinViewModel<SudokuGameViewModel>()
 		SudokuGameScreen(
 			openDrawer = openDrawer,
 			modifier = Modifier.fillMaxSize(),
+			onPlayAgainClick = onPlayAgainClick,
 			viewModel = viewmodel,
 		)
 	}

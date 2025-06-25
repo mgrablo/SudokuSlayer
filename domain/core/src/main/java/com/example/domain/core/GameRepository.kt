@@ -11,6 +11,8 @@ interface GameRepository {
 
 	suspend fun saveGame(game: Game)
 
+	suspend fun clearActiveGame()
+
 	suspend fun updateGrid(sudokuGrid: SudokuGrid)
 
 	suspend fun updateElapsedTime(elapsedTime: Long)

@@ -52,7 +52,7 @@ internal fun VictoryDialog(
 	gridSize: SudokuGridSize,
 	isNewBest: Boolean,
 	onDismissRequest: () -> Unit,
-	onMainMenuClick: () -> Unit,
+	onPlayAgainClick: () -> Unit,
 	onShowBoardClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -66,7 +66,7 @@ internal fun VictoryDialog(
 			difficulty = difficulty,
 			gridSize = gridSize,
 			isNewBest = isNewBest,
-			onMainMenuClick = onMainMenuClick,
+			onPlayAgainClick = onPlayAgainClick,
 			onShowBoardClick = onShowBoardClick,
 			modifier = modifier,
 		)
@@ -80,7 +80,7 @@ private fun DialogScope.VictoryDialogContent(
 	difficulty: GameDifficulty,
 	gridSize: SudokuGridSize,
 	isNewBest: Boolean,
-	onMainMenuClick: () -> Unit,
+	onPlayAgainClick: () -> Unit,
 	onShowBoardClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -104,6 +104,12 @@ private fun DialogScope.VictoryDialogContent(
 		DialogPanel(
 			backgroundColor = MaterialTheme.colorScheme.surface,
 			contentColor = MaterialTheme.colorScheme.onSurface,
+// 			enter = fadeIn(
+// 				animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
+// 			),
+// 			exit = fadeOut(
+// 				animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
+// 			),
 			shape = MaterialTheme.shapes.medium,
 			contentPadding = PaddingValues(
 				LocalPadding.current.large,
@@ -116,6 +122,7 @@ private fun DialogScope.VictoryDialogContent(
 					text = "Congratulations!",
 					style = LocalSudokuTypography.current.displayLargeEmphasized,
 					fontSize = 32.sp,
+					color = MaterialTheme.colorScheme.onSurface,
 				)
 				Spacer(Modifier.height(16.dp))
 				VictoryStatRow(
@@ -146,13 +153,13 @@ private fun DialogScope.VictoryDialogContent(
 						)
 					}
 					Button(
-						onClick = onMainMenuClick,
+						onClick = onPlayAgainClick,
 						colors = ButtonDefaults.buttonColors(
 							containerColor = MaterialTheme.colorScheme.primary,
 						),
 					) {
 						Text(
-							"Main Menu",
+							"Play Again",
 							color = MaterialTheme.colorScheme.onPrimary,
 						)
 					}
@@ -167,9 +174,12 @@ private fun VictoryStatRow(
 	label: String,
 	value: String,
 	modifier: Modifier = Modifier,
-	labelStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+	labelStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(
+		color = MaterialTheme.colorScheme.onSurfaceVariant,
+	),
 	valueStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(
 		fontWeight = FontWeight.Bold,
+		color = MaterialTheme.colorScheme.primary,
 	),
 ) {
 	Row(
@@ -203,7 +213,7 @@ private fun VictoryDialogPreview() {
 				gridSize = SudokuGridSize.NINE,
 				isNewBest = true,
 				onDismissRequest = { },
-				onMainMenuClick = { },
+				onPlayAgainClick = { },
 				onShowBoardClick = { },
 				modifier = Modifier,
 			)

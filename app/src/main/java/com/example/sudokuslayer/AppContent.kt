@@ -138,6 +138,7 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 						scope.launch {
 							backstack.clear()
 							backstack.addAll(listOf(SudokuCreator, SudokuGame))
+							println(backstack)
 						}
 					},
 					openDrawer = {
@@ -150,6 +151,12 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					openDrawer = {
 						scope.launch {
 							navigationRailState.expand()
+						}
+					},
+					onPlayAgainClick = {
+						scope.launch {
+							backstack.clear()
+							backstack.add(SudokuCreator)
 						}
 					},
 				)

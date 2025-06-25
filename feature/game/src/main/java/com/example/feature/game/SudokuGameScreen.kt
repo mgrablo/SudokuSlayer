@@ -58,6 +58,7 @@ import kotlin.random.Random
 @Composable
 internal fun SudokuGameScreen(
 	openDrawer: () -> Unit,
+	onPlayAgainClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
 ) {
@@ -70,6 +71,7 @@ internal fun SudokuGameScreen(
 		onEvent = {
 			viewModel.onEvent(it)
 		},
+		onPlayAgainClick = onPlayAgainClick,
 		modifier = modifier,
 		elapsedTime = { elapsedTime },
 		openDrawer = openDrawer,
@@ -84,6 +86,7 @@ private fun SudokuGameScreenContent(
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
+	onPlayAgainClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val windowInfo = LocalWindowInfo.current
@@ -117,11 +120,15 @@ private fun SudokuGameScreenContent(
 		gridSize = SudokuGridSize.fromIntSize(game.grid.gridSize),
 		isNewBest = false,
 		onDismissRequest = {
-			onEvent(Event.DismissVictoryDialog)
 			victoryDialogState.visible = false
 		},
-		onMainMenuClick = { },
-		onShowBoardClick = { },
+		onPlayAgainClick = {
+			victoryDialogState.visible = false
+			onPlayAgainClick()
+		},
+		onShowBoardClick = {
+			victoryDialogState.visible = false
+		},
 	)
 
 	ResetDialog(
@@ -270,6 +277,7 @@ private fun SudokuGameScreenPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			onPlayAgainClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -292,6 +300,7 @@ private fun SudokuGameScreenSixteenPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			onPlayAgainClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -317,6 +326,7 @@ private fun SudokuGameScreenFourPreview() {
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
+			onPlayAgainClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

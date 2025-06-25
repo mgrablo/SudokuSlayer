@@ -9,6 +9,7 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.creator.CreateNewGameUseCase
 import com.example.domain.creator.GetSavedGameUseCase
+import com.example.domain.creator.HasActiveGameUseCase
 import com.example.domain.creator.SaveGameUseCase
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ internal data class SudokuCreatorUiState(
 	val selectedDifficulty: GameDifficulty = GameDifficulty.Easy,
 	val selectedGridSize: SudokuGridSize = SudokuGridSize.FOUR,
 	val savedGame: Game? = null,
+	val hasActiveGame: Boolean = false,
 )
 
 @Stable
@@ -37,6 +39,7 @@ internal class SudokuCreatorViewModel(
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
+	private val hasActiveGameUseCase: HasActiveGameUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -61,10 +64,19 @@ internal class SudokuCreatorViewModel(
 
 	init {
 		viewModelScope.launch {
-			getSavedGameUseCase()?.let { savedGame ->
+			getSavedGameUseCase().collect { savedGame ->
 				_uiState.update {
 					it.copy(
 						savedGame = savedGame,
+					)
+				}
+			}
+		}
+		viewModelScope.launch {
+			hasActiveGameUseCase().collect { hasActiveGame ->
+				_uiState.update {
+					it.copy(
+						hasActiveGame = hasActiveGame,
 					)
 				}
 			}
