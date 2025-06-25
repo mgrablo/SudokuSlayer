@@ -8,6 +8,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.graphics.shapes.RoundedPolygon
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.sudokuslayer.feature.uicore.R
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -48,8 +49,6 @@ fun Modifier.consumeHorizontalDrag(minimalVerticalDragThreshold: Float = 1.0f): 
  */
 @Composable
 fun rememberFormattedTime(totalSeconds: Float, compact: Boolean = false): String {
-	// It's assumed that R.string.time_less_than_a_second is defined in your resources.
-	// If not, you should define it, e.g., <string name="time_less_than_a_second">less than 1s</string>
 	if (totalSeconds < 0) return stringResource(R.string.time_less_than_a_second)
 	if (totalSeconds < 1f && totalSeconds >= 0) return stringResource(R.string.time_less_than_a_second)
 
@@ -70,7 +69,6 @@ fun rememberFormattedTime(totalSeconds: Float, compact: Boolean = false): String
 			parts.add("${minutes}m")
 		}
 	} else {
-		// Original logic for non-compact minutes: show if hours are present or minutes > 0
 		if (minutes > 0 || hours > 0) {
 			parts.add("${minutes}m")
 		}
@@ -81,16 +79,12 @@ fun rememberFormattedTime(totalSeconds: Float, compact: Boolean = false): String
 			parts.add("${seconds}s")
 		}
 	} else {
-		// Original logic for non-compact seconds: show if seconds > 0, or if time is < 1 minute
 		if (seconds > 0 || (hours == 0L && minutes == 0L)) {
 			parts.add("${seconds}s")
 		}
 	}
 
 	return if (parts.isEmpty()) {
-		// This case should be covered by the initial checks if totalSeconds >= 1f,
-		// as at least one part (h, m, or s) would be non-zero.
-		// Kept for consistency with original structure or as a fallback.
 		stringResource(R.string.time_less_than_a_second)
 	} else {
 		parts.joinToString(" ")
@@ -99,4 +93,11 @@ fun rememberFormattedTime(totalSeconds: Float, compact: Boolean = false): String
 
 fun RoundedPolygon.mirrorVertically(): RoundedPolygon = this.transformed { x, y ->
 	FloatFloatPair(x, 1f - y)
+}
+
+@Composable
+fun SudokuGridSize.toLocalizedString(): String = when (this) {
+	SudokuGridSize.FOUR -> stringResource(R.string.gridsize_4x4)
+	SudokuGridSize.NINE -> stringResource(R.string.gridsize_9x9)
+	SudokuGridSize.SIXTEEN -> stringResource(R.string.gridsize_16x16)
 }

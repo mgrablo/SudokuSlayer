@@ -41,6 +41,7 @@ import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
+import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.game.R
 
 @Composable
@@ -84,6 +85,8 @@ private fun DialogScope.VictoryDialogContent(
 	modifier: Modifier = Modifier,
 ) {
 	val formattedTime = rememberFormattedTime(timeSpent.toFloat())
+	val localizedDifficulty = difficulty.toLocalizedString()
+	val localizedGridSize = gridSize.toLocalizedString()
 
 	Box(
 		contentAlignment = Alignment.TopCenter,
@@ -121,11 +124,11 @@ private fun DialogScope.VictoryDialogContent(
 				)
 				VictoryStatRow(
 					label = "Difficulty:",
-					value = difficulty.name,
+					value = localizedDifficulty,
 				)
 				VictoryStatRow(
 					label = "Grid Size:",
-					value = gridSize.name,
+					value = localizedGridSize,
 				)
 				Spacer(Modifier.height(24.dp))
 				Row(

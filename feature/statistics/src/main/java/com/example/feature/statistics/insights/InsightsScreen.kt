@@ -309,7 +309,7 @@ private fun InsightsScreenContent(
 					val formattedFastest = rememberFormattedTime(uiState.fastestGame.toFloat())
 					val formattedSlowest = rememberFormattedTime(uiState.longestGame.toFloat())
 					val difficultyText = uiState.mostPlayedDifficulty?.toLocalizedString() ?: ""
-					val gridSizeText = uiState.mostPlayedGridSize.toString()
+					val gridSizeText = uiState.mostPlayedGridSize?.toLocalizedString() ?: ""
 					val visibleColumns = remember(tableColumnsState) {
 						tableColumnsState.filter { it.visible }.map(
 							ColumnDisplayState::column,
