@@ -1,5 +1,6 @@
 package com.example.feature.game
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -71,7 +73,7 @@ internal fun SudokuGameScreen(
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SudokuGameScreenContent(
 	uiState: SudokuGameUiState,
@@ -81,8 +83,9 @@ private fun SudokuGameScreenContent(
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val configuration = LocalConfiguration.current
-	val isPortrait = configuration.screenHeightDp > configuration.screenWidthDp
+	val windowInfo = LocalWindowInfo.current
+	val containerSize = windowInfo.containerSize
+	val isPortrait = containerSize.height > containerSize.width
 
 	val scope = rememberCoroutineScope()
 	var resetDialogState by remember { mutableStateOf(false) }
@@ -139,6 +142,7 @@ private fun SudokuGameScreenContent(
 	)
 
 	HintBottomSheetScaffold(
+		modifier = modifier,
 		sheetScaffoldState = scaffoldState,
 		hintLogs = game.hintLogs,
 		showNextHint = uiState.lastHint == null,
@@ -154,7 +158,7 @@ private fun SudokuGameScreenContent(
 					)
 				},
 				colors =
-				TopAppBarDefaults.centerAlignedTopAppBarColors(
+				TopAppBarDefaults.topAppBarColors(
 					containerColor = MaterialTheme.colorScheme.surfaceContainer,
 				),
 				navigationIcon = {
@@ -166,7 +170,12 @@ private fun SudokuGameScreenContent(
 		},
 	) { innerPadding ->
 		if (uiState.gameState == GameState.LOADING) {
-			CircularProgressIndicator()
+			Box(
+				contentAlignment = Alignment.Center,
+				modifier = Modifier.fillMaxSize(),
+			) {
+				CircularWavyProgressIndicator()
+			}
 		} else {
 			if (isPortrait) {
 				Column(
