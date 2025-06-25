@@ -29,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -41,6 +44,7 @@ import com.example.feature.game.SudokuGameViewModel.Event
 import com.example.feature.game.components.HintBottomSheetScaffold
 import com.example.feature.game.components.HintsDialog
 import com.example.feature.game.components.KeyPad
+import com.example.feature.game.components.PostGameActions
 import com.example.feature.game.components.ResetDialog
 import com.example.feature.game.components.SudokuBoard
 import com.example.feature.game.components.TimerDisplay
@@ -49,6 +53,7 @@ import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -59,6 +64,7 @@ import kotlin.random.Random
 internal fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	onPlayAgainClick: () -> Unit,
+	onNavigateToInsightsClick: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
 ) {
@@ -74,6 +80,7 @@ internal fun SudokuGameScreen(
 		onPlayAgainClick = onPlayAgainClick,
 		modifier = modifier,
 		elapsedTime = { elapsedTime },
+		onNavigateToInsightsClick = onNavigateToInsightsClick,
 		openDrawer = openDrawer,
 	)
 }
@@ -87,6 +94,7 @@ private fun SudokuGameScreenContent(
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
 	onPlayAgainClick: () -> Unit,
+	onNavigateToInsightsClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val windowInfo = LocalWindowInfo.current
@@ -192,6 +200,23 @@ private fun SudokuGameScreenContent(
 						Icon(Icons.Default.Menu, "")
 					}
 				},
+				actions = {
+					if (uiState.gameState == GameState.VICTORY) {
+						IconButton(
+							onClick = {
+								victoryDialogState.visible = true
+							},
+							modifier = Modifier.semantics {
+								this.onClick(label = "View summary", action = null)
+							},
+						) {
+							Icon(
+								painter = painterResource(R.drawable.trophy),
+								contentDescription = "View summary",
+							)
+						}
+					}
+				},
 			)
 		},
 	) { innerPadding ->
@@ -215,21 +240,34 @@ private fun SudokuGameScreenContent(
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
-					KeyPad(
-						onNumberClick = { onEvent(Event.InputNumber(it)) },
-						onClearClick = { onEvent(Event.ClearCell) },
-						onUndoClick = { onEvent(Event.Undo) },
-						onRedoClick = { onEvent(Event.Redo) },
-						onHintClick = { hintsDialogState = true },
-						onShowMistakesClick = { onEvent(Event.ShowMistakes) },
-						onResetClick = { resetDialogState = true },
-						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
-						noteMode = uiState.isInNoteMode,
-						gridSize = game.grid.gridSize,
-						isLeftHandMode = uiState.isLeftHandMode,
-						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
-						modifier = Modifier.weight(1f),
-					)
+					if (uiState.gameState != GameState.VICTORY) {
+						KeyPad(
+							onNumberClick = { onEvent(Event.InputNumber(it)) },
+							onClearClick = { onEvent(Event.ClearCell) },
+							onUndoClick = { onEvent(Event.Undo) },
+							onRedoClick = { onEvent(Event.Redo) },
+							onHintClick = { hintsDialogState = true },
+							onShowMistakesClick = { onEvent(Event.ShowMistakes) },
+							onResetClick = { resetDialogState = true },
+							onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
+							noteMode = uiState.isInNoteMode,
+							gridSize = game.grid.gridSize,
+							isLeftHandMode = uiState.isLeftHandMode,
+							showActionButtonsOnTop = uiState.showActionButtonsOnTop,
+							modifier = Modifier.weight(1f),
+						)
+					} else {
+						PostGameActions(
+							onViewSummary = {
+								victoryDialogState.visible = true
+							},
+							onPlayAgainClick = onPlayAgainClick,
+							onShowInsights = {
+							},
+							summaryOpen = victoryDialogState.visible,
+							modifier = Modifier.weight(1f),
+						)
+					}
 				}
 			} else {
 				Row {
@@ -278,6 +316,7 @@ private fun SudokuGameScreenPreview() {
 			elapsedTime = { 1 },
 			openDrawer = {},
 			onPlayAgainClick = { },
+			onNavigateToInsightsClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -301,6 +340,7 @@ private fun SudokuGameScreenSixteenPreview() {
 			elapsedTime = { 1 },
 			openDrawer = {},
 			onPlayAgainClick = { },
+			onNavigateToInsightsClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
@@ -327,6 +367,7 @@ private fun SudokuGameScreenFourPreview() {
 			elapsedTime = { 1 },
 			openDrawer = {},
 			onPlayAgainClick = { },
+			onNavigateToInsightsClick = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

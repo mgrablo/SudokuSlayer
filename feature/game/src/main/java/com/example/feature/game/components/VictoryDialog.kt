@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +37,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogScope
@@ -43,6 +47,7 @@ import com.composables.core.DialogState
 import com.composables.core.Icon
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
+import com.composeunstyled.LocalModalWindow
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.uicore.rememberFormattedTime
@@ -74,6 +79,15 @@ internal fun VictoryDialog(
 		state = dialogState,
 		onDismiss = onDismissRequest,
 	) {
+		val view = LocalView.current
+		val window = LocalModalWindow.current
+		val insertsController = WindowCompat.getInsetsController(window, view)
+		if (!view.isInEditMode) {
+			insertsController.apply {
+				hide(WindowInsetsCompat.Type.systemBars())
+				systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+			}
+		}
 		Scrim()
 		VictoryDialogContent(
 			visible = dialogState.visible,
@@ -110,17 +124,7 @@ private fun DialogScope.VictoryDialogContent(
 			modifier = Modifier
 				.fillMaxSize()
 				.zIndex(11f),
-			parties = listOf(
-				Party(
-					speed = 0f,
-					maxSpeed = 30f,
-					damping = 0.9f,
-					spread = 360,
-					colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-					emitter = Emitter(duration = 100.milliseconds).max(100),
-					position = Position.Relative(0.5, 0.35),
-				),
-			),
+			parties = explode(),
 			onParticleSystemEnded = { _, activeSystems ->
 				if (activeSystems == 0) {
 					isAnimating = false

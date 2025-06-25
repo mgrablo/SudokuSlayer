@@ -159,6 +159,12 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 							backstack.add(SudokuCreator)
 						}
 					},
+					onNavigateToInsightsClick = {
+						scope.launch {
+							backstack.clear()
+							backstack.addAll(listOf(SudokuCreator, Insights))
+						}
+					},
 				)
 				insightsEntry(
 					openDrawer = {
