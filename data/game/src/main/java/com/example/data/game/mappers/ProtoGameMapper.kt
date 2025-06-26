@@ -11,6 +11,7 @@ fun Game.toProtoGame(): ProtoGame = ProtoGame
 	.setDifficulty(difficulty.toProtoDifficulty())
 	.setHintsUsed(hintsUsed)
 	.setElapsedTime(elapsedTime)
+	.setCompleted(completed)
 	.addAllHintLogs(hintLogs.map { it.toProtoHintLog() })
 	.build()
 
@@ -20,6 +21,7 @@ fun ProtoGame.toGame(): Game = Game(
 	elapsedTime = elapsedTime,
 	hintsUsed = hintsUsed,
 	hintLogs = hintLogsList.map { it.toHintLog() }.toPersistentList(),
+	completed = completed,
 )
 
 fun GameDifficulty.toProtoDifficulty(): ProtoGame.Difficulty = when (this) {

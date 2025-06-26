@@ -12,6 +12,7 @@ message ProtoGame {
 	int64 elapsedTime = 3;
 	int32 hintsUsed = 4;
 	repeated ProtoHintLog hintLogs = 5;
+	bool completed = 6;
 
 	enum Difficulty {
 		UNSPECIFIED = 0;

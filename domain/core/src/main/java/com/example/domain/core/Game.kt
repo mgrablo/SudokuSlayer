@@ -9,4 +9,5 @@ data class Game(
 	val elapsedTime: Long,
 	val hintsUsed: Int,
 	val hintLogs: PersistentList<HintLog>,
+	val completed: Boolean = false,
 )

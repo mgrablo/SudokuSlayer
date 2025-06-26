@@ -119,7 +119,7 @@ private fun DialogScope.VictoryDialogContent(
 			modifier = Modifier
 				.fillMaxSize()
 				.zIndex(11f),
-			parties = explode(),
+			parties = if (isNewBest) ConfettiParties.parade() else ConfettiParties.explode(),
 			onParticleSystemEnded = { _, activeSystems ->
 				if (activeSystems == 0) {
 					isAnimating = false

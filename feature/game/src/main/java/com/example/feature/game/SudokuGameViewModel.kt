@@ -1,6 +1,5 @@
 package com.example.feature.game
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
@@ -28,10 +27,10 @@ import com.example.sudoku.solver.Hint
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -85,10 +84,12 @@ internal class SudokuGameViewModel(
 			loadData()
 			_uiState.update {
 				it.copy(
-					gameState = GameState.PLAYING,
+					gameState = if (game.value.completed) GameState.VICTORY else GameState.PLAYING,
 				)
 			}
-			elapsedTimerManager.startTracking()
+			if (_uiState.value.gameState == GameState.PLAYING) {
+				elapsedTimerManager.startTracking()
+			}
 		}
 		viewModelScope.launch {
 			game.collect { game ->
@@ -166,32 +167,30 @@ internal class SudokuGameViewModel(
 	}
 
 	private suspend fun loadData() {
-		gameManagementUseCases.getGame().firstOrNull()?.let { game ->
-			viewModelScope.launch(Dispatchers.IO) {
-				_game.update {
+		gameManagementUseCases.getGame().first().let { game ->
+			_game.update {
+				it.copy(
+					grid = game.grid,
+					hintsUsed = game.hintsUsed,
+					elapsedTime = game.elapsedTime,
+					difficulty = game.difficulty,
+					hintLogs = game.hintLogs.toPersistentList(),
+					completed = game.completed,
+				)
+			}
+			getBestTimeUseCase(
+				game.difficulty,
+				SudokuGridSize.fromIntSize(
+					game.grid.gridSize,
+				),
+			)?.let { bestTime ->
+				_uiState.update {
 					it.copy(
-						grid = game.grid,
-						hintsUsed = game.hintsUsed,
-						elapsedTime = game.elapsedTime,
-						difficulty = game.difficulty,
-						hintLogs = game.hintLogs.toPersistentList(),
+						currentBestTime = bestTime,
 					)
 				}
-				getBestTimeUseCase(
-					game.difficulty,
-					SudokuGridSize.fromIntSize(
-						game.grid.gridSize,
-					),
-				)?.let { bestTime ->
-					_uiState.update {
-						it.copy(
-							currentBestTime = bestTime,
-						)
-					}
-					Log.d("test viewmodel", bestTime.toString())
-				}
 			}
-		} ?: throw Exception("Proto Sudoku not found!")
+		}
 
 		settingsRepository.leftHandMode.firstOrNull()?.let { leftHandMode ->
 			_uiState.update {
@@ -300,7 +299,7 @@ internal class SudokuGameViewModel(
 				_uiState.update {
 					it.copy(
 						gameState = GameState.VICTORY,
-						isNewBestTime = it.currentBestTime == null || it.currentBestTime > elapsedTime.value,
+						isNewBestTime = it.currentBestTime == null || it.currentBestTime >= elapsedTime.value,
 					)
 				}
 				elapsedTimerManager.stopTracking()
@@ -317,7 +316,12 @@ internal class SudokuGameViewModel(
 						seed = game.value.grid.seed,
 					),
 				)
-				gameManagementUseCases.clearActiveGame()
+				gameManagementUseCases.saveGame(
+					game.value.copy(
+						completed = true,
+						elapsedTime = elapsedTime.value,
+					),
+				)
 			}
 		}
 	}
