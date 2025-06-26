@@ -1,11 +1,13 @@
 package com.example.feature.game
 
-import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -33,6 +35,8 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -79,7 +83,7 @@ internal fun SudokuGameScreen(
 			viewModel.onEvent(it)
 		},
 		onPlayAgainClick = onPlayAgainClick,
-		modifier = modifier,
+		modifier = modifier.fillMaxSize(),
 		elapsedTime = { elapsedTime },
 		onNavigateToInsightsClick = onNavigateToInsightsClick,
 		openDrawer = openDrawer,
@@ -132,8 +136,6 @@ private fun SudokuGameScreenContent(
 		isNewBest = uiState.isNewBestTime,
 		onDismissRequest = {
 			victoryDialogState.visible = false
-			Log.d("test", uiState.isNewBestTime.toString())
-			Log.d("test", uiState.currentBestTime.toString())
 		},
 	)
 
@@ -238,56 +240,94 @@ private fun SudokuGameScreenContent(
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
-					if (uiState.gameState != GameState.VICTORY) {
-						KeyPad(
-							onNumberClick = { onEvent(Event.InputNumber(it)) },
-							onClearClick = { onEvent(Event.ClearCell) },
-							onUndoClick = { onEvent(Event.Undo) },
-							onRedoClick = { onEvent(Event.Redo) },
-							onHintClick = { hintsDialogState = true },
-							onShowMistakesClick = { onEvent(Event.ShowMistakes) },
-							onResetClick = { resetDialogState = true },
-							onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
-							noteMode = uiState.isInNoteMode,
-							gridSize = game.grid.gridSize,
-							isLeftHandMode = uiState.isLeftHandMode,
-							showActionButtonsOnTop = uiState.showActionButtonsOnTop,
-							modifier = Modifier.weight(1f),
-						)
-					} else {
-						PostGameActions(
-							onViewSummary = {
-								victoryDialogState.visible = true
-							},
-							onPlayAgainClick = onPlayAgainClick,
-							onShowInsights = onNavigateToInsightsClick,
-							summaryOpen = victoryDialogState.visible,
-							modifier = Modifier.weight(1f),
-						)
+					AnimatedContent(
+						targetState = uiState.gameState,
+						contentAlignment = Alignment.Center,
+						modifier = Modifier.weight(0.8f),
+					) { state ->
+						when (state) {
+							GameState.LOADING -> {}
+							GameState.PLAYING -> {
+								KeyPad(
+									onNumberClick = { onEvent(Event.InputNumber(it)) },
+									onClearClick = { onEvent(Event.ClearCell) },
+									onUndoClick = { onEvent(Event.Undo) },
+									onRedoClick = { onEvent(Event.Redo) },
+									onHintClick = { hintsDialogState = true },
+									onShowMistakesClick = { onEvent(Event.ShowMistakes) },
+									onResetClick = { resetDialogState = true },
+									onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
+									noteMode = uiState.isInNoteMode,
+									gridSize = game.grid.gridSize,
+									isLeftHandMode = uiState.isLeftHandMode,
+									showActionButtonsOnTop = uiState.showActionButtonsOnTop,
+									modifier = Modifier.weight(1f),
+								)
+							}
+
+							GameState.VICTORY -> {
+								PostGameActions(
+									onViewSummary = {
+										victoryDialogState.visible = true
+									},
+									onPlayAgainClick = onPlayAgainClick,
+									onShowInsights = onNavigateToInsightsClick,
+									summaryOpen = victoryDialogState.visible,
+									modifier = Modifier.weight(1f),
+								)
+							}
+						}
 					}
 				}
 			} else {
-				Row {
+				Row(
+					modifier = Modifier,
+					horizontalArrangement = Arrangement.Center,
+					verticalAlignment = Alignment.CenterVertically,
+				) {
 					SudokuBoard(
 						sudoku = game.grid,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
-					KeyPad(
-						onNumberClick = { onEvent(Event.InputNumber(it)) },
-						onClearClick = { onEvent(Event.ClearCell) },
-						onUndoClick = { onEvent(Event.Undo) },
-						onRedoClick = { onEvent(Event.Redo) },
-						onHintClick = { hintsDialogState = true },
-						onShowMistakesClick = { onEvent(Event.ShowMistakes) },
-						onResetClick = { resetDialogState = true },
-						onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
-						noteMode = uiState.isInNoteMode,
-						gridSize = game.grid.gridSize,
-						isLeftHandMode = uiState.isLeftHandMode,
-						showActionButtonsOnTop = uiState.showActionButtonsOnTop,
-						modifier = Modifier.weight(1f),
-					)
+					AnimatedContent(
+						targetState = uiState.gameState,
+						modifier = Modifier.weight(0.8f),
+						contentAlignment = Alignment.Center,
+					) { state ->
+						when (state) {
+							GameState.LOADING -> { }
+							GameState.PLAYING -> {
+								KeyPad(
+									onNumberClick = { onEvent(Event.InputNumber(it)) },
+									onClearClick = { onEvent(Event.ClearCell) },
+									onUndoClick = { onEvent(Event.Undo) },
+									onRedoClick = { onEvent(Event.Redo) },
+									onHintClick = { hintsDialogState = true },
+									onShowMistakesClick = { onEvent(Event.ShowMistakes) },
+									onResetClick = { resetDialogState = true },
+									onSwitchInputMode = { onEvent(Event.SwitchInputMode) },
+									noteMode = uiState.isInNoteMode,
+									gridSize = game.grid.gridSize,
+									isLeftHandMode = uiState.isLeftHandMode,
+									showActionButtonsOnTop = uiState.showActionButtonsOnTop,
+									modifier = Modifier.weight(1f).fillMaxHeight(),
+								)
+							}
+
+							GameState.VICTORY -> {
+								PostGameActions(
+									onViewSummary = {
+										victoryDialogState.visible = true
+									},
+									onPlayAgainClick = onPlayAgainClick,
+									onShowInsights = onNavigateToInsightsClick,
+									summaryOpen = victoryDialogState.visible,
+									modifier = Modifier.weight(1f).fillMaxHeight(),
+								)
+							}
+						}
+					}
 				}
 			}
 		}
@@ -300,7 +340,9 @@ private fun SudokuGameScreenContent(
 private fun SudokuGameScreenPreview() {
 	SudokuSlayerTheme {
 		SudokuGameScreenContent(
-			uiState = SudokuGameUiState(),
+			uiState = SudokuGameUiState(
+				gameState = GameState.VICTORY,
+			),
 			game =
 			Game(
 				grid = createFilledSudokuGrid(9),
@@ -343,14 +385,19 @@ private fun SudokuGameScreenSixteenPreview() {
 	}
 }
 
-@Preview
+@Preview(
+	device = Devices.AUTOMOTIVE_1024p,
+)
 @Composable
 private fun SudokuGameScreenFourPreview() {
-	SudokuSlayerTheme {
+	SudokuSlayerTheme(
+		darkTheme = true,
+	) {
 		SudokuGameScreenContent(
 			uiState =
 			SudokuGameUiState(
 				isLeftHandMode = true,
+				gameState = GameState.VICTORY,
 			),
 			game =
 			Game(

@@ -3,13 +3,15 @@ package com.example.feature.game.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -19,18 +21,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -56,6 +62,9 @@ import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.game.R
 import io.github.vinceglb.confettikit.compose.ConfettiKit
+import io.github.vinceglb.confettikit.core.Position
+import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 @Composable
 internal fun VictoryDialog(
@@ -112,14 +121,61 @@ private fun DialogScope.VictoryDialogContent(
 	val formattedTime = rememberFormattedTime(timeSpent.toFloat())
 	val localizedDifficulty = difficulty.toLocalizedString()
 	val localizedGridSize = gridSize.toLocalizedString()
-	var isAnimating by remember(visible) { mutableStateOf(visible) }
+	var isAnimating by remember(visible) { mutableStateOf(false) }
+
+	var trophyPositionCaptured by remember { mutableStateOf(false) }
+	var trophyPosition by remember { mutableStateOf(Offset.Zero) }
+	var trophyVisible by remember { mutableStateOf(false) }
+
+	val windowInfo = LocalWindowInfo.current
+
+	val newBestConfettiPresets = remember(trophyPosition) {
+		listOf(
+			ConfettiParties.parade(
+				position1 = Position.Absolute(0.0f, trophyPosition.y),
+				position2 = Position.Absolute(
+					windowInfo.containerSize.width.toFloat(),
+					trophyPosition.y,
+				),
+			),
+			ConfettiParties.fountain(
+				Position.Absolute(trophyPosition.x, trophyPosition.y),
+			),
+			ConfettiParties.rain(),
+		)
+	}
+
+	val confettiPresets = listOf(
+		ConfettiParties.explode(),
+		ConfettiParties.rain(),
+	)
+
+	LaunchedEffect(visible) {
+		if (visible) {
+			delay(200)
+			trophyVisible = true
+		} else {
+			trophyVisible = false
+		}
+	}
+
+	LaunchedEffect(visible, trophyPositionCaptured) {
+		if (visible && trophyPositionCaptured) {
+			delay(300)
+			isAnimating = true
+		}
+	}
 
 	if (isAnimating) {
 		ConfettiKit(
 			modifier = Modifier
 				.fillMaxSize()
 				.zIndex(11f),
-			parties = if (isNewBest) ConfettiParties.parade() else ConfettiParties.explode(),
+			parties = if (isNewBest) {
+				newBestConfettiPresets[Random.nextInt(newBestConfettiPresets.size)]
+			} else {
+				confettiPresets[Random.nextInt(confettiPresets.size)]
+			},
 			onParticleSystemEnded = { _, activeSystems ->
 				if (activeSystems == 0) {
 					isAnimating = false
@@ -127,26 +183,40 @@ private fun DialogScope.VictoryDialogContent(
 			},
 		)
 	}
+
 	Box(
 		contentAlignment = Alignment.TopCenter,
 		modifier = modifier.widthIn(max = 340.dp),
 	) {
 		AnimatedVisibility(
-			visible = visible,
-			enter = fadeIn() + slideIn(
-				initialOffset = { fullSize ->
-					IntOffset(-100, -fullSize.height / 2)
-				},
+			visible = trophyVisible,
+			enter = scaleIn(
+				animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+				initialScale = 0.2f,
+			) + slideInHorizontally(
+				animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+				initialOffsetX = { -it },
 			),
-			modifier = Modifier.zIndex(10f),
+			exit = fadeOut(
+				animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+			),
+			modifier = Modifier
+				.fillMaxWidth()
+				.zIndex(15f)
+				.offset(y = (-40).dp),
 		) {
 			Icon(
 				painterResource(R.drawable.trophy_filled),
 				contentDescription = "",
-				tint = MaterialTheme.extendedColorScheme.peach.color,
+				tint = MaterialTheme.extendedColorScheme.maroon.colorContainer,
 				modifier = Modifier
 					.size(60.dp)
-					.offset(y = (-40).dp),
+					.onGloballyPositioned {
+						trophyPosition = it.positionInWindow()
+						trophyPosition =
+							trophyPosition.copy(x = trophyPosition.x + it.size.width / 2)
+						trophyPositionCaptured = true
+					},
 			)
 		}
 		DialogPanel(

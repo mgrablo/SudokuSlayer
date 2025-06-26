@@ -27,7 +27,10 @@ internal object ConfettiParties {
 		),
 	)
 
-	fun parade(): List<Party> {
+	fun parade(
+		position1: Position = Position.Relative(0.0, 0.3),
+		position2: Position = Position.Relative(1.0, 0.3),
+	): List<Party> {
 		val party = Party(
 			speed = 10f,
 			maxSpeed = 30f,
@@ -35,16 +38,45 @@ internal object ConfettiParties {
 			angle = Angle.RIGHT - 45,
 			spread = Spread.SMALL,
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-			emitter = Emitter(duration = 5.seconds).perSecond(30),
-			position = Position.Relative(0.0, 0.5),
+			emitter = Emitter(duration = 1.seconds).perSecond(30),
+			position = position1,
 		)
 
 		return listOf(
 			party,
 			party.copy(
 				angle = party.angle - 90, // flip angle from right to left
-				position = Position.Relative(1.0, 0.5),
+				position = position2,
 			),
 		)
 	}
+
+	fun fountain(position: Position = Position.Relative(0.5, 0.3)): List<Party> {
+		val party = Party(
+			speed = 10f,
+			maxSpeed = 30f,
+			damping = 0.9f,
+			angle = Angle.TOP,
+			spread = Spread.SMALL,
+			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+			emitter = Emitter(duration = 2.seconds).perSecond(30),
+			position = position,
+		)
+		return listOf(party)
+	}
+
+	fun rain(): List<Party> = listOf(
+		Party(
+			speed = 0f,
+			maxSpeed = 15f,
+			damping = 0.9f,
+			angle = Angle.BOTTOM,
+			spread = Spread.ROUND,
+			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+			emitter = Emitter(duration = 2.5.seconds).perSecond(100),
+			position = Position.Relative(0.0, 0.0).between(Position.Relative(1.0, 0.0)),
+			timeToLive = 5000L,
+			fadeOutEnabled = false,
+		),
+	)
 }
