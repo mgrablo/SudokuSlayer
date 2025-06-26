@@ -85,6 +85,11 @@ internal class SudokuGameViewModel(
 			_uiState.update {
 				it.copy(
 					gameState = if (game.value.completed) GameState.VICTORY else GameState.PLAYING,
+					isNewBestTime = if (game.value.completed) {
+						it.currentBestTime == null || it.currentBestTime >= elapsedTime.value
+					} else {
+						it.isNewBestTime
+					},
 				)
 			}
 			if (_uiState.value.gameState == GameState.PLAYING) {
