@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -44,6 +41,7 @@ import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogScope
 import com.composables.core.DialogState
+import com.composables.core.HorizontalSeparator
 import com.composables.core.Icon
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
@@ -58,10 +56,6 @@ import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.game.R
 import io.github.vinceglb.confettikit.compose.ConfettiKit
-import io.github.vinceglb.confettikit.core.Party
-import io.github.vinceglb.confettikit.core.Position
-import io.github.vinceglb.confettikit.core.emitter.Emitter
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun VictoryDialog(
@@ -69,10 +63,10 @@ internal fun VictoryDialog(
 	timeSpent: Long,
 	difficulty: GameDifficulty,
 	gridSize: SudokuGridSize,
+	hintsUsed: Int,
 	isNewBest: Boolean,
+	bestTime: Long?,
 	onDismissRequest: () -> Unit,
-	onPlayAgainClick: () -> Unit,
-	onShowBoardClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	Dialog(
@@ -85,7 +79,8 @@ internal fun VictoryDialog(
 		if (!view.isInEditMode) {
 			insertsController.apply {
 				hide(WindowInsetsCompat.Type.systemBars())
-				systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+				systemBarsBehavior =
+					WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 			}
 		}
 		Scrim()
@@ -94,9 +89,9 @@ internal fun VictoryDialog(
 			timeSpent = timeSpent,
 			difficulty = difficulty,
 			gridSize = gridSize,
+			hintsUsed = hintsUsed,
+			bestTime = bestTime,
 			isNewBest = isNewBest,
-			onPlayAgainClick = onPlayAgainClick,
-			onShowBoardClick = onShowBoardClick,
 			modifier = modifier,
 		)
 	}
@@ -109,9 +104,9 @@ private fun DialogScope.VictoryDialogContent(
 	timeSpent: Long,
 	difficulty: GameDifficulty,
 	gridSize: SudokuGridSize,
+	hintsUsed: Int,
+	bestTime: Long?,
 	isNewBest: Boolean,
-	onPlayAgainClick: () -> Unit,
-	onShowBoardClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val formattedTime = rememberFormattedTime(timeSpent.toFloat())
@@ -190,32 +185,23 @@ private fun DialogScope.VictoryDialogContent(
 					label = "Grid Size:",
 					value = localizedGridSize,
 				)
+				VictoryStatRow(
+					label = "Hints Used:",
+					value = hintsUsed.toString(),
+				)
 				Spacer(Modifier.height(24.dp))
-				Row(
-					horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
-				) {
-					Button(
-						onClick = onShowBoardClick,
-						colors = ButtonDefaults.buttonColors(
-							containerColor = MaterialTheme.colorScheme.secondary,
-						),
-					) {
-						Text(
-							text = "Show Board",
-							color = MaterialTheme.colorScheme.onSecondary,
-						)
-					}
-					Button(
-						onClick = onPlayAgainClick,
-						colors = ButtonDefaults.buttonColors(
-							containerColor = MaterialTheme.colorScheme.primary,
-						),
-					) {
-						Text(
-							"Play Again",
-							color = MaterialTheme.colorScheme.onPrimary,
-						)
-					}
+				HorizontalSeparator(
+					color = MaterialTheme.colorScheme.outline,
+				)
+				Spacer(Modifier.height(16.dp))
+				if (isNewBest || bestTime == null) {
+					Text("New Best!")
+				} else {
+					val formattedBestTime = rememberFormattedTime(bestTime.toFloat())
+					VictoryStatRow(
+						label = "Best Time:",
+						value = formattedBestTime,
+					)
 				}
 			}
 		}
@@ -264,10 +250,10 @@ private fun VictoryDialogPreview() {
 				timeSpent = 374,
 				difficulty = GameDifficulty.Easy,
 				gridSize = SudokuGridSize.NINE,
-				isNewBest = true,
+				hintsUsed = 2,
+				bestTime = 100,
+				isNewBest = false,
 				onDismissRequest = { },
-				onPlayAgainClick = { },
-				onShowBoardClick = { },
 				modifier = Modifier,
 			)
 		}

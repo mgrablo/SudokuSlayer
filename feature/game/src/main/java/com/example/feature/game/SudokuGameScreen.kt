@@ -1,5 +1,6 @@
 package com.example.feature.game
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -126,16 +127,13 @@ private fun SudokuGameScreenContent(
 		timeSpent = elapsedTime(),
 		difficulty = game.difficulty,
 		gridSize = SudokuGridSize.fromIntSize(game.grid.gridSize),
-		isNewBest = false,
+		hintsUsed = game.hintsUsed,
+		bestTime = uiState.currentBestTime,
+		isNewBest = uiState.isNewBestTime,
 		onDismissRequest = {
 			victoryDialogState.visible = false
-		},
-		onPlayAgainClick = {
-			victoryDialogState.visible = false
-			onPlayAgainClick()
-		},
-		onShowBoardClick = {
-			victoryDialogState.visible = false
+			Log.d("test", uiState.isNewBestTime.toString())
+			Log.d("test", uiState.currentBestTime.toString())
 		},
 	)
 
@@ -262,8 +260,7 @@ private fun SudokuGameScreenContent(
 								victoryDialogState.visible = true
 							},
 							onPlayAgainClick = onPlayAgainClick,
-							onShowInsights = {
-							},
+							onShowInsights = onNavigateToInsightsClick,
 							summaryOpen = victoryDialogState.visible,
 							modifier = Modifier.weight(1f),
 						)

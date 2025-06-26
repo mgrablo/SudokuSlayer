@@ -59,6 +59,9 @@ class AndroidStatisticsRepository(private val database: AppDatabase) : Statistic
 		database.gameResultQueries.clearAll()
 	}
 
+	override suspend fun getBestTime(gameDifficulty: GameDifficulty, gridSize: SudokuGridSize): Long? =
+		database.gameResultQueries.getBestTime(gameDifficulty, gridSize).executeAsOneOrNull()?.MIN
+
 	private fun GameResultEntity.toGameResult(): GameResult = GameResult(
 		id = this.id,
 		timeInSeconds = this.timeInSeconds,

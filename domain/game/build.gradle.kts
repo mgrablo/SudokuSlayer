@@ -5,4 +5,5 @@ plugins {
 dependencies {
 	api(projects.sudokuCore)
 	api(projects.domain.core)
+	implementation(project(":domain:statistics"))
 }

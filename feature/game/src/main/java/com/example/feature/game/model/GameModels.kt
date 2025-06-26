@@ -9,6 +9,8 @@ internal data class SudokuGameUiState(
 	val lastHint: Hint? = null,
 	val isLeftHandMode: Boolean = false,
 	val showActionButtonsOnTop: Boolean = false,
+	val currentBestTime: Long? = null,
+	val isNewBestTime: Boolean = false,
 )
 
 internal enum class GameState {

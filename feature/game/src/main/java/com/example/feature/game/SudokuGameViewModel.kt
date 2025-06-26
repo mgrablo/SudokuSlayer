@@ -1,5 +1,6 @@
 package com.example.feature.game
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
@@ -12,6 +13,7 @@ import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
 import com.example.domain.game.repositories.Operation
 import com.example.domain.game.repositories.OperationRepository
+import com.example.domain.game.usecases.GetBestTimeUseCase
 import com.example.domain.game.usecases.RedoOperationUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
 import com.example.domain.settings.SettingsRepository
@@ -47,6 +49,7 @@ internal class SudokuGameViewModel(
 	private val hintUseCases: HintUseCases,
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
+	private val getBestTimeUseCase: GetBestTimeUseCase,
 	private val elapsedTimerManager: ElapsedTimerManager,
 	private val gameResultWriter: GameResultWriter,
 ) : ViewModel() {
@@ -174,8 +177,22 @@ internal class SudokuGameViewModel(
 						hintLogs = game.hintLogs.toPersistentList(),
 					)
 				}
+				getBestTimeUseCase(
+					game.difficulty,
+					SudokuGridSize.fromIntSize(
+						game.grid.gridSize,
+					),
+				)?.let { bestTime ->
+					_uiState.update {
+						it.copy(
+							currentBestTime = bestTime,
+						)
+					}
+					Log.d("test viewmodel", bestTime.toString())
+				}
 			}
 		} ?: throw Exception("Proto Sudoku not found!")
+
 		settingsRepository.leftHandMode.firstOrNull()?.let { leftHandMode ->
 			_uiState.update {
 				it.copy(isLeftHandMode = leftHandMode)
@@ -283,6 +300,7 @@ internal class SudokuGameViewModel(
 				_uiState.update {
 					it.copy(
 						gameState = GameState.VICTORY,
+						isNewBestTime = it.currentBestTime == null || it.currentBestTime > elapsedTime.value,
 					)
 				}
 				elapsedTimerManager.stopTracking()

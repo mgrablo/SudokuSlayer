@@ -5,6 +5,7 @@ import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
 import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.GenerateHintLogUseCase
+import com.example.domain.game.usecases.GetBestTimeUseCase
 import com.example.domain.game.usecases.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.GetGameUseCase
 import com.example.domain.game.usecases.HighlightMatchingNumbersUseCase
@@ -31,6 +32,7 @@ val domainGameModule =
 		factory { SaveGameUseCase(get()) }
 		factory { SaveElapsedTimeUseCase(get()) }
 		factory { ClearActiveGameUseCase(get()) }
+		factory { GetBestTimeUseCase(get()) }
 
 		factory { SelectCellUseCase(get(), get(), get(), get()) }
 		factory { HighlightMatchingNumbersUseCase() }
