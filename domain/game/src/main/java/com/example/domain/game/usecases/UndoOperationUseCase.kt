@@ -35,20 +35,36 @@ class UndoOperationUseCase(
 					operationRepository.removeUndoOperation(undoId.id)
 				}
 
+				var updatedGrid = grid
 				val oldCell = lastOperation.oldCell
 				val newCell = lastOperation.cell
 				val symmetricDifference =
 					(oldCell.cornerNotes - newCell.cornerNotes) union
 						(newCell.cornerNotes - oldCell.cornerNotes)
-				val isNote = symmetricDifference.isNotEmpty()
-				return inputNumberUseCase(
-					sudokuGrid = grid,
-					number = if (isNote) symmetricDifference.first() else oldCell.number,
-					row = oldCell.row,
-					column = oldCell.col,
-					isNote = isNote,
-					isHint = oldCell.attributes.contains(CellAttributes.HINT_REVEALED),
-				)
+
+				val isNote = symmetricDifference.isNotEmpty() && oldCell.number == 0
+				return if (isNote) {
+					symmetricDifference.forEach { noteVaule ->
+						updatedGrid = inputNumberUseCase(
+							sudokuGrid = updatedGrid,
+							number = noteVaule,
+							row = oldCell.row,
+							column = oldCell.col,
+							isNote = true,
+							isHint = oldCell.attributes.contains(element = CellAttributes.HINT_REVEALED),
+						)
+					}
+					updatedGrid
+				} else {
+					inputNumberUseCase(
+						sudokuGrid = grid,
+						number = oldCell.number,
+						row = oldCell.row,
+						column = oldCell.col,
+						isNote = false,
+						isHint = oldCell.attributes.contains(CellAttributes.HINT_REVEALED),
+					)
+				}
 			}
 		} finally {
 			isProcessing.set(false)
