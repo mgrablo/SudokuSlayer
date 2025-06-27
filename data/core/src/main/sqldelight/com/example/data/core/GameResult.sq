@@ -56,3 +56,8 @@ DELETE FROM GameResultEntity;
 -- Queries for game module repository methods
 insertGameResult:
 INSERT OR IGNORE INTO GameResultEntity VALUES (?, ?, ?, ?, ?, ?, ?);
+
+getBestTime:
+SELECT MIN(timeInSeconds) FROM GameResultEntity
+WHERE difficulty = :difficulty
+	AND gridSize = :gridSize;

@@ -14,6 +14,7 @@ interface StatisticsRepository {
 	suspend fun getFilteredGameResults(filter: GameResultFilter): List<GameResult>
 	suspend fun getTotalGameResults(): Long
 	suspend fun getTotalTimeSpent(): Long
+	suspend fun getBestTime(gameDifficulty: GameDifficulty, gridSize: SudokuGridSize): Long?
 	suspend fun clearAll()
 }
 

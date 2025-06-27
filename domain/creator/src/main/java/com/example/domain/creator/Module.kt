@@ -7,4 +7,5 @@ val domainCreatorModule =
 		factory { CreateNewGameUseCase() }
 		factory { GetSavedGameUseCase(get()) }
 		factory { SaveGameUseCase(get()) }
+		factory { HasActiveGameUseCase(get()) }
 	}

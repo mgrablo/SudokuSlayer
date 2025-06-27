@@ -105,7 +105,7 @@ fun SudokuNavigationRail(
 				enabled = isEnabled,
 				onClick = { navigateToScreen(it) },
 				icon = {
-					DestinationIcon(it.icon)
+					DestinationIcon(it.icon, tint = textColor)
 				},
 				colors = WideNavigationRailItemDefaults.colors(
 					selectedTextColor = MaterialTheme.colorScheme.secondary,

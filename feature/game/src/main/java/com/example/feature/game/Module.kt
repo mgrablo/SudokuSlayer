@@ -11,19 +11,12 @@ val gameModule =
 		viewModel {
 			SudokuGameViewModel(
 				settingsRepository = get(),
+				gameManagementUseCases = get(),
+				hintUseCases = get(),
 				operationRepository = get(),
-				getGameUseCase = get(),
-				saveGameUseCase = get(),
-				selectCellUseCase = get(),
-				inputNumberUseCase = get(),
-				provideHintUseCase = get(),
-				focusOnHintCellsUseCase = get(),
-				generateHintLogUseCase = get(),
-				revealHintOnGridUseCase = get(),
-				revealLastHintLogUseCase = get(),
 				undoOperationUseCase = get(),
 				redoOperationUseCase = get(),
-				resetGameUseCase = get(),
+				getBestTimeUseCase = get(),
 				elapsedTimerManager = get(),
 				gameResultWriter = get(),
 			)

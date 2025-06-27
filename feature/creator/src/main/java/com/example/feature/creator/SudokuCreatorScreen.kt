@@ -135,11 +135,12 @@ private fun SudokuCreatorContent(
 				modifier = Modifier.fillMaxWidth(SELECTS_MAX_WIDTH),
 			)
 
-			if (uiState.loadingState == ScreenState.LOADING) {
+			if (gameCreationInProgress) {
 				ContainedLoadingIndicator()
 			} else {
 				GameControls(
 					savedGame = uiState.savedGame,
+					hasActiveGame = uiState.hasActiveGame,
 					onNewGame = {
 						onEvent(Event.NewGame)
 						gameCreationInProgress = true
@@ -171,8 +172,13 @@ private fun PreviewBox() {
 }
 
 @Composable
-private fun GameControls(savedGame: Game?, onNewGame: () -> Unit, onLoadSudoku: () -> Unit) {
-	if (savedGame != null) {
+private fun GameControls(
+	savedGame: Game?,
+	hasActiveGame: Boolean,
+	onNewGame: () -> Unit,
+	onLoadSudoku: () -> Unit,
+) {
+	if (savedGame != null && hasActiveGame) {
 		GameButton(
 			onClick = onLoadSudoku,
 			text = "Continue ${savedGame.difficulty}",

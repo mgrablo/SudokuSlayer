@@ -5,5 +5,7 @@ plugins {
 dependencies {
 	implementation(projects.feature.uicore)
 	implementation(projects.domain.game)
+
 	implementation(libs.kotlinx.datetime)
+	implementation(libs.confettikit)
 }
