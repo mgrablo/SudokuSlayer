@@ -155,7 +155,16 @@ class UndoOperationUseCaseTest {
 		val lastOperation = Operation(1, newCell, oldCell)
 		val gridAfterNote1 = SudokuGrid().withValue(0, 0, 1) // Dummy grid
 		coEvery { operationRepository.getUndoOperations() } returns listOf(lastOperation)
-		coEvery { inputNumberUseCase(any(), 1, any(), any(), true, any()) } returns gridAfterNote1
+		coEvery {
+			inputNumberUseCase(
+				any(),
+				1,
+				any(),
+				any(),
+				true,
+				any(),
+			)
+		} returns gridAfterNote1
 		coEvery { inputNumberUseCase(any(), 2, any(), any(), true, any()) } returns updatedGrid
 
 		val result = undoOperationUseCase(initialGrid)
@@ -315,7 +324,7 @@ class UndoOperationUseCaseTest {
 	}
 
 	@Test
-	fun `UndoOperationUseCase exception in inputNumberUseCase  note input `() = runTest {
+	fun `UndoOperationUseCase exception in inputNumberUseCase note input `() = runTest {
 		// Test how the use case handles an exception thrown by `inputNumberUseCase` when `isNote` is true.
 		// Ensure `isProcessing` is reset.
 		val oldCell = SudokuCellData(0, 0, 0, cornerNotes = persistentSetOf(1))
@@ -337,7 +346,7 @@ class UndoOperationUseCaseTest {
 	}
 
 	@Test
-	fun `UndoOperationUseCase exception in inputNumberUseCase  number input `() = runTest {
+	fun `UndoOperationUseCase exception in inputNumberUseCase number input `() = runTest {
 		// Test how the use case handles an exception thrown by `inputNumberUseCase` when `isNote` is false.
 		// Ensure `isProcessing` is reset.
 		val lastOperation = Operation(1, SudokuCellData(0, 0, 5), SudokuCellData(0, 0, 0))
@@ -383,7 +392,16 @@ class UndoOperationUseCaseTest {
 
 			undoOperationUseCase(initialGrid)
 
-			coVerify { inputNumberUseCase(initialGrid, 9, 0, 0, isNote = false, isHint = false) }
+			coVerify {
+				inputNumberUseCase(
+					sudokuGrid = initialGrid,
+					number = 9,
+					row = 0,
+					column = 0,
+					isNote = false,
+					isHint = false,
+				)
+			}
 		}
 
 	@Test

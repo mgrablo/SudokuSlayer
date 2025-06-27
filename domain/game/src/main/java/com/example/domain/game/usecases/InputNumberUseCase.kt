@@ -37,6 +37,7 @@ class InputNumberUseCase {
 
 				isNote ->
 					cell.copy(
+						number = 0,
 						cornerNotes =
 						if (cell.cornerNotes.contains(number)) {
 							cell.cornerNotes - number
@@ -48,6 +49,7 @@ class InputNumberUseCase {
 				else ->
 					cell.copy(
 						number = if (number == cell.number) 0 else number,
+						cornerNotes = persistentSetOf(),
 						attributes = if (isHint) cell.attributes + CellAttributes.HINT_REVEALED else cell.attributes,
 					)
 			}

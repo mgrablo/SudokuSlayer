@@ -27,3 +27,6 @@ trailing-comma-on-call-site = true
 
 [**/build/generated/*/main/**]
 ktlint = disabled
+
+[**/test/**]
+ktlint_ignore_back_ticked_identifier = true
