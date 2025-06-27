@@ -33,6 +33,7 @@ androidJunit5 = "1.13.0.0"
 junit5TestCompose = "1.8.0"
 testCoreKtx = "1.6.1"
 testExt = "1.2.1"
+mockkVersion = "1.14.4"
 ktlint = "12.3.0"
 espressoCore = "3.6.1"
 
@@ -101,6 +102,7 @@ junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params" }
 junit5-android-test-compose = { group = "de.mannodermaus.junit5", name = "android-test-compose", version.ref = "junit5TestCompose"}
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockkVersion" }
 ktlint-ruleset-compose = { group = "io.nlopez.compose.rules", name="ktlint", version.ref = "ktlintCompose" }
 
 # Dependency Injection
