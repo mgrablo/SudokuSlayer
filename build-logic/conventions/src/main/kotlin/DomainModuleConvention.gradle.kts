@@ -18,6 +18,7 @@ kotlin {
 dependencies {
 	implementation(libs.koin.core)
 	implementation(libs.kotlinx.coroutines.core)
+	implementation(libs.kotlinx.coroutines.test)
 	implementation(libs.kotlinx.collections.immutable)
 
 	testImplementation(platform(libs.junit.bom))
