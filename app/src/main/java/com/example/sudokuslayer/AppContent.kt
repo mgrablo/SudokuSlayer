@@ -136,9 +136,11 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 				sudokuCreatorEntry(
 					navigateToGameScreen = {
 						scope.launch {
-							backstack.clear()
-							backstack.addAll(listOf(SudokuCreator, SudokuGame))
-							println(backstack)
+							backstack.apply {
+								clear()
+								add(SudokuCreator)
+								add(SudokuGame)
+							}
 						}
 					},
 					openDrawer = {
@@ -155,14 +157,15 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					},
 					onPlayAgainClick = {
 						scope.launch {
-							backstack.clear()
-							backstack.add(SudokuCreator)
+							backstack.removeLastOrNull()
 						}
 					},
 					onNavigateToInsightsClick = {
 						scope.launch {
-							backstack.clear()
-							backstack.addAll(listOf(SudokuCreator, Insights))
+							backstack.apply {
+								removeLastOrNull()
+								add(Insights)
+							}
 						}
 					},
 				)

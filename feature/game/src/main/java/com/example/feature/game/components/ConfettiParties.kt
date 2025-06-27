@@ -11,7 +11,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 internal object ConfettiParties {
-	fun explode(): List<Party> = listOf(
+	fun explode(position: Position = Position.Relative(0.5, 0.5)): List<Party> = listOf(
 		Party(
 			speed = 0f,
 			maxSpeed = 30f,
@@ -19,7 +19,7 @@ internal object ConfettiParties {
 			spread = 360,
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 100.milliseconds).max(100),
-			position = Position.Relative(0.5, 0.35),
+			position = position,
 			rotation = Rotation.enabled(),
 			fadeOutEnabled = false,
 			shapes = listOf(Shape.Square, Shape.Circle),
@@ -75,8 +75,6 @@ internal object ConfettiParties {
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 2.5.seconds).perSecond(100),
 			position = Position.Relative(0.0, 0.0).between(Position.Relative(1.0, 0.0)),
-			timeToLive = 5000L,
-			fadeOutEnabled = false,
 		),
 	)
 }

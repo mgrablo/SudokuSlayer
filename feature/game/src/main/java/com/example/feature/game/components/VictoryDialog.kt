@@ -141,12 +141,13 @@ private fun DialogScope.VictoryDialogContent(
 			ConfettiParties.fountain(
 				Position.Absolute(trophyPosition.x, trophyPosition.y),
 			),
-			ConfettiParties.rain(),
 		)
 	}
 
 	val confettiPresets = listOf(
-		ConfettiParties.explode(),
+		ConfettiParties.explode(
+			Position.Absolute(trophyPosition.x, trophyPosition.y),
+		),
 		ConfettiParties.rain(),
 	)
 
