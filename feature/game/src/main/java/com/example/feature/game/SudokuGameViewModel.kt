@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
+import com.example.domain.core.Operation
+import com.example.domain.core.OperationRepository
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.GameManagementUseCases
 import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
-import com.example.domain.game.repositories.Operation
-import com.example.domain.game.repositories.OperationRepository
 import com.example.domain.game.usecases.GetBestTimeUseCase
 import com.example.domain.game.usecases.RedoOperationUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
@@ -327,6 +327,7 @@ internal class SudokuGameViewModel(
 						elapsedTime = elapsedTime.value,
 					),
 				)
+				operationRepository.clearOperations()
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.repositories.Operation
-import com.example.domain.game.repositories.OperationRepository
+import com.example.domain.core.Operation
+import com.example.domain.core.OperationRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid

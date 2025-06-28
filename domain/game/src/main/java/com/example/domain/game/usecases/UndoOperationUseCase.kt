@@ -1,6 +1,6 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.game.repositories.OperationRepository
+import com.example.domain.core.OperationRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.coroutines.sync.Mutex

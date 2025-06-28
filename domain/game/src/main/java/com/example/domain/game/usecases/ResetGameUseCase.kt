@@ -1,7 +1,7 @@
 package com.example.domain.game.usecases
 
 import com.example.domain.core.Game
-import com.example.domain.game.repositories.OperationRepository
+import com.example.domain.core.OperationRepository
 import com.example.sudoku.model.clearGrid
 import com.example.sudoku.model.clearMatchingNumberHighlight
 import com.example.sudoku.model.clearRowColumnHighlight
