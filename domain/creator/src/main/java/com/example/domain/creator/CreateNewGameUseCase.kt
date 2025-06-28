@@ -2,13 +2,15 @@ package com.example.domain.creator
 
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
+import com.example.domain.core.OperationRepository
 import com.example.domain.core.SudokuGridSize
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
-class CreateNewGameUseCase {
+class CreateNewGameUseCase(private val operationRepository: OperationRepository) {
 	suspend operator fun invoke(gridSize: SudokuGridSize, difficulty: GameDifficulty): Game {
+		operationRepository.clearOperations()
 		val generator = ClassicSudokuGenerator(gridSize.toInt())
 		val cellsToRemove = calculateCellsToRemove(gridSize, difficulty)
 		val sudokuGrid = generator.createSudoku(cellsToRemove, Random.nextLong())
