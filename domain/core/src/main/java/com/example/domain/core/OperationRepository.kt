@@ -1,4 +1,4 @@
-package com.example.domain.game.repositories
+package com.example.domain.core
 
 import com.example.sudoku.model.SudokuCellData
 import kotlinx.coroutines.flow.Flow

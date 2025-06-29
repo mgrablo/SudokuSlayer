@@ -3,8 +3,8 @@ package com.example.data.game
 import com.example.data.core.proto.ProtoStorageFactory
 import com.example.data.game.mappers.toOperation
 import com.example.data.game.mappers.toProtoOperation
-import com.example.domain.game.repositories.Operation
-import com.example.domain.game.repositories.OperationRepository
+import com.example.domain.core.Operation
+import com.example.domain.core.OperationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

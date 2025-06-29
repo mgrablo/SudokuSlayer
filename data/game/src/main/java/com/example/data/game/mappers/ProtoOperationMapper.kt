@@ -1,6 +1,6 @@
 package com.example.data.game.mappers
 
-import com.example.domain.game.repositories.Operation
+import com.example.domain.core.Operation
 import data.game.ProtoOperation
 
 fun Operation.toProtoOperation(): ProtoOperation = ProtoOperation
