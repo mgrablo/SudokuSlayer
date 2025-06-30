@@ -43,6 +43,7 @@ import kotlin.math.sqrt
 @Composable
 internal fun KeyPad(
 	onNumberClick: (Int) -> Unit,
+	onNumberLongClick: (Int) -> Unit,
 	onClearClick: () -> Unit,
 	onUndoClick: () -> Unit,
 	onRedoClick: () -> Unit,
@@ -140,6 +141,7 @@ internal fun KeyPad(
 						NumberPad(
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
+							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
 							textStyle = textStyle,
 							itemSize = itemSize,
@@ -180,6 +182,7 @@ internal fun KeyPad(
 						NumberPad(
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
+							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
 							textStyle = textStyle,
 							itemSize = itemSize,
@@ -247,6 +250,7 @@ private fun KeyPadPreview() {
 	SudokuSlayerTheme {
 		KeyPad(
 			onNumberClick = { },
+			onNumberLongClick = { },
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
@@ -268,6 +272,7 @@ private fun KeyPadFourPreview() {
 	SudokuSlayerTheme {
 		KeyPad(
 			onNumberClick = { },
+			onNumberLongClick = { },
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
@@ -289,6 +294,7 @@ private fun KeyPadFourLeftHandPreview() {
 	SudokuSlayerTheme {
 		KeyPad(
 			onNumberClick = { },
+			onNumberLongClick = { },
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
@@ -310,6 +316,7 @@ private fun KeyPadSixteenPreview() {
 	SudokuSlayerTheme {
 		KeyPad(
 			onNumberClick = { },
+			onNumberLongClick = { },
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },
@@ -331,6 +338,7 @@ private fun KeyPadSixteenLeftPreview() {
 	SudokuSlayerTheme {
 		KeyPad(
 			onNumberClick = { },
+			onNumberLongClick = { },
 			onClearClick = { },
 			onUndoClick = { },
 			onRedoClick = { },

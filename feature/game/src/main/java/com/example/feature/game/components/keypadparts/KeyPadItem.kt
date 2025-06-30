@@ -1,7 +1,8 @@
 package com.example.feature.game.components.keypadparts
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,19 +35,27 @@ fun KeyPadItem(
 	text: String,
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
+	onLongClick: (() -> Unit)? = null,
 	icon: AppIcon? = null,
 	textStyle: TextStyle = TextStyle(),
 	bgColor: Color = MaterialTheme.colorScheme.primaryContainer,
 	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
 ) {
+	val mutableInteractionSource = remember { MutableInteractionSource() }
 	Box(
 		modifier =
 		modifier
 			.aspectRatio(1f)
 			.clip(CircleShape)
 			.background(bgColor)
-			.clickable(
+			.combinedClickable(
 				onClick = onClick,
+				onLongClick = onLongClick,
+				interactionSource = mutableInteractionSource,
+				indication = ripple(
+					bounded = true,
+					color = textColor.copy(alpha = 0.7f),
+				),
 			),
 		contentAlignment = Alignment.Center,
 	) {
@@ -58,6 +69,7 @@ fun KeyPadItem(
 						modifier = Modifier.size(textStyle.fontSize.value.dp),
 					)
 				}
+
 				is AppIcon.VectorIcon -> {
 					Icon(
 						imageVector = icon.imageVector,
