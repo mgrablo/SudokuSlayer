@@ -114,6 +114,8 @@ internal class SudokuGameViewModel(
 
 		data class InputNumber(val number: Int) : Event
 
+		data class LongInputNumber(val number: Int) : Event
+
 		data object SwitchInputMode : Event
 
 		data object ClearCell : Event
@@ -146,6 +148,12 @@ internal class SudokuGameViewModel(
 					selectedCell = _uiState.value.selectedCell,
 					noteMode = _uiState.value.isInNoteMode,
 				)
+
+			is Event.LongInputNumber -> inputNumber(
+				number = event.number,
+				selectedCell = _uiState.value.selectedCell,
+				noteMode = !uiState.value.isInNoteMode,
+			)
 
 			is Event.ClearCell ->
 				inputNumber(

@@ -26,6 +26,7 @@ import kotlin.math.sqrt
 fun NumberPad(
 	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
+	onButtonLongClick: (Int) -> Unit,
 	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
@@ -71,6 +72,7 @@ fun NumberPad(
 					KeyPadItem(
 						text = number.toString(),
 						onClick = { onButtonClick(number) },
+						onLongClick = { onButtonLongClick(number) },
 						bgColor = keyColor,
 						textColor = textColor,
 						textStyle = textStyle,
@@ -89,6 +91,7 @@ private fun NumberPadNineItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
+			onButtonLongClick = { },
 			noteMode = false,
 			gridSize = 9,
 			modifier = Modifier.padding(16.dp),
@@ -102,6 +105,7 @@ private fun NumberPadFourItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
+			onButtonLongClick = { },
 			noteMode = false,
 			gridSize = 4,
 			modifier = Modifier.padding(16.dp),
@@ -115,6 +119,7 @@ private fun NumberPadSixteenItemsPreview() {
 	SudokuSlayerTheme {
 		NumberPad(
 			onButtonClick = { },
+			onButtonLongClick = { },
 			noteMode = false,
 			gridSize = 16,
 			modifier = Modifier.padding(16.dp),

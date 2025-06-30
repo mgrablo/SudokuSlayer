@@ -250,6 +250,7 @@ private fun SudokuGameScreenContent(
 							GameState.PLAYING -> {
 								KeyPad(
 									onNumberClick = { onEvent(Event.InputNumber(it)) },
+									onNumberLongClick = { onEvent(Event.LongInputNumber(it)) },
 									onClearClick = { onEvent(Event.ClearCell) },
 									onUndoClick = { onEvent(Event.Undo) },
 									onRedoClick = { onEvent(Event.Redo) },
@@ -300,6 +301,7 @@ private fun SudokuGameScreenContent(
 							GameState.PLAYING -> {
 								KeyPad(
 									onNumberClick = { onEvent(Event.InputNumber(it)) },
+									onNumberLongClick = { onEvent(Event.LongInputNumber(it)) },
 									onClearClick = { onEvent(Event.ClearCell) },
 									onUndoClick = { onEvent(Event.Undo) },
 									onRedoClick = { onEvent(Event.Redo) },
