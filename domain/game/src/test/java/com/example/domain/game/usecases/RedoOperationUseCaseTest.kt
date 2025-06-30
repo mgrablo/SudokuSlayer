@@ -2,6 +2,7 @@ package com.example.domain.game.usecases
 
 import com.example.domain.core.Operation
 import com.example.domain.core.OperationRepository
+import com.example.domain.core.changedTo
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
@@ -85,7 +86,7 @@ class RedoOperationUseCaseTest {
 		// Test a successful redo operation where the last operation was a number input (isNote is false).
 		val oldCell = SudokuCellData(0, 0, 0)
 		val newCell = SudokuCellData(0, 0, 5)
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 
 		val result = redoOperationUseCase(initialGrid)
@@ -108,7 +109,7 @@ class RedoOperationUseCaseTest {
 		// Test a successful redo operation where the last operation was adding a single note.
 		val oldCell = SudokuCellData(0, 0, 0, cornerNotes = persistentSetOf(1))
 		val newCell = SudokuCellData(0, 0, 0, cornerNotes = persistentSetOf(1, 2))
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 
 		val result = redoOperationUseCase(initialGrid)
@@ -131,7 +132,7 @@ class RedoOperationUseCaseTest {
 		// Test that when a note is placed on a cell with number, redoing brings the notes back.
 		val oldCell = SudokuCellData(0, 0, 5, cornerNotes = persistentSetOf())
 		val newCell = SudokuCellData(0, 0, 0, cornerNotes = persistentSetOf(1, 2))
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		val gridAfterNote1 = SudokuGrid().withValue(0, 0, 1) // Dummy grid
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		coEvery { inputNumberUseCase(any(), 1, any(), any(), true, any()) } returns gridAfterNote1
@@ -152,7 +153,7 @@ class RedoOperationUseCaseTest {
 			SudokuCellData(0, 0, 0, attributes = persistentSetOf(CellAttributes.HINT_REVEALED))
 		val newCell =
 			SudokuCellData(0, 0, 5, attributes = persistentSetOf(CellAttributes.HINT_REVEALED))
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 
 		redoOperationUseCase(initialGrid)
@@ -174,7 +175,7 @@ class RedoOperationUseCaseTest {
 		// Verify that `addUndoOperation`, `findRedoOperation`, and `removeRedoOperation` are called correctly.
 		val oldCell = SudokuCellData(0, 0, 0)
 		val newCell = SudokuCellData(0, 0, 5)
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		coEvery { operationRepository.findRedoOperation(lastOperation.id) } returns lastOperation
 
@@ -190,7 +191,7 @@ class RedoOperationUseCaseTest {
 		// Test that if `findRedoOperation` returns null, `removeRedoOperation` is not called.
 		val oldCell = SudokuCellData(0, 0, 0)
 		val newCell = SudokuCellData(0, 0, 5)
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		coEvery { operationRepository.findRedoOperation(lastOperation.id) } returns null
 
@@ -206,7 +207,7 @@ class RedoOperationUseCaseTest {
 		// Test that the critical section of the code is properly protected by the mutex.
 		val oldCell = SudokuCellData(0, 0, 0)
 		val newCell = SudokuCellData(0, 0, 5)
-		val lastOperation = Operation(1, newCell, oldCell)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 
 		redoOperationUseCase(initialGrid)
@@ -256,7 +257,7 @@ class RedoOperationUseCaseTest {
 
 	@Test
 	fun `RedoOperationUseCase exception in addUndoOperation`() = runTest {
-		val lastOperation = Operation(1, SudokuCellData(0, 0, 5), SudokuCellData(0, 0, 0))
+		val lastOperation = Operation(1, SudokuCellData(0, 0, 5) changedTo SudokuCellData(0, 0, 0))
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		testExceptionHandling {
 			coEvery { operationRepository.addUndoOperation(any()) } throws RuntimeException("DB error")
@@ -265,7 +266,7 @@ class RedoOperationUseCaseTest {
 
 	@Test
 	fun `RedoOperationUseCase exception in findRedoOperation`() = runTest {
-		val lastOperation = Operation(1, SudokuCellData(0, 0, 5), SudokuCellData(0, 0, 0))
+		val lastOperation = Operation(1, SudokuCellData(0, 0, 5) changedTo SudokuCellData(0, 0, 0))
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		testExceptionHandling {
 			coEvery { operationRepository.findRedoOperation(any()) } throws RuntimeException("DB error")
@@ -274,7 +275,7 @@ class RedoOperationUseCaseTest {
 
 	@Test
 	fun `RedoOperationUseCase exception in removeRedoOperation`() = runTest {
-		val lastOperation = Operation(1, SudokuCellData(0, 0, 5), SudokuCellData(0, 0, 0))
+		val lastOperation = Operation(1, SudokuCellData(0, 0, 5) changedTo SudokuCellData(0, 0, 0))
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		testExceptionHandling {
 			coEvery { operationRepository.removeRedoOperation(any()) } throws RuntimeException("DB error")
@@ -283,7 +284,7 @@ class RedoOperationUseCaseTest {
 
 	@Test
 	fun `RedoOperationUseCase exception in inputNumberUseCase`() = runTest {
-		val lastOperation = Operation(1, SudokuCellData(0, 0, 5), SudokuCellData(0, 0, 0))
+		val lastOperation = Operation(1, SudokuCellData(0, 0, 5) changedTo SudokuCellData(0, 0, 0))
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		testExceptionHandling {
 			coEvery {

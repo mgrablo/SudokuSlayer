@@ -1,17 +1,28 @@
 package com.example.data.game.mappers
 
+import com.example.domain.core.CellChange
 import com.example.domain.core.Operation
+import data.game.ProtoCellChange
 import data.game.ProtoOperation
 
-fun Operation.toProtoOperation(): ProtoOperation = ProtoOperation
+internal fun Operation.toProtoOperation(): ProtoOperation = ProtoOperation
 	.newBuilder()
 	.setId(id)
-	.setCell(cell.toProtoCell())
-	.setOldCell(oldCell.toProtoCell())
+	.addAllChanges(changes.map { it.toProtoCellChange() })
 	.build()
 
-fun ProtoOperation.toOperation(): Operation = Operation(
+internal fun ProtoOperation.toOperation(): Operation = Operation(
 	id = id,
-	cell = cell.toSudokuCellData(),
-	oldCell = oldCell.toSudokuCellData(),
+	changes = changesList.map { it.toCellChange() },
 )
+
+internal fun ProtoCellChange.toCellChange(): CellChange = com.example.domain.core.CellChange(
+	oldCell = oldCell.toSudokuCellData(),
+	newCell = newCell.toSudokuCellData(),
+)
+
+internal fun CellChange.toProtoCellChange(): ProtoCellChange = ProtoCellChange
+	.newBuilder()
+	.setOldCell(oldCell.toProtoCell())
+	.setNewCell(newCell.toProtoCell())
+	.build()

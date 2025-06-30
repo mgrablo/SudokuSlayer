@@ -2,6 +2,7 @@ package com.example.feature.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.core.CellChange
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
@@ -262,8 +263,12 @@ internal class SudokuGameViewModel(
 				addUndoOperation(
 					Operation(
 						id = operationRepository.getUndoOperations().size.toLong(),
-						cell = updatedSudoku.getCellAt(row, col),
-						oldCell = backupCell,
+						changes = listOf(
+							CellChange(
+								oldCell = backupCell,
+								newCell = updatedSudoku.getCellAt(row, col),
+							),
+						),
 					),
 				)
 				clearRedoOperations()
