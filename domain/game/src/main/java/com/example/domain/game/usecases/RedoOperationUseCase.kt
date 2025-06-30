@@ -59,7 +59,7 @@ class RedoOperationUseCase(
 						}
 					} else {
 						updatedGrid = inputNumberUseCase(
-							sudokuGrid = grid,
+							sudokuGrid = updatedGrid,
 							number = newCell.number,
 							row = newCell.row,
 							column = newCell.col,

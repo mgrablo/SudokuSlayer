@@ -56,7 +56,7 @@ class UndoOperationUseCase(
 						}
 					} else {
 						updatedGrid = inputNumberUseCase(
-							sudokuGrid = grid,
+							sudokuGrid = updatedGrid,
 							number = oldCell.number,
 							row = oldCell.row,
 							column = oldCell.col,
