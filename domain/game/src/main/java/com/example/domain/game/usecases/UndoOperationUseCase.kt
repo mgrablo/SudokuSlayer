@@ -36,35 +36,37 @@ class UndoOperationUseCase(
 				}
 
 				var updatedGrid = grid
-				val oldCell = lastOperation.oldCell
-				val newCell = lastOperation.cell
-				val symmetricDifference =
-					(oldCell.cornerNotes - newCell.cornerNotes) union
-						(newCell.cornerNotes - oldCell.cornerNotes)
-
-				val isNote = symmetricDifference.isNotEmpty() && oldCell.number == 0
-				return if (isNote) {
-					symmetricDifference.forEach { noteVaule ->
+				lastOperation.changes.forEach { change ->
+					val oldCell = change.oldCell
+					val newCell = change.newCell
+					val symmetricDifference =
+						(oldCell.cornerNotes - newCell.cornerNotes) union
+							(newCell.cornerNotes - oldCell.cornerNotes)
+					val isNote = symmetricDifference.isNotEmpty() && oldCell.number == 0
+					if (isNote) {
+						symmetricDifference.forEach { noteVaule ->
+							updatedGrid = inputNumberUseCase(
+								sudokuGrid = updatedGrid,
+								number = noteVaule,
+								row = oldCell.row,
+								column = oldCell.col,
+								isNote = true,
+								isHint = oldCell.attributes.contains(element = CellAttributes.HINT_REVEALED),
+							)
+						}
+					} else {
 						updatedGrid = inputNumberUseCase(
-							sudokuGrid = updatedGrid,
-							number = noteVaule,
+							sudokuGrid = grid,
+							number = oldCell.number,
 							row = oldCell.row,
 							column = oldCell.col,
-							isNote = true,
-							isHint = oldCell.attributes.contains(element = CellAttributes.HINT_REVEALED),
+							isNote = false,
+							isHint = oldCell.attributes.contains(CellAttributes.HINT_REVEALED),
 						)
 					}
-					updatedGrid
-				} else {
-					inputNumberUseCase(
-						sudokuGrid = grid,
-						number = oldCell.number,
-						row = oldCell.row,
-						column = oldCell.col,
-						isNote = false,
-						isHint = oldCell.attributes.contains(CellAttributes.HINT_REVEALED),
-					)
 				}
+
+				return updatedGrid
 			}
 		} finally {
 			isProcessing.set(false)
