@@ -58,6 +58,9 @@ class SettingsViewModel(
 			initialValue = true,
 		)
 
+	val autoClearNotes: StateFlow<Boolean> =
+		settingsRepository.autoClearNotes.stateInViewModel(initialValue = true)
+
 	val lightColorSchemes = settingsRepository.getLightColorSchemes().toPersistentSet()
 	val darkColorSchemes = settingsRepository.getDarkColorSchemes().toPersistentSet()
 
@@ -75,6 +78,8 @@ class SettingsViewModel(
 		data class ToggleActionButtonsOnTop(val actionButtonsOnTop: Boolean) : Event
 
 		data class ToggleInsightsSummaryCompactLayout(val compactLayout: Boolean) : Event
+
+		data class ToggleAutoClearNotes(val autoClearNotes: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -88,6 +93,8 @@ class SettingsViewModel(
 			is Event.ToggleInsightsSummaryCompactLayout -> toggleInsightsSummaryCompactLayout(
 				event.compactLayout,
 			)
+
+			is Event.ToggleAutoClearNotes -> toggleAutoClearNotes(event.autoClearNotes)
 		}
 	}
 
@@ -130,6 +137,12 @@ class SettingsViewModel(
 	private fun toggleActionButtonsOnTop(actionButtonsOnTop: Boolean) {
 		viewModelScope.launch {
 			settingsRepository.setShowActionButtonsOnTop(actionButtonsOnTop)
+		}
+	}
+
+	private fun toggleAutoClearNotes(autoClearNotes: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setAutoClearNotes(autoClearNotes)
 		}
 	}
 }
