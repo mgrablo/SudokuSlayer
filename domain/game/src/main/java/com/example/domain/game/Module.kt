@@ -1,5 +1,6 @@
 package com.example.domain.game
 
+import com.example.domain.game.usecases.AutoClearNotesUseCase
 import com.example.domain.game.usecases.ClearActiveGameUseCase
 import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
 import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
@@ -42,6 +43,7 @@ val domainGameModule =
 
 		factory { InputNumberUseCase() }
 		factory { ResetGameUseCase(get()) }
+		factory { AutoClearNotesUseCase() }
 
 		factory { ProvideHintUseCase(get()) }
 		factory { FocusOnHintCellsUseCase() }
@@ -70,6 +72,7 @@ val domainGameModule =
 				inputNumber = get(),
 				resetGame = get(),
 				clearActiveGame = get(),
+				autoClearNotes = get(),
 			)
 		}
 	}

@@ -1,5 +1,6 @@
 package com.example.domain.game
 
+import com.example.domain.game.usecases.AutoClearNotesUseCase
 import com.example.domain.game.usecases.ClearActiveGameUseCase
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.GenerateHintLogUseCase
@@ -19,6 +20,7 @@ data class GameManagementUseCases(
 	val inputNumber: InputNumberUseCase,
 	val resetGame: ResetGameUseCase,
 	val clearActiveGame: ClearActiveGameUseCase,
+	val autoClearNotes: AutoClearNotesUseCase,
 )
 
 data class HintUseCases(

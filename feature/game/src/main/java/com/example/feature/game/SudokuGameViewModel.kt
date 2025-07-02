@@ -147,20 +147,20 @@ internal class SudokuGameViewModel(
 				inputNumber(
 					number = event.number,
 					selectedCell = _uiState.value.selectedCell,
-					noteMode = _uiState.value.isInNoteMode,
+					isNote = _uiState.value.isInNoteMode,
 				)
 
 			is Event.LongInputNumber -> inputNumber(
 				number = event.number,
 				selectedCell = _uiState.value.selectedCell,
-				noteMode = !uiState.value.isInNoteMode,
+				isNote = !uiState.value.isInNoteMode,
 			)
 
 			is Event.ClearCell ->
 				inputNumber(
 					number = 0,
 					selectedCell = _uiState.value.selectedCell,
-					noteMode = _uiState.value.isInNoteMode,
+					isNote = _uiState.value.isInNoteMode,
 				)
 
 			is Event.Undo -> undoLastMove()
@@ -216,6 +216,11 @@ internal class SudokuGameViewModel(
 				it.copy(showActionButtonsOnTop = actionButtonsOnTop)
 			}
 		}
+		settingsRepository.autoClearNotes.firstOrNull()?.let { autoClearNotes ->
+			_uiState.update {
+				it.copy(autoClearNotes = autoClearNotes)
+			}
+		}
 	}
 
 	private fun selectCell(row: Int, col: Int) {
@@ -241,12 +246,13 @@ internal class SudokuGameViewModel(
 	private fun inputNumber(
 		number: Int,
 		selectedCell: Pair<Int, Int>?,
-		noteMode: Boolean,
+		isNote: Boolean,
 		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
 			if (uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _game.value.grid
+			val changes = mutableListOf<CellChange>()
 			val (row, col) = selectedCell ?: return@launch
 
 			val backupCell = updatedSudoku.getCellAt(row, col)
@@ -256,19 +262,30 @@ internal class SudokuGameViewModel(
 					number = number,
 					row = row,
 					column = col,
-					isNote = noteMode,
+					isNote = isNote,
 					isHint = isHint,
 				)
+			changes.add(
+				CellChange(
+					oldCell = backupCell,
+					newCell = updatedSudoku.getCellAt(row, col),
+				),
+			)
+			if (uiState.value.autoClearNotes && !isNote) {
+				val (newSudoku, noteChanges) = gameManagementUseCases.autoClearNotes(
+					sudokuGrid = updatedSudoku,
+					row = row,
+					column = col,
+					number = number,
+				)
+				updatedSudoku = newSudoku
+				changes.addAll(noteChanges)
+			}
 			operationRepository.apply {
 				addUndoOperation(
 					Operation(
 						id = operationRepository.getUndoOperations().size.toLong(),
-						changes = listOf(
-							CellChange(
-								oldCell = backupCell,
-								newCell = updatedSudoku.getCellAt(row, col),
-							),
-						),
+						changes = changes,
 					),
 				)
 				clearRedoOperations()
