@@ -6,22 +6,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-internal fun TimerDisplay(
-	elapsedTime: () -> Long,
-	onPause: () -> Unit,
-	modifier: Modifier = Modifier,
-) {
-	LifecycleResumeEffect(Unit) {
-		onPauseOrDispose {
-			onPause()
-		}
-	}
-
-	val string = elapsedTime().seconds.toString()
+internal fun TimerDisplay(elapsedTime: Long, modifier: Modifier = Modifier) {
+	val string = elapsedTime.seconds.toString()
 	Box(modifier = modifier) {
 		Text(
 			text = string,
@@ -35,8 +24,7 @@ internal fun TimerDisplay(
 @Composable
 private fun TimerPreview() {
 	TimerDisplay(
-		elapsedTime = { 61L },
-		onPause = { },
+		elapsedTime = 61L,
 		modifier = Modifier,
 	)
 }

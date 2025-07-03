@@ -35,11 +35,11 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.core.rememberDialogState
 import com.example.domain.core.Game
@@ -76,6 +76,14 @@ internal fun SudokuGameScreen(
 	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState: SudokuGameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val game by viewModel.game.collectAsStateWithLifecycle()
+
+	LifecycleResumeEffect(Unit) {
+		viewModel.onEvent(Event.StartTimer)
+		onPauseOrDispose {
+			viewModel.onEvent(Event.StopTimer)
+		}
+	}
+
 	SudokuGameScreenContent(
 		uiState = uiState,
 		game = game,
@@ -187,8 +195,7 @@ private fun SudokuGameScreenContent(
 				windowInsets = WindowInsets.displayCutout,
 				title = {
 					TimerDisplay(
-						elapsedTime = { elapsedTime() },
-						onPause = { onEvent(Event.StopTimer) },
+						elapsedTime = elapsedTime(),
 					)
 				},
 				colors =
@@ -297,7 +304,7 @@ private fun SudokuGameScreenContent(
 						contentAlignment = Alignment.Center,
 					) { state ->
 						when (state) {
-							GameState.LOADING -> { }
+							GameState.LOADING -> {}
 							GameState.PLAYING -> {
 								KeyPad(
 									onNumberClick = { onEvent(Event.InputNumber(it)) },
@@ -388,7 +395,7 @@ private fun SudokuGameScreenSixteenPreview() {
 }
 
 @Preview(
-	device = Devices.AUTOMOTIVE_1024p,
+	device = AUTOMOTIVE_1024p,
 )
 @Composable
 private fun SudokuGameScreenFourPreview() {
