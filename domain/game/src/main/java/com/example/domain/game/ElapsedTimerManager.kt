@@ -2,7 +2,6 @@ package com.example.domain.game
 
 import com.example.domain.game.usecases.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.SaveElapsedTimeUseCase
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ElapsedTimerManager(
 	private val scope: CoroutineScope,
@@ -69,7 +69,6 @@ class ElapsedTimerManager(
 	}
 
 	suspend fun resetTimer() {
-		stopTracking()
 		_elapsedTime.update {
 			0L
 		}
