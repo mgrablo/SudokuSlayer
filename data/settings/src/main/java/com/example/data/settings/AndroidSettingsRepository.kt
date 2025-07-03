@@ -44,6 +44,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		SettingsPreferenceKeys.InsightsSummaryCompactLayout,
 	).map { it == true }
 
+	override val autoClearNotes: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.AutoClearNotes,
+	).map { it == true }
+
 	override suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
 	}
@@ -70,6 +74,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 
 	override suspend fun setInsightsSummaryCompactLayout(compactLayout: Boolean) {
 		preferenceStorage.set(SettingsPreferenceKeys.InsightsSummaryCompactLayout, compactLayout)
+	}
+
+	override suspend fun setAutoClearNotes(autoClearNotes: Boolean) {
+		preferenceStorage.set(SettingsPreferenceKeys.AutoClearNotes, autoClearNotes)
 	}
 
 	override fun getAvailableColorSchemes(): List<String> = ColorScheme.getAvailableColorSchemes()

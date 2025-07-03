@@ -31,6 +31,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
@@ -82,7 +83,7 @@ internal class SudokuGameViewModel(
 					gameState = GameState.LOADING,
 				)
 			}
-			loadData()
+			loadGame()
 			_uiState.update {
 				it.copy(
 					gameState = if (game.value.completed) GameState.VICTORY else GameState.PLAYING,
@@ -97,6 +98,25 @@ internal class SudokuGameViewModel(
 				elapsedTimerManager.startTracking()
 			}
 		}
+
+		viewModelScope.launch {
+			combine(
+				settingsRepository.leftHandMode,
+				settingsRepository.showActionButtonsOnTop,
+				settingsRepository.autoClearNotes,
+			) { leftHandMode, showActionButtonsOnTop, autoClearNotes ->
+				Triple(leftHandMode, showActionButtonsOnTop, autoClearNotes)
+			}.collect { (leftHandMode, showActionButtonsOnTop, autoClearNotes) ->
+				_uiState.update {
+					it.copy(
+						isLeftHandMode = leftHandMode,
+						showActionButtonsOnTop = showActionButtonsOnTop,
+						autoClearNotes = autoClearNotes,
+					)
+				}
+			}
+		}
+
 		viewModelScope.launch {
 			game.collect { game ->
 				gameManagementUseCases.saveGame(
@@ -147,20 +167,20 @@ internal class SudokuGameViewModel(
 				inputNumber(
 					number = event.number,
 					selectedCell = _uiState.value.selectedCell,
-					noteMode = _uiState.value.isInNoteMode,
+					isNote = _uiState.value.isInNoteMode,
 				)
 
 			is Event.LongInputNumber -> inputNumber(
 				number = event.number,
 				selectedCell = _uiState.value.selectedCell,
-				noteMode = !uiState.value.isInNoteMode,
+				isNote = !uiState.value.isInNoteMode,
 			)
 
 			is Event.ClearCell ->
 				inputNumber(
 					number = 0,
 					selectedCell = _uiState.value.selectedCell,
-					noteMode = _uiState.value.isInNoteMode,
+					isNote = _uiState.value.isInNoteMode,
 				)
 
 			is Event.Undo -> undoLastMove()
@@ -180,7 +200,7 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private suspend fun loadData() {
+	private suspend fun loadGame() {
 		gameManagementUseCases.getGame().first().let { game ->
 			_game.update {
 				it.copy(
@@ -203,17 +223,6 @@ internal class SudokuGameViewModel(
 						currentBestTime = bestTime,
 					)
 				}
-			}
-		}
-
-		settingsRepository.leftHandMode.firstOrNull()?.let { leftHandMode ->
-			_uiState.update {
-				it.copy(isLeftHandMode = leftHandMode)
-			}
-		}
-		settingsRepository.showActionButtonsOnTop.firstOrNull()?.let { actionButtonsOnTop ->
-			_uiState.update {
-				it.copy(showActionButtonsOnTop = actionButtonsOnTop)
 			}
 		}
 	}
@@ -241,12 +250,13 @@ internal class SudokuGameViewModel(
 	private fun inputNumber(
 		number: Int,
 		selectedCell: Pair<Int, Int>?,
-		noteMode: Boolean,
+		isNote: Boolean,
 		isHint: Boolean = false,
 	) {
 		viewModelScope.launch {
 			if (uiState.value.gameState == GameState.VICTORY) return@launch
 			var updatedSudoku = _game.value.grid
+			val changes = mutableListOf<CellChange>()
 			val (row, col) = selectedCell ?: return@launch
 
 			val backupCell = updatedSudoku.getCellAt(row, col)
@@ -256,19 +266,30 @@ internal class SudokuGameViewModel(
 					number = number,
 					row = row,
 					column = col,
-					isNote = noteMode,
+					isNote = isNote,
 					isHint = isHint,
 				)
+			changes.add(
+				CellChange(
+					oldCell = backupCell,
+					newCell = updatedSudoku.getCellAt(row, col),
+				),
+			)
+			if (uiState.value.autoClearNotes && !isNote) {
+				val (newSudoku, noteChanges) = gameManagementUseCases.autoClearNotes(
+					sudokuGrid = updatedSudoku,
+					row = row,
+					column = col,
+					number = number,
+				)
+				updatedSudoku = newSudoku
+				changes.addAll(noteChanges)
+			}
 			operationRepository.apply {
 				addUndoOperation(
 					Operation(
 						id = operationRepository.getUndoOperations().size.toLong(),
-						changes = listOf(
-							CellChange(
-								oldCell = backupCell,
-								newCell = updatedSudoku.getCellAt(row, col),
-							),
-						),
+						changes = changes,
 					),
 				)
 				clearRedoOperations()

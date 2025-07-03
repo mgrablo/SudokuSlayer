@@ -44,6 +44,7 @@ internal fun SettingsScreen(
 	val actionButtonsOnTop by viewModel.actionButtonsOnTop.collectAsStateWithLifecycle()
 	val insightsSummaryCompactLayout by
 		viewModel.insightsSummaryCompactLayout.collectAsStateWithLifecycle()
+	val autoClearNotes by viewModel.autoClearNotes.collectAsStateWithLifecycle()
 
 	SettingsScreenContent(
 		openDrawer = openDrawer,
@@ -56,6 +57,7 @@ internal fun SettingsScreen(
 		leftHandMode = leftHandMode,
 		actionButtonsOnTop = actionButtonsOnTop,
 		insightsSummaryCompactLayout = insightsSummaryCompactLayout,
+		autoClearNotes = autoClearNotes,
 		modifier = modifier.fillMaxSize(),
 	)
 }
@@ -72,6 +74,7 @@ private fun SettingsScreenContent(
 	leftHandMode: Boolean,
 	actionButtonsOnTop: Boolean,
 	insightsSummaryCompactLayout: Boolean,
+	autoClearNotes: Boolean,
 	darkMode: String,
 	modifier: Modifier = Modifier,
 ) {
@@ -167,6 +170,16 @@ private fun SettingsScreenContent(
 					modifier = Modifier.fillMaxWidth(),
 				)
 			}
+
+			SettingsCategory("Gameplay") {
+				SettingSwitchItem(
+					title = "Auto clear notes",
+					value = autoClearNotes,
+					description = "Clear notes when a number is input",
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleAutoClearNotes(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
+			}
 		}
 	}
 }
@@ -186,6 +199,7 @@ private fun SettingsScreenPreview() {
 			darkMode = "System",
 			actionButtonsOnTop = false,
 			insightsSummaryCompactLayout = false,
+			autoClearNotes = true,
 			modifier = Modifier.fillMaxSize(),
 		)
 	}
