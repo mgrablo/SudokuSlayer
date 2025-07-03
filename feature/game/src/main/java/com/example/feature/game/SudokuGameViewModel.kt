@@ -140,7 +140,9 @@ internal class SudokuGameViewModel(
 	}
 
 	sealed interface Event {
-		data class SelectCell(val row: Int, val col: Int) : Event
+		data class SelectCell(val row: Int, val column: Int) : Event
+
+		data class CellLongClick(val row: Int, val column: Int) : Event
 
 		data class InputNumber(val number: Int) : Event
 
@@ -173,7 +175,8 @@ internal class SudokuGameViewModel(
 
 	fun onEvent(event: Event) {
 		when (event) {
-			is Event.SelectCell -> selectCell(event.row, event.col)
+			is Event.SelectCell -> selectCell(event.row, event.column)
+			is Event.CellLongClick -> handleCellLongClick(event.row, event.column)
 			is Event.InputNumber ->
 				inputNumber(
 					number = event.number,
@@ -527,6 +530,22 @@ internal class SudokuGameViewModel(
 	private fun stopTrackingTime() {
 		viewModelScope.launch {
 			elapsedTimerManager.stopTracking()
+		}
+	}
+
+	private fun handleCellLongClick(row: Int, column: Int) {
+		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
+
+			val cell = game.value.grid.getCellAt(row, column)
+			if (cell.cornerNotes.size == 1) {
+				inputNumber(
+					number = cell.cornerNotes.first(),
+					selectedCell = row to column,
+					isNote = false,
+					isHint = false,
+				)
+			}
 		}
 	}
 }

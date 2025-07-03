@@ -245,6 +245,7 @@ private fun SudokuGameScreenContent(
 					SudokuBoard(
 						sudoku = game.grid,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
+						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
 					AnimatedContent(
@@ -296,6 +297,7 @@ private fun SudokuGameScreenContent(
 					SudokuBoard(
 						sudoku = game.grid,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
+						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
 						modifier = Modifier.weight(1f),
 					)
 					AnimatedContent(

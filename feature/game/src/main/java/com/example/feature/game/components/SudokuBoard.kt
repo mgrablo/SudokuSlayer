@@ -33,6 +33,7 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun SudokuBoard(
 	sudoku: SudokuGrid,
 	onCellClick: (Int, Int) -> Unit,
+	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
@@ -75,6 +76,7 @@ internal fun SudokuBoard(
 							data = sudoku.getCellAt(row, col),
 							gridSize = itemsInRow,
 							onCellClick = { row, col -> onCellClick(row, col) },
+							onCellLongClick = { row, col -> onCellLongClick(row, col) },
 							modifier = Modifier.size(cellSize),
 							textStyle = sizeAdjustedTextStyle,
 						)
@@ -123,7 +125,11 @@ internal fun SudokuBoard(
 private fun SudokuBoardNormalPreview() {
 	val grid = createFilledSudokuGrid(9)
 	SudokuSlayerTheme {
-		SudokuBoard(grid, onCellClick = { _, _ -> })
+		SudokuBoard(
+			sudoku = grid,
+			onCellClick = { _, _ -> },
+			onCellLongClick = { _, _ -> },
+		)
 	}
 }
 
@@ -132,7 +138,11 @@ private fun SudokuBoardNormalPreview() {
 private fun SudokuBoardBigPreview() {
 	val grid = createFilledSudokuGrid(16)
 	SudokuSlayerTheme {
-		SudokuBoard(grid, onCellClick = { _, _ -> })
+		SudokuBoard(
+			sudoku = grid,
+			onCellClick = { _, _ -> },
+			onCellLongClick = { _, _ -> },
+		)
 	}
 }
 
@@ -141,7 +151,11 @@ private fun SudokuBoardBigPreview() {
 private fun SudokuBoardSmallPreview() {
 	val grid = createFilledSudokuGrid(4)
 	SudokuSlayerTheme {
-		SudokuBoard(grid, onCellClick = { _, _ -> })
+		SudokuBoard(
+			sudoku = grid,
+			onCellClick = { _, _ -> },
+			onCellLongClick = { _, _ -> },
+		)
 	}
 }
 

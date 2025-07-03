@@ -2,7 +2,7 @@ package com.example.feature.game.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -43,6 +43,7 @@ internal fun SudokuCell(
 	data: SudokuCellData,
 	gridSize: Int,
 	onCellClick: (Int, Int) -> Unit,
+	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
@@ -67,7 +68,10 @@ internal fun SudokuCell(
 			.clip(shape)
 			.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
 			.background(backgroundColor)
-			.clickable(onClick = { onCellClick(data.row, data.col) }),
+			.combinedClickable(
+				onClick = { onCellClick(data.row, data.col) },
+				onLongClick = { onCellLongClick(data.row, data.col) },
+			),
 	) {
 		when (data.number) {
 			0 -> {
@@ -224,6 +228,7 @@ private fun SudokuCellPreview() {
 				SudokuCell(
 					data = cellData,
 					onCellClick = { _, _ -> },
+					onCellLongClick = { _, _ -> },
 					textStyle = TextStyle(fontSize = fontSize),
 					gridSize = gridSize,
 					modifier = Modifier.size(50.dp),
