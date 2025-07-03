@@ -31,6 +31,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
@@ -82,7 +83,7 @@ internal class SudokuGameViewModel(
 					gameState = GameState.LOADING,
 				)
 			}
-			loadData()
+			loadGame()
 			_uiState.update {
 				it.copy(
 					gameState = if (game.value.completed) GameState.VICTORY else GameState.PLAYING,
@@ -97,6 +98,25 @@ internal class SudokuGameViewModel(
 				elapsedTimerManager.startTracking()
 			}
 		}
+
+		viewModelScope.launch {
+			combine(
+				settingsRepository.leftHandMode,
+				settingsRepository.showActionButtonsOnTop,
+				settingsRepository.autoClearNotes,
+			) { leftHandMode, showActionButtonsOnTop, autoClearNotes ->
+				Triple(leftHandMode, showActionButtonsOnTop, autoClearNotes)
+			}.collect { (leftHandMode, showActionButtonsOnTop, autoClearNotes) ->
+				_uiState.update {
+					it.copy(
+						isLeftHandMode = leftHandMode,
+						showActionButtonsOnTop = showActionButtonsOnTop,
+						autoClearNotes = autoClearNotes,
+					)
+				}
+			}
+		}
+
 		viewModelScope.launch {
 			game.collect { game ->
 				gameManagementUseCases.saveGame(
@@ -180,7 +200,7 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private suspend fun loadData() {
+	private suspend fun loadGame() {
 		gameManagementUseCases.getGame().first().let { game ->
 			_game.update {
 				it.copy(
@@ -203,22 +223,6 @@ internal class SudokuGameViewModel(
 						currentBestTime = bestTime,
 					)
 				}
-			}
-		}
-
-		settingsRepository.leftHandMode.firstOrNull()?.let { leftHandMode ->
-			_uiState.update {
-				it.copy(isLeftHandMode = leftHandMode)
-			}
-		}
-		settingsRepository.showActionButtonsOnTop.firstOrNull()?.let { actionButtonsOnTop ->
-			_uiState.update {
-				it.copy(showActionButtonsOnTop = actionButtonsOnTop)
-			}
-		}
-		settingsRepository.autoClearNotes.firstOrNull()?.let { autoClearNotes ->
-			_uiState.update {
-				it.copy(autoClearNotes = autoClearNotes)
 			}
 		}
 	}
