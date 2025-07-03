@@ -1,6 +1,5 @@
 package com.example.feature.game
 
-import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.domainGameModule
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -17,9 +16,9 @@ val gameModule =
 				undoOperationUseCase = get(),
 				redoOperationUseCase = get(),
 				getBestTimeUseCase = get(),
-				elapsedTimerManager = get(),
+				getElapsedTimeUseCase = get(),
+				saveElapsedTimeUseCase = get(),
 				gameResultWriter = get(),
 			)
 		}
-		factory { ElapsedTimerManager(get(), get()) }
 	}

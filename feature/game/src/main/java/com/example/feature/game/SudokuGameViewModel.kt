@@ -14,7 +14,9 @@ import com.example.domain.game.GameManagementUseCases
 import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
 import com.example.domain.game.usecases.GetBestTimeUseCase
+import com.example.domain.game.usecases.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.RedoOperationUseCase
+import com.example.domain.game.usecases.SaveElapsedTimeUseCase
 import com.example.domain.game.usecases.UndoOperationUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
@@ -51,10 +53,17 @@ internal class SudokuGameViewModel(
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
 	private val getBestTimeUseCase: GetBestTimeUseCase,
-	private val elapsedTimerManager: ElapsedTimerManager,
 	private val gameResultWriter: GameResultWriter,
+	private val getElapsedTimeUseCase: GetElapsedTimeUseCase,
+	private val saveElapsedTimeUseCase: SaveElapsedTimeUseCase,
 ) : ViewModel() {
+	private val elapsedTimerManager = ElapsedTimerManager(
+		scope = viewModelScope,
+		getElapsedTimeUseCase = getElapsedTimeUseCase,
+		saveElapsedTimeUseCase = saveElapsedTimeUseCase,
+	)
 	private val mutex = Mutex()
+
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
 
@@ -158,6 +167,8 @@ internal class SudokuGameViewModel(
 		data object ResetNotes : Event
 
 		data object StopTimer : Event
+
+		data object StartTimer : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -196,6 +207,9 @@ internal class SudokuGameViewModel(
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
 				stopTrackingTime()
+			}
+			is Event.StartTimer -> {
+				elapsedTimerManager.startTracking()
 			}
 		}
 	}
