@@ -80,9 +80,9 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		preferenceStorage.set(SettingsPreferenceKeys.AutoClearNotes, autoClearNotes)
 	}
 
-	override fun getAvailableColorSchemes(): List<String> = ColorScheme.getAvailableColorSchemes()
+	override fun getAvailableColorSchemes(): List<ColorScheme> = ColorScheme.getAvailableColorSchemes()
 
-	override fun getDarkColorSchemes(): List<String> = ColorScheme.getDarkColorSchemes()
+	override fun getDarkColorSchemes(): List<ColorScheme> = ColorScheme.getDarkColorSchemes()
 
-	override fun getLightColorSchemes(): List<String> = ColorScheme.getLightColorSchemes()
+	override fun getLightColorSchemes(): List<ColorScheme> = ColorScheme.getLightColorSchemes()
 }

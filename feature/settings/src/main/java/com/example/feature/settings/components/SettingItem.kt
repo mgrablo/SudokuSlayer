@@ -10,7 +10,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -78,13 +77,14 @@ internal fun SettingSwitchItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingDropDownMenu(
+internal fun <T> SettingDropDownMenu(
 	title: String,
 	isExpanded: Boolean,
 	onExpandedChange: (Boolean) -> Unit,
-	onSelect: (String) -> Unit,
-	selectedValue: String,
-	options: PersistentSet<String>,
+	onSelect: (T) -> Unit,
+	selectedValue: T,
+	options: PersistentSet<T>,
+	optionToString: @Composable (T) -> String,
 	modifier: Modifier = Modifier,
 	description: String? = null,
 ) {
@@ -98,7 +98,7 @@ internal fun SettingDropDownMenu(
 				onExpandedChange = onExpandedChange,
 			) {
 				OutlinedTextField(
-					value = selectedValue,
+					value = optionToString(selectedValue),
 					onValueChange = {},
 					readOnly = true,
 					singleLine = true,
@@ -116,16 +116,7 @@ internal fun SettingDropDownMenu(
 				) {
 					options.forEach { option ->
 						DropdownMenuItem(
-							text = { Text(option) },
-							colors =
-							MenuItemColors(
-								textColor = MaterialTheme.colorScheme.onSurface,
-								leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-								trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-								disabledTextColor = MaterialTheme.colorScheme.onSurface,
-								disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface,
-								disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
-							),
+							text = { Text(optionToString(option)) },
 							onClick = {
 								onSelect(option)
 								onExpandedChange(false)

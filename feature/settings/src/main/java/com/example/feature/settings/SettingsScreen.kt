@@ -22,13 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.settings.models.ColorScheme
+import com.example.domain.settings.models.DarkMode
 import com.example.feature.settings.components.SettingDropDownMenu
 import com.example.feature.settings.components.SettingSwitchItem
 import com.example.feature.settings.components.SettingsCategory
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -37,27 +39,15 @@ internal fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	viewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
 ) {
-	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
-	val lightColorScheme by viewModel.lightColorScheme.collectAsStateWithLifecycle()
-	val darkColorScheme by viewModel.darkColorScheme.collectAsStateWithLifecycle()
-	val leftHandMode by viewModel.leftHandMode.collectAsStateWithLifecycle()
-	val actionButtonsOnTop by viewModel.actionButtonsOnTop.collectAsStateWithLifecycle()
-	val insightsSummaryCompactLayout by
-		viewModel.insightsSummaryCompactLayout.collectAsStateWithLifecycle()
-	val autoClearNotes by viewModel.autoClearNotes.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	SettingsScreenContent(
 		openDrawer = openDrawer,
 		onEvent = viewModel::onEvent,
+		themeOptions = DarkMode.all(),
 		lightColorSchemes = viewModel.lightColorSchemes,
 		darkColorSchemes = viewModel.darkColorSchemes,
-		selectedLightColorScheme = lightColorScheme.name,
-		selectedDarkColorScheme = darkColorScheme.name,
-		darkMode = darkMode.displayName,
-		leftHandMode = leftHandMode,
-		actionButtonsOnTop = actionButtonsOnTop,
-		insightsSummaryCompactLayout = insightsSummaryCompactLayout,
-		autoClearNotes = autoClearNotes,
+		uiState = uiState,
 		modifier = modifier.fillMaxSize(),
 	)
 }
@@ -66,16 +56,11 @@ internal fun SettingsScreen(
 @Composable
 private fun SettingsScreenContent(
 	openDrawer: () -> Unit,
+	uiState: SettingsUiState,
 	onEvent: (SettingsViewModel.Event) -> Unit,
-	lightColorSchemes: PersistentSet<String>,
-	darkColorSchemes: PersistentSet<String>,
-	selectedLightColorScheme: String,
-	selectedDarkColorScheme: String,
-	leftHandMode: Boolean,
-	actionButtonsOnTop: Boolean,
-	insightsSummaryCompactLayout: Boolean,
-	autoClearNotes: Boolean,
-	darkMode: String,
+	themeOptions: PersistentSet<DarkMode>,
+	lightColorSchemes: PersistentSet<ColorScheme>,
+	darkColorSchemes: PersistentSet<ColorScheme>,
 	modifier: Modifier = Modifier,
 ) {
 	Scaffold(
@@ -100,25 +85,24 @@ private fun SettingsScreenContent(
 				.verticalScroll(rememberScrollState()),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
-			val themeOptions = persistentSetOf("System", "Dark", "Light")
-
 			var lightColorSchemeExpanded by remember { mutableStateOf(false) }
 			var darkColorSchemeExpanded by remember { mutableStateOf(false) }
 
 			SettingsCategory("Appearance") {
 				SettingDropDownMenu(
 					title = "Theme",
-					description = if (darkMode == "system") {
+					description = if (uiState.darkMode == DarkMode.SYSTEM) {
 						"Follow system theme"
 					} else {
 						null
 					},
 					isExpanded = themeExpanded,
 					onExpandedChange = { themeExpanded = it },
+					selectedValue = uiState.darkMode,
 					onSelect = {
 						onEvent(SettingsViewModel.Event.SetDarkMode(it))
 					},
-					selectedValue = darkMode,
+					optionToString = { it.displayName },
 					options = themeOptions,
 					modifier = Modifier.fillMaxWidth(),
 				)
@@ -128,8 +112,11 @@ private fun SettingsScreenContent(
 					isExpanded = lightColorSchemeExpanded,
 					onExpandedChange = { lightColorSchemeExpanded = it },
 					onSelect = { onEvent(SettingsViewModel.Event.SetLightColorScheme(it)) },
-					selectedValue = selectedLightColorScheme,
+					selectedValue = uiState.lightColorScheme,
 					options = lightColorSchemes,
+					optionToString = {
+						it.name
+					},
 					modifier = Modifier.fillMaxWidth(),
 				)
 
@@ -137,15 +124,18 @@ private fun SettingsScreenContent(
 					title = "Dark color scheme",
 					isExpanded = darkColorSchemeExpanded,
 					onExpandedChange = { darkColorSchemeExpanded = it },
+					selectedValue = uiState.darkColorScheme,
 					onSelect = { onEvent(SettingsViewModel.Event.SetDarkColorScheme(it)) },
-					selectedValue = selectedDarkColorScheme,
 					options = darkColorSchemes,
+					optionToString = {
+						it.name
+					},
 					modifier = Modifier.fillMaxWidth(),
 				)
 
 				SettingSwitchItem(
 					title = "Compact Insights summaries",
-					value = insightsSummaryCompactLayout,
+					value = uiState.insightsSummaryCompactLayout,
 					onValueChange = {
 						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
 					},
@@ -157,7 +147,7 @@ private fun SettingsScreenContent(
 				SettingSwitchItem(
 					title = "Left hand mode",
 					description = "Swap the layout of the keypad",
-					value = leftHandMode,
+					value = uiState.leftHandMode,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleLeftHandMode(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
@@ -165,7 +155,7 @@ private fun SettingsScreenContent(
 				SettingSwitchItem(
 					title = "Show action buttons on top",
 					description = "Move the action buttons to the top of the screen",
-					value = actionButtonsOnTop,
+					value = uiState.actionButtonsOnTop,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
@@ -174,7 +164,7 @@ private fun SettingsScreenContent(
 			SettingsCategory("Gameplay") {
 				SettingSwitchItem(
 					title = "Auto clear notes",
-					value = autoClearNotes,
+					value = uiState.autoClearNotes,
 					description = "Clear notes when a number is input",
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleAutoClearNotes(it)) },
 					modifier = Modifier.fillMaxWidth(),
@@ -191,16 +181,11 @@ private fun SettingsScreenPreview() {
 		SettingsScreenContent(
 			openDrawer = { },
 			onEvent = { },
-			lightColorSchemes = persistentSetOf("Latte", "Frappe"),
-			darkColorSchemes = persistentSetOf("Mocha", "Macchiato"),
-			selectedLightColorScheme = "Latte",
-			selectedDarkColorScheme = "Mocha",
-			leftHandMode = true,
-			darkMode = "System",
-			actionButtonsOnTop = false,
-			insightsSummaryCompactLayout = false,
-			autoClearNotes = true,
 			modifier = Modifier.fillMaxSize(),
+			uiState = SettingsUiState(),
+			themeOptions = DarkMode.all(),
+			lightColorSchemes = ColorScheme.getLightColorSchemes().toPersistentSet(),
+			darkColorSchemes = ColorScheme.getDarkColorSchemes().toPersistentSet(),
 		)
 	}
 }

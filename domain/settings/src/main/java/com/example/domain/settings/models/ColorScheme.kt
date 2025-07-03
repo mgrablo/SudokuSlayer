@@ -1,6 +1,7 @@
 package com.example.domain.settings.models
 
 import com.example.domain.settings.models.DarkMode.entries
+import kotlinx.collections.immutable.toPersistentSet
 
 enum class DarkMode(val displayName: String) {
 	SYSTEM("system"),
@@ -11,6 +12,8 @@ enum class DarkMode(val displayName: String) {
 	companion object {
 		fun fromName(value: String): DarkMode =
 			entries.find { it.displayName == value.lowercase() } ?: SYSTEM
+
+		fun all() = entries.toPersistentSet()
 	}
 }
 
@@ -38,10 +41,15 @@ sealed class ColorScheme(open val name: String, open val isDark: Boolean) {
 			else -> Mocha()
 		}
 
-		fun getAvailableColorSchemes(): List<String> = listOf("mocha", "macchiato", "latte", "frappe")
+		fun getAvailableColorSchemes(): List<ColorScheme> = listOf(
+			Mocha(),
+			Macchiato(),
+			Latte(),
+			Frappe(),
+		)
 
-		fun getDarkColorSchemes(): List<String> = listOf("mocha", "macchiato")
+		fun getDarkColorSchemes(): List<ColorScheme> = getAvailableColorSchemes().filter { it.isDark }
 
-		fun getLightColorSchemes(): List<String> = listOf("latte", "frappe")
+		fun getLightColorSchemes(): List<ColorScheme> = getAvailableColorSchemes().filter { !it.isDark }
 	}
 }
