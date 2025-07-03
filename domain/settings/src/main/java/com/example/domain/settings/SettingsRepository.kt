@@ -30,9 +30,9 @@ interface SettingsRepository {
 
 	suspend fun setAutoClearNotes(autoClearNotes: Boolean)
 
-	fun getAvailableColorSchemes(): List<String>
+	fun getAvailableColorSchemes(): List<ColorScheme>
 
-	fun getDarkColorSchemes(): List<String>
+	fun getDarkColorSchemes(): List<ColorScheme>
 
-	fun getLightColorSchemes(): List<String>
+	fun getLightColorSchemes(): List<ColorScheme>
 }
