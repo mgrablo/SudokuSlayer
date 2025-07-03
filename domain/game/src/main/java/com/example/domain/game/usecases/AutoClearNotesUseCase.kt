@@ -35,26 +35,27 @@ class AutoClearNotesUseCase {
 				)
 				cellChanges.add(oldCell changedTo newCell)
 			}
-
-			// Same block
-			val subgridSize = result.subgridSize
-			result.data.filter {
-				(it.row / subgridSize) * subgridSize + it.col / subgridSize ==
-					(row / subgridSize) * subgridSize + column / subgridSize &&
-					it.row != row &&
-					it.col != column &&
-					it.number == 0 &&
-					it.cornerNotes.contains(number)
-			}.forEach { oldCell ->
-				val newCell = oldCell.copy(cornerNotes = oldCell.cornerNotes - number)
-				result = result.withReplacedCell(
-					row = oldCell.row,
-					col = oldCell.col,
-					cellData = newCell,
-				)
-				cellChanges.add(oldCell changedTo newCell)
-			}
 		}
+
+		// Same block
+		val subgridSize = result.subgridSize
+		result.data.filter {
+			(it.row / subgridSize) * subgridSize + it.col / subgridSize ==
+				(row / subgridSize) * subgridSize + column / subgridSize &&
+				it.row != row &&
+				it.col != column &&
+				it.number == 0 &&
+				it.cornerNotes.contains(number)
+		}.forEach { oldCell ->
+			val newCell = oldCell.copy(cornerNotes = oldCell.cornerNotes - number)
+			result = result.withReplacedCell(
+				row = oldCell.row,
+				col = oldCell.col,
+				cellData = newCell,
+			)
+			cellChanges.add(oldCell changedTo newCell)
+		}
+
 		return GameUpdate(
 			resultingGrid = result,
 			changes = cellChanges,
