@@ -311,7 +311,24 @@ internal class SudokuGameViewModel(
 				)
 				clearRedoOperations()
 			}
-
+			if (uiState.value.lastHint?.row == row &&
+				uiState.value.lastHint?.col == col &&
+				number == uiState.value.lastHint?.value
+			) {
+				val updatedLogs = _game.value.hintLogs.toMutableList()
+				val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
+				val log = updatedLogs[lastHintId]
+				updatedLogs[lastHintId] =
+					log.copy(
+						isUserGuessed = true,
+					)
+				_game.update {
+					it.copy(
+						hintLogs = updatedLogs.toPersistentList(),
+					)
+				}
+				revealHint()
+			}
 			_game.update {
 				it.copy(
 					grid = updatedSudoku,
