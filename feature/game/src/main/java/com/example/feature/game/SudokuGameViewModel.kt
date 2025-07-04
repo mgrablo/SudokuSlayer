@@ -231,6 +231,15 @@ internal class SudokuGameViewModel(
 					completed = game.completed,
 				)
 			}
+			game.hintLogs.lastOrNull()?.let { log ->
+				if (!log.isRevealed) {
+					_uiState.update {
+						it.copy(
+							lastHint = log.hint,
+						)
+					}
+				}
+			}
 			getBestTimeUseCase(
 				game.difficulty,
 				SudokuGridSize.fromIntSize(

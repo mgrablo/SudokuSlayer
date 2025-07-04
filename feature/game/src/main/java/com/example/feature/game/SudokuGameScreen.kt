@@ -187,7 +187,7 @@ private fun SudokuGameScreenContent(
 		modifier = modifier,
 		sheetScaffoldState = scaffoldState,
 		hintLogs = game.hintLogs,
-		showNextHint = uiState.lastHint == null,
+		showNextHint = game.hintLogs.lastOrNull()?.isRevealed ?: true,
 		explainHintClick = { onEvent(Event.ExplainHint) },
 		nextHintClick = { onEvent(Event.ProvideHint) },
 		topBar = {
