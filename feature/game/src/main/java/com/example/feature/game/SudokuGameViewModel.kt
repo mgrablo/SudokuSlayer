@@ -21,15 +21,17 @@ import com.example.domain.game.usecases.UndoOperationUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
-import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
 import com.example.sudoku.model.fillNotes
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
+import com.example.sudoku.solver.HintType
+import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -435,44 +437,6 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private fun handleNumberInput(
-		number: Int,
-		sudoku: SudokuGrid,
-		selectedCell: Pair<Int, Int>,
-	): SudokuGrid {
-		val (row, col) = selectedCell
-		val updatedSudoku = sudoku
-		if (updatedSudoku.getCellAt(row, col).attributes.contains(CellAttributes.GENERATED)) {
-			return updatedSudoku
-		}
-
-		if (_uiState.value.lastHint?.row == row &&
-			_uiState.value.lastHint?.col == col &&
-			number == _uiState.value.lastHint?.value
-		) {
-			val updatedLogs = _game.value.hintLogs.toMutableList()
-			val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
-			val log = updatedLogs[lastHintId]
-			updatedLogs[lastHintId] =
-				log.copy(
-					isUserGuessed = true,
-					explanation = log.explanation + "~You guessed correctly!~",
-				)
-			_uiState.update {
-				it.copy(
-					lastHint = null,
-				)
-			}
-			_game.update {
-				it.copy(
-					hintLogs = updatedLogs.toPersistentList(),
-				)
-			}
-		}
-
-		return updatedSudoku
-	}
-
 	private fun fillNotes() {
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
@@ -490,18 +454,17 @@ internal class SudokuGameViewModel(
 
 			val hint: Hint? = hintUseCases.provideHint(_game.value)
 			if (hint != null) {
-				var updatedSudoku = _game.value.grid
-				updatedSudoku = hintUseCases.focusOnCells(hint, updatedSudoku)
+				val grid = _game.value.grid
 				selectCell(hint.row, hint.col)
+				hintFocus(hint)
 				val hintLog =
 					hintUseCases.generateLog(
 						id = _game.value.hintLogs.size,
 						hint = hint,
-						grid = updatedSudoku,
+						grid = grid,
 					)
 				_game.update {
 					it.copy(
-						grid = updatedSudoku,
 						hintLogs = it.hintLogs + hintLog,
 						hintsUsed = it.hintsUsed + 1,
 					)
@@ -511,6 +474,37 @@ internal class SudokuGameViewModel(
 						lastHint = hint,
 					)
 				}
+			}
+		}
+	}
+
+	private fun hintFocus(hint: Hint) {
+		viewModelScope.launch {
+			if (_uiState.value.gameState == GameState.VICTORY) return@launch
+
+			val cellsToFocus = when (hint.type) {
+				is HintType.HiddenSingle, is HintType.NakedSingle -> {
+					listOf(Pair(hint.row, hint.col))
+				}
+				is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
+					hint.enforcingCells.map { it.row to it.col }
+				}
+			}
+
+			if (cellsToFocus.isEmpty()) return@launch
+
+			_uiState.update { state ->
+				state.copy(
+					focusedCells = state.focusedCells + cellsToFocus,
+				)
+			}
+
+			delay(3000)
+
+			_uiState.update { state ->
+				state.copy(
+					focusedCells = state.focusedCells - cellsToFocus,
+				)
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentSetOf
 
@@ -32,6 +33,7 @@ import kotlinx.collections.immutable.persistentSetOf
 @Composable
 internal fun SudokuBoard(
 	sudoku: SudokuGrid,
+	focusedCells: PersistentSet<Pair<Int, Int>>,
 	onCellClick: (Int, Int) -> Unit,
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
@@ -78,6 +80,7 @@ internal fun SudokuBoard(
 							onCellClick = { row, col -> onCellClick(row, col) },
 							onCellLongClick = { row, col -> onCellLongClick(row, col) },
 							modifier = Modifier.size(cellSize),
+							isFocused = focusedCells.contains(Pair(row, col)),
 							textStyle = sizeAdjustedTextStyle,
 						)
 					}
@@ -127,6 +130,7 @@ private fun SudokuBoardNormalPreview() {
 	SudokuSlayerTheme {
 		SudokuBoard(
 			sudoku = grid,
+			focusedCells = persistentSetOf(Pair(0, 0), Pair(0, 1)),
 			onCellClick = { _, _ -> },
 			onCellLongClick = { _, _ -> },
 		)
@@ -140,6 +144,7 @@ private fun SudokuBoardBigPreview() {
 	SudokuSlayerTheme {
 		SudokuBoard(
 			sudoku = grid,
+			focusedCells = persistentSetOf(),
 			onCellClick = { _, _ -> },
 			onCellLongClick = { _, _ -> },
 		)
@@ -153,6 +158,7 @@ private fun SudokuBoardSmallPreview() {
 	SudokuSlayerTheme {
 		SudokuBoard(
 			sudoku = grid,
+			focusedCells = persistentSetOf(),
 			onCellClick = { _, _ -> },
 			onCellLongClick = { _, _ -> },
 		)
