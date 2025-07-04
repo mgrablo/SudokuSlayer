@@ -162,6 +162,8 @@ internal class SudokuGameViewModel(
 
 		data object ExplainHint : Event
 
+		data class HighlightHintCells(val hint: Hint) : Event
+
 		data object ShowMistakes : Event
 
 		data object HintFillNotes : Event
@@ -203,6 +205,7 @@ internal class SudokuGameViewModel(
 			is Event.Redo -> redoLastMove()
 			is Event.ResetGame -> resetGame()
 			is Event.ProvideHint -> provideHint()
+			is Event.HighlightHintCells -> hintFocus(event.hint)
 
 			is Event.ExplainHint -> revealHint()
 
@@ -460,6 +463,7 @@ internal class SudokuGameViewModel(
 	private fun provideHint() {
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
+			game.value.hintLogs.lastOrNull()?.isRevealed?.let { if (!it) return@launch }
 
 			val hint: Hint? = hintUseCases.provideHint(_game.value)
 			if (hint != null) {

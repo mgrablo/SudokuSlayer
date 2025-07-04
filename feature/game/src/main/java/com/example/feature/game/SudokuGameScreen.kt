@@ -190,6 +190,7 @@ private fun SudokuGameScreenContent(
 		showNextHint = game.hintLogs.lastOrNull()?.isRevealed ?: true,
 		explainHintClick = { onEvent(Event.ExplainHint) },
 		nextHintClick = { onEvent(Event.ProvideHint) },
+		onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
 		topBar = {
 			CenterAlignedTopAppBar(
 				windowInsets = WindowInsets.displayCutout,

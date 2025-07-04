@@ -1,5 +1,6 @@
 package com.example.feature.game.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -50,6 +51,7 @@ internal fun HintStepCard(
 	cardContent: PersistentList<String>,
 	onExplainClick: () -> Unit,
 	onExpandToggle: () -> Unit,
+	onHighlightCellClick: () -> Unit,
 	interactionSource: MutableInteractionSource,
 	modifier: Modifier = Modifier,
 	isRevealed: Boolean = false,
@@ -117,14 +119,29 @@ internal fun HintStepCard(
 					style = MaterialTheme.typography.bodyMedium,
 					modifier = Modifier.weight(1f),
 				)
-				AnimatedVisibility(isUserGuessed) {
-					Row {
-						Spacer(modifier = Modifier.width(8.dp))
-						Icon(
-							imageVector = Icons.Default.CheckCircle,
-							contentDescription = "Correctly guessed",
-							tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
-						)
+				AnimatedContent(isUserGuessed) { guessed ->
+					if (guessed) {
+						Row {
+							Spacer(modifier = Modifier.width(8.dp))
+							Icon(
+								imageVector = Icons.Default.CheckCircle,
+								contentDescription = "Correctly guessed",
+								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
+							)
+						}
+					} else {
+						Row {
+							Spacer(modifier = Modifier.width(8.dp))
+							IconButton(
+								onClick = onHighlightCellClick,
+							) {
+								Icon(
+									painter = painterResource(R.drawable.visibility),
+									contentDescription = "Highlight cells to focus on",
+									tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
+								)
+							}
+						}
 					}
 				}
 				if (isRevealed || isUserGuessed) {
@@ -218,6 +235,7 @@ internal fun HintStepCardPreview() {
 				),
 				onExplainClick = {},
 				onExpandToggle = {},
+				onHighlightCellClick = { },
 				interactionSource = interactionSource,
 				isRevealed = true,
 				isExpanded = true,
@@ -231,6 +249,7 @@ internal fun HintStepCardPreview() {
 				),
 				onExplainClick = {},
 				onExpandToggle = {},
+				onHighlightCellClick = { },
 				interactionSource = interactionSource,
 				isRevealed = true,
 				isExpanded = false,
@@ -244,6 +263,7 @@ internal fun HintStepCardPreview() {
 				),
 				onExplainClick = {},
 				onExpandToggle = {},
+				onHighlightCellClick = { },
 				interactionSource = interactionSource,
 				isRevealed = false,
 				isExpanded = false,

@@ -58,6 +58,7 @@ internal fun HintBottomSheetScaffold(
 	sheetScaffoldState: BottomSheetScaffoldState,
 	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
+	onHighlightCellClick: (Hint) -> Unit,
 	modifier: Modifier = Modifier,
 	hintLogs: PersistentList<HintLog> = persistentListOf(),
 	showNextHint: Boolean = false,
@@ -80,6 +81,7 @@ internal fun HintBottomSheetScaffold(
 				showNextHint = showNextHint,
 				explainHintClick = explainHintClick,
 				nextHintClick = nextHintClick,
+				onHighlightCellClick = onHighlightCellClick,
 				modifier = Modifier.heightIn(min = 128.dp, max = 350.dp),
 			)
 		},
@@ -92,6 +94,7 @@ internal fun SheetContent(
 	title: String,
 	nextHintClick: () -> Unit,
 	explainHintClick: () -> Unit,
+	onHighlightCellClick: (Hint) -> Unit,
 	modifier: Modifier = Modifier,
 	showNextHint: Boolean = false,
 	logs: PersistentList<HintLog> = persistentListOf(),
@@ -158,6 +161,7 @@ internal fun SheetContent(
 							expandedItems.add(hintLog)
 						}
 					},
+					onHighlightCellClick = { onHighlightCellClick(hintLog.hint) },
 					isRevealed = hintLog.isRevealed,
 					isUserGuessed = hintLog.isUserGuessed,
 					interactionSource = interactionSource,
@@ -253,6 +257,7 @@ private fun HintBottomSheetScaffoldPreview() {
 			),
 			explainHintClick = { },
 			nextHintClick = { },
+			onHighlightCellClick = { },
 			topBar = null,
 			content = { },
 		)

@@ -29,11 +29,12 @@ class RevealHintOnGridUseCase(private val inputNumberUseCase: InputNumberUseCase
 				inputNumberUseCase(
 					sudokuGrid = updatedGrid,
 					number = hint.value,
-					row = hint.row,
-					column = hint.col,
+					row = cell.row,
+					column = cell.col,
 					isNote = true,
 					isHint = true,
 				)
+			println(cell)
 		}
 		return updatedGrid
 	}
@@ -42,12 +43,12 @@ class RevealHintOnGridUseCase(private val inputNumberUseCase: InputNumberUseCase
 		val otherCells = hint.enforcingCells
 		var updatedGrid = grid
 		otherCells.forEach { cell ->
-			inputNumberUseCase(
+			updatedGrid = inputNumberUseCase(
 				sudokuGrid = updatedGrid,
 				number = hint.value,
 				row = cell.row,
 				column = cell.col,
-				isNote = false,
+				isNote = true,
 				isHint = true,
 			)
 		}
