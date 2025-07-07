@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -125,13 +126,13 @@ internal fun HintStepCard(
 						if (guessed) {
 							Icon(
 								imageVector = Icons.Default.CheckCircle,
-								contentDescription = "Correctly guessed",
+								contentDescription = stringResource(R.string.content_desc_correctly_guessed),
 								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							)
 						} else {
 							Icon(
 								painter = painterResource(R.drawable.visibility),
-								contentDescription = "Highlight cells to focus on",
+								contentDescription = stringResource(R.string.content_desc_highlight_cells),
 								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							)
 						}
@@ -142,12 +143,12 @@ internal fun HintStepCard(
 						if (isExpanded) {
 							Icon(
 								imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
-								contentDescription = "Collapse",
+								contentDescription = stringResource(R.string.content_desc_collapse),
 							)
 						} else {
 							Icon(
 								imageVector = Icons.Default.KeyboardArrowDown,
-								contentDescription = "Expand",
+								contentDescription = stringResource(R.string.content_desc_expand),
 							)
 						}
 					}
@@ -155,7 +156,7 @@ internal fun HintStepCard(
 					IconButton(onClick = onExplainClick) {
 						Icon(
 							painter = painterResource(id = R.drawable.lightbulb),
-							contentDescription = "Explain",
+							contentDescription = stringResource(R.string.content_desc_explain_hint),
 						)
 					}
 				}

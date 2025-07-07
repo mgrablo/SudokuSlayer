@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="game_screen_title">Current Game</string>
+    <string name="content_desc_correctly_guessed">Correctly guessed</string>
+	<string name="content_desc_highlight_cells">Highlight cells</string>
+	<string name="content_desc_collapse">Collapse</string>
+	<string name="content_desc_expand">Expand</string>
+	<string name="content_desc_explain_hint">Explain hint</string>
 </resources>

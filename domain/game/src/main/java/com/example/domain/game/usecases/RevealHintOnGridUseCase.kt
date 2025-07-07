@@ -34,7 +34,6 @@ class RevealHintOnGridUseCase(private val inputNumberUseCase: InputNumberUseCase
 					isNote = true,
 					isHint = true,
 				)
-			println(cell)
 		}
 		return updatedGrid
 	}
