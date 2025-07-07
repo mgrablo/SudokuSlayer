@@ -5,8 +5,8 @@ import com.example.sudoku.model.House
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.symmetricDifference
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlin.math.sqrt
@@ -15,34 +15,22 @@ import kotlin.math.sqrt
 sealed interface HintType {
 	object NakedSingle : HintType
 
-	data class HiddenSingle(
-		val groupType: GroupType,
-	) : HintType
+	data class HiddenSingle(val groupType: GroupType) : HintType
 
-	data class PointingCandidate(
-		val groupType: GroupType,
-	) : HintType
+	data class PointingCandidate(val groupType: GroupType) : HintType
 
-	data class ClaimingCandidate(
-		val groupType: GroupType,
-	) : HintType
+	data class ClaimingCandidate(val groupType: GroupType) : HintType
 }
 
 @Stable
 sealed interface GroupType {
 	val id: Int
 
-	data class Row(
-		override val id: Int,
-	) : GroupType
+	data class Row(override val id: Int) : GroupType
 
-	data class Column(
-		override val id: Int,
-	) : GroupType
+	data class Column(override val id: Int) : GroupType
 
-	data class Block(
-		override val id: Int,
-	) : GroupType
+	data class Block(override val id: Int) : GroupType
 }
 
 @Stable
@@ -53,8 +41,8 @@ data class Hint(
 	val type: HintType,
 	val explanationStrategy: HintExplanationStrategy? = null,
 	val additionalInfo: String = "",
-	val affectedCells: PersistentList<SudokuCellData> = persistentListOf(),
-	val enforcingCells: PersistentList<SudokuCellData> = persistentListOf(),
+	val affectedCells: PersistentSet<SudokuCellData> = persistentSetOf(),
+	val enforcingCells: PersistentSet<SudokuCellData> = persistentSetOf(),
 )
 
 class HintProvider {
@@ -67,7 +55,12 @@ class HintProvider {
 		// Generate Houses from data
 		val houses = mutableListOf<House>()
 		(0..gridSize).forEach { i ->
-			houses.add(House.Block(data.filter { it.row / blockSize == i / blockSize && it.col / blockSize == i % blockSize }, i))
+			houses.add(
+				House.Block(
+					data.filter { it.row / blockSize == i / blockSize && it.col / blockSize == i % blockSize },
+					i,
+				),
+			)
 			houses.add(House.Row(data.filter { it.row == i }, i))
 			houses.add(House.Column(data.filter { it.col == i }, i))
 		}
@@ -105,8 +98,8 @@ class HintProvider {
 					.flatMap { it.enforcingCells }
 					.toPersistentList()
 			return representative.copy(
-				affectedCells = aggregatedCells,
-				enforcingCells = enforcingCells,
+				affectedCells = aggregatedCells.toPersistentSet(),
+				enforcingCells = enforcingCells.toPersistentSet(),
 			)
 		}
 		return null
@@ -155,27 +148,20 @@ class HintProvider {
 	}
 
 	// Now returns a list of hints representing eliminated candidates
-	fun findLockedCandidate(
-		house: House,
-		data: List<SudokuCellData>,
-	): List<Hint>? =
-		when (house) {
-			is House.Block -> {
-				val hints = findPointingCandidates(house, data)
-				if (hints.isNotEmpty()) hints else null
-			}
-
-			is House.Row, is House.Column -> {
-				val hints = findClaimingCandidates(house, data)
-				if (hints.isNotEmpty()) hints else null
-			}
+	fun findLockedCandidate(house: House, data: List<SudokuCellData>): List<Hint>? = when (house) {
+		is House.Block -> {
+			val hints = findPointingCandidates(house, data)
+			hints.ifEmpty { null }
 		}
 
+		is House.Row, is House.Column -> {
+			val hints = findClaimingCandidates(house, data)
+			hints.ifEmpty { null }
+		}
+	}
+
 	// Works on a Block house only
-	fun findPointingCandidates(
-		house: House.Block,
-		data: List<SudokuCellData>,
-	): List<Hint> {
+	fun findPointingCandidates(house: House.Block, data: List<SudokuCellData>): List<Hint> {
 		val hints = mutableListOf<Hint>()
 		val emptyCells = house.cells.filter { it.number == 0 }
 		val candidateDigits = emptyCells.flatMap { it.candidates }.toSet()
@@ -201,7 +187,7 @@ class HintProvider {
 							value = digit,
 							type = HintType.PointingCandidate(GroupType.Row(it.row)),
 							explanationStrategy = PointingCandidateExplanation(),
-							enforcingCells = candidateCells.toPersistentList(),
+							enforcingCells = candidateCells.toPersistentSet(),
 						),
 					)
 				}
@@ -222,7 +208,7 @@ class HintProvider {
 							value = digit,
 							type = HintType.PointingCandidate(GroupType.Column(it.col)),
 							explanationStrategy = PointingCandidateExplanation(),
-							enforcingCells = candidateCells.toPersistentList(),
+							enforcingCells = candidateCells.toPersistentSet(),
 						),
 					)
 				}
@@ -232,10 +218,7 @@ class HintProvider {
 	}
 
 	//  Works on a Row or Column house
-	fun findClaimingCandidates(
-		house: House,
-		data: List<SudokuCellData>,
-	): List<Hint> {
+	fun findClaimingCandidates(house: House, data: List<SudokuCellData>): List<Hint> {
 		if (house !is House.Row && house !is House.Column) {
 			throw IllegalArgumentException("House must be a Row or Column")
 		}
@@ -247,7 +230,9 @@ class HintProvider {
 			val candidateCells = house.cells.filter { it.number == 0 && digit in it.candidates }
 			if (candidateCells.isNotEmpty()) {
 				// Check if candidate cells belong to the same block (using block index)
-				val uniqueBlocks = candidateCells.map { (it.row / blockSize) * blockSize + (it.col / blockSize) }.toSet()
+				val uniqueBlocks =
+					candidateCells.map { (it.row / blockSize) * blockSize + (it.col / blockSize) }
+						.toSet()
 				if (uniqueBlocks.size == 1) {
 					val blockIndex = uniqueBlocks.first()
 					val blockCells =
@@ -263,17 +248,17 @@ class HintProvider {
 								col = it.col,
 								value = digit,
 								type =
-									HintType.ClaimingCandidate(
-										if (house is House.Row) {
-											GroupType.Row(
-												it.row,
-											)
-										} else {
-											GroupType.Column(it.col)
-										},
-									),
+								HintType.ClaimingCandidate(
+									if (house is House.Row) {
+										GroupType.Row(
+											it.row,
+										)
+									} else {
+										GroupType.Column(it.col)
+									},
+								),
 								explanationStrategy = ClaimingCandidateExplanation(),
-								enforcingCells = candidateCells.toPersistentList(),
+								enforcingCells = candidateCells.toPersistentSet(),
 							),
 						)
 					}
@@ -283,46 +268,44 @@ class HintProvider {
 		return hints
 	}
 
-	fun getPossibleValues(
-		data: List<SudokuCellData>,
-		row: Int,
-		col: Int,
-	): Set<Int> {
-		val possibleValues = ClassicSudokuSolver.getValidMoves(SudokuGrid.fromCellData(data), row, col).toSet()
+	fun getPossibleValues(data: List<SudokuCellData>, row: Int, col: Int): Set<Int> {
+		val possibleValues =
+			ClassicSudokuSolver.getValidMoves(SudokuGrid.fromCellData(data), row, col).toSet()
 		return possibleValues
 	}
 
-	private fun getRow(
-		data: List<SudokuCellData>,
-		row: Int,
-	): List<SudokuCellData> = data.filter { it.row == row }
+	private fun getRow(data: List<SudokuCellData>, row: Int): List<SudokuCellData> =
+		data.filter { it.row == row }
 
-	private fun getColumn(
-		data: List<SudokuCellData>,
-		col: Int,
-	): List<SudokuCellData> = data.filter { it.col == col }
+	private fun getColumn(data: List<SudokuCellData>, col: Int): List<SudokuCellData> =
+		data.filter { it.col == col }
 
-	private fun getBlock(
-		data: List<SudokuCellData>,
-		boxRow: Int,
-		boxCol: Int,
-	): List<SudokuCellData> {
+	private fun getBlock(data: List<SudokuCellData>, boxRow: Int, boxCol: Int): List<SudokuCellData> {
 		val gridSize = sqrt(data.size.toDouble()).toInt()
 		val blockSize = sqrt(gridSize.toDouble()).toInt()
 		val startRow = boxRow * blockSize
 		val startCol = boxCol * blockSize
-		return data.filter { it.row in startRow until startRow + blockSize && it.col in startCol until startCol + blockSize }
+		return data.filter {
+			it.row in startRow until startRow + blockSize &&
+				it.col in startCol until startCol + blockSize
+		}
 	}
 }
 
-fun Collection<SudokuCellData>.containsCell(cell: SudokuCellData): Boolean = this.any { it.row == cell.row && it.col == cell.col }
+fun Collection<SudokuCellData>.containsCell(cell: SudokuCellData): Boolean =
+	this.any { it.row == cell.row && it.col == cell.col }
 
-fun HintProvider.fillCandidates(data: List<SudokuCellData>): List<SudokuCellData> =
-	data
-		.map { cell ->
-			if (cell.number == 0) {
-				cell.copy(candidates = getPossibleValues(data, cell.row, cell.col).toPersistentSet())
-			} else {
-				cell
-			}
-		}.toList()
+fun HintProvider.fillCandidates(data: List<SudokuCellData>): List<SudokuCellData> = data
+	.map { cell ->
+		if (cell.number == 0) {
+			cell.copy(
+				candidates = getPossibleValues(
+					data,
+					cell.row,
+					cell.col,
+				).toPersistentSet(),
+			)
+		} else {
+			cell
+		}
+	}.toList()

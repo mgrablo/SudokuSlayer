@@ -14,7 +14,7 @@ import data.game.ProtoHintType.ProtoHintHouse
 import data.game.ProtoHintTypeKt.protoHintHouse
 import data.game.protoHint
 import data.game.protoHintType
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
 
 fun ProtoHint.toHint(): Hint {
 	val hintType = this.hintType.toHintType()
@@ -25,8 +25,8 @@ fun ProtoHint.toHint(): Hint {
 		type = hintType,
 		explanationStrategy = HintExplanationFactory.createStrategyFor(hintType),
 		additionalInfo = additionalInfo,
-		affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentList(),
-		enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentList(),
+		affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+		enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 	)
 }
 

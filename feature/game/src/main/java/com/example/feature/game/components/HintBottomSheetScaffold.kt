@@ -58,6 +58,7 @@ internal fun HintBottomSheetScaffold(
 	sheetScaffoldState: BottomSheetScaffoldState,
 	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
+	onHighlightCellClick: (Hint) -> Unit,
 	modifier: Modifier = Modifier,
 	hintLogs: PersistentList<HintLog> = persistentListOf(),
 	showNextHint: Boolean = false,
@@ -75,12 +76,12 @@ internal fun HintBottomSheetScaffold(
 		topBar = topBar,
 		sheetContent = {
 			SheetContent(
-				title = "Hint logs",
 				logs = hintLogs,
 				showNextHint = showNextHint,
 				explainHintClick = explainHintClick,
 				nextHintClick = nextHintClick,
-				modifier = Modifier.heightIn(min = 128.dp, max = 350.dp),
+				onHighlightCellClick = onHighlightCellClick,
+				modifier = Modifier.heightIn(min = 128.dp, max = 320.dp),
 			)
 		},
 		content = content,
@@ -88,10 +89,10 @@ internal fun HintBottomSheetScaffold(
 }
 
 @Composable
-internal fun SheetContent(
-	title: String,
+private fun SheetContent(
 	nextHintClick: () -> Unit,
 	explainHintClick: () -> Unit,
+	onHighlightCellClick: (Hint) -> Unit,
 	modifier: Modifier = Modifier,
 	showNextHint: Boolean = false,
 	logs: PersistentList<HintLog> = persistentListOf(),
@@ -113,19 +114,12 @@ internal fun SheetContent(
 		modifier =
 		modifier
 			.fillMaxSize()
-			.padding(16.dp)
+			.padding(horizontal = 16.dp)
 			.padding(
 				bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
 			),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
-		Text(
-			text = title,
-			style = MaterialTheme.typography.titleLarge,
-			modifier =
-			Modifier
-				.padding(bottom = 8.dp),
-		)
 		LazyColumn(
 			state = listState,
 			modifier =
@@ -158,6 +152,7 @@ internal fun SheetContent(
 							expandedItems.add(hintLog)
 						}
 					},
+					onHighlightCellClick = { onHighlightCellClick(hintLog.hint) },
 					isRevealed = hintLog.isRevealed,
 					isUserGuessed = hintLog.isUserGuessed,
 					interactionSource = interactionSource,
@@ -253,6 +248,7 @@ private fun HintBottomSheetScaffoldPreview() {
 			),
 			explainHintClick = { },
 			nextHintClick = { },
+			onHighlightCellClick = { },
 			topBar = null,
 			content = { },
 		)

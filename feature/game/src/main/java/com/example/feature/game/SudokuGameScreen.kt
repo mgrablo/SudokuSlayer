@@ -187,9 +187,10 @@ private fun SudokuGameScreenContent(
 		modifier = modifier,
 		sheetScaffoldState = scaffoldState,
 		hintLogs = game.hintLogs,
-		showNextHint = uiState.lastHint == null,
+		showNextHint = game.hintLogs.lastOrNull()?.isRevealed ?: true,
 		explainHintClick = { onEvent(Event.ExplainHint) },
 		nextHintClick = { onEvent(Event.ProvideHint) },
+		onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
 		topBar = {
 			CenterAlignedTopAppBar(
 				windowInsets = WindowInsets.displayCutout,
@@ -244,6 +245,7 @@ private fun SudokuGameScreenContent(
 				) {
 					SudokuBoard(
 						sudoku = game.grid,
+						focusedCells = uiState.focusedCells,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
 						modifier = Modifier.weight(1f),
@@ -296,6 +298,7 @@ private fun SudokuGameScreenContent(
 				) {
 					SudokuBoard(
 						sudoku = game.grid,
+						focusedCells = uiState.focusedCells,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
 						modifier = Modifier.weight(1f),

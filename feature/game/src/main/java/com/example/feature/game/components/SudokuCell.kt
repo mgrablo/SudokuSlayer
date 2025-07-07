@@ -1,5 +1,11 @@
 package com.example.feature.game.components
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -45,6 +51,7 @@ internal fun SudokuCell(
 	onCellClick: (Int, Int) -> Unit,
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
+	isFocused: Boolean = false,
 	textStyle: TextStyle = TextStyle(),
 ) {
 	val subgridSize by remember { derivedStateOf { sqrt(gridSize.toDouble()).toInt() } }
@@ -61,12 +68,43 @@ internal fun SudokuCell(
 
 	val shape = getRoundedBlockShape(gridSize, data.row, data.col)
 
+	val innerBorderModifier =
+		if (isFocused) {
+			val infiniteTransition = rememberInfiniteTransition("breathingEffect")
+			val borderWidth by infiniteTransition.animateFloat(
+				initialValue = 1.8f,
+				targetValue = 4f,
+				animationSpec = infiniteRepeatable(
+					animation = tween(750, easing = LinearEasing),
+					repeatMode = RepeatMode.Reverse,
+				),
+				label = "borderWidth",
+			)
+			val borderAlpha by infiniteTransition.animateFloat(
+				initialValue = 0.5f,
+				targetValue = 1f,
+				animationSpec = infiniteRepeatable(
+					animation = tween(750, easing = LinearEasing),
+					repeatMode = RepeatMode.Reverse,
+				),
+				label = "borderAlpha",
+			)
+			Modifier.border(
+				width = borderWidth.dp,
+				color = LocalSudokuBoardColors.current.hintMarkBackground.copy(alpha = borderAlpha),
+				shape = shape,
+			)
+		} else {
+			Modifier
+		}
+
 	Box(
 		contentAlignment = Alignment.Center,
 		modifier =
 		modifier
 			.clip(shape)
 			.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
+			.then(innerBorderModifier)
 			.background(backgroundColor)
 			.combinedClickable(
 				onClick = { onCellClick(data.row, data.col) },
@@ -231,6 +269,7 @@ private fun SudokuCellPreview() {
 					onCellLongClick = { _, _ -> },
 					textStyle = TextStyle(fontSize = fontSize),
 					gridSize = gridSize,
+					isFocused = true,
 					modifier = Modifier.size(50.dp),
 				)
 			}
