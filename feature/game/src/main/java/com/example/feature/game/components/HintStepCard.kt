@@ -2,16 +2,14 @@ package com.example.feature.game.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -19,10 +17,10 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -40,6 +38,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.createAnnotatedString
 import com.example.feature.uicore.theme.LocalHintSheetColors
+import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.sudokuslayer.feature.game.R
@@ -120,36 +119,26 @@ internal fun HintStepCard(
 					modifier = Modifier.weight(1f),
 				)
 				AnimatedContent(isUserGuessed) { guessed ->
-					if (guessed) {
-						Row {
-							Spacer(modifier = Modifier.width(8.dp))
+					IconButton(
+						onClick = onHighlightCellClick,
+					) {
+						if (guessed) {
 							Icon(
 								imageVector = Icons.Default.CheckCircle,
 								contentDescription = "Correctly guessed",
 								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
 							)
-						}
-					} else {
-						Row {
-							Spacer(modifier = Modifier.width(8.dp))
-							IconButton(
-								onClick = onHighlightCellClick,
-							) {
-								Icon(
-									painter = painterResource(R.drawable.visibility),
-									contentDescription = "Highlight cells to focus on",
-									tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
-								)
-							}
+						} else {
+							Icon(
+								painter = painterResource(R.drawable.visibility),
+								contentDescription = "Highlight cells to focus on",
+								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
+							)
 						}
 					}
 				}
 				if (isRevealed || isUserGuessed) {
-					IconButton(
-						onClick = {
-							onExpandToggle()
-						},
-					) {
+					IconButton(onClick = onExpandToggle) {
 						if (isExpanded) {
 							Icon(
 								imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
@@ -163,9 +152,7 @@ internal fun HintStepCard(
 						}
 					}
 				} else {
-					IconButton(
-						onClick = { onExplainClick() },
-					) {
+					IconButton(onClick = onExplainClick) {
 						Icon(
 							painter = painterResource(id = R.drawable.lightbulb),
 							contentDescription = "Explain",
@@ -173,45 +160,48 @@ internal fun HintStepCard(
 					}
 				}
 			}
-
 			AnimatedVisibility(isExpanded) {
-				HorizontalDivider(
-					color = MaterialTheme.colorScheme.outlineVariant,
-				)
-				Column {
-					Spacer(modifier = Modifier.height(8.dp))
-					cardContent.forEach {
-						Text(
-							text =
-							buildAnnotatedString {
-								withStyle(
-									SpanStyle(
-										fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-										color = MaterialTheme.colorScheme.onSurface,
-									),
-								) {
-									append("\u2022 ")
-									append(
-										createAnnotatedString(
-											input = it,
-											angleBracketStyle =
-											SpanStyle(
-												color = MaterialTheme.colorScheme.primary,
-												fontWeight = FontWeight.Bold,
-												fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-											),
-											asteriskStyle =
-											SpanStyle(
-												color = LocalHintSheetColors.current.subtext,
-												fontStyle = FontStyle.Italic,
-												fontSize = MaterialTheme.typography.bodySmall.fontSize,
-											),
+				Surface(
+					color = MaterialTheme.colorScheme.background,
+					shape = RoundedCornerShape(4.dp),
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					Column(
+						modifier = Modifier.padding(LocalPadding.current.tiny),
+					) {
+						cardContent.forEach {
+							Text(
+								text =
+								buildAnnotatedString {
+									withStyle(
+										SpanStyle(
+											fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+											color = MaterialTheme.colorScheme.onSurface,
 										),
-									)
-								}
-							},
-							style = MaterialTheme.typography.bodySmall,
-						)
+									) {
+										append("\u2022 ")
+										append(
+											createAnnotatedString(
+												input = it,
+												angleBracketStyle =
+												SpanStyle(
+													color = MaterialTheme.colorScheme.primary,
+													fontWeight = FontWeight.Bold,
+													fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+												),
+												asteriskStyle =
+												SpanStyle(
+													color = LocalHintSheetColors.current.subtext,
+													fontStyle = FontStyle.Italic,
+													fontSize = MaterialTheme.typography.bodySmall.fontSize,
+												),
+											),
+										)
+									}
+								},
+								style = MaterialTheme.typography.bodySmall,
+							)
+						}
 					}
 				}
 			}

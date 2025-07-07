@@ -76,13 +76,12 @@ internal fun HintBottomSheetScaffold(
 		topBar = topBar,
 		sheetContent = {
 			SheetContent(
-				title = "Hint logs",
 				logs = hintLogs,
 				showNextHint = showNextHint,
 				explainHintClick = explainHintClick,
 				nextHintClick = nextHintClick,
 				onHighlightCellClick = onHighlightCellClick,
-				modifier = Modifier.heightIn(min = 128.dp, max = 350.dp),
+				modifier = Modifier.heightIn(min = 128.dp, max = 320.dp),
 			)
 		},
 		content = content,
@@ -90,8 +89,7 @@ internal fun HintBottomSheetScaffold(
 }
 
 @Composable
-internal fun SheetContent(
-	title: String,
+private fun SheetContent(
 	nextHintClick: () -> Unit,
 	explainHintClick: () -> Unit,
 	onHighlightCellClick: (Hint) -> Unit,
@@ -116,19 +114,12 @@ internal fun SheetContent(
 		modifier =
 		modifier
 			.fillMaxSize()
-			.padding(16.dp)
+			.padding(horizontal = 16.dp)
 			.padding(
 				bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
 			),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
-		Text(
-			text = title,
-			style = MaterialTheme.typography.titleLarge,
-			modifier =
-			Modifier
-				.padding(bottom = 8.dp),
-		)
 		LazyColumn(
 			state = listState,
 			modifier =
