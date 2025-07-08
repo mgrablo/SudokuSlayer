@@ -91,8 +91,6 @@ dependencies {
 	implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.compose.unstyled)
-	implementation(libs.catppuccin.palette)
-	implementation(libs.catppuccin.compose)
 	implementation(libs.kotlinx.collections.immutable)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)

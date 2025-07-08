@@ -6,7 +6,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import com.shifthackz.catppuccin.palette.Catppuccin
 
 @Immutable
 data class ExtendedColorScheme(

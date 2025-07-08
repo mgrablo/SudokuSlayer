@@ -16,7 +16,6 @@ nav3core = "1.0.0-alpha04"
 lifecycleViewmodelNav3 = "1.0.0-alpha02"
 
 composeUnstyled = "1.36.0"
-catppuccinPalette = "0.1.2"
 reorderable = "2.5.1"
 graphics-shapes = "1.1.0-alpha01"
 confettikit = "0.5.0"
@@ -77,8 +76,6 @@ androidx-annotations = { group = "androidx.annotation", name = "annotation", ver
 
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-unstyled = { group = "com.composables", name = "core", version.ref = "composeUnstyled"}
-catppuccin-palette = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "palette", version.ref = "catppuccinPalette"}
-catppuccin-compose = { group = "com.github.ShiftHackZ.Catppuccin-Android-Library", name = "compose", version.ref = "catppuccinPalette"}
 confettikit = { group = "io.github.vinceglb", name = "confettikit", version.ref = "confettikit" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
