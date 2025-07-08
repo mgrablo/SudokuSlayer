@@ -1,5 +1,6 @@
 package com.example.feature.uicore.theme
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 val peachLight = Color(0xFF87512D)
@@ -60,6 +61,7 @@ val onYellowDark = Color(0xFF3C2F0B)
 val yellowContainerDark = Color(0xFFE9D2A0)
 val onYellowContainerDark = Color(0xFF4C3E18)
 
+@Immutable
 data class CatppuccinPalette(
 	val base: Color,
 	val mantle: Color,

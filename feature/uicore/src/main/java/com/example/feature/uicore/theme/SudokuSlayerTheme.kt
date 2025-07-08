@@ -13,7 +13,6 @@ import com.example.domain.settings.models.ColorScheme
 
 data class ThemeConfiguration(
 	val extendedColorScheme: ExtendedColorScheme,
-	val boardColors: SudokuBoardColors,
 	val keypadColors: KeypadColors,
 	val hintSheetColors: HintSheetColors,
 )
@@ -23,7 +22,6 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 		is ColorScheme.Mocha ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				boardColors = MochaSudokuBoard,
 				keypadColors = MochaKeypadColors,
 				hintSheetColors = MochaHintSheetColors,
 			)
@@ -31,7 +29,6 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				boardColors = MacchiatoSudokuBoard,
 				keypadColors = MacchiatoKeypadColors,
 				hintSheetColors = MacchiatoHintSheetColors,
 			)
@@ -42,7 +39,6 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 		is ColorScheme.Latte ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				boardColors = LatteSudokuBoard,
 				keypadColors = LatteKeypadColors,
 				hintSheetColors = LatteHintSheetColors,
 			)
@@ -50,7 +46,6 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				boardColors = FrappeSudokuBoard,
 				keypadColors = FrappeKeypadColors,
 				hintSheetColors = FrappeHintSheetColors,
 			)
