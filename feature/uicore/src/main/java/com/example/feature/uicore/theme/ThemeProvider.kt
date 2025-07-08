@@ -1,6 +1,8 @@
 package com.example.feature.uicore.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -9,9 +11,6 @@ import androidx.compose.runtime.remember
 import com.example.domain.settings.SettingsRepository
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
-import com.shifthackz.catppuccin.compose.CatppuccinMaterial
-import com.shifthackz.catppuccin.compose.CatppuccinTheme
-import com.shifthackz.catppuccin.palette.CatppuccinPalette
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,7 +29,6 @@ data class ThemeConfiguration(
 	val extendedColorScheme: ExtendedColorScheme,
 	val boardColors: SudokuBoardColors,
 	val keypadColors: KeypadColors,
-	val catppuccinPalette: CatppuccinPalette,
 	val hintSheetColors: HintSheetColors,
 )
 
@@ -42,7 +40,6 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 				boardColors = MochaSudokuBoard,
 				keypadColors = MochaKeypadColors,
 				hintSheetColors = MochaHintSheetColors,
-				catppuccinPalette = CatppuccinMaterial.Mocha(),
 			)
 
 		else ->
@@ -51,7 +48,6 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 				boardColors = MacchiatoSudokuBoard,
 				keypadColors = MacchiatoKeypadColors,
 				hintSheetColors = MacchiatoHintSheetColors,
-				catppuccinPalette = CatppuccinMaterial.Macchiato(),
 			)
 	}
 
@@ -63,7 +59,6 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 				boardColors = LatteSudokuBoard,
 				keypadColors = LatteKeypadColors,
 				hintSheetColors = LatteHintSheetColors,
-				catppuccinPalette = CatppuccinMaterial.Latte(),
 			)
 
 		else ->
@@ -72,10 +67,10 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 				boardColors = FrappeSudokuBoard,
 				keypadColors = FrappeKeypadColors,
 				hintSheetColors = FrappeHintSheetColors,
-				catppuccinPalette = CatppuccinMaterial.Frappe(),
 			)
 	}
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SudokuSlayerTheme(
 	darkTheme: Boolean = isSystemInDarkTheme(),
@@ -95,6 +90,20 @@ fun SudokuSlayerTheme(
 			)
 		}
 
+	val colorScheme = remember(darkTheme, darkScheme, lightScheme) {
+		if (darkTheme) {
+			when (darkScheme) {
+				is ColorScheme.Macchiato -> macchiatoColorScheme
+				else -> mochaColorScheme
+			}
+		} else {
+			when (lightScheme) {
+				is ColorScheme.Frappe -> frappeColorScheme
+				else -> latteColorScheme
+			}
+		}
+	}
+
 	CompositionLocalProvider(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
 		LocalSudokuBoardColors provides themeConfig.boardColors,
@@ -102,8 +111,8 @@ fun SudokuSlayerTheme(
 		LocalHintSheetColors provides themeConfig.hintSheetColors,
 		LocalSudokuTypography provides AppTypography,
 	) {
-		CatppuccinTheme.Palette(
-			palette = themeConfig.catppuccinPalette,
+		MaterialExpressiveTheme(
+			colorScheme = colorScheme,
 		) {
 			content()
 		}

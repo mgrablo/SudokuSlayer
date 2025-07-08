@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -107,6 +107,9 @@ private fun SudokuCreatorContent(
 		topBar = {
 			CenterAlignedTopAppBar(
 				windowInsets = WindowInsets.displayCutout,
+				colors = TopAppBarDefaults.topAppBarColors(
+					containerColor = MaterialTheme.colorScheme.surfaceContainer,
+				),
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
@@ -167,6 +170,7 @@ private fun PreviewBox() {
 		Text(
 			"PREVIEW",
 			style = MaterialTheme.typography.displayMedium,
+			color = MaterialTheme.colorScheme.onError,
 		)
 	}
 }
@@ -194,15 +198,10 @@ private fun GameControls(
 private fun GameButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
 	Button(
 		onClick = onClick,
-		colors =
-		ButtonDefaults.buttonColors(
-			containerColor = MaterialTheme.colorScheme.primaryContainer,
-		),
 		modifier = modifier,
 	) {
 		Text(
 			text = text,
-			color = MaterialTheme.colorScheme.onPrimaryContainer,
 		)
 	}
 }

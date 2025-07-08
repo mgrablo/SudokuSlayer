@@ -74,7 +74,7 @@ internal fun HintStepCard(
 			),
 		colors =
 		CardDefaults.cardColors(
-			containerColor = MaterialTheme.colorScheme.surface,
+			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 		),
 	) {
 		Column(
@@ -163,7 +163,7 @@ internal fun HintStepCard(
 			}
 			AnimatedVisibility(isExpanded) {
 				Surface(
-					color = MaterialTheme.colorScheme.background,
+					color = MaterialTheme.colorScheme.surface,
 					shape = RoundedCornerShape(4.dp),
 					modifier = Modifier.fillMaxWidth(),
 				) {

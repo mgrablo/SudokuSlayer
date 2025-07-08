@@ -21,7 +21,7 @@ internal fun FilterCategory(
 ) {
 	Surface(
 		modifier = modifier.fillMaxWidth(),
-		color = MaterialTheme.colorScheme.background,
+		color = MaterialTheme.colorScheme.surfaceContainer,
 		shape = RoundedCornerShape(LocalPadding.current.normal),
 	) {
 		Column(

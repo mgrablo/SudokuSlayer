@@ -45,6 +45,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -218,6 +219,9 @@ private fun InsightsScreenContent(
 		topBar = {
 			CenterAlignedTopAppBar(
 				title = { Text(stringResource(R.string.insights_screen_title)) },
+				colors = TopAppBarDefaults.topAppBarColors(
+					containerColor = MaterialTheme.colorScheme.surfaceContainer,
+				),
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
 						Icon(

@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.sudokuslayer.feature.statistics.R
 
@@ -35,7 +34,7 @@ fun FilterActionButtons(
 ) {
 	Surface(
 		modifier = modifier.fillMaxWidth(),
-		tonalElevation = 3.dp,
+		color = MaterialTheme.colorScheme.surfaceContainer,
 	) {
 		Column {
 			HorizontalDivider(Modifier.fillMaxWidth())
