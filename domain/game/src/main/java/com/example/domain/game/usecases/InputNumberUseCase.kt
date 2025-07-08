@@ -7,6 +7,7 @@ import com.example.sudoku.model.markRuleBreakingCells
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -43,7 +44,7 @@ class InputNumberUseCase {
 							cell.cornerNotes - number
 						} else {
 							cell.cornerNotes + number
-						},
+						}.sorted().toPersistentSet(),
 					)
 
 				else ->
