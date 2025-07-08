@@ -19,8 +19,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.game.theme.LocalSudokuBoardColors
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.LocalSudokuBoardColors
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
@@ -180,12 +180,12 @@ private fun createSudokuCellData(gridSize: Int): List<SudokuCellData> {
 				// 0 to 9
 				add(SudokuCellData(0, 0, it))
 			}
-			repeat(gridSize + 1) {
+			repeat(gridSize + 1) { number ->
 				add(
 					SudokuCellData(
 						0,
 						0,
-						it,
+						number,
 						cornerNotes = persistentSetOf<Int>().mutate { it.addAll(1..gridSize) },
 					),
 				)

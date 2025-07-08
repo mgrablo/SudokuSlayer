@@ -8,6 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.example.domain.settings.models.ColorScheme
 
 data class ThemeConfiguration(
@@ -84,7 +85,6 @@ fun SudokuSlayerTheme(
 
 	CompositionLocalProvider(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
-		LocalSudokuBoardColors provides themeConfig.boardColors,
 		LocalKeyPadColors provides themeConfig.keypadColors,
 		LocalHintSheetColors provides themeConfig.hintSheetColors,
 		LocalSudokuTypography provides AppTypography,
@@ -103,4 +103,8 @@ fun SudokuSlayerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Comp
 		colorScheme = if (darkTheme) ColorScheme.Mocha() else ColorScheme.Latte(),
 		content = content,
 	)
+}
+
+val LocalAppColorScheme = staticCompositionLocalOf<ColorScheme> {
+	ColorScheme.Mocha()
 }

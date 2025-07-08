@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import com.composables.core.rememberDialogState
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
+import com.example.domain.settings.models.ColorScheme
 import com.example.feature.game.SudokuGameViewModel.Event
 import com.example.feature.game.components.HintBottomSheetScaffold
 import com.example.feature.game.components.HintsDialog
@@ -56,6 +58,9 @@ import com.example.feature.game.components.TimerDisplay
 import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
+import com.example.feature.game.theme.BoardColorSchemes
+import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.game.R
@@ -77,25 +82,37 @@ internal fun SudokuGameScreen(
 	val uiState: SudokuGameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val game by viewModel.game.collectAsStateWithLifecycle()
 
-	LifecycleResumeEffect(Unit) {
-		viewModel.onEvent(Event.StartTimer)
-		onPauseOrDispose {
-			viewModel.onEvent(Event.StopTimer)
+	val colorScheme = LocalAppColorScheme.current
+	val boardColors = remember(colorScheme) {
+		when (colorScheme) {
+			is ColorScheme.Mocha -> BoardColorSchemes.Mocha
+			is ColorScheme.Macchiato -> BoardColorSchemes.Macchiato
+			is ColorScheme.Latte -> BoardColorSchemes.Latte
+			is ColorScheme.Frappe -> BoardColorSchemes.Frappe
 		}
 	}
 
-	SudokuGameScreenContent(
-		uiState = uiState,
-		game = game,
-		onEvent = {
-			viewModel.onEvent(it)
-		},
-		onPlayAgainClick = onPlayAgainClick,
-		modifier = modifier.fillMaxSize(),
-		elapsedTime = { elapsedTime },
-		onNavigateToInsightsClick = onNavigateToInsightsClick,
-		openDrawer = openDrawer,
-	)
+	CompositionLocalProvider(LocalSudokuBoardColors provides boardColors) {
+		LifecycleResumeEffect(Unit) {
+			viewModel.onEvent(Event.StartTimer)
+			onPauseOrDispose {
+				viewModel.onEvent(Event.StopTimer)
+			}
+		}
+
+		SudokuGameScreenContent(
+			uiState = uiState,
+			game = game,
+			onEvent = {
+				viewModel.onEvent(it)
+			},
+			onPlayAgainClick = onPlayAgainClick,
+			modifier = modifier.fillMaxSize(),
+			elapsedTime = { elapsedTime },
+			onNavigateToInsightsClick = onNavigateToInsightsClick,
+			openDrawer = openDrawer,
+		)
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

@@ -17,7 +17,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -42,6 +41,7 @@ import com.example.feature.statistics.Insights
 import com.example.feature.statistics.insightsEntry
 import com.example.feature.uicore.components.SudokuNavigationRail
 import com.example.feature.uicore.navigation.Destination
+import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -209,8 +209,4 @@ private fun rememberCurrentColorScheme(
 			}
 		}
 	}
-}
-
-val LocalAppColorScheme = staticCompositionLocalOf<ColorScheme> {
-	ColorScheme.Mocha()
 }

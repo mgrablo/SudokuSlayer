@@ -294,11 +294,6 @@ internal val LocalExtendedColorScheme =
 		extendedLight
 	}
 
-val LocalSudokuBoardColors =
-	staticCompositionLocalOf<SudokuBoardColors> {
-		MochaSudokuBoard
-	}
-
 val LocalKeyPadColors =
 	staticCompositionLocalOf<KeypadColors> {
 		MochaKeypadColors
