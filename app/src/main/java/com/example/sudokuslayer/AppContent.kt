@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -26,7 +25,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
-import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
 import com.example.feature.creator.sudokuCreatorEntry
@@ -39,7 +37,6 @@ import com.example.feature.statistics.insightsEntry
 import com.example.feature.uicore.components.SudokuNavigationRail
 import com.example.feature.uicore.navigation.Destination
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import com.example.feature.uicore.theme.ThemeProvider
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
@@ -62,7 +59,6 @@ class MyApplication : Application() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
-	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val backstack = rememberNavBackStack<Destination>(SudokuCreator)
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
@@ -86,28 +82,22 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 		}
 	}
 
-	val themeMode by ThemeProvider.getTheme().collectAsState(initial = DarkMode.SYSTEM)
-
-	val darkScheme by ThemeProvider.getDarkColorScheme()
-		.collectAsState(initial = ColorScheme.Mocha())
-	val lightScheme by ThemeProvider.getLightColorScheme().collectAsState(
-		initial = ColorScheme.Latte(),
-	)
+	val hasActiveGame by viewModel.hasActiveGame.collectAsStateWithLifecycle()
+	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
+	val darkScheme by viewModel.darkModeColorScheme.collectAsStateWithLifecycle()
+	val lightScheme by viewModel.lightModeColorScheme.collectAsStateWithLifecycle()
 
 	SudokuSlayerTheme(
-		darkTheme =
-		when (themeMode) {
-			DarkMode.DARK -> true
-			DarkMode.LIGHT -> false
-			DarkMode.SYSTEM -> isSystemInDarkTheme()
+		colorScheme = when (darkMode) {
+			DarkMode.DARK -> darkScheme
+			DarkMode.LIGHT -> lightScheme
+			DarkMode.SYSTEM -> if (isSystemInDarkTheme()) darkScheme else lightScheme
 		},
-		lightScheme = lightScheme,
-		darkScheme = darkScheme,
 	) {
 		SudokuNavigationRail(
 			state = navigationRailState,
 			destinations = destinations,
-			hasActiveGame = uiState.hasActiveGame,
+			hasActiveGame = hasActiveGame,
 			isSelected = { backstack.last() == it },
 			navigateToScreen = {
 				if (it == SudokuCreator) {

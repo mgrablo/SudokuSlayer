@@ -8,22 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.domain.settings.SettingsRepository
 import com.example.domain.settings.models.ColorScheme
-import com.example.domain.settings.models.DarkMode
-import kotlinx.coroutines.flow.Flow
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-
-object ThemeProvider : KoinComponent {
-	private val settingsRepository: SettingsRepository by inject()
-
-	fun getTheme(): Flow<DarkMode> = settingsRepository.darkMode
-
-	fun getDarkColorScheme(): Flow<ColorScheme> = settingsRepository.darkModeColorScheme
-
-	fun getLightColorScheme(): Flow<ColorScheme> = settingsRepository.lightModeColorScheme
-}
 
 data class ThemeConfiguration(
 	val extendedColorScheme: ExtendedColorScheme,
@@ -73,34 +58,27 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SudokuSlayerTheme(
-	darkTheme: Boolean = isSystemInDarkTheme(),
-	lightScheme: ColorScheme = ColorScheme.Latte(),
-	darkScheme: ColorScheme = ColorScheme.Mocha(),
+	colorScheme: ColorScheme,
 	content:
 	@Composable () -> Unit,
 ) {
 	val themeConfig by
-		remember(darkTheme, darkScheme, lightScheme) {
+		remember(colorScheme) {
 			mutableStateOf(
-				if (darkTheme) {
-					getDarkThemeConfiguration(darkScheme)
+				if (colorScheme.isDark) {
+					getDarkThemeConfiguration(colorScheme)
 				} else {
-					getLightThemeConfiguration(lightScheme)
+					getLightThemeConfiguration(colorScheme)
 				},
 			)
 		}
 
-	val colorScheme = remember(darkTheme, darkScheme, lightScheme) {
-		if (darkTheme) {
-			when (darkScheme) {
-				is ColorScheme.Macchiato -> macchiatoColorScheme
-				else -> mochaColorScheme
-			}
-		} else {
-			when (lightScheme) {
-				is ColorScheme.Frappe -> frappeColorScheme
-				else -> latteColorScheme
-			}
+	val colorScheme = remember(colorScheme) {
+		when (colorScheme) {
+			is ColorScheme.Mocha -> mochaColorScheme
+			is ColorScheme.Macchiato -> macchiatoColorScheme
+			is ColorScheme.Latte -> latteColorScheme
+			is ColorScheme.Frappe -> frappeColorScheme
 		}
 	}
 
@@ -117,4 +95,12 @@ fun SudokuSlayerTheme(
 			content()
 		}
 	}
+}
+
+@Composable
+fun SudokuSlayerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+	SudokuSlayerTheme(
+		colorScheme = if (darkTheme) ColorScheme.Mocha() else ColorScheme.Latte(),
+		content = content,
+	)
 }
