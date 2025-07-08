@@ -11,8 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -25,6 +30,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.SudokuCreator
 import com.example.feature.creator.sudokuCreatorEntry
@@ -83,97 +89,128 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 	}
 
 	val hasActiveGame by viewModel.hasActiveGame.collectAsStateWithLifecycle()
-	val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
-	val darkScheme by viewModel.darkModeColorScheme.collectAsStateWithLifecycle()
-	val lightScheme by viewModel.lightModeColorScheme.collectAsStateWithLifecycle()
+	val settingsDarkMode by viewModel.darkMode.collectAsStateWithLifecycle()
+	val darkColorScheme by viewModel.darkModeColorScheme.collectAsStateWithLifecycle()
+	val lightColorScheme by viewModel.lightModeColorScheme.collectAsStateWithLifecycle()
+	val currentColorScheme by rememberCurrentColorScheme(
+		settingsDarkMode = settingsDarkMode,
+		darkColorScheme = darkColorScheme,
+		lightColorScheme = lightColorScheme,
+	)
 
-	SudokuSlayerTheme(
-		colorScheme = when (darkMode) {
-			DarkMode.DARK -> darkScheme
-			DarkMode.LIGHT -> lightScheme
-			DarkMode.SYSTEM -> if (isSystemInDarkTheme()) darkScheme else lightScheme
-		},
-	) {
-		SudokuNavigationRail(
-			state = navigationRailState,
-			destinations = destinations,
-			hasActiveGame = hasActiveGame,
-			isSelected = { backstack.last() == it },
-			navigateToScreen = {
-				if (it == SudokuCreator) {
-					backstack.clear()
-					backstack.add(it)
-				} else if (backstack.last() != it) {
-					backstack.add(it)
-				}
-				scope.launch {
-					navigationRailState.collapse()
-				}
-			},
-			onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
-		)
-		NavDisplay(
-			modifier = Modifier.fillMaxSize().background(
-				MaterialTheme.colorScheme.background,
-			),
-			backStack = backstack,
-			entryDecorators = listOf(
-				rememberSceneSetupNavEntryDecorator(),
-				rememberSavedStateNavEntryDecorator(),
-				rememberViewModelStoreNavEntryDecorator(),
-			),
-			entryProvider = entryProvider {
-				sudokuCreatorEntry(
-					navigateToGameScreen = {
-						scope.launch {
-							backstack.apply {
-								clear()
-								add(SudokuCreator)
-								add(SudokuGame)
+	CompositionLocalProvider(LocalAppColorScheme provides currentColorScheme) {
+		SudokuSlayerTheme(
+			colorScheme = currentColorScheme,
+		) {
+			SudokuNavigationRail(
+				state = navigationRailState,
+				destinations = destinations,
+				hasActiveGame = hasActiveGame,
+				isSelected = { backstack.last() == it },
+				navigateToScreen = {
+					if (it == SudokuCreator) {
+						backstack.clear()
+						backstack.add(it)
+					} else if (backstack.last() != it) {
+						backstack.add(it)
+					}
+					scope.launch {
+						navigationRailState.collapse()
+					}
+				},
+				onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
+			)
+			NavDisplay(
+				modifier = Modifier.fillMaxSize().background(
+					MaterialTheme.colorScheme.background,
+				),
+				backStack = backstack,
+				entryDecorators = listOf(
+					rememberSceneSetupNavEntryDecorator(),
+					rememberSavedStateNavEntryDecorator(),
+					rememberViewModelStoreNavEntryDecorator(),
+				),
+				entryProvider = entryProvider {
+					sudokuCreatorEntry(
+						navigateToGameScreen = {
+							scope.launch {
+								backstack.apply {
+									clear()
+									add(SudokuCreator)
+									add(SudokuGame)
+								}
 							}
-						}
-					},
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-				gameEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-					onPlayAgainClick = {
-						scope.launch {
-							backstack.removeLastOrNull()
-						}
-					},
-					onNavigateToInsightsClick = {
-						scope.launch {
-							backstack.apply {
-								removeLastOrNull()
-								add(Insights)
+						},
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
 							}
-						}
-					},
-				)
-				insightsEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-				settingsEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-			},
-		)
+						},
+					)
+					gameEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+						onPlayAgainClick = {
+							scope.launch {
+								backstack.removeLastOrNull()
+							}
+						},
+						onNavigateToInsightsClick = {
+							scope.launch {
+								backstack.apply {
+									removeLastOrNull()
+									add(Insights)
+								}
+							}
+						},
+					)
+					insightsEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+					)
+					settingsEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+					)
+				},
+			)
+		}
 	}
+}
+
+@Composable
+private fun rememberCurrentColorScheme(
+	settingsDarkMode: DarkMode,
+	darkColorScheme: ColorScheme,
+	lightColorScheme: ColorScheme,
+): State<ColorScheme> {
+	val isSystemDark = isSystemInDarkTheme()
+
+	return remember(
+		settingsDarkMode,
+		isSystemDark,
+		darkColorScheme,
+		lightColorScheme,
+	) {
+		derivedStateOf {
+			when (settingsDarkMode) {
+				DarkMode.DARK -> darkColorScheme
+				DarkMode.LIGHT -> lightColorScheme
+				DarkMode.SYSTEM -> if (isSystemDark) darkColorScheme else lightColorScheme
+			}
+		}
+	}
+}
+
+val LocalAppColorScheme = staticCompositionLocalOf<ColorScheme> {
+	ColorScheme.Mocha()
 }
