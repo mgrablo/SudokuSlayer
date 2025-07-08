@@ -26,6 +26,7 @@ val appModule =
 		viewModel {
 			AppViewModel(
 				gameRepository = get(),
+				settingsRepository = get(),
 			)
 		}
 	}

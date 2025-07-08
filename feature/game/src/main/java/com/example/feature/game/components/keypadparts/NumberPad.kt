@@ -73,7 +73,7 @@ fun NumberPad(
 						text = number.toString(),
 						onClick = { onButtonClick(number) },
 						onLongClick = { onButtonLongClick(number) },
-						bgColor = keyColor,
+						containerColor = keyColor,
 						textColor = textColor,
 						textStyle = textStyle,
 						modifier = Modifier

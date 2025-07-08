@@ -11,8 +11,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -38,8 +41,8 @@ import com.example.feature.statistics.Insights
 import com.example.feature.statistics.insightsEntry
 import com.example.feature.uicore.components.SudokuNavigationRail
 import com.example.feature.uicore.navigation.Destination
+import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
-import com.example.feature.uicore.theme.ThemeProvider
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
@@ -62,7 +65,6 @@ class MyApplication : Application() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
-	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val backstack = rememberNavBackStack<Destination>(SudokuCreator)
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
@@ -86,104 +88,125 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 		}
 	}
 
-	val themeMode by ThemeProvider.getTheme().collectAsState(initial = DarkMode.SYSTEM)
-
-	val darkScheme by ThemeProvider.getDarkColorScheme()
-		.collectAsState(initial = ColorScheme.Mocha())
-	val lightScheme by ThemeProvider.getLightColorScheme().collectAsState(
-		initial = ColorScheme.Latte(),
+	val hasActiveGame by viewModel.hasActiveGame.collectAsStateWithLifecycle()
+	val settingsDarkMode by viewModel.darkMode.collectAsStateWithLifecycle()
+	val darkColorScheme by viewModel.darkModeColorScheme.collectAsStateWithLifecycle()
+	val lightColorScheme by viewModel.lightModeColorScheme.collectAsStateWithLifecycle()
+	val currentColorScheme by rememberCurrentColorScheme(
+		settingsDarkMode = settingsDarkMode,
+		darkColorScheme = darkColorScheme,
+		lightColorScheme = lightColorScheme,
 	)
 
-	SudokuSlayerTheme(
-		darkTheme =
-		when (themeMode) {
-			DarkMode.DARK -> true
-			DarkMode.LIGHT -> false
-			DarkMode.SYSTEM -> isSystemInDarkTheme()
-		},
-		lightScheme = lightScheme,
-		darkScheme = darkScheme,
+	CompositionLocalProvider(LocalAppColorScheme provides currentColorScheme) {
+		SudokuSlayerTheme(
+			colorScheme = currentColorScheme,
+		) {
+			SudokuNavigationRail(
+				state = navigationRailState,
+				destinations = destinations,
+				hasActiveGame = hasActiveGame,
+				isSelected = { backstack.last() == it },
+				navigateToScreen = {
+					if (it == SudokuCreator) {
+						backstack.clear()
+						backstack.add(it)
+					} else if (backstack.last() != it) {
+						backstack.add(it)
+					}
+					scope.launch {
+						navigationRailState.collapse()
+					}
+				},
+				onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
+			)
+			NavDisplay(
+				modifier = Modifier.fillMaxSize().background(
+					MaterialTheme.colorScheme.background,
+				),
+				backStack = backstack,
+				entryDecorators = listOf(
+					rememberSceneSetupNavEntryDecorator(),
+					rememberSavedStateNavEntryDecorator(),
+					rememberViewModelStoreNavEntryDecorator(),
+				),
+				entryProvider = entryProvider {
+					sudokuCreatorEntry(
+						navigateToGameScreen = {
+							scope.launch {
+								backstack.apply {
+									clear()
+									add(SudokuCreator)
+									add(SudokuGame)
+								}
+							}
+						},
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+					)
+					gameEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+						onPlayAgainClick = {
+							scope.launch {
+								backstack.removeLastOrNull()
+							}
+						},
+						onNavigateToInsightsClick = {
+							scope.launch {
+								backstack.apply {
+									removeLastOrNull()
+									add(Insights)
+								}
+							}
+						},
+					)
+					insightsEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+					)
+					settingsEntry(
+						openDrawer = {
+							scope.launch {
+								navigationRailState.expand()
+							}
+						},
+					)
+				},
+			)
+		}
+	}
+}
+
+@Composable
+private fun rememberCurrentColorScheme(
+	settingsDarkMode: DarkMode,
+	darkColorScheme: ColorScheme,
+	lightColorScheme: ColorScheme,
+): State<ColorScheme> {
+	val isSystemDark = isSystemInDarkTheme()
+
+	return remember(
+		settingsDarkMode,
+		isSystemDark,
+		darkColorScheme,
+		lightColorScheme,
 	) {
-		SudokuNavigationRail(
-			state = navigationRailState,
-			destinations = destinations,
-			hasActiveGame = uiState.hasActiveGame,
-			isSelected = { backstack.last() == it },
-			navigateToScreen = {
-				if (it == SudokuCreator) {
-					backstack.clear()
-					backstack.add(it)
-				} else if (backstack.last() != it) {
-					backstack.add(it)
-				}
-				scope.launch {
-					navigationRailState.collapse()
-				}
-			},
-			onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
-		)
-		NavDisplay(
-			modifier = Modifier.fillMaxSize().background(
-				MaterialTheme.colorScheme.background,
-			),
-			backStack = backstack,
-			entryDecorators = listOf(
-				rememberSceneSetupNavEntryDecorator(),
-				rememberSavedStateNavEntryDecorator(),
-				rememberViewModelStoreNavEntryDecorator(),
-			),
-			entryProvider = entryProvider {
-				sudokuCreatorEntry(
-					navigateToGameScreen = {
-						scope.launch {
-							backstack.apply {
-								clear()
-								add(SudokuCreator)
-								add(SudokuGame)
-							}
-						}
-					},
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-				gameEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-					onPlayAgainClick = {
-						scope.launch {
-							backstack.removeLastOrNull()
-						}
-					},
-					onNavigateToInsightsClick = {
-						scope.launch {
-							backstack.apply {
-								removeLastOrNull()
-								add(Insights)
-							}
-						}
-					},
-				)
-				insightsEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-				settingsEntry(
-					openDrawer = {
-						scope.launch {
-							navigationRailState.expand()
-						}
-					},
-				)
-			},
-		)
+		derivedStateOf {
+			when (settingsDarkMode) {
+				DarkMode.DARK -> darkColorScheme
+				DarkMode.LIGHT -> lightColorScheme
+				DarkMode.SYSTEM -> if (isSystemDark) darkColorScheme else lightColorScheme
+			}
+		}
 	}
 }

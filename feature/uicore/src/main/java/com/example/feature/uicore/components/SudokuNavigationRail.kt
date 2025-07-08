@@ -13,9 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalWideNavigationRail
 import androidx.compose.material3.Text
-import androidx.compose.material3.WideNavigationRailDefaults
 import androidx.compose.material3.WideNavigationRailItem
-import androidx.compose.material3.WideNavigationRailItemDefaults
 import androidx.compose.material3.WideNavigationRailState
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
@@ -58,9 +56,6 @@ fun SudokuNavigationRail(
 		hideOnCollapse = true,
 		expandedHeaderTopPadding = 0.dp,
 		windowInsets = WindowInsets(),
-		colors = WideNavigationRailDefaults.colors(
-			modalContainerColor = MaterialTheme.colorScheme.surface,
-		),
 		header = {
 			Row(
 				horizontalArrangement = Arrangement.Center,
@@ -105,13 +100,8 @@ fun SudokuNavigationRail(
 				enabled = isEnabled,
 				onClick = { navigateToScreen(it) },
 				icon = {
-					DestinationIcon(it.icon, tint = textColor)
+					DestinationIcon(it.icon)
 				},
-				colors = WideNavigationRailItemDefaults.colors(
-					selectedTextColor = MaterialTheme.colorScheme.secondary,
-					selectedIndicatorColor = MaterialTheme.colorScheme.secondaryContainer,
-					selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-				),
 				label = {
 					Text(
 						text = stringResource(it.displayNameRes),

@@ -69,7 +69,7 @@ internal fun HintBottomSheetScaffold(
 		modifier = modifier,
 		scaffoldState = sheetScaffoldState,
 		sheetPeekHeight = 128.dp,
-		sheetContainerColor = MaterialTheme.colorScheme.surfaceTint,
+		sheetContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
 		sheetContentColor = MaterialTheme.colorScheme.onSurface,
 		containerColor = MaterialTheme.colorScheme.background,
 		contentColor = MaterialTheme.colorScheme.onBackground,

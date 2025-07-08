@@ -2,7 +2,6 @@ package com.example.feature.game.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +37,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.createAnnotatedString
-import com.example.feature.uicore.theme.LocalHintSheetColors
+import com.example.feature.game.theme.LocalHintLogsColors
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
@@ -74,7 +73,7 @@ internal fun HintStepCard(
 			),
 		colors =
 		CardDefaults.cardColors(
-			containerColor = MaterialTheme.colorScheme.surface,
+			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 		),
 	) {
 		Column(
@@ -108,7 +107,7 @@ internal fun HintStepCard(
 									),
 									asteriskStyle =
 									SpanStyle(
-										color = LocalHintSheetColors.current.subtext,
+										color = LocalHintLogsColors.current.subtext,
 										fontStyle = FontStyle.Italic,
 										fontSize = MaterialTheme.typography.bodySmall.fontSize,
 									),
@@ -163,7 +162,7 @@ internal fun HintStepCard(
 			}
 			AnimatedVisibility(isExpanded) {
 				Surface(
-					color = MaterialTheme.colorScheme.background,
+					color = MaterialTheme.colorScheme.surface,
 					shape = RoundedCornerShape(4.dp),
 					modifier = Modifier.fillMaxWidth(),
 				) {
@@ -192,7 +191,7 @@ internal fun HintStepCard(
 												),
 												asteriskStyle =
 												SpanStyle(
-													color = LocalHintSheetColors.current.subtext,
+													color = LocalHintLogsColors.current.subtext,
 													fontStyle = FontStyle.Italic,
 													fontSize = MaterialTheme.typography.bodySmall.fontSize,
 												),

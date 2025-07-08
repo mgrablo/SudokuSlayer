@@ -77,7 +77,7 @@ internal fun FilterBottomSheet(
 			.fillMaxWidth()
 			.statusBarsPadding(),
 		onDismissRequest = onDismissRequest,
-		containerColor = MaterialTheme.colorScheme.surface,
+		containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 	) {
 		FilterBottomSheetContent(
 			uiState = uiState,
@@ -112,7 +112,7 @@ private fun FilterBottomSheetContent(
 	Column(
 		modifier = modifier
 			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.surface),
+			.background(MaterialTheme.colorScheme.surfaceContainerLow),
 	) {
 		ScrollArea(
 			state = scrollAreaState,

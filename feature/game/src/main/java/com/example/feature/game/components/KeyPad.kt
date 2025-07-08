@@ -29,9 +29,9 @@ import com.example.feature.game.components.keypadparts.ActionPadOrientation
 import com.example.feature.game.components.keypadparts.InputModeSwitch
 import com.example.feature.game.components.keypadparts.KeyPadItem
 import com.example.feature.game.components.keypadparts.NumberPad
+import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.uicore.components.ReversibleRow
 import com.example.feature.uicore.navigation.AppIcon
-import com.example.feature.uicore.theme.LocalKeyPadColors
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.game.R
@@ -125,7 +125,7 @@ internal fun KeyPad(
 								onClick = onHintClick,
 								textStyle = textStyle,
 								modifier = Modifier.size(itemSize),
-								bgColor = LocalKeyPadColors.current.actionPadBackground,
+								containerColor = LocalKeyPadColors.current.actionPadBackground,
 								textColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 							KeyPadItem(
@@ -134,7 +134,7 @@ internal fun KeyPad(
 								onClick = onResetClick,
 								textStyle = textStyle,
 								modifier = Modifier.size(itemSize),
-								bgColor = LocalKeyPadColors.current.actionPadBackground,
+								containerColor = LocalKeyPadColors.current.actionPadBackground,
 								textColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 						}
@@ -160,6 +160,8 @@ internal fun KeyPad(
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
 							textStyle = textStyle,
+							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
+							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 					}
 				}
@@ -176,7 +178,7 @@ internal fun KeyPad(
 							onClick = onHintClick,
 							textStyle = textStyle,
 							modifier = Modifier.size(itemSize),
-							bgColor = LocalKeyPadColors.current.actionPadBackground,
+							containerColor = LocalKeyPadColors.current.actionPadBackground,
 							textColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						NumberPad(
@@ -199,7 +201,7 @@ internal fun KeyPad(
 							onClick = onResetClick,
 							textStyle = textStyle,
 							modifier = Modifier.size(itemSize),
-							bgColor = LocalKeyPadColors.current.actionPadBackground,
+							containerColor = LocalKeyPadColors.current.actionPadBackground,
 							textColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						ActionPad(
@@ -207,6 +209,8 @@ internal fun KeyPad(
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
 							textStyle = textStyle,
+							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
+							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						InputModeSwitch(
 							onClick = onSwitchInputMode,
