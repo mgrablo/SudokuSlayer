@@ -172,6 +172,10 @@ internal fun SudokuCell(
 							CellAttributes.HINT_REVEALED,
 						) -> LocalSudokuBoardColors.current.onHintMarkBackground
 
+						data.attributes.contains(
+							CellAttributes.GENERATED
+						) -> LocalSudokuBoardColors.current.generatedNumber
+
 						else -> LocalSudokuBoardColors.current.onDefaultBackground
 					}
 				Box(

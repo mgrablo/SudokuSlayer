@@ -11,6 +11,7 @@ import com.example.feature.uicore.theme.CatppuccinPalette
 internal data class SudokuBoardColors(
 	val defaultBackground: Color,
 	val onDefaultBackground: Color,
+	val generatedNumber: Color,
 	val selectedBackground: Color,
 	val onSelectedBackground: Color,
 	val highlightedBackground: Color,
@@ -46,6 +47,7 @@ internal object BoardColorSchemes {
 		onMatchingMarkBackground = palette.crust,
 		cellBorder = palette.overlay0,
 		blockBorder = palette.overlay2,
+		generatedNumber = palette.subtext0,
 	)
 }
 
