@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
@@ -21,7 +22,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.feature.uicore.navigation.AppIcon
-import com.example.feature.uicore.theme.LocalKeyPadColors
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
@@ -41,8 +41,8 @@ fun ActionPad(
 	orientation: ActionPadOrientation = ActionPadOrientation.HORIZONTAL,
 	itemSize: Dp = 60.dp,
 	textStyle: TextStyle = TextStyle(),
-	itemBackgroundColor: Color = LocalKeyPadColors.current.actionPadBackground,
-	itemOnBackgroundColor: Color = LocalKeyPadColors.current.actionPadOnBackground,
+	itemContainerColor: Color = MaterialTheme.colorScheme.background,
+	itemContentColor: Color = MaterialTheme.colorScheme.onBackground,
 ) {
 	LayoutWithOrientation(
 		orientation = orientation,
@@ -53,8 +53,8 @@ fun ActionPad(
 				text = "",
 				icon = item.icon,
 				onClick = item.onClick,
-				bgColor = itemBackgroundColor,
-				textColor = itemOnBackgroundColor,
+				containerColor = itemContainerColor,
+				textColor = itemContentColor,
 				textStyle = textStyle,
 				modifier =
 				Modifier

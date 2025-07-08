@@ -38,7 +38,7 @@ fun KeyPadItem(
 	onLongClick: (() -> Unit)? = null,
 	icon: AppIcon? = null,
 	textStyle: TextStyle = TextStyle(),
-	bgColor: Color = MaterialTheme.colorScheme.primaryContainer,
+	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
 	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
 ) {
 	val mutableInteractionSource = remember { MutableInteractionSource() }
@@ -47,7 +47,7 @@ fun KeyPadItem(
 		modifier
 			.aspectRatio(1f)
 			.clip(CircleShape)
-			.background(bgColor)
+			.background(containerColor)
 			.combinedClickable(
 				onClick = onClick,
 				onLongClick = onLongClick,

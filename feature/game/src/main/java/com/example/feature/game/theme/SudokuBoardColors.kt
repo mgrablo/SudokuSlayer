@@ -1,7 +1,10 @@
 package com.example.feature.game.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.example.domain.settings.models.ColorScheme
 import com.example.feature.uicore.theme.Catppuccin
 import com.example.feature.uicore.theme.CatppuccinPalette
 
@@ -28,23 +31,34 @@ internal object BoardColorSchemes {
 	val Frappe = createBoardColorsScheme(Catppuccin.Frappe)
 	val Latte = createBoardColorsScheme(Catppuccin.Latte)
 
-	private fun createBoardColorsScheme(pallete: CatppuccinPalette) = SudokuBoardColors(
-		defaultBackground = pallete.base,
-		onDefaultBackground = pallete.text,
-		selectedBackground = pallete.surface1,
-		onSelectedBackground = pallete.text,
-		highlightedBackground = pallete.surface0,
-		onHighlightedBackground = pallete.text,
-		hintMarkBackground = pallete.green,
-		onHintMarkBackground = pallete.crust,
-		invalidMarkBackground = pallete.red,
-		onInvalidMarkBackground = pallete.crust,
-		matchingMarkBackground = pallete.lavender,
-		onMatchingMarkBackground = pallete.crust,
-		cellBorder = pallete.overlay0,
-		blockBorder = pallete.overlay2,
+	private fun createBoardColorsScheme(palette: CatppuccinPalette) = SudokuBoardColors(
+		defaultBackground = palette.base,
+		onDefaultBackground = palette.text,
+		selectedBackground = palette.surface1,
+		onSelectedBackground = palette.text,
+		highlightedBackground = palette.surface0,
+		onHighlightedBackground = palette.text,
+		hintMarkBackground = palette.green,
+		onHintMarkBackground = palette.crust,
+		invalidMarkBackground = palette.red,
+		onInvalidMarkBackground = palette.crust,
+		matchingMarkBackground = palette.lavender,
+		onMatchingMarkBackground = palette.crust,
+		cellBorder = palette.overlay0,
+		blockBorder = palette.overlay2,
 	)
 }
+
+@Composable
+internal fun rememberBoardColors(colorScheme: ColorScheme): SudokuBoardColors =
+	remember(colorScheme) {
+		when (colorScheme) {
+			is ColorScheme.Mocha -> BoardColorSchemes.Mocha
+			is ColorScheme.Macchiato -> BoardColorSchemes.Macchiato
+			is ColorScheme.Latte -> BoardColorSchemes.Latte
+			is ColorScheme.Frappe -> BoardColorSchemes.Frappe
+		}
+	}
 
 internal val LocalSudokuBoardColors =
 	staticCompositionLocalOf<SudokuBoardColors> {

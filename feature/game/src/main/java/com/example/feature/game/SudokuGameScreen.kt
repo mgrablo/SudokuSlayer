@@ -46,7 +46,6 @@ import com.composables.core.rememberDialogState
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
-import com.example.domain.settings.models.ColorScheme
 import com.example.feature.game.SudokuGameViewModel.Event
 import com.example.feature.game.components.HintBottomSheetScaffold
 import com.example.feature.game.components.HintsDialog
@@ -58,8 +57,10 @@ import com.example.feature.game.components.TimerDisplay
 import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
-import com.example.feature.game.theme.BoardColorSchemes
+import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.game.theme.rememberBoardColors
+import com.example.feature.game.theme.rememberKeypadColors
 import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
@@ -83,16 +84,13 @@ internal fun SudokuGameScreen(
 	val game by viewModel.game.collectAsStateWithLifecycle()
 
 	val colorScheme = LocalAppColorScheme.current
-	val boardColors = remember(colorScheme) {
-		when (colorScheme) {
-			is ColorScheme.Mocha -> BoardColorSchemes.Mocha
-			is ColorScheme.Macchiato -> BoardColorSchemes.Macchiato
-			is ColorScheme.Latte -> BoardColorSchemes.Latte
-			is ColorScheme.Frappe -> BoardColorSchemes.Frappe
-		}
-	}
+	val boardColors = rememberBoardColors(colorScheme)
+	val keypadColors = rememberKeypadColors(colorScheme)
 
-	CompositionLocalProvider(LocalSudokuBoardColors provides boardColors) {
+	CompositionLocalProvider(
+		LocalSudokuBoardColors provides boardColors,
+		LocalKeyPadColors provides keypadColors,
+	) {
 		LifecycleResumeEffect(Unit) {
 			viewModel.onEvent(Event.StartTimer)
 			onPauseOrDispose {

@@ -13,7 +13,6 @@ import com.example.domain.settings.models.ColorScheme
 
 data class ThemeConfiguration(
 	val extendedColorScheme: ExtendedColorScheme,
-	val keypadColors: KeypadColors,
 	val hintSheetColors: HintSheetColors,
 )
 
@@ -22,14 +21,12 @@ private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfigurati
 		is ColorScheme.Mocha ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				keypadColors = MochaKeypadColors,
 				hintSheetColors = MochaHintSheetColors,
 			)
 
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				keypadColors = MacchiatoKeypadColors,
 				hintSheetColors = MacchiatoHintSheetColors,
 			)
 	}
@@ -39,14 +36,12 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 		is ColorScheme.Latte ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				keypadColors = LatteKeypadColors,
 				hintSheetColors = LatteHintSheetColors,
 			)
 
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				keypadColors = FrappeKeypadColors,
 				hintSheetColors = FrappeHintSheetColors,
 			)
 	}
@@ -80,7 +75,6 @@ fun SudokuSlayerTheme(
 
 	CompositionLocalProvider(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
-		LocalKeyPadColors provides themeConfig.keypadColors,
 		LocalHintSheetColors provides themeConfig.hintSheetColors,
 		LocalSudokuTypography provides AppTypography,
 	) {
