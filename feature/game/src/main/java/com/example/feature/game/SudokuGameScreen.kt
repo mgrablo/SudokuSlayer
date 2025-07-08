@@ -57,9 +57,11 @@ import com.example.feature.game.components.TimerDisplay
 import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
+import com.example.feature.game.theme.LocalHintLogsColors
 import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.LocalSudokuBoardColors
 import com.example.feature.game.theme.rememberBoardColors
+import com.example.feature.game.theme.rememberHintLogsColors
 import com.example.feature.game.theme.rememberKeypadColors
 import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
@@ -86,10 +88,12 @@ internal fun SudokuGameScreen(
 	val colorScheme = LocalAppColorScheme.current
 	val boardColors = rememberBoardColors(colorScheme)
 	val keypadColors = rememberKeypadColors(colorScheme)
+	val hintLogsColors = rememberHintLogsColors(colorScheme)
 
 	CompositionLocalProvider(
 		LocalSudokuBoardColors provides boardColors,
 		LocalKeyPadColors provides keypadColors,
+		LocalHintLogsColors provides hintLogsColors,
 	) {
 		LifecycleResumeEffect(Unit) {
 			viewModel.onEvent(Event.StartTimer)

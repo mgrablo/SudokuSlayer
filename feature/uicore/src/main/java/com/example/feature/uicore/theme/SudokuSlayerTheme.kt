@@ -11,23 +11,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.example.domain.settings.models.ColorScheme
 
-data class ThemeConfiguration(
-	val extendedColorScheme: ExtendedColorScheme,
-	val hintSheetColors: HintSheetColors,
-)
+data class ThemeConfiguration(val extendedColorScheme: ExtendedColorScheme)
 
 private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfiguration =
 	when (darkScheme) {
 		is ColorScheme.Mocha ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				hintSheetColors = MochaHintSheetColors,
 			)
 
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedDark,
-				hintSheetColors = MacchiatoHintSheetColors,
 			)
 	}
 
@@ -36,13 +31,11 @@ private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfigura
 		is ColorScheme.Latte ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				hintSheetColors = LatteHintSheetColors,
 			)
 
 		else ->
 			ThemeConfiguration(
 				extendedColorScheme = extendedLight,
-				hintSheetColors = FrappeHintSheetColors,
 			)
 	}
 
@@ -75,7 +68,6 @@ fun SudokuSlayerTheme(
 
 	CompositionLocalProvider(
 		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
-		LocalHintSheetColors provides themeConfig.hintSheetColors,
 		LocalSudokuTypography provides AppTypography,
 	) {
 		MaterialExpressiveTheme(
