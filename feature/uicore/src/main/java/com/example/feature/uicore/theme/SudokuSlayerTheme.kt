@@ -5,39 +5,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.example.domain.settings.models.ColorScheme
-
-data class ThemeConfiguration(val extendedColorScheme: ExtendedColorScheme)
-
-private fun getDarkThemeConfiguration(darkScheme: ColorScheme): ThemeConfiguration =
-	when (darkScheme) {
-		is ColorScheme.Mocha ->
-			ThemeConfiguration(
-				extendedColorScheme = extendedDark,
-			)
-
-		else ->
-			ThemeConfiguration(
-				extendedColorScheme = extendedDark,
-			)
-	}
-
-private fun getLightThemeConfiguration(lightScheme: ColorScheme): ThemeConfiguration =
-	when (lightScheme) {
-		is ColorScheme.Latte ->
-			ThemeConfiguration(
-				extendedColorScheme = extendedLight,
-			)
-
-		else ->
-			ThemeConfiguration(
-				extendedColorScheme = extendedLight,
-			)
-	}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -46,17 +16,13 @@ fun SudokuSlayerTheme(
 	content:
 	@Composable () -> Unit,
 ) {
-	val themeConfig by
-		remember(colorScheme) {
-			mutableStateOf(
-				if (colorScheme.isDark) {
-					getDarkThemeConfiguration(colorScheme)
-				} else {
-					getLightThemeConfiguration(colorScheme)
-				},
-			)
+	val extendedColorScheme = remember(colorScheme) {
+		if (colorScheme.isDark) {
+			extendedDark
+		} else {
+			extendedLight
 		}
-
+	}
 	val colorScheme = remember(colorScheme) {
 		when (colorScheme) {
 			is ColorScheme.Mocha -> mochaColorScheme
@@ -67,7 +33,7 @@ fun SudokuSlayerTheme(
 	}
 
 	CompositionLocalProvider(
-		LocalExtendedColorScheme provides themeConfig.extendedColorScheme,
+		LocalExtendedColorScheme provides extendedColorScheme,
 		LocalSudokuTypography provides AppTypography,
 	) {
 		MaterialExpressiveTheme(
