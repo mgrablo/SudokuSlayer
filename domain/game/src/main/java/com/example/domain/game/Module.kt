@@ -73,6 +73,7 @@ val domainGameModule =
 				resetGame = get(),
 				clearActiveGame = get(),
 				autoClearNotes = get(),
+				highlightMatching = get(),
 			)
 		}
 	}

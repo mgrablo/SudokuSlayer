@@ -52,7 +52,7 @@ class SelectCellUseCase(
 			if (cell.number != 0) {
 				updatedSudoku =
 					highlightMatchingNumbersUseCase(
-						sudoku = updatedSudoku,
+						sudokuGrid = updatedSudoku,
 						number = cell.number,
 					)
 			}

@@ -300,6 +300,12 @@ internal class SudokuGameViewModel(
 					isNote = isNote,
 					isHint = isHint,
 				)
+			if (!isNote && !isHint) {
+				updatedSudoku = gameManagementUseCases.highlightMatching(
+					sudokuGrid = updatedSudoku,
+					number = number,
+				)
+			}
 			changes.add(
 				CellChange(
 					oldCell = backupCell,
