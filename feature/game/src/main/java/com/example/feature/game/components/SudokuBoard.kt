@@ -1,7 +1,6 @@
 package com.example.feature.game.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,14 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.feature.game.theme.LocalSudokuBoardColors
-import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
@@ -47,7 +45,7 @@ internal fun SudokuBoard(
 	) {
 		val requiredRatio = itemsInRow.toFloat() / itemsInRow
 		val currentRatio = maxWidth / maxHeight
-		val blockPadding = LocalPadding.current.tiny
+		val blockPadding = 7.dp
 		val totalBlockPadding = blockPadding * (itemsInRow / itemsInBlock - 1)
 		val cellSize =
 			if (requiredRatio > currentRatio) {
@@ -55,14 +53,44 @@ internal fun SudokuBoard(
 			} else {
 				(maxHeight - totalBlockPadding) / itemsInRow
 			}
-		val sizeAdjustedTextStyle =
-			textStyle.copy(
-				fontSize = (cellSize.value * 0.6f).sp,
-			)
 
 		val lineColor = LocalSudokuBoardColors.current.blockBorder
+		val lineThickness = 2.dp
 
-		Column {
+		Column(
+			modifier = Modifier.drawBehind {
+				val lineThicknessPx = lineThickness.toPx()
+				val numBlocks = itemsInRow / itemsInBlock
+
+				// Draw horizontal dividers
+				for (i in 1 until numBlocks) {
+					val y =
+						i * (itemsInBlock * cellSize.toPx()) + (i - 1) * blockPadding.toPx() +
+							blockPadding.toPx() / 2f
+					drawLine(
+						color = lineColor,
+						start = Offset(0f, y),
+						end = Offset(size.width, y),
+						strokeWidth = lineThicknessPx,
+						cap = StrokeCap.Round,
+					)
+				}
+
+				// Draw vertical dividers
+				for (j in 1 until numBlocks) {
+					val x =
+						j * (itemsInBlock * cellSize.toPx()) + (j - 1) * blockPadding.toPx() +
+							blockPadding.toPx() / 2f
+					drawLine(
+						color = lineColor,
+						start = Offset(x, 0f),
+						end = Offset(x, size.height),
+						strokeWidth = lineThicknessPx,
+						cap = StrokeCap.Round,
+					)
+				}
+			},
+		) {
 			repeat(itemsInRow) { row ->
 				if (row > 0 && row % itemsInBlock == 0) {
 					Spacer(modifier = Modifier.height(blockPadding))
@@ -81,43 +109,9 @@ internal fun SudokuBoard(
 							onCellLongClick = { row, col -> onCellLongClick(row, col) },
 							modifier = Modifier.size(cellSize),
 							isFocused = focusedCells.contains(Pair(row, col)),
-							textStyle = sizeAdjustedTextStyle,
 						)
 					}
 				}
-			}
-		}
-
-		Canvas(modifier = Modifier.size(cellSize * itemsInRow + totalBlockPadding)) {
-			val lineThicknessPx = 2.dp.toPx()
-			val numBlocks = itemsInRow / itemsInBlock
-
-			fun dividerPosition(index: Int): Float = index * (itemsInBlock * cellSize.toPx()) +
-				(index - 1) * blockPadding.toPx() +
-				blockPadding.toPx() / 2f
-
-			// Draw horizontal dividers
-			for (i in 1 until numBlocks) {
-				val y = dividerPosition(i)
-				drawLine(
-					color = lineColor,
-					start = Offset(0f, y),
-					end = Offset(size.width, y),
-					strokeWidth = lineThicknessPx,
-					cap = StrokeCap.Round,
-				)
-			}
-
-			// Draw vertical dividers
-			for (j in 1 until numBlocks) {
-				val x = dividerPosition(j)
-				drawLine(
-					color = lineColor,
-					start = Offset(x, 0f),
-					end = Offset(x, size.height),
-					strokeWidth = lineThicknessPx,
-					cap = StrokeCap.Round,
-				)
 			}
 		}
 	}

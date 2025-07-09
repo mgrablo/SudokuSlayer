@@ -1,11 +1,5 @@
 package com.example.feature.game.components
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -13,16 +7,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,16 +26,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.game.getRoundedBlockShape
 import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.uicore.modifiers.breathingBorder
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentSetOf
 import kotlin.math.sqrt
@@ -52,51 +51,14 @@ internal fun SudokuCell(
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
 	isFocused: Boolean = false,
-	textStyle: TextStyle = TextStyle(),
 ) {
 	val subgridSize by remember { derivedStateOf { sqrt(gridSize.toDouble()).toInt() } }
 	val isSelected = remember(data.attributes) { data.attributes.contains(CellAttributes.SELECTED) }
 	val isHighlighted =
 		remember(data.attributes) { data.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED) }
 
-	val backgroundColor =
-		when {
-			isSelected -> LocalSudokuBoardColors.current.selectedBackground
-			isHighlighted -> LocalSudokuBoardColors.current.highlightedBackground
-			else -> LocalSudokuBoardColors.current.defaultBackground
-		}
-
-	val shape = getRoundedBlockShape(gridSize, data.row, data.col)
-
-	val innerBorderModifier =
-		if (isFocused) {
-			val infiniteTransition = rememberInfiniteTransition("breathingEffect")
-			val borderWidth by infiniteTransition.animateFloat(
-				initialValue = 1.8f,
-				targetValue = 4f,
-				animationSpec = infiniteRepeatable(
-					animation = tween(750, easing = LinearEasing),
-					repeatMode = RepeatMode.Reverse,
-				),
-				label = "borderWidth",
-			)
-			val borderAlpha by infiniteTransition.animateFloat(
-				initialValue = 0.5f,
-				targetValue = 1f,
-				animationSpec = infiniteRepeatable(
-					animation = tween(750, easing = LinearEasing),
-					repeatMode = RepeatMode.Reverse,
-				),
-				label = "borderAlpha",
-			)
-			Modifier.border(
-				width = borderWidth.dp,
-				color = LocalSudokuBoardColors.current.hintMarkBackground.copy(alpha = borderAlpha),
-				shape = shape,
-			)
-		} else {
-			Modifier
-		}
+	val backgroundColor = rememberCellBackgroundColor(isSelected, isHighlighted)
+	val shape = getRoundedBlockShape(subgridSize, data.row, data.col)
 
 	Box(
 		contentAlignment = Alignment.Center,
@@ -104,153 +66,149 @@ internal fun SudokuCell(
 		modifier
 			.clip(shape)
 			.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
-			.then(innerBorderModifier)
+			.breathingBorder(
+				isActive = isFocused,
+				focusedColor = LocalSudokuBoardColors.current.hintMarkBackground,
+				shape = shape,
+			)
 			.background(backgroundColor)
 			.combinedClickable(
 				onClick = { onCellClick(data.row, data.col) },
 				onLongClick = { onCellLongClick(data.row, data.col) },
 			),
 	) {
-		when (data.number) {
-			0 -> {
-				// Empty cell
-				if (data.cornerNotes.isNotEmpty()) {
-					LazyVerticalGrid(
-						columns = GridCells.Fixed(subgridSize),
-						modifier = Modifier.fillMaxSize(),
-						contentPadding = PaddingValues(1.dp),
-					) {
-						items(
-							count = data.cornerNotes.size,
-							key = { index -> data.cornerNotes.elementAt(index) },
-						) { index ->
-							val cornerNote = data.cornerNotes.elementAt(index)
-							Text(
-								text = cornerNote.toString(),
-								color = LocalSudokuBoardColors.current.onDefaultBackground,
-								style = textStyle.copy(fontSize = textStyle.fontSize / subgridSize),
-								textAlign = TextAlign.Center,
-								modifier =
-								Modifier
-									.fillMaxSize()
-									.wrapContentHeight(align = Alignment.CenterVertically),
-							)
-						}
-					}
-				}
-			}
+		if (data.number == 0) {
+			NotesCellContent(
+				cornerNotes = data.cornerNotes,
+				subgridSize = subgridSize,
+			)
+		} else {
+			FilledCellContent(
+				number = data.number,
+				attributes = data.attributes,
+			)
+		}
+	}
+}
 
-			else -> {
-				// Filled cell
-				val circleColor =
-					when {
-						data.attributes.contains(
-							CellAttributes.RULE_BREAKING,
-						) -> LocalSudokuBoardColors.current.invalidMarkBackground
+@Composable
+private fun FilledCellContent(
+	number: Int,
+	attributes: PersistentSet<CellAttributes>,
+	modifier: Modifier = Modifier,
+) {
+	val colors = rememberFilledCellColors(attributes)
 
-						data.attributes.contains(
-							CellAttributes.NUMBER_MATCH_HIGHLIGHTED,
-						) -> LocalSudokuBoardColors.current.matchingMarkBackground
+	Box(
+		contentAlignment = Alignment.Center,
+		modifier = modifier
+			.padding(2.dp)
+			.fillMaxSize()
+			.clip(CircleShape)
+			.background(colors.circleColor),
+	) {
+		Text(
+			text = number.toString(),
+			color = colors.textColor,
+			autoSize = TextAutoSize.StepBased(),
+			textAlign = TextAlign.Center,
+			style = TextStyle.Default.copy(
+				platformStyle = PlatformTextStyle(
+					includeFontPadding = false,
+				),
+			),
+			modifier = Modifier
+				.fillMaxSize()
+				.wrapContentHeight(
+					align = Alignment.CenterVertically,
+				),
+		)
+	}
+}
 
-						data.attributes.contains(
-							CellAttributes.HINT_REVEALED,
-						) -> LocalSudokuBoardColors.current.hintMarkBackground
-
-						else -> Color.Transparent
-					}
-				val textColor =
-					when {
-						data.attributes.contains(
-							CellAttributes.RULE_BREAKING,
-						) -> LocalSudokuBoardColors.current.onInvalidMarkBackground
-
-						data.attributes.contains(
-							CellAttributes.NUMBER_MATCH_HIGHLIGHTED,
-						) -> LocalSudokuBoardColors.current.onMatchingMarkBackground
-
-						data.attributes.contains(
-							CellAttributes.HINT_REVEALED,
-						) -> LocalSudokuBoardColors.current.onHintMarkBackground
-
-						data.attributes.contains(
-							CellAttributes.GENERATED
-						) -> LocalSudokuBoardColors.current.generatedNumber
-
-						else -> LocalSudokuBoardColors.current.onDefaultBackground
-					}
-				Box(
-					contentAlignment = Alignment.Center,
-					modifier =
-					Modifier
-						.fillMaxSize(0.9f)
-						.clip(CircleShape)
-						.background(circleColor),
-				) {
-					Text(
-						text = data.number.toString(),
-						color = textColor,
-						style = textStyle,
-						textAlign = TextAlign.Center,
-						modifier =
-						Modifier
-							.fillMaxSize()
-							.wrapContentHeight(
-								align = Alignment.CenterVertically,
-							),
-					)
-				}
+@Composable
+private fun NotesCellContent(
+	cornerNotes: PersistentSet<Int>,
+	subgridSize: Int,
+	modifier: Modifier = Modifier,
+) {
+	if (cornerNotes.isNotEmpty()) {
+		LazyVerticalGrid(
+			columns = GridCells.Fixed(subgridSize),
+			modifier = modifier.fillMaxSize(),
+		) {
+			items(
+				count = cornerNotes.size,
+				key = { index -> cornerNotes.elementAt(index) },
+			) { index ->
+				val cornerNote = cornerNotes.elementAt(index)
+				Text(
+					text = cornerNote.toString(),
+					color = LocalSudokuBoardColors.current.onDefaultBackground,
+					autoSize = TextAutoSize.StepBased(minFontSize = 4.sp),
+					style = TextStyle.Default.copy(
+						platformStyle = PlatformTextStyle(includeFontPadding = false),
+					),
+					textAlign = TextAlign.Center,
+					modifier = Modifier
+						.aspectRatio(1f)
+						.wrapContentHeight(align = Alignment.CenterVertically),
+				)
 			}
 		}
 	}
 }
 
-fun getRoundedBlockShape(gridSize: Int, row: Int, column: Int): Shape {
-	val blockSize = sqrt(gridSize.toDouble()).toInt()
-	val shape =
+@Composable
+private fun rememberCellBackgroundColor(isSelected: Boolean, isHighlighted: Boolean): Color {
+	val colors = LocalSudokuBoardColors.current
+	return remember(isSelected, isHighlighted) {
 		when {
-			row % blockSize == 0 && column % blockSize == 0 -> TopLeftRoundedCornerShape
-			row % blockSize == 0 && column % blockSize == blockSize - 1 -> TopRightRoundedCornerShape
-			row % blockSize == blockSize - 1 && column % blockSize == 0 -> BottomLeftRoundedCornerShape
-			row % blockSize == blockSize - 1 && column % blockSize == blockSize - 1 -> {
-				BottomRightRoundedCornerShape
-			}
-
-			else -> RoundedCornerShape(0.dp)
+			isSelected -> colors.selectedBackground
+			isHighlighted -> colors.highlightedBackground
+			else -> colors.defaultBackground
 		}
-	return shape
+	}
 }
 
-val TopLeftRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 8.dp,
-		topEnd = 0.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 0.dp,
-	)
+@Stable
+private data class FilledCellColors(val textColor: Color, val circleColor: Color)
 
-val TopRightRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 8.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 0.dp,
-	)
+@Composable
+private fun rememberFilledCellColors(attributes: PersistentSet<CellAttributes>): FilledCellColors {
+	val colors = LocalSudokuBoardColors.current
 
-val BottomLeftRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 0.dp,
-		bottomStart = 8.dp,
-		bottomEnd = 0.dp,
-	)
+	return remember(attributes) {
+		when {
+			attributes.contains(CellAttributes.RULE_BREAKING) ->
+				FilledCellColors(
+					textColor = colors.onInvalidMarkBackground,
+					circleColor = colors.invalidMarkBackground,
+				)
 
-val BottomRightRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 0.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 8.dp,
-	)
+			attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) ->
+				FilledCellColors(
+					textColor = colors.onMatchingMarkBackground,
+					circleColor = colors.matchingMarkBackground,
+				)
+
+			attributes.contains(CellAttributes.HINT_REVEALED) -> FilledCellColors(
+				textColor = colors.onHintMarkBackground,
+				circleColor = colors.hintMarkBackground,
+			)
+
+			attributes.contains(CellAttributes.GENERATED) -> FilledCellColors(
+				textColor = colors.generatedNumber,
+				circleColor = Color.Transparent,
+			)
+
+			else -> FilledCellColors(
+				textColor = colors.onDefaultBackground,
+				circleColor = Color.Transparent,
+			)
+		}
+	}
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @PreviewLightDark
@@ -258,8 +216,6 @@ val BottomRightRoundedCornerShape =
 private fun SudokuCellPreview() {
 	val gridSize = 16
 	val list = createSudokuCellData(gridSize)
-
-	val fontSize = (50.sp * 0.6f)
 
 	SudokuSlayerTheme {
 		FlowRow(
@@ -271,9 +227,8 @@ private fun SudokuCellPreview() {
 					data = cellData,
 					onCellClick = { _, _ -> },
 					onCellLongClick = { _, _ -> },
-					textStyle = TextStyle(fontSize = fontSize),
 					gridSize = gridSize,
-					isFocused = true,
+					isFocused = false,
 					modifier = Modifier.size(50.dp),
 				)
 			}

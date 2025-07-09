@@ -38,11 +38,44 @@ import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.toPath
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+
+val TopLeftRoundedCornerShape =
+	RoundedCornerShape(
+		topStart = 8.dp,
+		topEnd = 0.dp,
+		bottomStart = 0.dp,
+		bottomEnd = 0.dp,
+	)
+
+val TopRightRoundedCornerShape =
+	RoundedCornerShape(
+		topStart = 0.dp,
+		topEnd = 8.dp,
+		bottomStart = 0.dp,
+		bottomEnd = 0.dp,
+	)
+
+val BottomLeftRoundedCornerShape =
+	RoundedCornerShape(
+		topStart = 0.dp,
+		topEnd = 0.dp,
+		bottomStart = 8.dp,
+		bottomEnd = 0.dp,
+	)
+
+val BottomRightRoundedCornerShape =
+	RoundedCornerShape(
+		topStart = 0.dp,
+		topEnd = 0.dp,
+		bottomStart = 0.dp,
+		bottomEnd = 8.dp,
+	)
 
 // This AnimatedShapeState and related composables are derived from
 // the internal Material3 implementation used for components like SplitButton.
