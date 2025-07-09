@@ -72,7 +72,7 @@ internal fun SudokuCell(
 			else -> LocalSudokuBoardColors.current.defaultBackground
 		}
 
-	val shape = getRoundedBlockShape(gridSize, data.row, data.col)
+	val shape = getRoundedBlockShape(subgridSize, data.row, data.col)
 
 	Box(
 		contentAlignment = Alignment.Center,
@@ -249,8 +249,7 @@ private fun Modifier.breathingBorder(
 	)
 }
 
-private fun getRoundedBlockShape(gridSize: Int, row: Int, column: Int): Shape {
-	val blockSize = sqrt(gridSize.toDouble()).toInt()
+private fun getRoundedBlockShape(blockSize: Int, row: Int, column: Int): Shape {
 	val shape =
 		when {
 			row % blockSize == 0 && column % blockSize == 0 -> TopLeftRoundedCornerShape
