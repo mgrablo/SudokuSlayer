@@ -1,11 +1,5 @@
 package com.example.feature.game.components
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -31,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -42,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.uicore.modifiers.breathingBorder
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
@@ -74,7 +68,7 @@ internal fun SudokuCell(
 			.clip(shape)
 			.border(1.dp, LocalSudokuBoardColors.current.cellBorder, shape)
 			.breathingBorder(
-				isFocused = isFocused,
+				isActive = isFocused,
 				focusedColor = LocalSudokuBoardColors.current.hintMarkBackground,
 				shape = shape,
 			)
@@ -215,39 +209,6 @@ private fun rememberFilledCellColors(attributes: PersistentSet<CellAttributes>):
 			)
 		}
 	}
-}
-
-@Composable
-private fun Modifier.breathingBorder(
-	isFocused: Boolean,
-	focusedColor: Color,
-	shape: Shape,
-): Modifier = composed {
-	if (!isFocused) return@composed this
-	val infiniteTransition = rememberInfiniteTransition("breathingEffect")
-	val borderWidth by infiniteTransition.animateFloat(
-		initialValue = 1.8f,
-		targetValue = 4f,
-		animationSpec = infiniteRepeatable(
-			animation = tween(750, easing = LinearEasing),
-			repeatMode = RepeatMode.Reverse,
-		),
-		label = "borderWidth",
-	)
-	val borderAlpha by infiniteTransition.animateFloat(
-		initialValue = 0.5f,
-		targetValue = 1f,
-		animationSpec = infiniteRepeatable(
-			animation = tween(750, easing = LinearEasing),
-			repeatMode = RepeatMode.Reverse,
-		),
-		label = "borderAlpha",
-	)
-	Modifier.border(
-		width = borderWidth.dp,
-		color = focusedColor.copy(alpha = borderAlpha),
-		shape = shape,
-	)
 }
 
 private fun getRoundedBlockShape(blockSize: Int, row: Int, column: Int): Shape {
