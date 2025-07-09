@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -90,96 +91,126 @@ internal fun SudokuCell(
 				onLongClick = { onCellLongClick(data.row, data.col) },
 			),
 	) {
-		when (data.number) {
-			0 -> {
-				// Empty cell
-				if (data.cornerNotes.isNotEmpty()) {
-					LazyVerticalGrid(
-						columns = GridCells.Fixed(subgridSize),
-						modifier = Modifier.fillMaxSize(),
-					) {
-						items(
-							count = data.cornerNotes.size,
-							key = { index -> data.cornerNotes.elementAt(index) },
-						) { index ->
-							val cornerNote = data.cornerNotes.elementAt(index)
-							Text(
-								text = cornerNote.toString(),
-								color = LocalSudokuBoardColors.current.onDefaultBackground,
-								autoSize = TextAutoSize.StepBased(minFontSize = 4.sp),
-								style = TextStyle.Default.copy(
-									platformStyle = PlatformTextStyle(includeFontPadding = false),
-								),
-								textAlign = TextAlign.Center,
-								modifier = Modifier
-									.aspectRatio(1f)
-									.wrapContentHeight(align = Alignment.CenterVertically),
-							)
-						}
-					}
-				}
-			}
+		if (data.number == 0) {
+			NotesCellContent(
+				cornerNotes = data.cornerNotes,
+				subgridSize = subgridSize,
+			)
+		} else {
+			FilledCellContent(
+				number = data.number,
+				attributes = data.attributes,
+			)
+		}
+	}
+}
 
-			else -> {
-				// Filled cell
-				val circleColor by rememberCircleColor(attributes = data.attributes)
-				val textColor by rememberTextColor(attributes = data.attributes)
-				Box(
-					contentAlignment = Alignment.Center,
+@Composable
+private fun FilledCellContent(
+	number: Int,
+	attributes: PersistentSet<CellAttributes>,
+	modifier: Modifier = Modifier,
+) {
+	val colors by rememberFilledCellColors(attributes)
+
+	Box(
+		contentAlignment = Alignment.Center,
+		modifier = modifier
+			.padding(2.dp)
+			.fillMaxSize()
+			.clip(CircleShape)
+			.background(colors.circleColor),
+	) {
+		Text(
+			text = number.toString(),
+			color = colors.textColor,
+			autoSize = TextAutoSize.StepBased(),
+			textAlign = TextAlign.Center,
+			style = TextStyle.Default.copy(
+				platformStyle = PlatformTextStyle(
+					includeFontPadding = false,
+				),
+			),
+			modifier = Modifier
+				.fillMaxSize()
+				.wrapContentHeight(
+					align = Alignment.CenterVertically,
+				),
+		)
+	}
+}
+
+@Composable
+private fun NotesCellContent(
+	cornerNotes: PersistentSet<Int>,
+	subgridSize: Int,
+	modifier: Modifier = Modifier,
+) {
+	if (cornerNotes.isNotEmpty()) {
+		LazyVerticalGrid(
+			columns = GridCells.Fixed(subgridSize),
+			modifier = modifier.fillMaxSize(),
+		) {
+			items(
+				count = cornerNotes.size,
+				key = { index -> cornerNotes.elementAt(index) },
+			) { index ->
+				val cornerNote = cornerNotes.elementAt(index)
+				Text(
+					text = cornerNote.toString(),
+					color = LocalSudokuBoardColors.current.onDefaultBackground,
+					autoSize = TextAutoSize.StepBased(minFontSize = 4.sp),
+					style = TextStyle.Default.copy(
+						platformStyle = PlatformTextStyle(includeFontPadding = false),
+					),
+					textAlign = TextAlign.Center,
 					modifier = Modifier
-						.padding(2.dp)
-						.fillMaxSize()
-						.clip(CircleShape)
-						.background(circleColor),
-				) {
-					Text(
-						text = data.number.toString(),
-						color = textColor,
-						autoSize = TextAutoSize.StepBased(),
-						textAlign = TextAlign.Center,
-						style = TextStyle.Default.copy(
-							platformStyle = PlatformTextStyle(
-								includeFontPadding = false,
-							),
-						),
-						modifier = Modifier
-							.fillMaxSize()
-							.wrapContentHeight(
-								align = Alignment.CenterVertically,
-							),
+						.aspectRatio(1f)
+						.wrapContentHeight(align = Alignment.CenterVertically),
+				)
+			}
+		}
+	}
+}
+
+@Stable
+private data class FilledCellColors(val textColor: Color, val circleColor: Color)
+
+@Composable
+private fun rememberFilledCellColors(
+	attributes: PersistentSet<CellAttributes>,
+): State<FilledCellColors> {
+	val colors = LocalSudokuBoardColors.current
+
+	return remember(attributes) {
+		derivedStateOf {
+			when {
+				attributes.contains(CellAttributes.RULE_BREAKING) ->
+					FilledCellColors(
+						textColor = colors.onInvalidMarkBackground,
+						circleColor = colors.invalidMarkBackground,
 					)
-				}
-			}
-		}
-	}
-}
 
-@Composable
-private fun rememberTextColor(attributes: PersistentSet<CellAttributes>): State<Color> {
-	val colors = LocalSudokuBoardColors.current
-	return remember(attributes) {
-		derivedStateOf {
-			when {
-				attributes.contains(CellAttributes.RULE_BREAKING) -> colors.onInvalidMarkBackground
-				attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) -> colors.onMatchingMarkBackground
-				attributes.contains(CellAttributes.HINT_REVEALED) -> colors.onHintMarkBackground
-				attributes.contains(CellAttributes.GENERATED) -> colors.generatedNumber
-				else -> colors.onDefaultBackground
-			}
-		}
-	}
-}
+				attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) ->
+					FilledCellColors(
+						textColor = colors.onMatchingMarkBackground,
+						circleColor = colors.matchingMarkBackground,
+					)
 
-@Composable
-private fun rememberCircleColor(attributes: PersistentSet<CellAttributes>): State<Color> {
-	val colors = LocalSudokuBoardColors.current
-	return remember(attributes) {
-		derivedStateOf {
-			when {
-				attributes.contains(CellAttributes.RULE_BREAKING) -> colors.invalidMarkBackground
-				attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) -> colors.matchingMarkBackground
-				attributes.contains(CellAttributes.HINT_REVEALED) -> colors.hintMarkBackground
-				else -> Color.Transparent
+				attributes.contains(CellAttributes.HINT_REVEALED) -> FilledCellColors(
+					textColor = colors.onHintMarkBackground,
+					circleColor = colors.hintMarkBackground,
+				)
+
+				attributes.contains(CellAttributes.GENERATED) -> FilledCellColors(
+					textColor = colors.generatedNumber,
+					circleColor = Color.Transparent,
+				)
+
+				else -> FilledCellColors(
+					textColor = colors.onDefaultBackground,
+					circleColor = Color.Transparent,
+				)
 			}
 		}
 	}
