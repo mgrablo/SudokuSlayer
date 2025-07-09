@@ -1,10 +1,17 @@
 package com.example.feature.game
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import com.example.feature.uicore.theme.BottomLeftRoundedCornerShape
+import com.example.feature.uicore.theme.BottomRightRoundedCornerShape
+import com.example.feature.uicore.theme.TopLeftRoundedCornerShape
+import com.example.feature.uicore.theme.TopRightRoundedCornerShape
 
 internal fun createAnnotatedString(
 	input: String,
@@ -61,4 +68,19 @@ internal fun createAnnotatedString(
 			append(input.substring(lastIndex))
 		}
 	}
+}
+
+internal fun getRoundedBlockShape(blockSize: Int, row: Int, column: Int): Shape {
+	val shape =
+		when {
+			row % blockSize == 0 && column % blockSize == 0 -> TopLeftRoundedCornerShape
+			row % blockSize == 0 && column % blockSize == blockSize - 1 -> TopRightRoundedCornerShape
+			row % blockSize == blockSize - 1 && column % blockSize == 0 -> BottomLeftRoundedCornerShape
+			row % blockSize == blockSize - 1 && column % blockSize == blockSize - 1 -> {
+				BottomRightRoundedCornerShape
+			}
+
+			else -> RoundedCornerShape(0.dp)
+		}
+	return shape
 }

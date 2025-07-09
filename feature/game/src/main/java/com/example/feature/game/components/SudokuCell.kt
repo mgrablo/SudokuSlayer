@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.game.getRoundedBlockShape
 import com.example.feature.game.theme.LocalSudokuBoardColors
 import com.example.feature.uicore.modifiers.breathingBorder
 import com.example.feature.uicore.theme.SudokuSlayerTheme
@@ -210,53 +209,6 @@ private fun rememberFilledCellColors(attributes: PersistentSet<CellAttributes>):
 		}
 	}
 }
-
-private fun getRoundedBlockShape(blockSize: Int, row: Int, column: Int): Shape {
-	val shape =
-		when {
-			row % blockSize == 0 && column % blockSize == 0 -> TopLeftRoundedCornerShape
-			row % blockSize == 0 && column % blockSize == blockSize - 1 -> TopRightRoundedCornerShape
-			row % blockSize == blockSize - 1 && column % blockSize == 0 -> BottomLeftRoundedCornerShape
-			row % blockSize == blockSize - 1 && column % blockSize == blockSize - 1 -> {
-				BottomRightRoundedCornerShape
-			}
-
-			else -> RoundedCornerShape(0.dp)
-		}
-	return shape
-}
-
-val TopLeftRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 8.dp,
-		topEnd = 0.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 0.dp,
-	)
-
-val TopRightRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 8.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 0.dp,
-	)
-
-val BottomLeftRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 0.dp,
-		bottomStart = 8.dp,
-		bottomEnd = 0.dp,
-	)
-
-val BottomRightRoundedCornerShape =
-	RoundedCornerShape(
-		topStart = 0.dp,
-		topEnd = 0.dp,
-		bottomStart = 0.dp,
-		bottomEnd = 8.dp,
-	)
 
 @OptIn(ExperimentalLayoutApi::class)
 @PreviewLightDark
