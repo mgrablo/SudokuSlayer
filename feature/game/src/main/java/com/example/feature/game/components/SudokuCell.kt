@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,13 +64,7 @@ internal fun SudokuCell(
 	val isHighlighted =
 		remember(data.attributes) { data.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED) }
 
-	val backgroundColor =
-		when {
-			isSelected -> LocalSudokuBoardColors.current.selectedBackground
-			isHighlighted -> LocalSudokuBoardColors.current.highlightedBackground
-			else -> LocalSudokuBoardColors.current.defaultBackground
-		}
-
+	val backgroundColor = rememberCellBackgroundColor(isSelected, isHighlighted)
 	val shape = getRoundedBlockShape(subgridSize, data.row, data.col)
 
 	Box(
@@ -111,7 +104,7 @@ private fun FilledCellContent(
 	attributes: PersistentSet<CellAttributes>,
 	modifier: Modifier = Modifier,
 ) {
-	val colors by rememberFilledCellColors(attributes)
+	val colors = rememberFilledCellColors(attributes)
 
 	Box(
 		contentAlignment = Alignment.Center,
@@ -173,45 +166,53 @@ private fun NotesCellContent(
 	}
 }
 
+@Composable
+private fun rememberCellBackgroundColor(isSelected: Boolean, isHighlighted: Boolean): Color {
+	val colors = LocalSudokuBoardColors.current
+	return remember(isSelected, isHighlighted) {
+		when {
+			isSelected -> colors.selectedBackground
+			isHighlighted -> colors.highlightedBackground
+			else -> colors.defaultBackground
+		}
+	}
+}
+
 @Stable
 private data class FilledCellColors(val textColor: Color, val circleColor: Color)
 
 @Composable
-private fun rememberFilledCellColors(
-	attributes: PersistentSet<CellAttributes>,
-): State<FilledCellColors> {
+private fun rememberFilledCellColors(attributes: PersistentSet<CellAttributes>): FilledCellColors {
 	val colors = LocalSudokuBoardColors.current
 
 	return remember(attributes) {
-		derivedStateOf {
-			when {
-				attributes.contains(CellAttributes.RULE_BREAKING) ->
-					FilledCellColors(
-						textColor = colors.onInvalidMarkBackground,
-						circleColor = colors.invalidMarkBackground,
-					)
-
-				attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) ->
-					FilledCellColors(
-						textColor = colors.onMatchingMarkBackground,
-						circleColor = colors.matchingMarkBackground,
-					)
-
-				attributes.contains(CellAttributes.HINT_REVEALED) -> FilledCellColors(
-					textColor = colors.onHintMarkBackground,
-					circleColor = colors.hintMarkBackground,
+		when {
+			attributes.contains(CellAttributes.RULE_BREAKING) ->
+				FilledCellColors(
+					textColor = colors.onInvalidMarkBackground,
+					circleColor = colors.invalidMarkBackground,
 				)
 
-				attributes.contains(CellAttributes.GENERATED) -> FilledCellColors(
-					textColor = colors.generatedNumber,
-					circleColor = Color.Transparent,
+			attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED) ->
+				FilledCellColors(
+					textColor = colors.onMatchingMarkBackground,
+					circleColor = colors.matchingMarkBackground,
 				)
 
-				else -> FilledCellColors(
-					textColor = colors.onDefaultBackground,
-					circleColor = Color.Transparent,
-				)
-			}
+			attributes.contains(CellAttributes.HINT_REVEALED) -> FilledCellColors(
+				textColor = colors.onHintMarkBackground,
+				circleColor = colors.hintMarkBackground,
+			)
+
+			attributes.contains(CellAttributes.GENERATED) -> FilledCellColors(
+				textColor = colors.generatedNumber,
+				circleColor = Color.Transparent,
+			)
+
+			else -> FilledCellColors(
+				textColor = colors.onDefaultBackground,
+				circleColor = Color.Transparent,
+			)
 		}
 	}
 }

@@ -35,7 +35,7 @@ internal object BoardColorSchemes {
 	private fun createBoardColorsScheme(palette: CatppuccinPalette) = SudokuBoardColors(
 		defaultBackground = palette.base,
 		onDefaultBackground = palette.text,
-		selectedBackground = palette.surface1,
+		selectedBackground = palette.surface2,
 		onSelectedBackground = palette.text,
 		highlightedBackground = palette.surface0,
 		onHighlightedBackground = palette.text,
