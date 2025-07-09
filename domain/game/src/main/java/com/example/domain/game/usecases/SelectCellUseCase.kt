@@ -18,10 +18,15 @@ class SelectCellUseCase(
 				attribute = CellAttributes.SELECTED,
 			)
 
-		updatedSudoku =
-			clearHighlightedNumbersUseCase(
-				sudoku = updatedSudoku,
-			)
+		if (selectedCell == null) {
+			updatedSudoku = clearHighlightedNumbersUseCase(updatedSudoku)
+		} else {
+			selectedCell.let { (row, col) ->
+				if (updatedSudoku.getCellAt(row, col).number != 0) {
+					updatedSudoku = clearHighlightedNumbersUseCase(updatedSudoku)
+				}
+			}
+		}
 		updatedSudoku =
 			clearHighlightedRowAndColumnUseCase(
 				sudoku = updatedSudoku,
@@ -44,11 +49,13 @@ class SelectCellUseCase(
 					row = row,
 					column = col,
 				)
-			updatedSudoku =
-				highlightMatchingNumbersUseCase(
-					sudoku = updatedSudoku,
-					number = cell.number.takeIf { it != 0 },
-				)
+			if (cell.number != 0) {
+				updatedSudoku =
+					highlightMatchingNumbersUseCase(
+						sudoku = updatedSudoku,
+						number = cell.number,
+					)
+			}
 		}
 
 		return updatedSudoku
