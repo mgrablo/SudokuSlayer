@@ -27,8 +27,7 @@ class SelectCellUseCase(
 				sudoku = updatedSudoku,
 			)
 
-		selectedCell?.let {
-			val (row, col) = it
+		selectedCell?.let { (row, col) ->
 			val cell = updatedSudoku.getCellAt(row, col)
 			updatedSudoku =
 				updatedSudoku.withReplacedCell(
@@ -48,7 +47,7 @@ class SelectCellUseCase(
 			updatedSudoku =
 				highlightMatchingNumbersUseCase(
 					sudoku = updatedSudoku,
-					number = cell.number,
+					number = cell.number.takeIf { it != 0 },
 				)
 		}
 
