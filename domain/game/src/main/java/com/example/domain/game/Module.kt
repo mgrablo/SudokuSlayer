@@ -34,7 +34,13 @@ val domainGameModule =
 		factory { ClearActiveGameUseCase(get()) }
 		factory { GetBestTimeUseCase(get()) }
 
-		factory { SelectCellUseCase(get(), get(), get()) }
+		factory {
+			SelectCellUseCase(
+				highlightRowAndColumnUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+				clearHighlightedRowAndColumnUseCase = get(),
+			)
+		}
 		factory { HighlightMatchingNumbersUseCase() }
 		factory { HighlightRowAndColumnUseCase() }
 		factory { ClearHighlightedRowAndColumnUseCase() }
@@ -49,8 +55,20 @@ val domainGameModule =
 		factory { RevealHintOnGridUseCase(get()) }
 		factory { RevealLastHintLogUseCase() }
 
-		factory { UndoOperationUseCase(get(), get()) }
-		factory { RedoOperationUseCase(get(), get()) }
+		factory {
+			UndoOperationUseCase(
+				operationRepository = get(),
+				inputNumberUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+			)
+		}
+		factory {
+			RedoOperationUseCase(
+				operationRepository = get(),
+				inputNumberUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+			)
+		}
 
 		factory {
 			HintUseCases(

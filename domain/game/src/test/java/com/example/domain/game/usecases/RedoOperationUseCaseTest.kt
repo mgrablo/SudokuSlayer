@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -30,6 +31,7 @@ class RedoOperationUseCaseTest {
 
 	private lateinit var operationRepository: OperationRepository
 	private lateinit var inputNumberUseCase: InputNumberUseCase
+	private lateinit var highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase
 	private lateinit var redoOperationUseCase: RedoOperationUseCase
 
 	private val initialGrid = SudokuGrid()
@@ -39,11 +41,19 @@ class RedoOperationUseCaseTest {
 	fun setUp() {
 		operationRepository = mockk()
 		inputNumberUseCase = mockk()
-		redoOperationUseCase = spyk(RedoOperationUseCase(operationRepository, inputNumberUseCase))
+		highlightMatchingNumbersUseCase = mockk()
+		redoOperationUseCase = spyk(
+			RedoOperationUseCase(
+				operationRepository,
+				inputNumberUseCase,
+				highlightMatchingNumbersUseCase,
+			),
+		)
 
 		coJustRun { operationRepository.addUndoOperation(any()) }
 		coEvery { operationRepository.findRedoOperation(any()) } returns mockk { every { id } returns 1L }
 		coJustRun { operationRepository.removeRedoOperation(any()) }
+		every { highlightMatchingNumbersUseCase(any(), any()) } returns updatedGrid
 		coEvery {
 			inputNumberUseCase.invoke(
 				sudokuGrid = any(),
@@ -135,10 +145,23 @@ class RedoOperationUseCaseTest {
 		val lastOperation = Operation(1, oldCell changedTo newCell)
 		val gridAfterNote1 = SudokuGrid().withValue(0, 0, 1) // Dummy grid
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
-		coEvery { inputNumberUseCase(any(), 1, any(), any(), true, any()) } returns gridAfterNote1
+		coEvery {
+			inputNumberUseCase(
+				any(),
+				1,
+				any(),
+				any(),
+				true,
+				any(),
+			)
+		} returns gridAfterNote1
 		coEvery { inputNumberUseCase(any(), 2, any(), any(), true, any()) } returns updatedGrid
 
-		val redoUseCase = RedoOperationUseCase(operationRepository, inputNumberUseCase)
+		val redoUseCase = RedoOperationUseCase(
+			operationRepository,
+			inputNumberUseCase,
+			highlightMatchingNumbersUseCase,
+		)
 		val result = redoUseCase(initialGrid)
 
 		assertEquals(updatedGrid, result)
@@ -291,5 +314,18 @@ class RedoOperationUseCaseTest {
 				inputNumberUseCase(any(), any(), any(), any(), any(), any())
 			} throws RuntimeException("Input error")
 		}
+	}
+
+	@Test
+	fun `RedoOperationUseCase highlight matching numbers`() = runTest {
+		/**
+		 * Test that `highlightMatchingNumbersUseCase` is called after a successful redo operation.
+		 * This ensures that after a number is redone, the UI correctly highlights matching numbers.
+		 */
+		val lastOperation = Operation(1, SudokuCellData(0, 0, 5) changedTo SudokuCellData(0, 0, 0))
+		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
+		redoOperationUseCase(initialGrid)
+
+		verify(exactly = 1) { highlightMatchingNumbersUseCase(any(), 0) }
 	}
 }

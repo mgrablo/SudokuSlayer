@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class RedoOperationUseCase(
 	private val operationRepository: OperationRepository,
 	private val inputNumberUseCase: InputNumberUseCase,
+	private val highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase,
 ) {
 	private val mutex = Mutex()
 	private val isProcessing = AtomicBoolean(false)
@@ -66,6 +67,7 @@ class RedoOperationUseCase(
 							isNote = false,
 							isHint = newCell.attributes.contains(CellAttributes.HINT_REVEALED),
 						)
+						updatedGrid = highlightMatchingNumbersUseCase(updatedGrid, newCell.number)
 					}
 				}
 				return updatedGrid
