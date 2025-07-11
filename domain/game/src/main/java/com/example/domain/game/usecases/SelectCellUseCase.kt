@@ -8,7 +8,6 @@ import kotlinx.collections.immutable.plus
 class SelectCellUseCase(
 	private val highlightRowAndColumnUseCase: HighlightRowAndColumnUseCase,
 	private val highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase,
-	private val clearHighlightedNumbersUseCase: ClearHighlightedNumbersUseCase,
 	private val clearHighlightedRowAndColumnUseCase: ClearHighlightedRowAndColumnUseCase,
 ) {
 	operator fun invoke(sudoku: SudokuGrid, selectedCell: Pair<Int, Int>? = null): SudokuGrid {
@@ -19,11 +18,11 @@ class SelectCellUseCase(
 			)
 
 		if (selectedCell == null) {
-			updatedSudoku = clearHighlightedNumbersUseCase(updatedSudoku)
+			updatedSudoku = highlightMatchingNumbersUseCase(updatedSudoku, null)
 		} else {
 			selectedCell.let { (row, col) ->
 				if (updatedSudoku.getCellAt(row, col).number != 0) {
-					updatedSudoku = clearHighlightedNumbersUseCase(updatedSudoku)
+					updatedSudoku = highlightMatchingNumbersUseCase(updatedSudoku, null)
 				}
 			}
 		}

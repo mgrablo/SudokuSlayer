@@ -15,7 +15,6 @@ class SelectCellUseCaseTest {
 	private lateinit var selectCellUseCase: SelectCellUseCase
 	private lateinit var highlightRowAndColumnUseCase: HighlightRowAndColumnUseCase
 	private lateinit var highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase
-	private lateinit var clearHighlightedNumbersUseCase: ClearHighlightedNumbersUseCase
 	private lateinit var clearHighlightedRowAndColumnUseCase: ClearHighlightedRowAndColumnUseCase
 
 	private val emptyGrid = SudokuGrid(9)
@@ -28,9 +27,6 @@ class SelectCellUseCaseTest {
 		highlightMatchingNumbersUseCase = mockk(relaxed = true) {
 			every { this@mockk.invoke(any(), any()) } answers { firstArg() }
 		}
-		clearHighlightedNumbersUseCase = mockk(relaxed = true) {
-			every { this@mockk.invoke(any()) } answers { firstArg() }
-		}
 		clearHighlightedRowAndColumnUseCase = mockk(relaxed = true) {
 			every { this@mockk.invoke(any()) } answers { firstArg() }
 		}
@@ -39,7 +35,6 @@ class SelectCellUseCaseTest {
 			SelectCellUseCase(
 				highlightRowAndColumnUseCase,
 				highlightMatchingNumbersUseCase,
-				clearHighlightedNumbersUseCase,
 				clearHighlightedRowAndColumnUseCase,
 			)
 	}
@@ -58,10 +53,9 @@ class SelectCellUseCaseTest {
 		val resultGrid = selectCellUseCase(initialGrid, null)
 
 		assert(!resultGrid.getCellAt(0, 0).attributes.contains(CellAttributes.SELECTED))
-		verify { clearHighlightedNumbersUseCase(any()) }
 		verify { clearHighlightedRowAndColumnUseCase(any()) }
 		verify(exactly = 0) { highlightRowAndColumnUseCase(any(), any(), any()) }
-		verify(exactly = 0) { highlightMatchingNumbersUseCase(any(), any()) }
+		verify(exactly = 1) { highlightMatchingNumbersUseCase(any(), any()) }
 	}
 
 	@Test
@@ -258,7 +252,7 @@ class SelectCellUseCaseTest {
 		selectCellUseCase(gridWithHighlights, emptyCellToSelect)
 
 		// 3. Verify that clearHighlightedNumbersUseCase was NOT called
-		verify(exactly = 0) { clearHighlightedNumbersUseCase(any()) }
+		verify(exactly = 0) { highlightMatchingNumbersUseCase(any(), null) }
 	}
 
 	@Test
