@@ -7,7 +7,7 @@ import com.example.sudoku.model.highlightMatchingCells
 class HighlightMatchingNumbersUseCase {
 	operator fun invoke(sudokuGrid: SudokuGrid, number: Int?): SudokuGrid {
 		val clearedGrid = sudokuGrid.clearMatchingNumberHighlight()
-		return if (number != null) {
+		return if (number != null && number != 0) {
 			clearedGrid.highlightMatchingCells(number)
 		} else {
 			clearedGrid
