@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -31,6 +32,7 @@ class UndoOperationUseCaseTest {
 	private lateinit var operationRepository: OperationRepository
 	private lateinit var inputNumberUseCase: InputNumberUseCase
 	private lateinit var undoOperationUseCase: UndoOperationUseCase
+	private lateinit var highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase
 
 	private val initialGrid = SudokuGrid()
 	private val updatedGrid = SudokuGrid().withValue(0, 0, 1)
@@ -39,11 +41,19 @@ class UndoOperationUseCaseTest {
 	fun setUp() {
 		operationRepository = mockk()
 		inputNumberUseCase = mockk()
-		undoOperationUseCase = spyk(UndoOperationUseCase(operationRepository, inputNumberUseCase))
+		highlightMatchingNumbersUseCase = mockk()
+		undoOperationUseCase = spyk(
+			UndoOperationUseCase(
+				operationRepository,
+				inputNumberUseCase,
+				highlightMatchingNumbersUseCase,
+			),
+		)
 
 		coJustRun { operationRepository.addRedoOperation(any()) }
 		coEvery { operationRepository.findUndoOperation(any()) } returns mockk { every { id } returns 1L }
 		coJustRun { operationRepository.removeUndoOperation(any()) }
+		coEvery { highlightMatchingNumbersUseCase(any(), any()) } returns updatedGrid
 		coEvery {
 			inputNumberUseCase.invoke(
 				sudokuGrid = any(),
@@ -417,5 +427,23 @@ class UndoOperationUseCaseTest {
 		undoOperationUseCase(initialGrid)
 
 		coVerify { inputNumberUseCase(initialGrid, 0, 0, 0, isNote = false, isHint = false) }
+	}
+
+	@Test
+	fun `UndoOperationUseCase highlight matching numbers`() = runTest {
+		/**
+		 * Test that after a successful undo operation that results in a cell having a number (0 in this case, representing empty),
+		 * the `highlightMatchingNumbersUseCase` is called to update the highlighting of numbers in the grid.
+		 */
+		val oldCell = SudokuCellData(0, 0, 0)
+		val newCell = SudokuCellData(0, 0, 5)
+		val lastOperation = Operation(1, oldCell changedTo newCell)
+		coEvery { operationRepository.getUndoOperations() } returns listOf(lastOperation)
+
+		undoOperationUseCase(initialGrid)
+
+		verify(exactly = 1) {
+			highlightMatchingNumbersUseCase(any(), 0)
+		}
 	}
 }

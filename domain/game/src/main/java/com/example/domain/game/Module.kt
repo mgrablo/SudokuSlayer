@@ -2,7 +2,6 @@ package com.example.domain.game
 
 import com.example.domain.game.usecases.AutoClearNotesUseCase
 import com.example.domain.game.usecases.ClearActiveGameUseCase
-import com.example.domain.game.usecases.ClearHighlightedNumbersUseCase
 import com.example.domain.game.usecases.ClearHighlightedRowAndColumnUseCase
 import com.example.domain.game.usecases.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.GenerateHintLogUseCase
@@ -35,9 +34,14 @@ val domainGameModule =
 		factory { ClearActiveGameUseCase(get()) }
 		factory { GetBestTimeUseCase(get()) }
 
-		factory { SelectCellUseCase(get(), get(), get(), get()) }
+		factory {
+			SelectCellUseCase(
+				highlightRowAndColumnUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+				clearHighlightedRowAndColumnUseCase = get(),
+			)
+		}
 		factory { HighlightMatchingNumbersUseCase() }
-		factory { ClearHighlightedNumbersUseCase(get()) }
 		factory { HighlightRowAndColumnUseCase() }
 		factory { ClearHighlightedRowAndColumnUseCase() }
 
@@ -51,8 +55,20 @@ val domainGameModule =
 		factory { RevealHintOnGridUseCase(get()) }
 		factory { RevealLastHintLogUseCase() }
 
-		factory { UndoOperationUseCase(get(), get()) }
-		factory { RedoOperationUseCase(get(), get()) }
+		factory {
+			UndoOperationUseCase(
+				operationRepository = get(),
+				inputNumberUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+			)
+		}
+		factory {
+			RedoOperationUseCase(
+				operationRepository = get(),
+				inputNumberUseCase = get(),
+				highlightMatchingNumbersUseCase = get(),
+			)
+		}
 
 		factory {
 			HintUseCases(
@@ -73,6 +89,7 @@ val domainGameModule =
 				resetGame = get(),
 				clearActiveGame = get(),
 				autoClearNotes = get(),
+				highlightMatching = get(),
 			)
 		}
 	}

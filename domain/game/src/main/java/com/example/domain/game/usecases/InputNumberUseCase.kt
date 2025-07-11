@@ -51,7 +51,12 @@ class InputNumberUseCase {
 					cell.copy(
 						number = if (number == cell.number) 0 else number,
 						cornerNotes = persistentSetOf(),
-						attributes = if (isHint) cell.attributes + CellAttributes.HINT_REVEALED else cell.attributes,
+						attributes = if (isHint) {
+							cell.attributes + CellAttributes.HINT_REVEALED
+						} else {
+							cell.attributes -
+								CellAttributes.HINT_REVEALED
+						},
 					)
 			}
 
