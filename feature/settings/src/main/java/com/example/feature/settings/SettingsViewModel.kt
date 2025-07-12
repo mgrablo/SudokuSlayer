@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 internal data class SettingsUiState(
-	val appearence: AppearanceSettings = AppearanceSettings(),
+	val appearance: AppearanceSettings = AppearanceSettings(),
 	val accessibility: AccessibilitySettings = AccessibilitySettings(),
 	val gameplay: GameplaySettings = GameplaySettings(),
 )
