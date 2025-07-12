@@ -39,7 +39,7 @@ class InputNumberUseCase(private val markRuleBreakingCellsUseCase: MarkRuleBreak
 					cell.copy(
 						number = 0,
 						cornerNotes =
-						if (cell.cornerNotes.contains(number)) {
+						if (cell.cornerNotes.contains(number) && !isHint) {
 							cell.cornerNotes - number
 						} else {
 							cell.cornerNotes + number
