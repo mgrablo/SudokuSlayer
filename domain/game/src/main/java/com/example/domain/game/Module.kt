@@ -41,7 +41,7 @@ val domainGameModule =
 				clearHighlightedRowAndColumnUseCase = get(),
 			)
 		}
-		factory { HighlightMatchingNumbersUseCase() }
+		factory { HighlightMatchingNumbersUseCase(get()) }
 		factory { HighlightRowAndColumnUseCase() }
 		factory { ClearHighlightedRowAndColumnUseCase() }
 
