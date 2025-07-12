@@ -1,9 +1,8 @@
 package com.example.domain.game.usecases.input
 
+import com.example.domain.game.usecases.visuals.MarkRuleBreakingCellsUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.model.clearRuleBreakingCells
-import com.example.sudoku.model.markRuleBreakingCells
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
@@ -11,7 +10,7 @@ import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class InputNumberUseCase {
+class InputNumberUseCase(private val markRuleBreakingCellsUseCase: MarkRuleBreakingCellsUseCase) {
 	private val mutex = Mutex()
 
 	suspend operator fun invoke(
@@ -60,9 +59,7 @@ class InputNumberUseCase {
 					)
 			}
 
-		return sudokuGrid
-			.withReplacedCell(row, column, updatedCell)
-			.clearRuleBreakingCells()
-			.markRuleBreakingCells()
+		val updatedGrid = sudokuGrid.withReplacedCell(row, column, updatedCell)
+		return markRuleBreakingCellsUseCase(updatedGrid)
 	}
 }

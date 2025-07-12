@@ -54,7 +54,7 @@ val domainGameModule =
 		}
 		factory { ClearRuleBreakingCellsUseCase() }
 
-		factory { InputNumberUseCase() }
+		factory { InputNumberUseCase(get()) }
 		factory { ResetGameUseCase(get()) }
 		factory { AutoClearNotesUseCase() }
 
