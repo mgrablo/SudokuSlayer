@@ -35,6 +35,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -88,6 +89,7 @@ internal class SudokuGameViewModel(
 		)
 
 	init {
+		observeSettings()
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
@@ -107,24 +109,6 @@ internal class SudokuGameViewModel(
 			}
 			if (_uiState.value.gameState == GameState.PLAYING) {
 				elapsedTimerManager.startTracking()
-			}
-		}
-
-		viewModelScope.launch {
-			combine(
-				settingsRepository.leftHandMode,
-				settingsRepository.showActionButtonsOnTop,
-				settingsRepository.autoClearNotes,
-			) { leftHandMode, showActionButtonsOnTop, autoClearNotes ->
-				Triple(leftHandMode, showActionButtonsOnTop, autoClearNotes)
-			}.collect { (leftHandMode, showActionButtonsOnTop, autoClearNotes) ->
-				_uiState.update {
-					it.copy(
-						isLeftHandMode = leftHandMode,
-						showActionButtonsOnTop = showActionButtonsOnTop,
-						autoClearNotes = autoClearNotes,
-					)
-				}
 			}
 		}
 
@@ -216,6 +200,7 @@ internal class SudokuGameViewModel(
 			is Event.StopTimer -> {
 				stopTrackingTime()
 			}
+
 			is Event.StartTimer -> {
 				elapsedTimerManager.startTracking()
 			}
@@ -255,6 +240,26 @@ internal class SudokuGameViewModel(
 					)
 				}
 			}
+		}
+	}
+
+	private fun observeSettings() {
+		viewModelScope.launch {
+			combine(
+				settingsRepository.leftHandMode,
+				settingsRepository.showActionButtonsOnTop,
+				settingsRepository.autoClearNotes,
+				settingsRepository.timerVisibility,
+			) { leftHandMode, showActionButtonsOnTop, autoClearNotes, timerVisibility ->
+				_uiState.update {
+					it.copy(
+						isLeftHandMode = leftHandMode,
+						showActionButtonsOnTop = showActionButtonsOnTop,
+						autoClearNotes = autoClearNotes,
+						timerVisible = timerVisibility,
+					)
+				}
+			}.collect()
 		}
 	}
 
@@ -505,6 +510,7 @@ internal class SudokuGameViewModel(
 				is HintType.HiddenSingle, is HintType.NakedSingle -> {
 					listOf(Pair(hint.row, hint.col))
 				}
+
 				is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
 					hint.enforcingCells.map { it.row to it.col }
 				}

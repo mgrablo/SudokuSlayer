@@ -214,9 +214,11 @@ private fun SudokuGameScreenContent(
 			CenterAlignedTopAppBar(
 				windowInsets = WindowInsets.displayCutout,
 				title = {
-					TimerDisplay(
-						elapsedTime = elapsedTime(),
-					)
+					if (uiState.timerVisible) {
+						TimerDisplay(
+							elapsedTime = elapsedTime(),
+						)
+					}
 				},
 				colors =
 				TopAppBarDefaults.topAppBarColors(

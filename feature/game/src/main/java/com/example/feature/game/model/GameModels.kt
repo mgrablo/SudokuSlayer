@@ -15,6 +15,7 @@ internal data class SudokuGameUiState(
 	val currentBestTime: Long? = null,
 	val isNewBestTime: Boolean = false,
 	val autoClearNotes: Boolean = true,
+	val timerVisible: Boolean = true,
 )
 
 internal enum class GameState {
