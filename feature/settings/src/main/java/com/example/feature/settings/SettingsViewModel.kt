@@ -34,6 +34,7 @@ internal data class AccessibilitySettings(
 internal data class GameplaySettings(
 	val autoClearNotes: Boolean = true,
 	val highlightMatching: Boolean = true,
+	val highlightInvalid: Boolean = true,
 )
 
 internal class SettingsViewModel(private val settingsRepository: SettingsRepository) :
@@ -78,10 +79,12 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 	private val gameplayState: StateFlow<GameplaySettings> = combine(
 		settingsRepository.autoClearNotes,
 		settingsRepository.highlightMatchingNumbers,
-	) { autoClearNotes, highlightMatching ->
+		settingsRepository.highlightInvalidNumbers,
+	) { autoClearNotes, highlightMatching, highlightInvalid ->
 		GameplaySettings(
 			autoClearNotes = autoClearNotes,
 			highlightMatching = highlightMatching,
+			highlightInvalid = highlightInvalid,
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -121,6 +124,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		data class ToggleInsightsSummaryCompactLayout(val compactLayout: Boolean) : Event
 		data class ToggleAutoClearNotes(val autoClearNotes: Boolean) : Event
 		data class ToggleHighlightMatching(val highlightMatching: Boolean) : Event
+		data class ToggleHighlightInvalid(val highlightInvalid: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -137,6 +141,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 
 			is Event.ToggleAutoClearNotes -> toggleAutoClearNotes(event.autoClearNotes)
 			is Event.ToggleHighlightMatching -> toggleHighlightMatching(event.highlightMatching)
+			is Event.ToggleHighlightInvalid -> toggleHighlightInvalid(event.highlightInvalid)
 		}
 	}
 
@@ -191,6 +196,12 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 	private fun toggleHighlightMatching(highlightMatching: Boolean) {
 		viewModelScope.launch {
 			settingsRepository.setHighlightMatchingNumbers(highlightMatching)
+		}
+	}
+
+	private fun toggleHighlightInvalid(highlightInvalid: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setHighlightInvalidNumbers(highlightInvalid)
 		}
 	}
 }
