@@ -38,7 +38,8 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		it == true
 	}
 	override val showActionButtonsOnTop: Flow<Boolean> =
-		preferenceStorage.getAsFlow(SettingsPreferenceKeys.ShowActionButtonsOnTop).map { it == true }
+		preferenceStorage.getAsFlow(SettingsPreferenceKeys.ShowActionButtonsOnTop)
+			.map { it == true }
 
 	override val insightsSummaryCompactLayout: Flow<Boolean> = preferenceStorage.getAsFlow(
 		SettingsPreferenceKeys.InsightsSummaryCompactLayout,
@@ -46,6 +47,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 
 	override val autoClearNotes: Flow<Boolean> = preferenceStorage.getAsFlow(
 		SettingsPreferenceKeys.AutoClearNotes,
+	).map { it == true }
+
+	override val highlightMatchingNumbers: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.HighlightMatchingNumbers,
 	).map { it == true }
 
 	override suspend fun setDarkMode(darkMode: DarkMode) {
@@ -78,6 +83,13 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 
 	override suspend fun setAutoClearNotes(autoClearNotes: Boolean) {
 		preferenceStorage.set(SettingsPreferenceKeys.AutoClearNotes, autoClearNotes)
+	}
+
+	override suspend fun setHighlightMatchingNumbers(highlightMatchingNumbers: Boolean) {
+		preferenceStorage.set(
+			SettingsPreferenceKeys.HighlightMatchingNumbers,
+			highlightMatchingNumbers,
+		)
 	}
 
 	override fun getAvailableColorSchemes(): List<ColorScheme> = ColorScheme.getAvailableColorSchemes()
