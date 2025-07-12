@@ -57,6 +57,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		SettingsPreferenceKeys.HighlightInvalidNumbers,
 	).map { it == true }
 
+	override val timerVisibility: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.TimerVisibility,
+	).map { it == true }
+
 	override suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
 	}
@@ -100,6 +104,13 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		preferenceStorage.set(
 			SettingsPreferenceKeys.HighlightInvalidNumbers,
 			highlightInvalidNumbers,
+		)
+	}
+
+	override suspend fun setTimerVisibility(timerVisibility: Boolean) {
+		preferenceStorage.set(
+			SettingsPreferenceKeys.TimerVisibility,
+			timerVisibility,
 		)
 	}
 

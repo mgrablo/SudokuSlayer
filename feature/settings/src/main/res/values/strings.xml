@@ -5,4 +5,6 @@
 	<string name="gameplay_highlight_matching">Highlight Matching Numbers</string>
 	<string name="gameplay_mark_invalid_desc">Automatically highlight numbers that break the rules of Sudoku (e.g., duplicates in a row, column, or block).</string>
 	<string name="gameplay_mark_invalid">Mark Invalid Numbers</string>
+	<string name="gameplay_hide_in_game_timer">Hide In-Game Timer</string>
+	<string name="gameplay_hide_in_game_timer_desc">Hides the timer during gameplay so you can solve at your own pace. Your final time is still recorded.</string>
 </resources>
