@@ -13,6 +13,7 @@ interface SettingsRepository {
 	val showActionButtonsOnTop: Flow<Boolean>
 	val insightsSummaryCompactLayout: Flow<Boolean>
 	val autoClearNotes: Flow<Boolean>
+	val highlightMatchingNumbers: Flow<Boolean>
 
 	suspend fun setDarkMode(darkMode: DarkMode)
 
@@ -29,6 +30,8 @@ interface SettingsRepository {
 	suspend fun setInsightsSummaryCompactLayout(compactLayout: Boolean)
 
 	suspend fun setAutoClearNotes(autoClearNotes: Boolean)
+
+	suspend fun setHighlightMatchingNumbers(highlightMatchingNumbers: Boolean)
 
 	fun getAvailableColorSchemes(): List<ColorScheme>
 

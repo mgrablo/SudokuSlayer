@@ -14,7 +14,6 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -442,7 +441,7 @@ class UndoOperationUseCaseTest {
 
 		undoOperationUseCase(initialGrid)
 
-		verify(exactly = 1) {
+		coVerify(exactly = 1) {
 			highlightMatchingNumbersUseCase(any(), 0)
 		}
 	}

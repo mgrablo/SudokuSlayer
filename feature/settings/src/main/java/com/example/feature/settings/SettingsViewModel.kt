@@ -1,64 +1,103 @@
 package com.example.feature.settings
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.combine
 import com.example.domain.settings.SettingsRepository
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class SettingsUiState(
+internal data class SettingsUiState(
+	val appearance: AppearanceSettings = AppearanceSettings(),
+	val accessibility: AccessibilitySettings = AccessibilitySettings(),
+	val gameplay: GameplaySettings = GameplaySettings(),
+)
+
+internal data class AppearanceSettings(
 	val darkMode: DarkMode = DarkMode.SYSTEM,
 	val darkColorScheme: ColorScheme = ColorScheme.fromName("mocha"),
 	val lightColorScheme: ColorScheme = ColorScheme.fromName("latte"),
-	val language: String = "system",
-	val leftHandMode: Boolean = false,
-	val actionButtonsOnTop: Boolean = false,
 	val insightsSummaryCompactLayout: Boolean = true,
-	val autoClearNotes: Boolean = true,
+	val language: String = "system",
 )
 
-class SettingsViewModel(
-	private val settingsRepository: SettingsRepository,
-	private val savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+internal data class AccessibilitySettings(
+	val leftHandMode: Boolean = false,
+	val actionButtonsOnTop: Boolean = false,
+)
+
+internal data class GameplaySettings(
+	val autoClearNotes: Boolean = true,
+	val highlightMatching: Boolean = true,
+)
+
+internal class SettingsViewModel(private val settingsRepository: SettingsRepository) :
+	ViewModel() {
 	val lightColorSchemes = settingsRepository.getLightColorSchemes().toPersistentSet()
 	val darkColorSchemes = settingsRepository.getDarkColorSchemes().toPersistentSet()
 
-	val uiState: StateFlow<SettingsUiState> = combine(
+	private val appearenceState: StateFlow<AppearanceSettings> = combine(
 		settingsRepository.darkMode,
 		settingsRepository.darkModeColorScheme,
 		settingsRepository.lightModeColorScheme,
 		settingsRepository.language,
-		settingsRepository.leftHandMode,
-		settingsRepository.showActionButtonsOnTop,
 		settingsRepository.insightsSummaryCompactLayout,
-		settingsRepository.autoClearNotes,
-	) {
-			darkMode,
-			darkColorScheme,
-			lightColorScheme,
-			language,
-			leftHandMode,
-			actionButtonsOnTop,
-			insightsSummaryCompactLayout,
-			autoClearNotes,
-		->
-		SettingsUiState(
+	) { darkMode, darkColorScheme, lightColorScheme, language, insightsSummaryCompactLayout ->
+		AppearanceSettings(
 			darkMode = darkMode,
 			darkColorScheme = darkColorScheme,
 			lightColorScheme = lightColorScheme,
 			language = language,
+			insightsSummaryCompactLayout = insightsSummaryCompactLayout,
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000L),
+		initialValue = AppearanceSettings(),
+	)
+
+	private val accessibilityState: StateFlow<AccessibilitySettings> = combine(
+		settingsRepository.leftHandMode,
+		settingsRepository.showActionButtonsOnTop,
+	) { leftHandMode, actionButtonsOnTop ->
+		AccessibilitySettings(
 			leftHandMode = leftHandMode,
 			actionButtonsOnTop = actionButtonsOnTop,
-			insightsSummaryCompactLayout = insightsSummaryCompactLayout,
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000L),
+		initialValue = AccessibilitySettings(),
+	)
+
+	private val gameplayState: StateFlow<GameplaySettings> = combine(
+		settingsRepository.autoClearNotes,
+		settingsRepository.highlightMatchingNumbers,
+	) { autoClearNotes, highlightMatching ->
+		GameplaySettings(
 			autoClearNotes = autoClearNotes,
+			highlightMatching = highlightMatching,
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000L),
+		initialValue = GameplaySettings(),
+	)
+
+	val uiState: StateFlow<SettingsUiState> = combine(
+		appearenceState,
+		accessibilityState,
+		gameplayState,
+	) { appearence, accessibility, gameplay ->
+		SettingsUiState(
+			appearance = appearence,
+			accessibility = accessibility,
+			gameplay = gameplay,
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -80,8 +119,8 @@ class SettingsViewModel(
 		data class ToggleActionButtonsOnTop(val actionButtonsOnTop: Boolean) : Event
 
 		data class ToggleInsightsSummaryCompactLayout(val compactLayout: Boolean) : Event
-
 		data class ToggleAutoClearNotes(val autoClearNotes: Boolean) : Event
+		data class ToggleHighlightMatching(val highlightMatching: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -97,6 +136,7 @@ class SettingsViewModel(
 			)
 
 			is Event.ToggleAutoClearNotes -> toggleAutoClearNotes(event.autoClearNotes)
+			is Event.ToggleHighlightMatching -> toggleHighlightMatching(event.highlightMatching)
 		}
 	}
 
@@ -145,6 +185,12 @@ class SettingsViewModel(
 	private fun toggleAutoClearNotes(autoClearNotes: Boolean) {
 		viewModelScope.launch {
 			settingsRepository.setAutoClearNotes(autoClearNotes)
+		}
+	}
+
+	private fun toggleHighlightMatching(highlightMatching: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setHighlightMatchingNumbers(highlightMatching)
 		}
 	}
 }

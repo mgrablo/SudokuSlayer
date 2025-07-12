@@ -16,9 +16,6 @@ class CheckModulesTest : KoinTest {
 				definition<com.example.data.core.database.AndroidDatabaseDriverFactory>(
 					android.content.Context::class,
 				),
-				definition<com.example.feature.settings.SettingsViewModel>(
-					androidx.lifecycle.SavedStateHandle::class,
-				),
 			),
 		)
 	}

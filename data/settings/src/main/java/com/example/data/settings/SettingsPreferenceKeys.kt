@@ -38,4 +38,9 @@ interface SettingsPreferenceKeys {
 		name = "auto_clear_notes",
 		defaultValue = true,
 	)
+
+	data object HighlightMatchingNumbers : PreferenceStorage.Key.BooleanKey(
+		name = "highlight_matching_numbers",
+		defaultValue = true,
+	)
 }

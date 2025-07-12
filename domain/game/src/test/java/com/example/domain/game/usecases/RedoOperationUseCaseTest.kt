@@ -14,7 +14,6 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -53,7 +52,7 @@ class RedoOperationUseCaseTest {
 		coJustRun { operationRepository.addUndoOperation(any()) }
 		coEvery { operationRepository.findRedoOperation(any()) } returns mockk { every { id } returns 1L }
 		coJustRun { operationRepository.removeRedoOperation(any()) }
-		every { highlightMatchingNumbersUseCase(any(), any()) } returns updatedGrid
+		coEvery { highlightMatchingNumbersUseCase(any(), any()) } returns updatedGrid
 		coEvery {
 			inputNumberUseCase.invoke(
 				sudokuGrid = any(),
@@ -326,6 +325,6 @@ class RedoOperationUseCaseTest {
 		coEvery { operationRepository.getRedoOperations() } returns listOf(lastOperation)
 		redoOperationUseCase(initialGrid)
 
-		verify(exactly = 1) { highlightMatchingNumbersUseCase(any(), 0) }
+		coVerify(exactly = 1) { highlightMatchingNumbersUseCase(any(), 0) }
 	}
 }
