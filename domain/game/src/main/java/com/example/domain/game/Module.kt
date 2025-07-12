@@ -18,8 +18,10 @@ import com.example.domain.game.usecases.time.GetBestTimeUseCase
 import com.example.domain.game.usecases.time.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import com.example.domain.game.usecases.visuals.ClearHighlightedRowAndColumnUseCase
+import com.example.domain.game.usecases.visuals.ClearRuleBreakingCellsUseCase
 import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 import com.example.domain.game.usecases.visuals.HighlightRowAndColumnUseCase
+import com.example.domain.game.usecases.visuals.MarkRuleBreakingCellsUseCase
 import com.example.sudoku.sudokuModule
 import org.koin.dsl.module
 
@@ -44,6 +46,13 @@ val domainGameModule =
 		factory { HighlightMatchingNumbersUseCase(get()) }
 		factory { HighlightRowAndColumnUseCase() }
 		factory { ClearHighlightedRowAndColumnUseCase() }
+		factory {
+			MarkRuleBreakingCellsUseCase(
+				settingsRepository = get(),
+				clearRuleBreakingCellsUseCase = get(),
+			)
+		}
+		factory { ClearRuleBreakingCellsUseCase() }
 
 		factory { InputNumberUseCase() }
 		factory { ResetGameUseCase(get()) }
