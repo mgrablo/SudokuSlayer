@@ -10,6 +10,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotSame
@@ -48,7 +49,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Highlighting matching numbers with valid number`() {
+	fun `Highlighting matching numbers with valid number`() = runTest {
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 		val numberToHighlight = 1
 
@@ -70,7 +71,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Highlighting with null number`() {
+	fun `Highlighting with null number`() = runTest {
 		val initialGridWithHighlights =
 			createGridWithHighlight(1) // Start with some cells highlighted
 		assertTrue(
@@ -90,7 +91,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Highlighting with zero as number`() {
+	fun `Highlighting with zero as number`() = runTest {
 		val initialGridWithHighlights =
 			createGridWithHighlight(2) // Start with some cells highlighted
 		assertTrue(
@@ -110,7 +111,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Grid state after clearing highlights`() {
+	fun `Grid state after clearing highlights`() = runTest {
 		// Create a grid with cell (0,0) value 1 and already highlighted
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 			.updateCell(
@@ -137,7 +138,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Grid state with no matching numbers`() {
+	fun `Grid state with no matching numbers`() = runTest {
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 		val numberToHighlight = 5 // This number is not in sampleGridData
 
@@ -152,7 +153,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Grid state with all cells matching the number`() {
+	fun `Grid state with all cells matching the number`() = runTest {
 		val allMatchData = listOf(
 			intArrayOf(7, 7, 7),
 			intArrayOf(7, 7, 7),
@@ -172,23 +173,23 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Highlighting behavior based on SettingsRepository highlightMatching setting`() {
+	fun `Highlighting behavior based on SettingsRepository highlightMatching setting`() = runTest {
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 		val numberToHighlight = 1
 
 		every { mockSettingsRepository.highlightMatchingNumbers } returns flowOf(false)
 		var resultGrid = useCase(initialGrid, numberToHighlight)
 
-		assertTrue(
+		assertFalse(
 			resultGrid.getCellAt(0, 0).attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED),
-			"Cell (0,0) should be highlighted even if (unused) setting is false, due to current use case logic.",
+			"Cell (0,0) should not be highlighted  if setting is false. ",
 		)
 
 		every { mockSettingsRepository.highlightMatchingNumbers } returns flowOf(true)
 		resultGrid = useCase(initialGrid, numberToHighlight)
 		assertTrue(
 			resultGrid.getCellAt(0, 0).attributes.contains(CellAttributes.NUMBER_MATCH_HIGHLIGHTED),
-			"Cell (0,0) should be highlighted when (unused) setting is true.",
+			"Cell (0,0) should be highlighted when setting is true.",
 		)
 
 		resultGrid = useCase(initialGrid, null)
@@ -199,7 +200,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Input SudokuGrid immutability or expected mutation`() {
+	fun `Input SudokuGrid immutability or expected mutation`() = runTest {
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 		val initialGridDataSnapshot =
 			initialGrid.data.toList() // Save a deep copy of data for comparison
@@ -230,7 +231,7 @@ class HighlightMatchingNumbersUseCaseTest {
 	}
 
 	@Test
-	fun `Highlighting with number outside typical Sudoku range e g 9 or 1`() {
+	fun `Highlighting with number outside typical Sudoku range e g 9 or 1`() = runTest {
 		val initialGrid = SudokuGrid.fromIntArray(sampleGridData, gridSize = 4)
 
 		// Test with a number like 10 (not in grid)

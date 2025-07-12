@@ -3,11 +3,15 @@ package com.example.domain.game.usecases
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.addAttribute
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -25,7 +29,7 @@ class SelectCellUseCaseTest {
 			every { this@mockk.invoke(any(), any(), any()) } answers { firstArg() }
 		}
 		highlightMatchingNumbersUseCase = mockk(relaxed = true) {
-			every { this@mockk.invoke(any(), any()) } answers { firstArg() }
+			coEvery { this@mockk.invoke(any(), any()) } answers { firstArg() }
 		}
 		clearHighlightedRowAndColumnUseCase = mockk(relaxed = true) {
 			every { this@mockk.invoke(any()) } answers { firstArg() }
@@ -40,7 +44,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase selectedCell is null`() {
+	fun `SelectCellUseCase selectedCell is null`() = runTest {
 		// Verify that when selectedCell is null, the SudokuGrid is returned with previously selected cells deselected and highlights cleared.
 		val initialGrid =
 			emptyGrid.withReplacedCell(
@@ -55,11 +59,11 @@ class SelectCellUseCaseTest {
 		assert(!resultGrid.getCellAt(0, 0).attributes.contains(CellAttributes.SELECTED))
 		verify { clearHighlightedRowAndColumnUseCase(any()) }
 		verify(exactly = 0) { highlightRowAndColumnUseCase(any(), any(), any()) }
-		verify(exactly = 1) { highlightMatchingNumbersUseCase(any(), any()) }
+		coVerify(exactly = 1) { highlightMatchingNumbersUseCase(any(), any()) }
 	}
 
 	@Test
-	fun `SelectCellUseCase selectedCell is not null  cell has no initial attributes`() {
+	fun `SelectCellUseCase selectedCell is not null  cell has no initial attributes`() = runTest {
 		// Verify that when a valid cell is selected, it's marked as SELECTED, and row, column, and matching numbers are highlighted.
 		// The selected cell initially has no attributes.
 		val selectedCell = 1 to 2
@@ -75,7 +79,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase selectedCell is not null  cell has other attributes`() {
+	fun `SelectCellUseCase selectedCell is not null  cell has other attributes`() = runTest {
 		// Verify that when a valid cell with pre-existing attributes is selected, the SELECTED attribute is added without removing existing ones,
 		// and row, column, and matching numbers are highlighted.
 		val selectedCell = 1 to 2
@@ -103,7 +107,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase selecting a new cell when another cell is already selected`() {
+	fun `SelectCellUseCase selecting a new cell when another cell is already selected`() = runTest {
 		// Verify that if a cell is already selected, selecting a new cell correctly deselects the old one, clears its highlights,
 		// and selects and highlights the new cell and its related elements.
 		val oldSelectedCell = 0 to 0
@@ -141,7 +145,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase selected cell has a number`() {
+	fun `SelectCellUseCase selected cell has a number`() = runTest {
 		// Verify that highlightMatchingNumbersUseCase is called with the correct number from the selected cell.
 		val selectedCell = 3 to 4
 		val number = 5
@@ -149,11 +153,11 @@ class SelectCellUseCaseTest {
 
 		selectCellUseCase(initialGrid, selectedCell)
 
-		verify { highlightMatchingNumbersUseCase(any(), number) }
+		coVerify { highlightMatchingNumbersUseCase(any(), number) }
 	}
 
 	@Test
-	fun `SelectCellUseCase selected cell is empty  number is null or 0 `() {
+	fun `SelectCellUseCase selected cell is empty  number is null or 0 `() = runTest {
 		// Verify that highlightMatchingNumbersUseCase is called with null or 0 if the selected cell is empty, and handles it gracefully (no numbers highlighted).
 		val selectedCell = 2 to 2
 		val cell = emptyGrid.getCellAt(selectedCell.first, selectedCell.second)
@@ -161,11 +165,11 @@ class SelectCellUseCaseTest {
 
 		selectCellUseCase(emptyGrid, selectedCell)
 
-		verify(exactly = 0) { highlightMatchingNumbersUseCase(any(), any()) }
+		coVerify(exactly = 0) { highlightMatchingNumbersUseCase(any(), any()) }
 	}
 
 	@Test
-	fun `SelectCellUseCase SudokuGrid has pre existing selected cells`() {
+	fun `SelectCellUseCase SudokuGrid has pre existing selected cells`() = runTest {
 		// Verify that any cells in the input SudokuGrid that are already marked with CellAttributes.SELECTED are correctly deselected before processing the new selectedCell.
 		val preSelectedCell = 4 to 4
 		val newSelectedCell = 5 to 5
@@ -196,7 +200,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase interaction with highlightRowAndColumnUseCase`() {
+	fun `SelectCellUseCase interaction with highlightRowAndColumnUseCase`() = runTest {
 		// Ensure highlightRowAndColumnUseCase is called with the correct SudokuGrid (after deselection and clearing) and the correct row/column from selectedCell.
 		val selectedCell = 2 to 3
 		selectCellUseCase(emptyGrid, selectedCell)
@@ -208,7 +212,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `SelectCellUseCase interaction with highlightMatchingNumbersUseCase`() {
+	fun `SelectCellUseCase interaction with highlightMatchingNumbersUseCase`() = runTest {
 		// Ensure highlightMatchingNumbersUseCase is called with the correct SudokuGrid (after selection and row/column highlighting) and the correct number from the selected cell.
 		val selectedCell = 2 to 3
 		val number = 7
@@ -216,14 +220,14 @@ class SelectCellUseCaseTest {
 
 		selectCellUseCase(initialGrid, selectedCell)
 
-		verifyOrder {
+		coVerifyOrder {
 			highlightRowAndColumnUseCase(any(), selectedCell.first, selectedCell.second)
 			highlightMatchingNumbersUseCase(any(), number)
 		}
 	}
 
 	@Test
-	fun `SelectCellUseCase immutability of input SudokuGrid`() {
+	fun `SelectCellUseCase immutability of input SudokuGrid`() = runTest {
 		// Confirm that the original sudoku object passed to the invoke method is not mutated, and a new instance is returned.
 		val initialGrid = emptyGrid.withValue(0, 0, 5)
 		val initialGridCopy = initialGrid.copy()
@@ -235,7 +239,7 @@ class SelectCellUseCaseTest {
 	}
 
 	@Test
-	fun `selecting an empty cell should not clear existing number highlights`() {
+	fun `selecting an empty cell should not clear existing number highlights`() = runTest {
 		// 1. Setup a grid with some highlighted numbers
 		val gridWithHighlights =
 			emptyGrid.addAttribute({ it.row == 0 }, CellAttributes.NUMBER_MATCH_HIGHLIGHTED)
@@ -252,11 +256,11 @@ class SelectCellUseCaseTest {
 		selectCellUseCase(gridWithHighlights, emptyCellToSelect)
 
 		// 3. Verify that clearHighlightedNumbersUseCase was NOT called
-		verify(exactly = 0) { highlightMatchingNumbersUseCase(any(), null) }
+		coVerify(exactly = 0) { highlightMatchingNumbersUseCase(any(), null) }
 	}
 
 	@Test
-	fun `SelectCellUseCase with an empty SudokuGrid  all cells empty `() {
+	fun `SelectCellUseCase with an empty SudokuGrid  all cells empty `() = runTest {
 		// Test behavior when a cell is selected in an entirely empty Sudoku grid.
 		val selectedCell = 0 to 0
 		val resultGrid = selectCellUseCase(emptyGrid, selectedCell)
@@ -269,11 +273,11 @@ class SelectCellUseCaseTest {
 		)
 
 		verify { highlightRowAndColumnUseCase(any(), selectedCell.first, selectedCell.second) }
-		verify(exactly = 0) { highlightMatchingNumbersUseCase(any(), any()) }
+		coVerify(exactly = 0) { highlightMatchingNumbersUseCase(any(), any()) }
 	}
 
 	@Test
-	fun `SelectCellUseCase with a fully solved SudokuGrid`() {
+	fun `SelectCellUseCase with a fully solved SudokuGrid`() = runTest {
 		// Test behavior when a cell is selected in a fully solved Sudoku grid, ensuring highlights work as expected.
 		// Create a simple solved grid
 		var solvedGrid: SudokuGrid = emptyGrid
@@ -293,6 +297,6 @@ class SelectCellUseCaseTest {
 		)
 
 		verify { highlightRowAndColumnUseCase(any(), selectedCell.first, selectedCell.second) }
-		verify { highlightMatchingNumbersUseCase(any(), selectedNumber) }
+		coVerify { highlightMatchingNumbersUseCase(any(), selectedNumber) }
 	}
 }

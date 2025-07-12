@@ -4,11 +4,13 @@ import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearMatchingNumberHighlight
 import com.example.sudoku.model.highlightMatchingCells
+import kotlinx.coroutines.flow.firstOrNull
 
 class HighlightMatchingNumbersUseCase(private val settingsRepository: SettingsRepository) {
-	operator fun invoke(sudokuGrid: SudokuGrid, number: Int?): SudokuGrid {
+	suspend operator fun invoke(sudokuGrid: SudokuGrid, number: Int?): SudokuGrid {
 		val clearedGrid = sudokuGrid.clearMatchingNumberHighlight()
-		return if (number != null && number != 0) {
+		val highlightMatchingNumbers = settingsRepository.highlightMatchingNumbers.firstOrNull() ?: true
+		return if (number != null && number != 0 && highlightMatchingNumbers) {
 			clearedGrid.highlightMatchingCells(number)
 		} else {
 			clearedGrid
