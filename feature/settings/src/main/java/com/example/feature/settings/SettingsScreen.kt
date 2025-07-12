@@ -171,6 +171,13 @@ private fun SettingsScreenContent(
 
 			SettingsCategory("Gameplay") {
 				SettingSwitchItem(
+					title = stringResource(R.string.gameplay_hide_in_game_timer),
+					value = !uiState.gameplay.timerVisibility,
+					description = stringResource(R.string.gameplay_hide_in_game_timer_desc),
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleTimerVisibility(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
+				SettingSwitchItem(
 					title = "Auto clear notes",
 					value = uiState.gameplay.autoClearNotes,
 					description = "Clear notes when a number is input",

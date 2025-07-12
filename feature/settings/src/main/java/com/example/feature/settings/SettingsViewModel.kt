@@ -35,6 +35,7 @@ internal data class GameplaySettings(
 	val autoClearNotes: Boolean = true,
 	val highlightMatching: Boolean = true,
 	val highlightInvalid: Boolean = true,
+	val timerVisibility: Boolean = true,
 )
 
 internal class SettingsViewModel(private val settingsRepository: SettingsRepository) :
@@ -80,11 +81,13 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		settingsRepository.autoClearNotes,
 		settingsRepository.highlightMatchingNumbers,
 		settingsRepository.highlightInvalidNumbers,
-	) { autoClearNotes, highlightMatching, highlightInvalid ->
+		settingsRepository.timerVisibility,
+	) { autoClearNotes, highlightMatching, highlightInvalid, timerVisibility ->
 		GameplaySettings(
 			autoClearNotes = autoClearNotes,
 			highlightMatching = highlightMatching,
 			highlightInvalid = highlightInvalid,
+			timerVisibility = timerVisibility,
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -125,6 +128,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		data class ToggleAutoClearNotes(val autoClearNotes: Boolean) : Event
 		data class ToggleHighlightMatching(val highlightMatching: Boolean) : Event
 		data class ToggleHighlightInvalid(val highlightInvalid: Boolean) : Event
+		data class ToggleTimerVisibility(val timerVisibility: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -142,6 +146,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 			is Event.ToggleAutoClearNotes -> toggleAutoClearNotes(event.autoClearNotes)
 			is Event.ToggleHighlightMatching -> toggleHighlightMatching(event.highlightMatching)
 			is Event.ToggleHighlightInvalid -> toggleHighlightInvalid(event.highlightInvalid)
+			is Event.ToggleTimerVisibility -> toggleTimerVisibility(event.timerVisibility)
 		}
 	}
 
@@ -202,6 +207,13 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 	private fun toggleHighlightInvalid(highlightInvalid: Boolean) {
 		viewModelScope.launch {
 			settingsRepository.setHighlightInvalidNumbers(highlightInvalid)
+		}
+	}
+
+	private fun toggleTimerVisibility(timerVisibility: Boolean) {
+		viewModelScope.launch {
+			// When timerVisibility is true (user wants to hide), we save visibility as false.
+			settingsRepository.setTimerVisibility(!timerVisibility)
 		}
 	}
 }
