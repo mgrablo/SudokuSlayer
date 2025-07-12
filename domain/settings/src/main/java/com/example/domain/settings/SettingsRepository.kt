@@ -14,6 +14,7 @@ interface SettingsRepository {
 	val insightsSummaryCompactLayout: Flow<Boolean>
 	val autoClearNotes: Flow<Boolean>
 	val highlightMatchingNumbers: Flow<Boolean>
+	val highlightInvalidNumbers: Flow<Boolean>
 
 	suspend fun setDarkMode(darkMode: DarkMode)
 
@@ -32,6 +33,8 @@ interface SettingsRepository {
 	suspend fun setAutoClearNotes(autoClearNotes: Boolean)
 
 	suspend fun setHighlightMatchingNumbers(highlightMatchingNumbers: Boolean)
+
+	suspend fun setHighlightInvalidNumbers(highlightInvalidNumbers: Boolean)
 
 	fun getAvailableColorSchemes(): List<ColorScheme>
 

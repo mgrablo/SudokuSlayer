@@ -43,4 +43,9 @@ interface SettingsPreferenceKeys {
 		name = "highlight_matching_numbers",
 		defaultValue = true,
 	)
+
+	data object HighlightInvalidNumbers : PreferenceStorage.Key.BooleanKey(
+		name = "highlight_invalid_numbers",
+		defaultValue = true,
+	)
 }
