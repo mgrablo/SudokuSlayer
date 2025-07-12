@@ -3,6 +3,9 @@ package com.example.domain.game.usecases
 import com.example.domain.core.Operation
 import com.example.domain.core.OperationRepository
 import com.example.domain.core.changedTo
+import com.example.domain.game.usecases.input.InputNumberUseCase
+import com.example.domain.game.usecases.input.RedoOperationUseCase
+import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid

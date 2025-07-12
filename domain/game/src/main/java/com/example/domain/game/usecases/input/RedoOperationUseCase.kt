@@ -1,13 +1,14 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.input
 
 import com.example.domain.core.OperationRepository
+import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
-class UndoOperationUseCase(
+class RedoOperationUseCase(
 	private val operationRepository: OperationRepository,
 	private val inputNumberUseCase: InputNumberUseCase,
 	private val highlightMatchingNumbersUseCase: HighlightMatchingNumbersUseCase,
@@ -24,16 +25,17 @@ class UndoOperationUseCase(
 			mutex.withLock {
 				val lastOperation =
 					operationRepository
-						.getUndoOperations()
-						.lastOrNull()
+						.getRedoOperations()
+						.reversed()
+						.firstOrNull()
 				if (lastOperation == null) {
 					return grid
 				}
 
-				operationRepository.addRedoOperation(lastOperation)
-				val undoId = operationRepository.findUndoOperation(lastOperation.id)
-				if (undoId != null) {
-					operationRepository.removeUndoOperation(undoId.id)
+				operationRepository.addUndoOperation(lastOperation)
+				val redoId = operationRepository.findRedoOperation(lastOperation.id)
+				if (redoId != null) {
+					operationRepository.removeRedoOperation(redoId.id)
 				}
 
 				var updatedGrid = grid
@@ -43,31 +45,32 @@ class UndoOperationUseCase(
 					val symmetricDifference =
 						(oldCell.cornerNotes - newCell.cornerNotes) union
 							(newCell.cornerNotes - oldCell.cornerNotes)
-					val isNote = symmetricDifference.isNotEmpty() && oldCell.number == 0
+
+					val isNote = symmetricDifference.isNotEmpty() && newCell.number == 0
+
 					if (isNote) {
 						symmetricDifference.forEach { noteVaule ->
 							updatedGrid = inputNumberUseCase(
 								sudokuGrid = updatedGrid,
 								number = noteVaule,
-								row = oldCell.row,
-								column = oldCell.col,
+								row = newCell.row,
+								column = newCell.col,
 								isNote = true,
-								isHint = oldCell.attributes.contains(element = CellAttributes.HINT_REVEALED),
+								isHint = newCell.attributes.contains(element = CellAttributes.HINT_REVEALED),
 							)
 						}
 					} else {
 						updatedGrid = inputNumberUseCase(
 							sudokuGrid = updatedGrid,
-							number = oldCell.number,
-							row = oldCell.row,
-							column = oldCell.col,
+							number = newCell.number,
+							row = newCell.row,
+							column = newCell.col,
 							isNote = false,
-							isHint = oldCell.attributes.contains(CellAttributes.HINT_REVEALED),
+							isHint = newCell.attributes.contains(CellAttributes.HINT_REVEALED),
 						)
-						updatedGrid = highlightMatchingNumbersUseCase(updatedGrid, oldCell.number)
+						updatedGrid = highlightMatchingNumbersUseCase(updatedGrid, newCell.number)
 					}
 				}
-
 				return updatedGrid
 			}
 		} finally {

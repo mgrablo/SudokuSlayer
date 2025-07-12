@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.hint
 
 import com.example.domain.core.HintLog
 import com.example.sudoku.model.SudokuGrid

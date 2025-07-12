@@ -1,7 +1,7 @@
 package com.example.domain.game
 
-import com.example.domain.game.usecases.GetElapsedTimeUseCase
-import com.example.domain.game.usecases.SaveElapsedTimeUseCase
+import com.example.domain.game.usecases.time.GetElapsedTimeUseCase
+import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

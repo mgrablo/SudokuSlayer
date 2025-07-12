@@ -1,5 +1,6 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.hint
 
+import com.example.domain.game.usecases.input.InputNumberUseCase
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType

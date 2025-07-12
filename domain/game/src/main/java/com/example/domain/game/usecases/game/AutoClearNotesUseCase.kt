@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.game
 
 import com.example.domain.core.CellChange
 import com.example.domain.core.changedTo

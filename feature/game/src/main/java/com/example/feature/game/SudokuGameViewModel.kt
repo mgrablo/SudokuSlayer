@@ -13,11 +13,11 @@ import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.GameManagementUseCases
 import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
-import com.example.domain.game.usecases.GetBestTimeUseCase
-import com.example.domain.game.usecases.GetElapsedTimeUseCase
-import com.example.domain.game.usecases.RedoOperationUseCase
-import com.example.domain.game.usecases.SaveElapsedTimeUseCase
-import com.example.domain.game.usecases.UndoOperationUseCase
+import com.example.domain.game.usecases.input.RedoOperationUseCase
+import com.example.domain.game.usecases.input.UndoOperationUseCase
+import com.example.domain.game.usecases.time.GetBestTimeUseCase
+import com.example.domain.game.usecases.time.GetElapsedTimeUseCase
+import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState

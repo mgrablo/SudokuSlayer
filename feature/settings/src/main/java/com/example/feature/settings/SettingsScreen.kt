@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.settings.models.ColorScheme
@@ -87,9 +88,9 @@ private fun SettingsScreenContent(
 			modifier =
 			Modifier
 				.fillMaxSize()
+				.verticalScroll(rememberScrollState())
 				.padding(paddingValues)
-				.padding(LocalPadding.current.normal)
-				.verticalScroll(rememberScrollState()),
+				.padding(LocalPadding.current.normal),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
 			var lightColorSchemeExpanded by remember { mutableStateOf(false) }
@@ -183,12 +184,20 @@ private fun SettingsScreenContent(
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleHighlightMatching(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
+				SettingSwitchItem(
+					title = stringResource(R.string.gameplay_mark_invalid),
+					value = uiState.gameplay.highlightInvalid,
+					description = stringResource(R.string.gameplay_mark_invalid_desc),
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleHighlightInvalid(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
 			}
 		}
 	}
 }
 
 @PreviewScreenSizes
+@PreviewLightDark
 @Composable
 private fun SettingsScreenPreview() {
 	SudokuSlayerTheme {

@@ -1,15 +1,30 @@
 package com.example.domain.game.usecases
 
+import com.example.domain.game.usecases.input.InputNumberUseCase
+import com.example.domain.game.usecases.visuals.MarkRuleBreakingCellsUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class InputNumberUseCaseTest {
-	val inputNumberUseCase = InputNumberUseCase()
+	private lateinit var markRuleBreakingCellsUseCase: MarkRuleBreakingCellsUseCase
+	private lateinit var inputNumberUseCase: InputNumberUseCase
+
+	@BeforeEach
+	fun setup() {
+		markRuleBreakingCellsUseCase = mockk(relaxed = true) {
+			coEvery { this@mockk.invoke(any()) } answers { firstArg() }
+		}
+		inputNumberUseCase = InputNumberUseCase(markRuleBreakingCellsUseCase)
+	}
 
 	@Test
 	fun `Input number in a generated cell`() = runTest {
@@ -269,7 +284,7 @@ class InputNumberUseCaseTest {
 	@Test
 	fun `Rule breaking cells are cleared and marked after input`() = runTest {
 		// After any valid input (not a generated cell),
-		// ensure that `clearRuleBreakingCells()` and `markRuleBreakingCells()` are called on the SudokuGrid.
+		// ensure that `markRuleBreakingCellsUseCase` is called on the SudokuGrid.
 		val grid =
 			SudokuGrid().withReplacedCell(
 				row = 0,
@@ -281,7 +296,7 @@ class InputNumberUseCaseTest {
 				),
 			)
 
-		var updatedGrid =
+		val updatedGrid =
 			inputNumberUseCase(
 				sudokuGrid = grid,
 				number = 1,
@@ -292,36 +307,7 @@ class InputNumberUseCaseTest {
 			)
 
 		assert(updatedGrid.getCellAt(1, 0).number == 1)
-		assert(
-			updatedGrid.getCellAt(
-				1,
-				0,
-			).attributes == persistentSetOf(CellAttributes.RULE_BREAKING),
-		)
-		updatedGrid = inputNumberUseCase(
-			sudokuGrid = updatedGrid,
-			number = 2,
-			row = 1,
-			column = 0,
-			isNote = false,
-			isHint = false,
-		)
-		assert(updatedGrid.getCellAt(1, 0).number == 2)
-		assert(updatedGrid.getCellAt(1, 0).attributes == persistentSetOf<Int>())
-	}
-
-	@Test
-	fun `Concurrency  Multiple inputs to different cells`() {
-		// Test that multiple concurrent calls to `invoke` for different cells are handled correctly without race conditions,
-		// leveraging the Mutex.
-		// TODO implement test
-	}
-
-	@Test
-	fun `Concurrency  Multiple inputs to the same cell`() {
-		// Test that multiple concurrent calls to `invoke` for the same cell are serialized by the Mutex,
-		// and the final state of the cell reflects the sequential application of inputs.
-		// TODO implement test
+		coVerify(exactly = 1) { markRuleBreakingCellsUseCase(any()) }
 	}
 
 	@Test

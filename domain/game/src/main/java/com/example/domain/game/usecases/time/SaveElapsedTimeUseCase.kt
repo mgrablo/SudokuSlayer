@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.time
 
 import com.example.domain.core.GameRepository
 

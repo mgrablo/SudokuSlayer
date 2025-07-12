@@ -3,4 +3,6 @@
 	<string name="settings_screen_title">Settings</string>
     <string name="gameplay_highlight_matching_desc">When a cell with a number is selected, all other cells with the same number will be highlighted.</string>
 	<string name="gameplay_highlight_matching">Highlight Matching Numbers</string>
+	<string name="gameplay_mark_invalid_desc">Automatically highlight numbers that break the rules of Sudoku (e.g., duplicates in a row, column, or block).</string>
+	<string name="gameplay_mark_invalid">Mark Invalid Numbers</string>
 </resources>

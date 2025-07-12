@@ -53,6 +53,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		SettingsPreferenceKeys.HighlightMatchingNumbers,
 	).map { it == true }
 
+	override val highlightInvalidNumbers: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.HighlightInvalidNumbers,
+	).map { it == true }
+
 	override suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
 	}
@@ -89,6 +93,13 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		preferenceStorage.set(
 			SettingsPreferenceKeys.HighlightMatchingNumbers,
 			highlightMatchingNumbers,
+		)
+	}
+
+	override suspend fun setHighlightInvalidNumbers(highlightInvalidNumbers: Boolean) {
+		preferenceStorage.set(
+			SettingsPreferenceKeys.HighlightInvalidNumbers,
+			highlightInvalidNumbers,
 		)
 	}
 
