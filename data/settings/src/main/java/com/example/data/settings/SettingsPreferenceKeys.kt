@@ -48,4 +48,9 @@ interface SettingsPreferenceKeys {
 		name = "highlight_invalid_numbers",
 		defaultValue = true,
 	)
+
+	data object TimerVisibility : PreferenceStorage.Key.BooleanKey(
+		name = "timer_visibility",
+		defaultValue = true,
+	)
 }
