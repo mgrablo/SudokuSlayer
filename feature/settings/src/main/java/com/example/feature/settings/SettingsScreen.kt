@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.settings.models.ColorScheme
@@ -31,6 +32,7 @@ import com.example.feature.settings.components.SettingSwitchItem
 import com.example.feature.settings.components.SettingsCategory
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.feature.settings.R
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
 import org.koin.androidx.compose.koinViewModel
@@ -96,14 +98,14 @@ private fun SettingsScreenContent(
 			SettingsCategory("Appearance") {
 				SettingDropDownMenu(
 					title = "Theme",
-					description = if (uiState.darkMode == DarkMode.SYSTEM) {
+					description = if (uiState.appearence.darkMode == DarkMode.SYSTEM) {
 						"Follow system theme"
 					} else {
 						null
 					},
 					isExpanded = themeExpanded,
 					onExpandedChange = { themeExpanded = it },
-					selectedValue = uiState.darkMode,
+					selectedValue = uiState.appearence.darkMode,
 					onSelect = {
 						onEvent(SettingsViewModel.Event.SetDarkMode(it))
 					},
@@ -117,7 +119,7 @@ private fun SettingsScreenContent(
 					isExpanded = lightColorSchemeExpanded,
 					onExpandedChange = { lightColorSchemeExpanded = it },
 					onSelect = { onEvent(SettingsViewModel.Event.SetLightColorScheme(it)) },
-					selectedValue = uiState.lightColorScheme,
+					selectedValue = uiState.appearence.lightColorScheme,
 					options = lightColorSchemes,
 					optionToString = {
 						it.name
@@ -129,7 +131,7 @@ private fun SettingsScreenContent(
 					title = "Dark color scheme",
 					isExpanded = darkColorSchemeExpanded,
 					onExpandedChange = { darkColorSchemeExpanded = it },
-					selectedValue = uiState.darkColorScheme,
+					selectedValue = uiState.appearence.darkColorScheme,
 					onSelect = { onEvent(SettingsViewModel.Event.SetDarkColorScheme(it)) },
 					options = darkColorSchemes,
 					optionToString = {
@@ -140,7 +142,7 @@ private fun SettingsScreenContent(
 
 				SettingSwitchItem(
 					title = "Compact Insights summaries",
-					value = uiState.insightsSummaryCompactLayout,
+					value = uiState.appearence.insightsSummaryCompactLayout,
 					onValueChange = {
 						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
 					},
@@ -152,7 +154,7 @@ private fun SettingsScreenContent(
 				SettingSwitchItem(
 					title = "Left hand mode",
 					description = "Swap the layout of the keypad",
-					value = uiState.leftHandMode,
+					value = uiState.accessibility.leftHandMode,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleLeftHandMode(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
@@ -160,7 +162,7 @@ private fun SettingsScreenContent(
 				SettingSwitchItem(
 					title = "Show action buttons on top",
 					description = "Move the action buttons to the top of the screen",
-					value = uiState.actionButtonsOnTop,
+					value = uiState.accessibility.actionButtonsOnTop,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
@@ -169,9 +171,16 @@ private fun SettingsScreenContent(
 			SettingsCategory("Gameplay") {
 				SettingSwitchItem(
 					title = "Auto clear notes",
-					value = uiState.autoClearNotes,
+					value = uiState.gameplay.autoClearNotes,
 					description = "Clear notes when a number is input",
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleAutoClearNotes(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
+				SettingSwitchItem(
+					title = stringResource(R.string.gameplay_highlight_matching),
+					value = uiState.gameplay.highlightMatching,
+					description = stringResource(R.string.gameplay_highlight_matching_desc),
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleHighlightMatching(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
 			}
