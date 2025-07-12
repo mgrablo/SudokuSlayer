@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.input
 
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid

@@ -1,5 +1,6 @@
 package com.example.domain.game.usecases
 
+import com.example.domain.game.usecases.game.AutoClearNotesUseCase
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.persistentSetOf

@@ -1,5 +1,6 @@
 package com.example.domain.game.usecases
 
+import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid

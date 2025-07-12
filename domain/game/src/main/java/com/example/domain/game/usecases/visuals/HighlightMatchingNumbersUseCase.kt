@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.visuals
 
 import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.SudokuGrid

@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.hint
 
 import com.example.domain.core.Game
 import com.example.sudoku.model.SudokuCellData

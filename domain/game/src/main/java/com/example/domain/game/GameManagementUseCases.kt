@@ -1,18 +1,18 @@
 package com.example.domain.game
 
-import com.example.domain.game.usecases.AutoClearNotesUseCase
-import com.example.domain.game.usecases.ClearActiveGameUseCase
-import com.example.domain.game.usecases.FocusOnHintCellsUseCase
-import com.example.domain.game.usecases.GenerateHintLogUseCase
-import com.example.domain.game.usecases.GetGameUseCase
-import com.example.domain.game.usecases.HighlightMatchingNumbersUseCase
-import com.example.domain.game.usecases.InputNumberUseCase
-import com.example.domain.game.usecases.ProvideHintUseCase
-import com.example.domain.game.usecases.ResetGameUseCase
-import com.example.domain.game.usecases.RevealHintOnGridUseCase
-import com.example.domain.game.usecases.RevealLastHintLogUseCase
-import com.example.domain.game.usecases.SaveGameUseCase
-import com.example.domain.game.usecases.SelectCellUseCase
+import com.example.domain.game.usecases.game.AutoClearNotesUseCase
+import com.example.domain.game.usecases.game.ClearActiveGameUseCase
+import com.example.domain.game.usecases.game.GetGameUseCase
+import com.example.domain.game.usecases.game.ResetGameUseCase
+import com.example.domain.game.usecases.game.SaveGameUseCase
+import com.example.domain.game.usecases.hint.FocusOnHintCellsUseCase
+import com.example.domain.game.usecases.hint.GenerateHintLogUseCase
+import com.example.domain.game.usecases.hint.ProvideHintUseCase
+import com.example.domain.game.usecases.hint.RevealHintOnGridUseCase
+import com.example.domain.game.usecases.hint.RevealLastHintLogUseCase
+import com.example.domain.game.usecases.input.InputNumberUseCase
+import com.example.domain.game.usecases.input.SelectCellUseCase
+import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 
 data class GameManagementUseCases(
 	val getGame: GetGameUseCase,

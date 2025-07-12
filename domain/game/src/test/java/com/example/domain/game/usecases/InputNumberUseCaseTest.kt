@@ -1,5 +1,6 @@
 package com.example.domain.game.usecases
 
+import com.example.domain.game.usecases.input.InputNumberUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid

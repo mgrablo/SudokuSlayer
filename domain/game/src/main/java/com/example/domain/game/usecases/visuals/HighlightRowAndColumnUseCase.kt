@@ -1,4 +1,4 @@
-package com.example.domain.game.usecases
+package com.example.domain.game.usecases.visuals
 
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearRowColumnHighlight
