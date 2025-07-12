@@ -1,6 +1,5 @@
 package com.example.feature.settings
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.settings.SettingsRepository
@@ -37,10 +36,8 @@ internal data class GameplaySettings(
 	val highlightMatching: Boolean = true,
 )
 
-internal class SettingsViewModel(
-	private val settingsRepository: SettingsRepository,
-	private val savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+internal class SettingsViewModel(private val settingsRepository: SettingsRepository) :
+	ViewModel() {
 	val lightColorSchemes = settingsRepository.getLightColorSchemes().toPersistentSet()
 	val darkColorSchemes = settingsRepository.getDarkColorSchemes().toPersistentSet()
 
@@ -98,7 +95,7 @@ internal class SettingsViewModel(
 		gameplayState,
 	) { appearence, accessibility, gameplay ->
 		SettingsUiState(
-			appearence = appearence,
+			appearance = appearence,
 			accessibility = accessibility,
 			gameplay = gameplay,
 		)

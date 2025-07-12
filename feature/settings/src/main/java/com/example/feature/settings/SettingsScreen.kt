@@ -98,14 +98,14 @@ private fun SettingsScreenContent(
 			SettingsCategory("Appearance") {
 				SettingDropDownMenu(
 					title = "Theme",
-					description = if (uiState.appearence.darkMode == DarkMode.SYSTEM) {
+					description = if (uiState.appearance.darkMode == DarkMode.SYSTEM) {
 						"Follow system theme"
 					} else {
 						null
 					},
 					isExpanded = themeExpanded,
 					onExpandedChange = { themeExpanded = it },
-					selectedValue = uiState.appearence.darkMode,
+					selectedValue = uiState.appearance.darkMode,
 					onSelect = {
 						onEvent(SettingsViewModel.Event.SetDarkMode(it))
 					},
@@ -119,7 +119,7 @@ private fun SettingsScreenContent(
 					isExpanded = lightColorSchemeExpanded,
 					onExpandedChange = { lightColorSchemeExpanded = it },
 					onSelect = { onEvent(SettingsViewModel.Event.SetLightColorScheme(it)) },
-					selectedValue = uiState.appearence.lightColorScheme,
+					selectedValue = uiState.appearance.lightColorScheme,
 					options = lightColorSchemes,
 					optionToString = {
 						it.name
@@ -131,7 +131,7 @@ private fun SettingsScreenContent(
 					title = "Dark color scheme",
 					isExpanded = darkColorSchemeExpanded,
 					onExpandedChange = { darkColorSchemeExpanded = it },
-					selectedValue = uiState.appearence.darkColorScheme,
+					selectedValue = uiState.appearance.darkColorScheme,
 					onSelect = { onEvent(SettingsViewModel.Event.SetDarkColorScheme(it)) },
 					options = darkColorSchemes,
 					optionToString = {
@@ -142,7 +142,7 @@ private fun SettingsScreenContent(
 
 				SettingSwitchItem(
 					title = "Compact Insights summaries",
-					value = uiState.appearence.insightsSummaryCompactLayout,
+					value = uiState.appearance.insightsSummaryCompactLayout,
 					onValueChange = {
 						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
 					},
