@@ -90,7 +90,9 @@ internal fun TopAppBarActions(
 			MenuItem(
 				onClick = onClearClick,
 				enabled = clearActionEnabled,
-				modifier = Modifier.height(48.dp).alpha(0.38f),
+				modifier = Modifier
+					.height(48.dp)
+					.alpha(if (clearActionEnabled) 1f else 0.38f),
 			) {
 				Icon(
 					painter = painterResource(R.drawable.delete),

@@ -55,7 +55,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.core.Menu
 import com.composables.core.ScrollArea
 import com.composables.core.Thumb
 import com.composables.core.ThumbVisibility.HideWhileIdle
