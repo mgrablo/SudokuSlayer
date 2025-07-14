@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonDefaults
@@ -26,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.painterResource
@@ -47,6 +47,7 @@ import com.example.sudokuslayer.feature.statistics.R
 internal fun TopAppBarActions(
 	menuState: MenuState,
 	onClearClick: () -> Unit,
+	clearActionEnabled: Boolean,
 	modifier: Modifier = Modifier,
 ) {
 	Menu(
@@ -80,7 +81,7 @@ internal fun TopAppBarActions(
 					max = 280.dp,
 				)
 				.clip(MaterialTheme.shapes.extraSmall)
-				.background(MaterialTheme.colorScheme.surfaceContainerLow)
+				.background(MaterialTheme.colorScheme.surfaceContainerHigh)
 				.padding(
 					horizontal = LocalPadding.current.small,
 					vertical = LocalPadding.current.tiny,
@@ -88,12 +89,17 @@ internal fun TopAppBarActions(
 		) {
 			MenuItem(
 				onClick = onClearClick,
-				modifier = Modifier.height(48.dp),
+				enabled = clearActionEnabled,
+				modifier = Modifier.height(48.dp).alpha(0.38f),
 			) {
 				Icon(
 					painter = painterResource(R.drawable.delete),
 					contentDescription = null,
-					tint = MaterialTheme.colorScheme.error,
+					tint = if (clearActionEnabled) {
+						MaterialTheme.colorScheme.error
+					} else {
+						MaterialTheme.colorScheme.onSurfaceVariant
+					},
 				)
 				Spacer(Modifier.width(ButtonDefaults.IconSpacing))
 				Text(stringResource(R.string.clear_data))
@@ -111,8 +117,8 @@ private fun TopAppBarActionsCollapsedPreview() {
 		) {
 			TopAppBarActions(
 				menuState = rememberMenuState(),
-				onClearClick = {
-				},
+				onClearClick = {},
+				clearActionEnabled = true,
 			)
 		}
 	}
@@ -130,8 +136,8 @@ private fun TopAppBarActionsExpandedPreview() {
 		) {
 			TopAppBarActions(
 				menuState = menuState,
-				onClearClick = {
-				},
+				onClearClick = {},
+				clearActionEnabled = true,
 			)
 		}
 	}

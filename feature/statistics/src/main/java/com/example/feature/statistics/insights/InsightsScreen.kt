@@ -214,6 +214,7 @@ private fun InsightsScreenContent(
 				actions = {
 					TopAppBarActions(
 						menuState = actionsMenuState,
+						clearActionEnabled = loadingState is LoadingState.Success,
 						onClearClick = {
 							dialogState.visible = true
 						},
