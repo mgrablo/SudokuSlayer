@@ -12,39 +12,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -57,18 +49,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.core.Menu
 import com.composables.core.ScrollArea
 import com.composables.core.Thumb
 import com.composables.core.ThumbVisibility.HideWhileIdle
 import com.composables.core.VerticalScrollbar
+import com.composables.core.rememberDialogState
+import com.composables.core.rememberMenuState
 import com.composables.core.rememberScrollAreaState
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
@@ -83,7 +76,11 @@ import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.Column
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGameClicked
 import com.example.feature.statistics.filter.FilterBottomSheet
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
+import com.example.feature.statistics.insights.components.DeleteDataDialog
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
+import com.example.feature.statistics.insights.components.InsightsFab
+import com.example.feature.statistics.insights.components.InsightsSnackbar
+import com.example.feature.statistics.insights.components.TopAppBarActions
 import com.example.feature.statistics.insights.components.insightsTableContent
 import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
@@ -159,21 +156,14 @@ private fun InsightsScreenContent(
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val snackBarHostState = remember { SnackbarHostState() }
-	val dismissState = rememberSwipeToDismissBoxState(
-		confirmValueChange = { value ->
-			if (value != SwipeToDismissBoxValue.Settled) {
-				snackBarHostState.currentSnackbarData?.dismiss()
-				true
-			} else {
-				false
-			}
-		},
-	)
+	val dismissState = rememberSwipeToDismissBoxState()
 
 	val filterSheetState = rememberModalBottomSheetState(
 		skipPartiallyExpanded = true,
 	)
 	var showBottomSheet by remember { mutableStateOf(false) }
+	val actionsMenuState = rememberMenuState()
+	val dialogState = rememberDialogState()
 
 	LaunchedEffect(dismissState.currentValue) {
 		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
@@ -181,39 +171,28 @@ private fun InsightsScreenContent(
 		}
 	}
 
+	DeleteDataDialog(
+		dialogState = dialogState,
+		onCancelClick = {
+			coroutineScope.launch {
+				dialogState.visible = false
+			}
+		},
+		onConfirmClick = {
+			coroutineScope.launch {
+				dialogState.visible = false
+				onEvent(StatisticsEvent.ClearData)
+			}
+		},
+	)
+
 	Scaffold(
 		modifier = modifier,
+		contentWindowInsets = WindowInsets.systemBars,
 		snackbarHost = {
-			SnackbarHost(
-				hostState = snackBarHostState,
-				modifier = Modifier.imePadding(),
-				snackbar = {
-					SwipeToDismissBox(
-						state = dismissState,
-						backgroundContent = {
-						},
-					) {
-						Snackbar(
-							modifier = Modifier.padding(horizontal = LocalPadding.current.small),
-							containerColor = MaterialTheme.colorScheme.inverseSurface,
-							contentColor = MaterialTheme.colorScheme.inversePrimary,
-							dismissAction = {
-								TextButton(
-									onClick = {
-										snackBarHostState.currentSnackbarData?.dismiss()
-									},
-								) {
-									Text("Dismiss")
-								}
-							},
-						) {
-							Text(
-								it.visuals.message,
-								color = MaterialTheme.colorScheme.inversePrimary,
-							)
-						}
-					}
-				},
+			InsightsSnackbar(
+				snackBarHostState = snackBarHostState,
+				dismissState = dismissState,
 			)
 		},
 		topBar = {
@@ -232,44 +211,27 @@ private fun InsightsScreenContent(
 						)
 					}
 				},
+				actions = {
+					TopAppBarActions(
+						menuState = actionsMenuState,
+						clearActionEnabled = loadingState is LoadingState.Success,
+						onClearClick = {
+							dialogState.visible = true
+						},
+					)
+				},
 			)
 		},
 		floatingActionButton = {
-			if (loadingState is LoadingState.Success) {
-				BadgedBox(
-					badge = {
-						if (activeFilterCount > 0) {
-							Badge(
-								modifier = Modifier.clip(CircleShape),
-								contentColor = MaterialTheme.colorScheme.onError,
-								containerColor = MaterialTheme.colorScheme.error,
-							) {
-								Text(
-									text = activeFilterCount.toString(),
-									color = MaterialTheme.colorScheme.onErrorContainer,
-								)
-							}
-						}
-					},
-				) {
-					FloatingActionButton(
-						onClick = {
-							coroutineScope.launch {
-								showBottomSheet = true
-							}
-						},
-						modifier = Modifier,
-
-					) {
-						Icon(
-							painterResource(R.drawable.filter),
-							contentDescription = stringResource(
-								R.string.filter_fab_content_description,
-							),
-						)
+			InsightsFab(
+				onClick = {
+					coroutineScope.launch {
+						showBottomSheet = true
 					}
-				}
-			}
+				},
+				loadingState = loadingState,
+				activeFilterCount = activeFilterCount,
+			)
 		},
 	) { paddingValues ->
 		Crossfade(
@@ -298,10 +260,15 @@ private fun InsightsScreenContent(
 						),
 						horizontalAlignment = Alignment.CenterHorizontally,
 					) {
-						BasicText(":(", autoSize = TextAutoSize.StepBased(), maxLines = 1)
-						BasicText(
-							stringResource(R.string.no_data_message),
+						Text(
+							text = stringResource(R.string.no_games_found),
 							autoSize = TextAutoSize.StepBased(),
+							maxLines = 1,
+						)
+						Text(
+							text = stringResource(R.string.no_data_message),
+							autoSize = TextAutoSize.StepBased(),
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
 							maxLines = 1,
 						)
 					}
@@ -438,7 +405,7 @@ private fun InsightsScreenContent(
 @PreviewLightDark
 @Composable
 private fun InsightsScreenPreview() {
-	val entries = persistentListOf<GameResult>(
+	val entries = persistentListOf(
 		GameResult(
 			id = "1",
 			timeInSeconds = 124,
