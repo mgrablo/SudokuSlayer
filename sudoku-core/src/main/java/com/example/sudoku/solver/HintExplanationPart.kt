@@ -34,7 +34,7 @@ sealed class HintExplanationPart {
 	/**
 	 * A reference to a row, column or block
 	 */
-	data class ScopeReference(val type: ScopeType, val index: Int) : HintExplanationPart()
+	data class ScopeReference(val type: ScopeType, val index: Int?) : HintExplanationPart()
 
 	/**
 	 * A range of values like {1, 2, 3}

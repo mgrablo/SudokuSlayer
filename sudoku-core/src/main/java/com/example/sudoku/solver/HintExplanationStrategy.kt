@@ -133,6 +133,126 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 			"*Hidden Single*",
 		)
 	}
+
+	override fun generateStructuredHintExplanation(
+		grid: SudokuGrid,
+		hint: Hint,
+	): List<HintExplanationStep> {
+		val hintType = hint.type as HintType.HiddenSingle
+
+		// Determine the scope type (row, column, or block)
+		val (scopeType, scopeIndex) = when (hintType.groupType) {
+			is GroupType.Row -> ScopeType.ROW to hint.row + 1
+			is GroupType.Column -> ScopeType.COLUMN to hint.col + 1
+			is GroupType.Block -> {
+				val blockId =
+					(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+				ScopeType.BLOCK to blockId
+			}
+		}
+
+		// Get the affected cells (cells that can't have the value)
+		val affectedCells = when (hintType.groupType) {
+			is GroupType.Row -> {
+				grid.getRow(hint.row)
+					.filter { it.number == 0 && it.col != hint.col }
+					.map { Pair(it.row + 1, it.col + 1) }
+			}
+
+			is GroupType.Column -> {
+				grid.getColumn(hint.col)
+					.filter { it.number == 0 && it.row != hint.row }
+					.map { Pair(it.row + 1, it.col + 1) }
+			}
+
+			is GroupType.Block -> {
+				val blockRow = (hint.row / grid.subgridSize) * grid.subgridSize
+				val blockCol = (hint.col / grid.subgridSize) * grid.subgridSize
+
+				val cells = mutableListOf<Pair<Int, Int>>()
+				for (r in blockRow until blockRow + grid.subgridSize) {
+					for (c in blockCol until blockCol + grid.subgridSize) {
+						if ((r != hint.row || c != hint.col) && grid.getCellAt(r, c).number == 0) {
+							cells.add(Pair(r + 1, c + 1))
+						}
+					}
+				}
+				cells
+			}
+		}
+
+		// Build explanation steps with proper structured parts
+		return listOf(
+			// Step 1: Focus on the cell
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Focus on the cell "),
+					HintExplanationPart.CellCoordinate(hint.row + 1, hint.col + 1),
+					HintExplanationPart.Text("!"),
+				),
+			),
+
+			// Step 2: Explain hidden single logic - the value can only go in this cell
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("In "),
+					HintExplanationPart.ScopeReference(scopeType, scopeIndex),
+					HintExplanationPart.Text(", "),
+					HintExplanationPart.Value(hint.value),
+					HintExplanationPart.Text(" cannot be placed in any other empty cells because "),
+					HintExplanationPart.Text("they are blocked by "),
+					HintExplanationPart.Value(hint.value),
+					when (hintType.groupType) {
+						is GroupType.Row ->
+							HintExplanationPart.Text(" in the same column or block.")
+
+						is GroupType.Column ->
+							HintExplanationPart.Text(" in the same row or block.")
+
+						is GroupType.Block ->
+							HintExplanationPart.Text(" in the same row or column.")
+					},
+				),
+			),
+
+			// Step 3: Show affected cells if there are any
+			HintExplanationStep(
+				if (affectedCells.isNotEmpty()) {
+					listOf(
+						HintExplanationPart.Text("The affected cells are: "),
+						HintExplanationPart.CellCoordinatesGroup(affectedCells),
+						HintExplanationPart.Text("."),
+					)
+				} else {
+					listOf(
+						HintExplanationPart.Text(
+							"There are no other empty cells in this ",
+						),
+						HintExplanationPart.ScopeReference(scopeType, null),
+						HintExplanationPart.Text("."),
+					)
+				},
+			),
+
+			// Step 4: Conclusion
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Therefore, the cell "),
+					HintExplanationPart.CellCoordinate(hint.row + 1, hint.col + 1),
+					HintExplanationPart.Text(" must contain "),
+					HintExplanationPart.Value(hint.value),
+					HintExplanationPart.Text("."),
+				),
+			),
+
+			// Step 5: Technique name
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.TechniqueName("Hidden Single"),
+				),
+			),
+		)
+	}
 }
 
 class ClaimingCandidateExplanation : HintExplanationStrategy {
