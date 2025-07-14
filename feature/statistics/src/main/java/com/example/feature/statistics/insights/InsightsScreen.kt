@@ -22,19 +22,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,18 +54,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.core.Menu
 import com.composables.core.ScrollArea
 import com.composables.core.Thumb
 import com.composables.core.ThumbVisibility.HideWhileIdle
 import com.composables.core.VerticalScrollbar
+import com.composables.core.rememberMenuState
 import com.composables.core.rememberScrollAreaState
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
@@ -87,6 +82,8 @@ import com.example.feature.statistics.filter.FilterBottomSheet
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
 import com.example.feature.statistics.insights.components.InsightsFab
+import com.example.feature.statistics.insights.components.InsightsSnackbar
+import com.example.feature.statistics.insights.components.TopAppBarActions
 import com.example.feature.statistics.insights.components.insightsTableContent
 import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
@@ -168,6 +165,7 @@ private fun InsightsScreenContent(
 		skipPartiallyExpanded = true,
 	)
 	var showBottomSheet by remember { mutableStateOf(false) }
+	val actionsMenuState = rememberMenuState()
 
 	LaunchedEffect(dismissState.currentValue) {
 		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
@@ -199,6 +197,14 @@ private fun InsightsScreenContent(
 							),
 						)
 					}
+				},
+				actions = {
+					TopAppBarActions(
+						menuState = actionsMenuState,
+						onClearClick = {
+							onEvent(StatisticsEvent.ClearData)
+						},
+					)
 				},
 			)
 		},
@@ -385,7 +391,7 @@ private fun InsightsScreenContent(
 @PreviewLightDark
 @Composable
 private fun InsightsScreenPreview() {
-	val entries = persistentListOf<GameResult>(
+	val entries = persistentListOf(
 		GameResult(
 			id = "1",
 			timeInSeconds = 124,

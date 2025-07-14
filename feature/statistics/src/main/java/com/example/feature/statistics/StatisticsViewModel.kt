@@ -118,6 +118,7 @@ internal class StatisticsViewModel(
 		data class ReorderColumns(val from: Int, val to: Int) : StatisticsEvent
 		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
 		data class PlayGameClicked(val gameSeed: Long) : StatisticsEvent
+		data object ClearData : StatisticsEvent
 
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
@@ -128,7 +129,6 @@ internal class StatisticsViewModel(
 		data class UpdateSolveTimeRangeEnabled(val value: Boolean) : StatisticsEvent
 		data class UpdateCompletionDateRangeEnabled(val value: Boolean) : StatisticsEvent
 		data object ClearFilters : StatisticsEvent
-		data object ClearData : StatisticsEvent
 	}
 
 	fun onEvent(event: StatisticsEvent) {
@@ -157,7 +157,7 @@ internal class StatisticsViewModel(
 
 			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
-			is StatisticsEvent.ClearData -> {}
+			is StatisticsEvent.ClearData -> clearData()
 		}
 	}
 
@@ -314,6 +314,13 @@ internal class StatisticsViewModel(
 					gameResults = sortedResults,
 				)
 			}
+		}
+	}
+
+	private fun clearData() {
+		viewModelScope.launch {
+			statisticsRepository.clearAll()
+			_loadingState.update { LoadingState.NoData }
 		}
 	}
 
