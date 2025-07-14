@@ -13,7 +13,17 @@ import com.example.sudoku.model.SudokuGrid
 
 @Stable
 interface HintExplanationStrategy {
+	// Old method - returns simple strings with regex patterns for styling
+	// This is kept for backward compatibility
 	fun generateHintExplanationSteps(grid: SudokuGrid, hint: Hint): List<String>
+
+	// New method - returns structured hint explanation steps
+	fun generateStructuredHintExplanation(grid: SudokuGrid, hint: Hint): List<HintExplanationStep> {
+		// Default implementation converts string-based explanations to structured ones
+		return generateHintExplanationSteps(grid, hint).map { text ->
+			HintExplanationStep(listOf(HintExplanationPart.Text(text)))
+		}
+	}
 }
 
 class NakedSingleExplanation : HintExplanationStrategy {
@@ -24,6 +34,49 @@ class NakedSingleExplanation : HintExplanationStrategy {
 			"The cell at [${row + 1}, ${column + 1}] has only one possible candidate remaining after considering the numbers already present in its row, column, and block.",
 			"Since the only possible candidate for the cell is <$value>, this cell must contain <$value>.",
 			"*Naked Single*",
+		)
+	}
+
+	override fun generateStructuredHintExplanation(
+		grid: SudokuGrid,
+		hint: Hint,
+	): List<HintExplanationStep> {
+		val (row, column, value) = hint
+		return listOf(
+			// Step 1: Focus on the cell
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Focus on the cell at "),
+					HintExplanationPart.CellCoordinate(row + 1, column + 1),
+					HintExplanationPart.Text("!"),
+				),
+			),
+			// Step 2: Explain the naked single logic
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("The cell at "),
+					HintExplanationPart.CellCoordinate(row + 1, column + 1),
+					HintExplanationPart.Text(
+						" has only one possible candidate remaining after considering the numbers already present in its row, column, and block.",
+					),
+				),
+			),
+			// Step 3: Explain the conclusion
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Since the only possible candidate for the cell is "),
+					HintExplanationPart.Value(value),
+					HintExplanationPart.Text(", this cell must contain "),
+					HintExplanationPart.Value(value),
+					HintExplanationPart.Text("."),
+				),
+			),
+			// Step 4: Name the technique
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.TechniqueName("Naked Single"),
+				),
+			),
 		)
 	}
 }
@@ -93,7 +146,8 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 				.toSet()
 				.joinToString(", ")
 		val block = grid.getSubgrid(hint.row, hint.col)
-		val blockId = (hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+		val blockId =
+			(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 		val otherCells = hint.enforcingCells
 		val groupType = hintType.groupType
 
@@ -156,15 +210,18 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 					(it.col / grid.subgridSize) +
 					1
 			}
-		val enforcingScopePart = getScopePartString(enforcingCells.firstOrNull(), hintType.groupType)
+		val enforcingScopePart =
+			getScopePartString(enforcingCells.firstOrNull(), hintType.groupType)
 
 		val enforcingCellsExplanation =
 			scopeAndBlockIdList
 				.map {
-					"In 'block ${it.second}', <${hint.value}> can only appear in the '${getScopePartString(
-						it.first,
-						hintType.groupType,
-					)} $scope'."
+					"In 'block ${it.second}', <${hint.value}> can only appear in the '${
+						getScopePartString(
+							it.first,
+							hintType.groupType,
+						)
+					} $scope'."
 				}.toTypedArray()
 
 		return listOf(
