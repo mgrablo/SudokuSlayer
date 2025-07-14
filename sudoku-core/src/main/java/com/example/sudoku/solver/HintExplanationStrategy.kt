@@ -299,6 +299,101 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			"*Claiming Candidate*",
 		)
 	}
+
+	override fun generateStructuredHintExplanation(
+		grid: SudokuGrid,
+		hint: Hint,
+	): List<HintExplanationStep> {
+		val hintType = hint.type as HintType.ClaimingCandidate
+
+		// Calculate block id
+		val blockId =
+			(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+
+		// Organize enforcing cells by row or column
+		val groupType = hintType.groupType
+		val scopeType = if (groupType is GroupType.Row) ScopeType.ROW else ScopeType.COLUMN
+
+		// Get affected cells coordinates (1-indexed)
+		val affectedCells = hint.affectedCells
+			.sortedBy { it.row }
+			.map { Pair(it.row + 1, it.col + 1) }
+
+		// Group enforcing cells by row/column
+		val enforcingCellsByScope = hint.enforcingCells
+			.groupBy { if (groupType is GroupType.Row) it.row else it.col }
+			.map { (scopeIndex, cells) ->
+				scopeIndex to cells.map { Pair(it.row + 1, it.col + 1) }
+			}
+
+		// Build the explanation steps
+		val steps = mutableListOf<HintExplanationStep>()
+
+		// Step 1: Focus on block
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Focus on "),
+					HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId),
+					HintExplanationPart.Text("!"),
+				),
+			),
+		)
+
+		// Step 2: Explain for each row/column where the value can be placed
+		enforcingCellsByScope.forEach { (scopeIndex, cells) ->
+			steps.add(
+				HintExplanationStep(
+					listOf(
+						HintExplanationPart.Text("In "),
+						HintExplanationPart.ScopeReference(scopeType, scopeIndex + 1),
+						HintExplanationPart.Text(", "),
+						HintExplanationPart.Value(hint.value),
+						HintExplanationPart.Text(" can only be placed in the following cells: "),
+						HintExplanationPart.CellCoordinatesGroup(cells),
+						HintExplanationPart.Text("."),
+					),
+				),
+			)
+		}
+
+		// Step 3: Conclusion - removing candidates from other cells in the block
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Thus, you can remove "),
+					HintExplanationPart.Value(hint.value),
+					HintExplanationPart.Text(" from candidates for the other cells in "),
+					HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId),
+					HintExplanationPart.Text("."),
+				),
+			),
+		)
+
+		// Step 4: Show affected cells
+		if (affectedCells.isNotEmpty()) {
+			steps.add(
+				HintExplanationStep(
+					listOf(
+						HintExplanationPart.Text("The affected cells are: "),
+						HintExplanationPart.CellCoordinatesGroup(affectedCells),
+						HintExplanationPart.Text("."),
+					),
+				),
+			)
+		}
+
+		// Step 5: Technique name
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.TechniqueName("Claiming Candidate"),
+				),
+			),
+		)
+
+		return steps
+	}
 }
 
 class PointingCandidateExplanation : HintExplanationStrategy {
@@ -350,6 +445,121 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 			"In 'block $affectedBlockId', <${hint.value}> cannot appear in '$enforcingScopePart $scope' since it is confined to '$enforcingScopePart $scope' in 'block $enforcingBlockId'.",
 			"*Pointing Candidate*",
 		)
+	}
+
+	override fun generateStructuredHintExplanation(
+		grid: SudokuGrid,
+		hint: Hint,
+	): List<HintExplanationStep> {
+		val hintType = hint.type as HintType.PointingCandidate
+
+		// Get block ID and scope type
+		val affectedBlockId =
+			(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+		val scopeType = if (hintType.groupType is GroupType.Row) ScopeType.ROW else ScopeType.COLUMN
+		val scopeName = if (hintType.groupType is GroupType.Row) "row" else "column"
+
+		// Get enforcing cells
+		val enforcingCells = hint.enforcingCells
+
+		// Group cells by row/column and get their block IDs
+		val scopeAndBlockInfo = enforcingCells
+			.groupBy { if (hintType.groupType is GroupType.Row) it.row else it.col }
+			.map { (index, cells) ->
+				val blockId = cells.firstOrNull()?.let {
+					(it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1
+				} ?: 0
+				Triple(index, blockId, cells.map { Pair(it.row + 1, it.col + 1) })
+			}
+
+		// Get the enforcing block ID
+		val enforcingBlockId = enforcingCells.firstOrNull()?.let {
+			(it.row / grid.subgridSize) * grid.subgridSize + (it.col / grid.subgridSize) + 1
+		} ?: 0
+
+		// Get the scope part description (top/middle/bottom row or left/center/right column)
+		val enforcingScopePart =
+			getScopePartString(enforcingCells.firstOrNull(), hintType.groupType)
+
+		// Get the affected cells
+		val affectedCells = hint.affectedCells.map { Pair(it.row + 1, it.col + 1) }
+
+		// Build the explanation steps
+		val steps = mutableListOf<HintExplanationStep>()
+
+		// Step 1: Focus on the affected block
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("Focus on "),
+					HintExplanationPart.ScopeReference(ScopeType.BLOCK, affectedBlockId),
+					HintExplanationPart.Text("!"),
+				),
+			),
+		)
+
+		// Step 2: Explain for each block where the value is confined to a single row/column
+		scopeAndBlockInfo.forEach { (scopeIndex, blockId, cells) ->
+			steps.add(
+				HintExplanationStep(
+					listOf(
+						HintExplanationPart.Text("In "),
+						HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId),
+						HintExplanationPart.Text(", "),
+						HintExplanationPart.Value(hint.value),
+						HintExplanationPart.Text(" can only appear in the "),
+						HintExplanationPart.Text(
+							getScopePartString(
+								scopeIndex,
+								hintType.groupType,
+							),
+						),
+						HintExplanationPart.Text(" $scopeName."),
+					),
+				),
+			)
+		}
+
+		// Step 3: Explain the pointing pattern and its implication
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.Text("In "),
+					HintExplanationPart.ScopeReference(ScopeType.BLOCK, affectedBlockId),
+					HintExplanationPart.Text(", "),
+					HintExplanationPart.Value(hint.value),
+					HintExplanationPart.Text(
+						" cannot appear in the $enforcingScopePart $scopeName since it is confined to the $enforcingScopePart $scopeName in ",
+					),
+					HintExplanationPart.ScopeReference(ScopeType.BLOCK, enforcingBlockId),
+					HintExplanationPart.Text("."),
+				),
+			),
+		)
+
+		// Step 4: Show affected cells if any
+		if (affectedCells.isNotEmpty()) {
+			steps.add(
+				HintExplanationStep(
+					listOf(
+						HintExplanationPart.Text("The affected cells are: "),
+						HintExplanationPart.CellCoordinatesGroup(affectedCells),
+						HintExplanationPart.Text("."),
+					),
+				),
+			)
+		}
+
+		// Step 5: Technique name
+		steps.add(
+			HintExplanationStep(
+				listOf(
+					HintExplanationPart.TechniqueName("Pointing Candidate"),
+				),
+			),
+		)
+
+		return steps
 	}
 }
 
