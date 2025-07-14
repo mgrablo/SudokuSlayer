@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -175,37 +177,11 @@ private fun InsightsScreenContent(
 
 	Scaffold(
 		modifier = modifier,
+		contentWindowInsets = WindowInsets.systemBars,
 		snackbarHost = {
-			SnackbarHost(
-				hostState = snackBarHostState,
-				modifier = Modifier.imePadding(),
-				snackbar = {
-					SwipeToDismissBox(
-						state = dismissState,
-						backgroundContent = {
-						},
-					) {
-						Snackbar(
-							modifier = Modifier.padding(horizontal = LocalPadding.current.small),
-							containerColor = MaterialTheme.colorScheme.inverseSurface,
-							contentColor = MaterialTheme.colorScheme.inversePrimary,
-							dismissAction = {
-								TextButton(
-									onClick = {
-										snackBarHostState.currentSnackbarData?.dismiss()
-									},
-								) {
-									Text("Dismiss")
-								}
-							},
-						) {
-							Text(
-								it.visuals.message,
-								color = MaterialTheme.colorScheme.inversePrimary,
-							)
-						}
-					}
-				},
+			InsightsSnackbar(
+				snackBarHostState = snackBarHostState,
+				dismissState = dismissState,
 			)
 		},
 		topBar = {
@@ -264,10 +240,15 @@ private fun InsightsScreenContent(
 						),
 						horizontalAlignment = Alignment.CenterHorizontally,
 					) {
-						BasicText(":(", autoSize = TextAutoSize.StepBased(), maxLines = 1)
-						BasicText(
-							stringResource(R.string.no_data_message),
+						Text(
+							text = stringResource(R.string.no_games_found),
 							autoSize = TextAutoSize.StepBased(),
+							maxLines = 1,
+						)
+						Text(
+							text = stringResource(R.string.no_data_message),
+							autoSize = TextAutoSize.StepBased(),
+							color = MaterialTheme.colorScheme.onSurfaceVariant,
 							maxLines = 1,
 						)
 					}
