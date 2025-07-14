@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- General hint parts -->
+    <string name="hint_focus_on_cell">Focus on the cell</string>
+    <string name="hint_focus_on_block">Focus on</string>
+    <string name="hint_therefore">Therefore</string>
+    <string name="hint_must_contain">must contain</string>
+    <string name="hint_the_cell_at">The cell at</string>
+    <string name="hint_in">In</string>
+    <string name="hint_affected_cells_are">The affected cells are:</string>
+    <string name="hint_no_other_empty_cells">There are no other empty cells in this %s</string>
+    <string name="hint_can_only_be_placed_in">can only be placed in</string>
+    <string name="hint_cannot_be_placed_in">cannot be placed in</string>
+    <string name="hint_only_possible_candidate">Since the only possible candidate for the cell is</string>
+    <string name="hint_following_cells">the following cells:</string>
+    <string name="hint_since">since</string>
+    <string name="hint_thus_remove_from">Thus, you can remove</string>
+    <string name="hint_they_are_blocked_by">they are blocked by</string>
+    <string name="hint_can_only_appear_in_the">can only appear in the</string>
+    <string name="hint_cannot_appear_in_the">cannot appear in the</string>
+    <string name="hint_since_confined_to">since it is confined to the</string>
+
+    <!-- Scope parts -->
+    <string name="hint_row">row</string>
+    <string name="hint_column">column</string>
+    <string name="hint_block">block</string>
+    <string name="hint_block_part">block part</string>
+
+    <!-- Position descriptions -->
+    <string name="hint_top">top</string>
+    <string name="hint_middle">middle</string>
+    <string name="hint_bottom">bottom</string>
+    <string name="hint_left">left</string>
+    <string name="hint_center">center</string>
+    <string name="hint_right">right</string>
+
+    <!-- Other hints context -->
+    <string name="hint_same_row">in the same row</string>
+    <string name="hint_same_column">in the same column</string>
+    <string name="hint_same_block">in the same block</string>
+
+    <!-- Technique names -->
+    <string name="hint_technique_naked_single">Naked Single</string>
+    <string name="hint_technique_hidden_single">Hidden Single</string>
+    <string name="hint_technique_pointing_candidate">Pointing Candidate</string>
+    <string name="hint_technique_claiming_candidate">Claiming Candidate</string>
+</resources>
+

@@ -2,8 +2,6 @@ package com.example.sudoku.solver
 
 /**
  * Represents different types of parts that can appear in a hint explanation.
- * This enables structured representation of hint explanation content without
- * relying on regex patterns for styling.
  */
 sealed class HintExplanationPart {
 	/**

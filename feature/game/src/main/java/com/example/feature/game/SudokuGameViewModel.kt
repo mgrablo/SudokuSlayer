@@ -1,6 +1,7 @@
 package com.example.feature.game
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.CellChange
 import com.example.domain.core.Game
@@ -21,6 +22,7 @@ import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
+import com.example.feature.game.util.AndroidHintStringProvider
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
 import com.example.sudoku.model.fillNotes
@@ -49,6 +51,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class SudokuGameViewModel(
+	private val application: Application,
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
 	private val gameManagementUseCases: GameManagementUseCases,
@@ -59,7 +62,7 @@ internal class SudokuGameViewModel(
 	private val gameResultWriter: GameResultWriter,
 	private val getElapsedTimeUseCase: GetElapsedTimeUseCase,
 	private val saveElapsedTimeUseCase: SaveElapsedTimeUseCase,
-) : ViewModel() {
+) : AndroidViewModel(application) {
 	private val elapsedTimerManager = ElapsedTimerManager(
 		scope = viewModelScope,
 		getElapsedTimeUseCase = getElapsedTimeUseCase,
@@ -87,6 +90,10 @@ internal class SudokuGameViewModel(
 			started = SharingStarted.WhileSubscribed(5000L),
 			initialValue = 0L,
 		)
+
+	private val stringProvider by lazy {
+		AndroidHintStringProvider(application)
+	}
 
 	init {
 		observeSettings()
@@ -486,6 +493,7 @@ internal class SudokuGameViewModel(
 						id = _game.value.hintLogs.size,
 						hint = hint,
 						grid = grid,
+						stringProvider = stringProvider,
 					)
 				_game.update {
 					it.copy(
