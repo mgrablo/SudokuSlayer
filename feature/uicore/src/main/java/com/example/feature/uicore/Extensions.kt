@@ -5,8 +5,14 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.graphics.shapes.RoundedPolygon
+import com.composables.core.DialogScope
+import com.composeunstyled.LocalModalWindow
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.sudokuslayer.feature.uicore.R
@@ -100,4 +106,18 @@ fun SudokuGridSize.toLocalizedString(): String = when (this) {
 	SudokuGridSize.FOUR -> stringResource(R.string.gridsize_4x4)
 	SudokuGridSize.NINE -> stringResource(R.string.gridsize_9x9)
 	SudokuGridSize.SIXTEEN -> stringResource(R.string.gridsize_16x16)
+}
+
+@Composable
+fun DialogScope.HideSystemBars() {
+	val view = LocalView.current
+	val window = LocalModalWindow.current
+	val insertsController = WindowCompat.getInsetsController(window, view)
+	if (!view.isInEditMode) {
+		insertsController.apply {
+			hide(WindowInsetsCompat.Type.systemBars())
+			systemBarsBehavior =
+				WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+		}
+	}
 }

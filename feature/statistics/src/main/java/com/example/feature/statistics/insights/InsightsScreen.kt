@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,14 +33,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -65,6 +60,7 @@ import com.composables.core.ScrollArea
 import com.composables.core.Thumb
 import com.composables.core.ThumbVisibility.HideWhileIdle
 import com.composables.core.VerticalScrollbar
+import com.composables.core.rememberDialogState
 import com.composables.core.rememberMenuState
 import com.composables.core.rememberScrollAreaState
 import com.example.domain.core.GameDifficulty
@@ -80,6 +76,7 @@ import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.Column
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGameClicked
 import com.example.feature.statistics.filter.FilterBottomSheet
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
+import com.example.feature.statistics.insights.components.DeleteDataDialog
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
 import com.example.feature.statistics.insights.components.InsightsFab
 import com.example.feature.statistics.insights.components.InsightsSnackbar
@@ -166,12 +163,28 @@ private fun InsightsScreenContent(
 	)
 	var showBottomSheet by remember { mutableStateOf(false) }
 	val actionsMenuState = rememberMenuState()
+	val dialogState = rememberDialogState()
 
 	LaunchedEffect(dismissState.currentValue) {
 		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
 			dismissState.reset()
 		}
 	}
+
+	DeleteDataDialog(
+		dialogState = dialogState,
+		onCancelClick = {
+			coroutineScope.launch {
+				dialogState.visible = false
+			}
+		},
+		onConfirmClick = {
+			coroutineScope.launch {
+				dialogState.visible = false
+				onEvent(StatisticsEvent.ClearData)
+			}
+		},
+	)
 
 	Scaffold(
 		modifier = modifier,
@@ -202,7 +215,7 @@ private fun InsightsScreenContent(
 					TopAppBarActions(
 						menuState = actionsMenuState,
 						onClearClick = {
-							onEvent(StatisticsEvent.ClearData)
+							dialogState.visible = true
 						},
 					)
 				},
