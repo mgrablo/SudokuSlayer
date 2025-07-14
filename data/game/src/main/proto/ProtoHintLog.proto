@@ -6,12 +6,67 @@ option java_multiple_files = true;
 
 message ProtoHintLog {
 	int32 id = 1;
-	repeated string explanation = 2;
 	bool is_user_guessed = 3;
 	bool is_revealed = 4;
 	ProtoHint hint = 5;
+	repeated ProtoHintExplanationStep structured_explanation = 6;
+
+	reserved 2;
 }
 
+message ProtoHintExplanationStep {
+	repeated ProtoHintExplanationPart parts = 1;
+}
+
+message ProtoHintExplanationPart {
+	oneof part {
+		TextPart text = 1;
+		CellCoordinatePart cell_coordinate = 2;
+		CellCoordinatesGroupPart cell_coordinates_group = 3;
+		ValuePart value = 4;
+		TechniqueNamePart technique_name = 5;
+		ScopeReferencePart scope_reference = 6;
+		ValueGroupPart value_group = 7;
+	}
+
+	message TextPart {
+		string content = 1;
+	}
+
+	message CellCoordinatePart {
+		int32 row = 1;
+		int32 col = 2;
+	}
+
+	message CellCoordinatesGroupPart {
+		repeated CellCoordinatePart cells = 1;
+	}
+
+	message ValuePart {
+		int32 value = 1;
+	}
+
+	message TechniqueNamePart {
+		string name = 1;
+	}
+
+	message ScopeReferencePart {
+		ScopeType type = 1;
+		optional int32 index = 2;
+
+		enum ScopeType {
+			SCOPE_TYPE_UNSPECIFIED = 0;
+			ROW = 1;
+			COLUMN = 2;
+			BLOCK = 3;
+			BLOCK_PART = 4;
+		}
+	}
+
+	message ValueGroupPart {
+		repeated int32 values = 1;
+	}
+}
 
 message ProtoHint {
 	int32 row = 1;
@@ -47,5 +102,3 @@ message ProtoHintType {
 		}
 	}
 }
-
-

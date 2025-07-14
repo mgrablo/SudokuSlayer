@@ -2,6 +2,7 @@ package com.example.feature.game.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +20,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -29,25 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.feature.game.createAnnotatedString
 import com.example.feature.game.theme.LocalHintLogsColors
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
+import com.example.sudoku.solver.HintExplanationPart
+import com.example.sudoku.solver.HintExplanationStep
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun HintStepCard(
-	title: String,
-	cardContent: PersistentList<String>,
+	title: HintExplanationStep,
+	cardContent: PersistentList<HintExplanationStep>,
 	onExplainClick: () -> Unit,
 	onExpandToggle: () -> Unit,
 	onHighlightCellClick: () -> Unit,
@@ -89,119 +86,74 @@ internal fun HintStepCard(
 			) {
 				Text(
 					text =
-					buildAnnotatedString {
-						withStyle(
-							SpanStyle(
-								color = MaterialTheme.colorScheme.onSurface,
-								fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-							),
-						) {
-							append(
-								createAnnotatedString(
-									input = title,
-									angleBracketStyle =
-									SpanStyle(
-										color = MaterialTheme.colorScheme.primary,
-										fontWeight = FontWeight.Bold,
-										fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-									),
-									asteriskStyle =
-									SpanStyle(
-										color = LocalHintLogsColors.current.subtext,
-										fontStyle = FontStyle.Italic,
-										fontSize = MaterialTheme.typography.bodySmall.fontSize,
-									),
-								),
-							)
-						}
-					},
-					style = MaterialTheme.typography.bodyMedium,
+					buildAnnotatedStringFromExplanationParts(
+						title.parts,
+						LocalHintLogsColors.current,
+					),
+					maxLines = 1,
 					modifier = Modifier.weight(1f),
 				)
-				AnimatedContent(isUserGuessed) { guessed ->
-					IconButton(
-						onClick = onHighlightCellClick,
-					) {
-						if (guessed) {
+				Row {
+					IconButton(onClick = onHighlightCellClick) {
+						if (isUserGuessed) {
 							Icon(
-								imageVector = Icons.Default.CheckCircle,
-								contentDescription = stringResource(R.string.content_desc_correctly_guessed),
-								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
-							)
-						} else {
-							Icon(
-								painter = painterResource(R.drawable.visibility),
+								imageVector = Icons.Filled.CheckCircle,
 								contentDescription = stringResource(R.string.content_desc_highlight_cells),
-								tint = MaterialTheme.extendedColorScheme.peach.colorContainer,
-							)
-						}
-					}
-				}
-				if (isRevealed || isUserGuessed) {
-					IconButton(onClick = onExpandToggle) {
-						if (isExpanded) {
-							Icon(
-								imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
-								contentDescription = stringResource(R.string.content_desc_collapse),
+								tint = MaterialTheme.extendedColorScheme.yellow.color,
 							)
 						} else {
 							Icon(
-								imageVector = Icons.Default.KeyboardArrowDown,
-								contentDescription = stringResource(R.string.content_desc_expand),
+								painter = painterResource(id = R.drawable.visibility),
+								contentDescription = stringResource(R.string.content_desc_highlight_cells),
+								tint = MaterialTheme.colorScheme.secondary,
 							)
 						}
 					}
-				} else {
-					IconButton(onClick = onExplainClick) {
-						Icon(
-							painter = painterResource(id = R.drawable.lightbulb),
-							contentDescription = stringResource(R.string.content_desc_explain_hint),
-						)
+					if (isRevealed) {
+						AnimatedContent(targetState = !isExpanded) { notExpanded ->
+							if (notExpanded) {
+								IconButton(onClick = onExpandToggle) {
+									Icon(
+										imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+										contentDescription = stringResource(R.string.content_desc_explain_hint),
+										tint = MaterialTheme.colorScheme.primary,
+									)
+								}
+							}
+						}
+					} else {
+						IconButton(onClick = onExplainClick) {
+							Icon(
+								painter = painterResource(id = R.drawable.lightbulb),
+								contentDescription = stringResource(R.string.content_desc_explain_hint),
+								tint = MaterialTheme.colorScheme.primary,
+							)
+						}
 					}
 				}
 			}
-			AnimatedVisibility(isExpanded) {
-				Surface(
-					color = MaterialTheme.colorScheme.surface,
-					shape = RoundedCornerShape(4.dp),
-					modifier = Modifier.fillMaxWidth(),
+			AnimatedVisibility(visible = isExpanded) {
+				Column(
+					modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
 				) {
-					Column(
-						modifier = Modifier.padding(LocalPadding.current.tiny),
+					// Use the new structured hint explanation component
+					StructuredHintExplanation(
+						steps = cardContent,
+						colors = LocalHintLogsColors.current,
+						modifier = Modifier.background(
+							MaterialTheme.colorScheme.background,
+							RoundedCornerShape(8.dp),
+						).padding(LocalPadding.current.tiny),
+					)
+					IconButton(
+						onClick = onExpandToggle,
+						modifier = Modifier.align(Alignment.End),
 					) {
-						cardContent.forEach {
-							Text(
-								text =
-								buildAnnotatedString {
-									withStyle(
-										SpanStyle(
-											fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-											color = MaterialTheme.colorScheme.onSurface,
-										),
-									) {
-										append("\u2022 ")
-										append(
-											createAnnotatedString(
-												input = it,
-												angleBracketStyle =
-												SpanStyle(
-													color = MaterialTheme.colorScheme.primary,
-													fontWeight = FontWeight.Bold,
-													fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-												),
-												asteriskStyle =
-												SpanStyle(
-													color = LocalHintLogsColors.current.subtext,
-													fontStyle = FontStyle.Italic,
-													fontSize = MaterialTheme.typography.bodySmall.fontSize,
-												),
-											),
-										)
-									}
-								},
-								style = MaterialTheme.typography.bodySmall,
-							)
-						}
+						Icon(
+							Icons.Default.KeyboardArrowDown,
+							contentDescription = null,
+							tint = MaterialTheme.colorScheme.onSurface,
+						)
 					}
 				}
 			}
@@ -218,10 +170,23 @@ internal fun HintStepCardPreview() {
 			verticalArrangement = Arrangement.spacedBy(12.dp),
 		) {
 			HintStepCard(
-				title = "Hidden Single in cell [3, 2]",
-				cardContent = kotlinx.collections.immutable.persistentListOf(
-					"The cell [3, 2] can only be <5>.",
-					"Other candidates in [3, 2] are *eliminated*.",
+				title = HintExplanationStep(
+					persistentListOf(
+						HintExplanationPart.Text("Hidden Single in cell "),
+						HintExplanationPart.CellCoordinate(3, 2),
+						HintExplanationPart.Text("."),
+					),
+				),
+				cardContent = persistentListOf(
+					HintExplanationStep(
+						persistentListOf(
+							HintExplanationPart.Text("The cell "),
+							HintExplanationPart.CellCoordinate(3, 2),
+							HintExplanationPart.Text(" can only be "),
+							HintExplanationPart.Value(5),
+							HintExplanationPart.Text("."),
+						),
+					),
 				),
 				onExplainClick = {},
 				onExpandToggle = {},
@@ -232,10 +197,23 @@ internal fun HintStepCardPreview() {
 			)
 
 			HintStepCard(
-				title = "Hidden Single in cell [3, 2]",
-				cardContent = kotlinx.collections.immutable.persistentListOf(
-					"The cell [3, 2] can only be <5>.",
-					"Other candidates in [3, 2] are *eliminated*.",
+				title = HintExplanationStep(
+					persistentListOf(
+						HintExplanationPart.Text("Hidden Single in cell "),
+						HintExplanationPart.CellCoordinate(3, 2),
+						HintExplanationPart.Text("."),
+					),
+				),
+				cardContent = persistentListOf(
+					HintExplanationStep(
+						persistentListOf(
+							HintExplanationPart.Text("The cell "),
+							HintExplanationPart.CellCoordinate(3, 2),
+							HintExplanationPart.Text(" can only be "),
+							HintExplanationPart.Value(5),
+							HintExplanationPart.Text("."),
+						),
+					),
 				),
 				onExplainClick = {},
 				onExpandToggle = {},
@@ -246,10 +224,23 @@ internal fun HintStepCardPreview() {
 				isUserGuessed = true,
 			)
 			HintStepCard(
-				title = "Hidden Single in cell [3, 2]",
-				cardContent = kotlinx.collections.immutable.persistentListOf(
-					"The cell [3, 2] can only be <5>.",
-					"Other candidates in [3, 2] are *eliminated*.",
+				title = HintExplanationStep(
+					persistentListOf(
+						HintExplanationPart.Text("Hidden Single in cell "),
+						HintExplanationPart.CellCoordinate(3, 2),
+						HintExplanationPart.Text("."),
+					),
+				),
+				cardContent = persistentListOf(
+					HintExplanationStep(
+						persistentListOf(
+							HintExplanationPart.Text("The cell "),
+							HintExplanationPart.CellCoordinate(3, 2),
+							HintExplanationPart.Text(" can only be "),
+							HintExplanationPart.Value(5),
+							HintExplanationPart.Text("."),
+						),
+					),
 				),
 				onExplainClick = {},
 				onExpandToggle = {},

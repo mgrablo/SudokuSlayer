@@ -12,7 +12,7 @@ class GenerateHintLogUseCase {
 			hint.explanationStrategy ?: HintExplanationFactory.createStrategyFor(hint.type)
 		val explanationSteps =
 			explanationStrategy
-				.generateHintExplanationSteps(
+				.generateStructuredHintExplanation(
 					grid = grid,
 					hint = hint,
 				).toPersistentList()
@@ -21,7 +21,7 @@ class GenerateHintLogUseCase {
 			hint = hint,
 			isUserGuessed = false,
 			isRevealed = false,
-			explanation = explanationSteps,
+			structuredExplanation = explanationSteps,
 		)
 	}
 }
