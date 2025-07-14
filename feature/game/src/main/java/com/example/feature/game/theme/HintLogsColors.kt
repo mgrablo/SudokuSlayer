@@ -10,7 +10,14 @@ import com.example.feature.uicore.theme.Catppuccin
 import com.example.feature.uicore.theme.CatppuccinPalette
 
 @Immutable
-internal data class HintLogsColors(val subtext: Color)
+internal data class HintLogsColors(
+	val subtext: Color,
+	val cellCoordinateColor: Color, // Color for cell coordinates like [1, 2]
+	val valueColor: Color, // Color for Sudoku values like <5>
+	val techniqueNameColor: Color, // Color for technique names like "Hidden Single"
+	val scopeReferenceColor: Color, // Color for scope references like "row 3"
+	val valueGroupColor: Color, // Color for groups of values like {1, 2, 3}
+)
 
 internal object HintLogsColorSchemes {
 	val Mocha = createHintLogsColorsScheme(Catppuccin.Mocha)
@@ -20,6 +27,11 @@ internal object HintLogsColorSchemes {
 
 	private fun createHintLogsColorsScheme(palette: CatppuccinPalette) = HintLogsColors(
 		subtext = palette.subtext1,
+		cellCoordinateColor = palette.blue,
+		valueColor = palette.red,
+		techniqueNameColor = palette.muave,
+		scopeReferenceColor = palette.green,
+		valueGroupColor = palette.peach,
 	)
 }
 
