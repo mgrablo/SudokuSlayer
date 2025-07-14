@@ -84,6 +84,7 @@ import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGa
 import com.example.feature.statistics.filter.FilterBottomSheet
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
+import com.example.feature.statistics.insights.components.InsightsFab
 import com.example.feature.statistics.insights.components.insightsTableContent
 import com.example.feature.statistics.model.ColumnDisplayState
 import com.example.feature.statistics.model.InsightsTableColumn
@@ -159,16 +160,7 @@ private fun InsightsScreenContent(
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val snackBarHostState = remember { SnackbarHostState() }
-	val dismissState = rememberSwipeToDismissBoxState(
-		confirmValueChange = { value ->
-			if (value != SwipeToDismissBoxValue.Settled) {
-				snackBarHostState.currentSnackbarData?.dismiss()
-				true
-			} else {
-				false
-			}
-		},
-	)
+	val dismissState = rememberSwipeToDismissBoxState()
 
 	val filterSheetState = rememberModalBottomSheetState(
 		skipPartiallyExpanded = true,
@@ -235,41 +227,15 @@ private fun InsightsScreenContent(
 			)
 		},
 		floatingActionButton = {
-			if (loadingState is LoadingState.Success) {
-				BadgedBox(
-					badge = {
-						if (activeFilterCount > 0) {
-							Badge(
-								modifier = Modifier.clip(CircleShape),
-								contentColor = MaterialTheme.colorScheme.onError,
-								containerColor = MaterialTheme.colorScheme.error,
-							) {
-								Text(
-									text = activeFilterCount.toString(),
-									color = MaterialTheme.colorScheme.onErrorContainer,
-								)
-							}
-						}
-					},
-				) {
-					FloatingActionButton(
-						onClick = {
-							coroutineScope.launch {
-								showBottomSheet = true
-							}
-						},
-						modifier = Modifier,
-
-					) {
-						Icon(
-							painterResource(R.drawable.filter),
-							contentDescription = stringResource(
-								R.string.filter_fab_content_description,
-							),
-						)
+			InsightsFab(
+				onClick = {
+					coroutineScope.launch {
+						showBottomSheet = true
 					}
-				}
-			}
+				},
+				loadingState = loadingState,
+				activeFilterCount = activeFilterCount,
+			)
 		},
 	) { paddingValues ->
 		Crossfade(
