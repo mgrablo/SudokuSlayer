@@ -29,7 +29,7 @@ internal object HintLogsColorSchemes {
 		subtext = palette.subtext1,
 		cellCoordinateColor = palette.blue,
 		valueColor = palette.red,
-		techniqueNameColor = palette.muave,
+		techniqueNameColor = palette.mauve,
 		scopeReferenceColor = palette.green,
 		valueGroupColor = palette.peach,
 	)
