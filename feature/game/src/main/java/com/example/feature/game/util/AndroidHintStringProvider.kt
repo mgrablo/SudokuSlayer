@@ -38,6 +38,7 @@ class AndroidHintStringProvider(private val context: Context) : HintStringProvid
 		HintStringKey.CAN_ONLY_APPEAR_IN_THE -> R.string.hint_can_only_appear_in_the
 		HintStringKey.CANNOT_APPEAR_IN_THE -> R.string.hint_cannot_appear_in_the
 		HintStringKey.SINCE_CONFINED_TO -> R.string.hint_since_confined_to
+		HintStringKey.ONE_POSSIBLE_CANDIDATE -> R.string.hint_one_possible_candidate
 
 		// Scope parts
 		HintStringKey.ROW -> R.string.hint_row

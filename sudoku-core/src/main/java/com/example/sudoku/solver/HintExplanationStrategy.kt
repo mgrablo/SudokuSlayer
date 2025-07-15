@@ -36,9 +36,9 @@ class NakedSingleExplanation : HintExplanationStrategy {
 					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THE_CELL_AT)),
 					HintExplanationPart.Text(" "),
 					HintExplanationPart.CellCoordinate(row + 1, column + 1),
-					HintExplanationPart.Text(
-						" has only one possible candidate remaining after considering the numbers already present in its row, column, and block.",
-					),
+					HintExplanationPart.Text(" "),
+					HintExplanationPart.Text(stringProvider.getString(HintStringKey.ONE_POSSIBLE_CANDIDATE)),
+					HintExplanationPart.Text("."),
 				),
 			),
 			// Step 3: Explain the conclusion

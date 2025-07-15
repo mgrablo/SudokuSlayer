@@ -19,6 +19,7 @@
     <string name="hint_can_only_appear_in_the">can only appear in the</string>
     <string name="hint_cannot_appear_in_the">cannot appear in the</string>
     <string name="hint_since_confined_to">since it is confined to the</string>
+	<string name="hint_one_possible_candidate">has only one possible candidate remaining after considering the numbers already present in its row, column, and block</string>
 
     <!-- Scope parts -->
     <string name="hint_row">row</string>

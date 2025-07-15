@@ -45,6 +45,7 @@ enum class HintStringKey {
 	CAN_ONLY_APPEAR_IN_THE,
 	CANNOT_APPEAR_IN_THE,
 	SINCE_CONFINED_TO,
+	ONE_POSSIBLE_CANDIDATE,
 
 	// Scope parts
 	ROW,
