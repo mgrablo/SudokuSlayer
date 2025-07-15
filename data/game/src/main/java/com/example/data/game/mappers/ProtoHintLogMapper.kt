@@ -157,6 +157,8 @@ fun ProtoHintExplanationPart.toHintExplanationPart(): HintExplanationPart = when
 	ProtoHintExplanationPart.PartCase.VALUE_GROUP ->
 		HintExplanationPart.ValueGroup(valueGroup.valuesList)
 
-	// If none of the above, return a simple Text part as fallback
-	else -> HintExplanationPart.Text("Unknown part type")
+	else -> {
+		System.err.println("Unknown part case: $partCase")
+		throw IllegalArgumentException("Unknown part case: $partCase")
+	}
 }
