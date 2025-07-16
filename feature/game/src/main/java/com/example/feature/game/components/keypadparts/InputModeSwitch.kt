@@ -1,15 +1,18 @@
 package com.example.feature.game.components.keypadparts
 
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.IconToggleButtonShapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -19,35 +22,34 @@ import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudokuslayer.feature.game.R
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InputModeSwitch(
-	onClick: () -> Unit,
+	checked: Boolean,
+	onClick: (Boolean) -> Unit,
 	modifier: Modifier = Modifier,
 	iconSize: Dp = 40.dp,
-	inputMode: Boolean = false,
 ) {
 	IconToggleButton(
-		checked = inputMode,
-		onCheckedChange = { onClick() },
+		checked = checked,
+		onCheckedChange = { onClick(it) },
 		modifier = modifier,
+		shapes = IconToggleButtonShapes(
+			shape = IconButtonDefaults.standardShape,
+			checkedShape = IconButtonDefaults.extraSmallSquareShape,
+			pressedShape = IconButtonDefaults.largePressedShape,
+		),
 		colors = IconButtonDefaults.iconToggleButtonColors(
-			containerColor = LocalKeyPadColors.current.actionPadBackground,
-			checkedContainerColor = LocalKeyPadColors.current.actionPadBackground,
+			containerColor = LocalKeyPadColors.current.numberModeSelectedBackground,
+			contentColor = LocalKeyPadColors.current.numberModeSelectedOnBackground,
+			checkedContainerColor = LocalKeyPadColors.current.noteModeSelectedBackground,
+			checkedContentColor = LocalKeyPadColors.current.noteModeSelectedOnBackground,
+			disabledContainerColor = LocalKeyPadColors.current.actionPadBackground,
+			disabledContentColor = LocalKeyPadColors.current.actionPadOnBackground.copy(alpha = 0.38f),
 		),
 	) {
-		val transition = updateTransition(inputMode)
-		val tint by transition.animateColor(
-			label = "tint",
-		) {
-			if (it) {
-				LocalKeyPadColors.current.noteModeSelectedBackground
-			} else {
-				LocalKeyPadColors.current.numberModeSelectedBackground
-			}
-		}
-
 		Icon(
-			painter = if (inputMode) {
+			painter = if (checked) {
 				painterResource(
 					R.drawable.stylus_note,
 				)
@@ -56,7 +58,6 @@ fun InputModeSwitch(
 			},
 			contentDescription = "Input mode switch",
 			modifier = Modifier.size(iconSize),
-			tint = tint,
 		)
 	}
 }
@@ -64,19 +65,20 @@ fun InputModeSwitch(
 @PreviewLightDark
 @Composable
 private fun InputModeSwitchPreview() {
+	var checked by remember { mutableStateOf(false) }
 	SudokuGameTheme {
 		Row(
 			horizontalArrangement = Arrangement.spacedBy(8.dp),
 		) {
 			InputModeSwitch(
-				onClick = { },
-				inputMode = false,
+				onClick = { checked = !checked },
+				checked = checked,
 				iconSize = 30.dp,
 				modifier = Modifier.size(50.dp),
 			)
 			InputModeSwitch(
-				onClick = { },
-				inputMode = true,
+				onClick = { checked = !checked },
+				checked = !checked,
 				iconSize = 30.dp,
 				modifier = Modifier.size(50.dp),
 			)

@@ -148,7 +148,7 @@ internal class SudokuGameViewModel(
 
 		data class LongInputNumber(val number: Int) : Event
 
-		data object SwitchInputMode : Event
+		data class SwitchInputMode(val isNote: Boolean) : Event
 
 		data object ClearCell : Event
 
@@ -209,7 +209,7 @@ internal class SudokuGameViewModel(
 
 			is Event.HintFillNotes -> fillNotes()
 			is Event.ShowMistakes -> {}
-			is Event.SwitchInputMode -> switchInputMode()
+			is Event.SwitchInputMode -> switchInputMode(event.isNote)
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
 				viewModelScope.launch {
@@ -448,10 +448,10 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private fun switchInputMode() {
+	private fun switchInputMode(isInNoteMode: Boolean) {
 		_uiState.update {
 			it.copy(
-				isInNoteMode = !it.isInNoteMode,
+				isInNoteMode = isInNoteMode,
 			)
 		}
 	}

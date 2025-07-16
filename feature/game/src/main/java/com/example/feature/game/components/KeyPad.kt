@@ -47,7 +47,7 @@ internal fun KeyPad(
 	onClearClick: () -> Unit,
 	onUndoClick: () -> Unit,
 	onRedoClick: () -> Unit,
-	onSwitchInputMode: () -> Unit,
+	onSwitchInputMode: (Boolean) -> Unit,
 	onHintClick: () -> Unit,
 	onShowMistakesClick: () -> Unit,
 	onResetClick: () -> Unit,
@@ -115,7 +115,7 @@ internal fun KeyPad(
 						) {
 							InputModeSwitch(
 								onClick = onSwitchInputMode,
-								inputMode = noteMode,
+								checked = noteMode,
 								iconSize = fontSize.value.dp,
 								modifier = Modifier.size(itemSize),
 							)
@@ -214,7 +214,7 @@ internal fun KeyPad(
 						)
 						InputModeSwitch(
 							onClick = onSwitchInputMode,
-							inputMode = noteMode,
+							checked = noteMode,
 							iconSize = fontSize.value.dp,
 							modifier = Modifier.size(itemSize),
 						)
