@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock.System
@@ -132,7 +133,10 @@ internal class SudokuGameViewModel(
 	}
 
 	override fun onCleared() {
-		stopTrackingTime()
+		super.onCleared()
+		runBlocking {
+			saveGame()
+		}
 	}
 
 	sealed interface Event {
@@ -208,7 +212,9 @@ internal class SudokuGameViewModel(
 			is Event.SwitchInputMode -> switchInputMode()
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
-				stopTrackingTime()
+				viewModelScope.launch {
+					elapsedTimerManager.stopTracking()
+				}
 			}
 
 			is Event.StartTimer -> {
@@ -217,38 +223,45 @@ internal class SudokuGameViewModel(
 		}
 	}
 
+	private suspend fun saveGame() {
+		gameManagementUseCases.saveGame(
+			game.value.copy(
+				elapsedTime = elapsedTime.value,
+			),
+		)
+	}
+
 	private suspend fun loadGame() {
-		gameManagementUseCases.getGame().first().let { game ->
-			_game.update {
-				it.copy(
-					grid = game.grid,
-					hintsUsed = game.hintsUsed,
-					elapsedTime = game.elapsedTime,
-					difficulty = game.difficulty,
-					hintLogs = game.hintLogs.toPersistentList(),
-					completed = game.completed,
-				)
-			}
-			game.hintLogs.lastOrNull()?.let { log ->
-				if (!log.isRevealed) {
-					_uiState.update {
-						it.copy(
-							lastHint = log.hint,
-						)
-					}
-				}
-			}
-			getBestTimeUseCase(
-				game.difficulty,
-				SudokuGridSize.fromIntSize(
-					game.grid.gridSize,
-				),
-			)?.let { bestTime ->
+		val loadedGame = gameManagementUseCases.getGame().first()
+		_game.update {
+			it.copy(
+				grid = loadedGame.grid,
+				hintsUsed = loadedGame.hintsUsed,
+				elapsedTime = loadedGame.elapsedTime,
+				difficulty = loadedGame.difficulty,
+				hintLogs = loadedGame.hintLogs.toPersistentList(),
+				completed = loadedGame.completed,
+			)
+		}
+		loadedGame.hintLogs.lastOrNull()?.let { log ->
+			if (!log.isRevealed) {
 				_uiState.update {
 					it.copy(
-						currentBestTime = bestTime,
+						lastHint = log.hint,
 					)
 				}
+			}
+		}
+		getBestTimeUseCase(
+			loadedGame.difficulty,
+			SudokuGridSize.fromIntSize(
+				loadedGame.grid.gridSize,
+			),
+		)?.let { bestTime ->
+			_uiState.update {
+				it.copy(
+					currentBestTime = bestTime,
+				)
 			}
 		}
 	}
@@ -572,12 +585,6 @@ internal class SudokuGameViewModel(
 					hintLogs = updatedLogs,
 				)
 			}
-		}
-	}
-
-	private fun stopTrackingTime() {
-		viewModelScope.launch {
-			elapsedTimerManager.stopTracking()
 		}
 	}
 
