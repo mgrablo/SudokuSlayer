@@ -136,8 +136,8 @@ private fun SheetContent(
 				}
 
 				HintStepCard(
-					title = "${index + 1}. ${hintLog.explanation.first()}",
-					cardContent = hintLog.explanation.drop(1).toPersistentList(),
+					title = hintLog.structuredExplanation.first(),
+					cardContent = hintLog.structuredExplanation.drop(1).toPersistentList(),
 					onExplainClick = {
 						explainHintClick()
 						if (!expandedItems.contains(hintLog)) {
@@ -243,7 +243,7 @@ private fun HintBottomSheetScaffoldPreview() {
 					),
 					isUserGuessed = false,
 					isRevealed = false,
-					explanation = persistentListOf(),
+					structuredExplanation = persistentListOf(),
 				),
 			),
 			explainHintClick = { },
