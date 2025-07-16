@@ -29,10 +29,12 @@ import com.example.sudoku.model.fillNotes
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
-import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -72,6 +74,7 @@ internal class SudokuGameViewModel(
 
 	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
+	private var hintFocusJob: Job? = null
 
 	private val _game =
 		MutableStateFlow<Game>(
@@ -511,7 +514,8 @@ internal class SudokuGameViewModel(
 	}
 
 	private fun hintFocus(hint: Hint) {
-		viewModelScope.launch {
+		hintFocusJob?.cancel()
+		hintFocusJob = viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 
 			val cellsToFocus = when (hint.type) {
@@ -528,7 +532,7 @@ internal class SudokuGameViewModel(
 
 			_uiState.update { state ->
 				state.copy(
-					focusedCells = state.focusedCells + cellsToFocus,
+					focusedCells = cellsToFocus.toPersistentSet(),
 				)
 			}
 
@@ -536,7 +540,7 @@ internal class SudokuGameViewModel(
 
 			_uiState.update { state ->
 				state.copy(
-					focusedCells = state.focusedCells - cellsToFocus,
+					focusedCells = persistentSetOf(),
 				)
 			}
 		}
