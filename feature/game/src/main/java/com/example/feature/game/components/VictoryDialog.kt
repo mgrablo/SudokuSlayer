@@ -55,6 +55,7 @@ import com.composeunstyled.LocalModalWindow
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.theme.SudokuGameTheme
+import com.example.feature.game.util.ConfettiParties
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSudokuTypography

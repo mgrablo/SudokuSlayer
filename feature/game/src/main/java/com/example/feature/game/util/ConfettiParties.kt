@@ -1,4 +1,4 @@
-package com.example.feature.game.components
+package com.example.feature.game.util
 
 import io.github.vinceglb.confettikit.core.Angle
 import io.github.vinceglb.confettikit.core.Party
@@ -20,7 +20,7 @@ internal object ConfettiParties {
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 100.milliseconds).max(100),
 			position = position,
-			rotation = Rotation.enabled(),
+			rotation = Rotation.Companion.enabled(),
 			fadeOutEnabled = false,
 			shapes = listOf(Shape.Square, Shape.Circle),
 			timeToLive = 7000L,
@@ -35,8 +35,8 @@ internal object ConfettiParties {
 			speed = 10f,
 			maxSpeed = 30f,
 			damping = 0.9f,
-			angle = Angle.RIGHT - 45,
-			spread = Spread.SMALL,
+			angle = Angle.Companion.RIGHT - 45,
+			spread = Spread.Companion.SMALL,
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 1.seconds).perSecond(30),
 			position = position1,
@@ -56,8 +56,8 @@ internal object ConfettiParties {
 			speed = 10f,
 			maxSpeed = 30f,
 			damping = 0.9f,
-			angle = Angle.TOP,
-			spread = Spread.SMALL,
+			angle = Angle.Companion.TOP,
+			spread = Spread.Companion.SMALL,
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 2.seconds).perSecond(30),
 			position = position,
@@ -70,8 +70,8 @@ internal object ConfettiParties {
 			speed = 0f,
 			maxSpeed = 15f,
 			damping = 0.9f,
-			angle = Angle.BOTTOM,
-			spread = Spread.ROUND,
+			angle = Angle.Companion.BOTTOM,
+			spread = Spread.Companion.ROUND,
 			colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
 			emitter = Emitter(duration = 2.5.seconds).perSecond(100),
 			position = Position.Relative(0.0, 0.0).between(Position.Relative(1.0, 0.0)),
