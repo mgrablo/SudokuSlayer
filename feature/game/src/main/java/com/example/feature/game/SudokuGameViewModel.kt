@@ -587,6 +587,7 @@ internal class SudokuGameViewModel(
 
 			val cell = game.value.grid.getCellAt(row, column)
 			if (cell.cornerNotes.size == 1) {
+				selectCell(row, column)
 				inputNumber(
 					number = cell.cornerNotes.first(),
 					selectedCell = row to column,
