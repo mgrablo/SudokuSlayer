@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -41,7 +40,6 @@ import com.example.feature.statistics.Insights
 import com.example.feature.statistics.insightsEntry
 import com.example.feature.uicore.components.SudokuNavigationRail
 import com.example.feature.uicore.navigation.Destination
-import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -98,92 +96,90 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 		lightColorScheme = lightColorScheme,
 	)
 
-	CompositionLocalProvider(LocalAppColorScheme provides currentColorScheme) {
-		SudokuSlayerTheme(
-			colorScheme = currentColorScheme,
-		) {
-			SudokuNavigationRail(
-				state = navigationRailState,
-				destinations = destinations,
-				hasActiveGame = hasActiveGame,
-				isSelected = { backstack.last() == it },
-				navigateToScreen = {
-					if (it == SudokuCreator) {
-						backstack.clear()
-						backstack.add(it)
-					} else if (backstack.last() != it) {
-						backstack.add(it)
-					}
-					scope.launch {
-						navigationRailState.collapse()
-					}
-				},
-				onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
-			)
-			NavDisplay(
-				modifier = Modifier.fillMaxSize().background(
-					MaterialTheme.colorScheme.background,
-				),
-				backStack = backstack,
-				entryDecorators = listOf(
-					rememberSceneSetupNavEntryDecorator(),
-					rememberSavedStateNavEntryDecorator(),
-					rememberViewModelStoreNavEntryDecorator(),
-				),
-				entryProvider = entryProvider {
-					sudokuCreatorEntry(
-						navigateToGameScreen = {
-							scope.launch {
-								backstack.apply {
-									clear()
-									add(SudokuCreator)
-									add(SudokuGame)
-								}
+	SudokuSlayerTheme(
+		colorScheme = currentColorScheme,
+	) {
+		SudokuNavigationRail(
+			state = navigationRailState,
+			destinations = destinations,
+			hasActiveGame = hasActiveGame,
+			isSelected = { backstack.last() == it },
+			navigateToScreen = {
+				if (it == SudokuCreator) {
+					backstack.clear()
+					backstack.add(it)
+				} else if (backstack.last() != it) {
+					backstack.add(it)
+				}
+				scope.launch {
+					navigationRailState.collapse()
+				}
+			},
+			onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
+		)
+		NavDisplay(
+			modifier = Modifier.fillMaxSize().background(
+				MaterialTheme.colorScheme.background,
+			),
+			backStack = backstack,
+			entryDecorators = listOf(
+				rememberSceneSetupNavEntryDecorator(),
+				rememberSavedStateNavEntryDecorator(),
+				rememberViewModelStoreNavEntryDecorator(),
+			),
+			entryProvider = entryProvider {
+				sudokuCreatorEntry(
+					navigateToGameScreen = {
+						scope.launch {
+							backstack.apply {
+								clear()
+								add(SudokuCreator)
+								add(SudokuGame)
 							}
-						},
-						openDrawer = {
-							scope.launch {
-								navigationRailState.expand()
+						}
+					},
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+				gameEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+					onPlayAgainClick = {
+						scope.launch {
+							backstack.removeLastOrNull()
+						}
+					},
+					onNavigateToInsightsClick = {
+						scope.launch {
+							backstack.apply {
+								removeLastOrNull()
+								add(Insights)
 							}
-						},
-					)
-					gameEntry(
-						openDrawer = {
-							scope.launch {
-								navigationRailState.expand()
-							}
-						},
-						onPlayAgainClick = {
-							scope.launch {
-								backstack.removeLastOrNull()
-							}
-						},
-						onNavigateToInsightsClick = {
-							scope.launch {
-								backstack.apply {
-									removeLastOrNull()
-									add(Insights)
-								}
-							}
-						},
-					)
-					insightsEntry(
-						openDrawer = {
-							scope.launch {
-								navigationRailState.expand()
-							}
-						},
-					)
-					settingsEntry(
-						openDrawer = {
-							scope.launch {
-								navigationRailState.expand()
-							}
-						},
-					)
-				},
-			)
-		}
+						}
+					},
+				)
+				insightsEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+				settingsEntry(
+					openDrawer = {
+						scope.launch {
+							navigationRailState.expand()
+						}
+					},
+				)
+			},
+		)
 	}
 }
 

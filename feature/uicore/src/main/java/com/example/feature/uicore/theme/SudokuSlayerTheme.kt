@@ -23,7 +23,7 @@ fun SudokuSlayerTheme(
 			extendedLight
 		}
 	}
-	val colorScheme = remember(colorScheme) {
+	val materialColorScheme = remember(colorScheme) {
 		when (colorScheme) {
 			is ColorScheme.Mocha -> mochaColorScheme
 			is ColorScheme.Macchiato -> macchiatoColorScheme
@@ -33,11 +33,12 @@ fun SudokuSlayerTheme(
 	}
 
 	CompositionLocalProvider(
+		LocalAppColorScheme provides colorScheme,
 		LocalExtendedColorScheme provides extendedColorScheme,
 		LocalSudokuTypography provides AppTypography,
 	) {
 		MaterialExpressiveTheme(
-			colorScheme = colorScheme,
+			colorScheme = materialColorScheme,
 		) {
 			content()
 		}

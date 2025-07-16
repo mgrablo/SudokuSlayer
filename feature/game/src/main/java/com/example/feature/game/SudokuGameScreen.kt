@@ -23,7 +23,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,14 +56,7 @@ import com.example.feature.game.components.TimerDisplay
 import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
-import com.example.feature.game.theme.LocalHintLogsColors
-import com.example.feature.game.theme.LocalKeyPadColors
-import com.example.feature.game.theme.LocalSudokuBoardColors
-import com.example.feature.game.theme.rememberBoardColors
-import com.example.feature.game.theme.rememberHintLogsColors
-import com.example.feature.game.theme.rememberKeypadColors
-import com.example.feature.uicore.theme.LocalAppColorScheme
-import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.persistentListOf
@@ -85,16 +77,7 @@ internal fun SudokuGameScreen(
 	val uiState: SudokuGameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val game by viewModel.game.collectAsStateWithLifecycle()
 
-	val colorScheme = LocalAppColorScheme.current
-	val boardColors = rememberBoardColors(colorScheme)
-	val keypadColors = rememberKeypadColors(colorScheme)
-	val hintLogsColors = rememberHintLogsColors(colorScheme)
-
-	CompositionLocalProvider(
-		LocalSudokuBoardColors provides boardColors,
-		LocalKeyPadColors provides keypadColors,
-		LocalHintLogsColors provides hintLogsColors,
-	) {
+	SudokuGameTheme(useSudokuSlayerTheme = false) {
 		LifecycleResumeEffect(Unit) {
 			viewModel.onEvent(Event.StartTimer)
 			onPauseOrDispose {
@@ -373,9 +356,10 @@ private fun SudokuGameScreenContent(
 @PreviewLightDark
 @Composable
 private fun SudokuGameScreenPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		SudokuGameScreenContent(
 			uiState = SudokuGameUiState(
+				selectedCell = 1 to 1,
 				gameState = GameState.VICTORY,
 			),
 			game =
@@ -399,7 +383,7 @@ private fun SudokuGameScreenPreview() {
 @Preview
 @Composable
 private fun SudokuGameScreenSixteenPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		SudokuGameScreenContent(
 			uiState = SudokuGameUiState(),
 			game =
@@ -425,9 +409,7 @@ private fun SudokuGameScreenSixteenPreview() {
 )
 @Composable
 private fun SudokuGameScreenFourPreview() {
-	SudokuSlayerTheme(
-		darkTheme = true,
-	) {
+	SudokuGameTheme {
 		SudokuGameScreenContent(
 			uiState =
 			SudokuGameUiState(
