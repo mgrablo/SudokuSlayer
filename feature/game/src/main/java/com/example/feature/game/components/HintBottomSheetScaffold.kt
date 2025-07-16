@@ -41,7 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.HintLog
-import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
 import com.example.sudoku.solver.NakedSingleExplanation
@@ -218,7 +218,7 @@ internal fun BottomSheetElevatedButton(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HintBottomSheetScaffoldPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		val scaffoldState =
 			rememberBottomSheetScaffoldState(
 				bottomSheetState =

@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.game.getRoundedBlockShape
 import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.modifiers.breathingBorder
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import kotlinx.collections.immutable.PersistentSet
@@ -217,7 +217,7 @@ private fun SudokuCellPreview() {
 	val gridSize = 16
 	val list = createSudokuCellData(gridSize)
 
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		FlowRow(
 			horizontalArrangement = Arrangement.spacedBy(8.dp),
 			verticalArrangement = Arrangement.spacedBy(8.dp),

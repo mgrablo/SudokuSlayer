@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import kotlin.math.sqrt
 
@@ -88,7 +88,7 @@ fun NumberPad(
 @PreviewLightDark
 @Composable
 private fun NumberPadNineItemsPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		NumberPad(
 			onButtonClick = { },
 			onButtonLongClick = { },
@@ -102,7 +102,7 @@ private fun NumberPadNineItemsPreview() {
 @Preview
 @Composable
 private fun NumberPadFourItemsPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		NumberPad(
 			onButtonClick = { },
 			onButtonLongClick = { },
@@ -116,7 +116,7 @@ private fun NumberPadFourItemsPreview() {
 @Preview
 @Composable
 private fun NumberPadSixteenItemsPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		NumberPad(
 			onButtonClick = { },
 			onButtonLongClick = { },

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.LocalSudokuBoardColors
-import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
@@ -121,7 +121,7 @@ internal fun SudokuBoard(
 @Composable
 private fun SudokuBoardNormalPreview() {
 	val grid = createFilledSudokuGrid(9)
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		SudokuBoard(
 			sudoku = grid,
 			focusedCells = persistentSetOf(Pair(0, 0), Pair(0, 1)),
@@ -135,7 +135,7 @@ private fun SudokuBoardNormalPreview() {
 @Composable
 private fun SudokuBoardBigPreview() {
 	val grid = createFilledSudokuGrid(16)
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		SudokuBoard(
 			sudoku = grid,
 			focusedCells = persistentSetOf(),
@@ -149,7 +149,7 @@ private fun SudokuBoardBigPreview() {
 @Composable
 private fun SudokuBoardSmallPreview() {
 	val grid = createFilledSudokuGrid(4)
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		SudokuBoard(
 			sudoku = grid,
 			focusedCells = persistentSetOf(),

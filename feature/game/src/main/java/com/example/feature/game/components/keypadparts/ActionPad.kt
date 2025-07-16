@@ -21,9 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -98,7 +98,7 @@ private fun LayoutWithOrientation(
 @PreviewLightDark
 @Composable
 private fun ActionPadHorizontalPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		val items = getPreviewItems()
 
 		ActionPad(
@@ -111,7 +111,7 @@ private fun ActionPadHorizontalPreview() {
 @Preview
 @Composable
 private fun ActionPadVerticalPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		val items = getPreviewItems()
 
 		ActionPad(

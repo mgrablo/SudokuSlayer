@@ -26,11 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSudokuTypography
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.game.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -122,10 +123,10 @@ internal fun PostGameActions(
 	}
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun PostGameActionsPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		PostGameActions(
 			onViewSummary = { },
 			onPlayAgainClick = { },
