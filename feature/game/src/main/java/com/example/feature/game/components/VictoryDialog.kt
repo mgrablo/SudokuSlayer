@@ -54,10 +54,11 @@ import com.composables.core.rememberDialogState
 import com.composeunstyled.LocalModalWindow
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
+import com.example.feature.game.theme.SudokuGameTheme
+import com.example.feature.game.util.ConfettiParties
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSudokuTypography
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.game.R
@@ -310,7 +311,7 @@ private fun VictoryStatRow(
 @Preview
 @Composable
 private fun VictoryDialogPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		Surface(
 			color = MaterialTheme.colorScheme.background,
 			modifier = Modifier.fillMaxSize(),

@@ -27,8 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.navigation.AppIcon
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 
 @Composable
 fun KeyPadItem(
@@ -98,7 +98,7 @@ fun KeyPadItem(
 @PreviewLightDark
 @Composable
 private fun KeyboardItemNumberPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPadItem(
 			text = "5",
 			onClick = { },
@@ -110,7 +110,7 @@ private fun KeyboardItemNumberPreview() {
 @PreviewLightDark
 @Composable
 private fun KeyboardItemIconPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPadItem(
 			text = "5",
 			icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear"),

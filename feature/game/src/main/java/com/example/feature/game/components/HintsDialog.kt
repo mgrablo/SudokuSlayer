@@ -32,7 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudokuslayer.feature.game.R
 
 @Composable
@@ -123,7 +123,7 @@ private data class HintDialogButton(
 @PreviewLightDark
 @Composable
 private fun HintsDialogPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		HintsDialog(
 			isVisible = true,
 			onDismissRequest = { },

@@ -30,10 +30,10 @@ import com.example.feature.game.components.keypadparts.InputModeSwitch
 import com.example.feature.game.components.keypadparts.KeyPadItem
 import com.example.feature.game.components.keypadparts.NumberPad
 import com.example.feature.game.theme.LocalKeyPadColors
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.components.ReversibleRow
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -251,7 +251,7 @@ private fun getMiddleActionPadItems(
 @PreviewLightDark
 @Composable
 private fun KeyPadPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPad(
 			onNumberClick = { },
 			onNumberLongClick = { },
@@ -273,7 +273,7 @@ private fun KeyPadPreview() {
 @Preview
 @Composable
 private fun KeyPadFourPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPad(
 			onNumberClick = { },
 			onNumberLongClick = { },
@@ -295,7 +295,7 @@ private fun KeyPadFourPreview() {
 @Preview
 @Composable
 private fun KeyPadFourLeftHandPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPad(
 			onNumberClick = { },
 			onNumberLongClick = { },
@@ -317,7 +317,7 @@ private fun KeyPadFourLeftHandPreview() {
 @Preview
 @Composable
 private fun KeyPadSixteenPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPad(
 			onNumberClick = { },
 			onNumberLongClick = { },
@@ -339,7 +339,7 @@ private fun KeyPadSixteenPreview() {
 @Preview
 @Composable
 private fun KeyPadSixteenLeftPreview() {
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		KeyPad(
 			onNumberClick = { },
 			onNumberLongClick = { },

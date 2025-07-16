@@ -32,8 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.LocalHintLogsColors
+import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.theme.extendedColorScheme
 import com.example.sudoku.solver.HintExplanationPart
 import com.example.sudoku.solver.HintExplanationStep
@@ -165,7 +165,7 @@ internal fun HintStepCard(
 @Composable
 internal fun HintStepCardPreview() {
 	val interactionSource = remember { MutableInteractionSource() }
-	SudokuSlayerTheme {
+	SudokuGameTheme {
 		Column(
 			verticalArrangement = Arrangement.spacedBy(12.dp),
 		) {
