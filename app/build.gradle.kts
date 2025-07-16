@@ -96,6 +96,7 @@ dependencies {
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 	testImplementation(platform(libs.junit.bom))
 	testImplementation(libs.junit.jupiter)
+	testImplementation(libs.mockk)
 	testImplementation(libs.androidx.test.core)
 	testImplementation(libs.androidx.test.core.ktx)
 	testImplementation(libs.androidx.test.runner)
