@@ -18,11 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.feature.game.components.keypadparts.ActionPad
 import com.example.feature.game.components.keypadparts.ActionPadItem
 import com.example.feature.game.components.keypadparts.ActionPadOrientation
@@ -56,7 +53,6 @@ internal fun KeyPad(
 	isLeftHandMode: Boolean,
 	showActionButtonsOnTop: Boolean,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle(),
 ) {
 	val middleActionPadItems =
 		getMiddleActionPadItems(
@@ -95,8 +91,6 @@ internal fun KeyPad(
 			} else {
 				(maxHeight - totalItemHeightPadding) / itemsInColumn
 			}
-		val fontSize = (itemSize.value * 0.6f).sp
-		val textStyle = textStyle.copy(fontSize = fontSize)
 
 		LazyColumn(
 			reverseLayout = showActionButtonsOnTop,

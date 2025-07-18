@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
@@ -27,77 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.navigation.AppIcon
-
-@Composable
-fun KeyPadItem(
-	text: String,
-	onClick: () -> Unit,
-	modifier: Modifier = Modifier,
-	onLongClick: (() -> Unit)? = null,
-	icon: AppIcon? = null,
-	textStyle: TextStyle = TextStyle(),
-	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-	textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-) {
-	val mutableInteractionSource = remember { MutableInteractionSource() }
-	Box(
-		modifier =
-		modifier
-			.aspectRatio(1f)
-			.clip(CircleShape)
-			.background(containerColor)
-			.combinedClickable(
-				onClick = onClick,
-				onLongClick = onLongClick,
-				interactionSource = mutableInteractionSource,
-				indication = ripple(
-					bounded = true,
-					color = textColor.copy(alpha = 0.7f),
-				),
-			),
-		contentAlignment = Alignment.Center,
-	) {
-		if (icon != null) {
-			when (icon) {
-				is AppIcon.ResourceIcon -> {
-					Icon(
-						painter = painterResource(id = icon.resourceId),
-						contentDescription = icon.contentDescription,
-						tint = textColor,
-						modifier = Modifier.size(textStyle.fontSize.value.dp),
-					)
-				}
-
-				is AppIcon.VectorIcon -> {
-					Icon(
-						imageVector = icon.imageVector,
-						contentDescription = icon.contentDescription,
-						tint = textColor,
-						modifier = Modifier.size(textStyle.fontSize.value.dp),
-					)
-				}
-			}
-		} else {
-			Text(
-				text = text,
-				color = textColor,
-				style = textStyle,
-				textAlign = TextAlign.Center,
-				maxLines = 1,
-				modifier =
-				Modifier
-					.fillMaxSize()
-					.wrapContentHeight(Alignment.CenterVertically),
-			)
-		}
-	}
-}
 
 @Composable
 private fun BaseKeyPadItem(
