@@ -158,7 +158,6 @@ internal fun KeyPad(
 							items = middleActionPadItems,
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
-							textStyle = textStyle,
 							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
 							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
@@ -206,7 +205,6 @@ internal fun KeyPad(
 							items = middleActionPadItems,
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
-							textStyle = textStyle,
 							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
 							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
