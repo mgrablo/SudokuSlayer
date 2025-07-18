@@ -27,7 +27,7 @@ import com.example.feature.game.components.keypadparts.ActionPad
 import com.example.feature.game.components.keypadparts.ActionPadItem
 import com.example.feature.game.components.keypadparts.ActionPadOrientation
 import com.example.feature.game.components.keypadparts.InputModeSwitch
-import com.example.feature.game.components.keypadparts.KeyPadItem
+import com.example.feature.game.components.keypadparts.KeyPadIconItem
 import com.example.feature.game.components.keypadparts.NumberPad
 import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.SudokuGameTheme
@@ -116,26 +116,23 @@ internal fun KeyPad(
 							InputModeSwitch(
 								onClick = onSwitchInputMode,
 								checked = noteMode,
-								iconSize = fontSize.value.dp,
 								modifier = Modifier.size(itemSize),
 							)
-							KeyPadItem(
-								text = "",
+							KeyPadIconItem(
 								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
 								onClick = onHintClick,
-								textStyle = textStyle,
+								onLongClick = null,
 								modifier = Modifier.size(itemSize),
 								containerColor = LocalKeyPadColors.current.actionPadBackground,
-								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
-							KeyPadItem(
-								text = "",
+							KeyPadIconItem(
 								icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
 								onClick = onResetClick,
-								textStyle = textStyle,
+								onLongClick = null,
 								modifier = Modifier.size(itemSize),
 								containerColor = LocalKeyPadColors.current.actionPadBackground,
-								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 						}
 						NumberPad(
@@ -170,14 +167,13 @@ internal fun KeyPad(
 						reverseLayout = isLeftHandMode,
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
-						KeyPadItem(
-							text = "",
+						KeyPadIconItem(
 							icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
 							onClick = onHintClick,
-							textStyle = textStyle,
+							onLongClick = null,
 							modifier = Modifier.size(itemSize),
 							containerColor = LocalKeyPadColors.current.actionPadBackground,
-							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						NumberPad(
 							gridSize = gridSize,
@@ -192,14 +188,13 @@ internal fun KeyPad(
 					Row(
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
-						KeyPadItem(
-							text = "",
+						KeyPadIconItem(
 							icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
 							onClick = onResetClick,
-							textStyle = textStyle,
+							onLongClick = null,
 							modifier = Modifier.size(itemSize),
 							containerColor = LocalKeyPadColors.current.actionPadBackground,
-							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						ActionPad(
 							items = middleActionPadItems,
@@ -211,7 +206,6 @@ internal fun KeyPad(
 						InputModeSwitch(
 							onClick = onSwitchInputMode,
 							checked = noteMode,
-							iconSize = fontSize.value.dp,
 							modifier = Modifier.size(itemSize),
 						)
 					}

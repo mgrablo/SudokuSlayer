@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.SudokuGameTheme
@@ -25,12 +24,7 @@ import com.example.sudokuslayer.feature.game.R
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun InputModeSwitch(
-	checked: Boolean,
-	onClick: (Boolean) -> Unit,
-	modifier: Modifier = Modifier,
-	iconSize: Dp = 40.dp,
-) {
+fun InputModeSwitch(checked: Boolean, onClick: (Boolean) -> Unit, modifier: Modifier = Modifier) {
 	val contentDesc = if (checked) {
 		stringResource(R.string.input_switch_action_to_numbers)
 	} else {
@@ -64,7 +58,7 @@ fun InputModeSwitch(
 				painterResource(R.drawable.tag)
 			},
 			contentDescription = contentDesc,
-			modifier = Modifier.size(iconSize),
+			modifier = Modifier.size(IconButtonDefaults.largeIconSize),
 		)
 	}
 }
@@ -80,13 +74,11 @@ private fun InputModeSwitchPreview() {
 			InputModeSwitch(
 				onClick = { checked = !checked },
 				checked = checked,
-				iconSize = 30.dp,
 				modifier = Modifier.size(50.dp),
 			)
 			InputModeSwitch(
 				onClick = { checked = !checked },
 				checked = !checked,
-				iconSize = 30.dp,
 				modifier = Modifier.size(50.dp),
 			)
 		}

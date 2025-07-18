@@ -14,7 +14,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -151,13 +153,14 @@ internal fun KeyPadTextItem(
 			maxLines = 1,
 			modifier =
 			Modifier
-				.padding(4.dp)
 				.fillMaxSize()
+				.padding(4.dp)
 				.align(Alignment.Center),
 		)
 	}
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun KeyPadIconItem(
 	icon: AppIcon,
@@ -181,8 +184,7 @@ internal fun KeyPadIconItem(
 					contentDescription = icon.contentDescription,
 					tint = contentColor,
 					modifier = Modifier
-						.padding(4.dp)
-						.fillMaxSize(),
+						.size(IconButtonDefaults.largeIconSize),
 				)
 			}
 
@@ -192,8 +194,7 @@ internal fun KeyPadIconItem(
 					contentDescription = icon.contentDescription,
 					tint = contentColor,
 					modifier = Modifier
-						.padding(4.dp)
-						.fillMaxSize(),
+						.size(IconButtonDefaults.largeIconSize),
 				)
 			}
 		}
