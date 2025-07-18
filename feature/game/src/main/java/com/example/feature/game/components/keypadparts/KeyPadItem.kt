@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
@@ -95,14 +97,112 @@ fun KeyPadItem(
 	}
 }
 
+@Composable
+private fun BaseKeyPadItem(
+	onClick: () -> Unit,
+	onLongClick: (() -> Unit)?,
+	modifier: Modifier = Modifier,
+	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+	contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+	content: @Composable BoxScope.() -> Unit,
+) {
+	val mutableInteractionSource = remember { MutableInteractionSource() }
+	Box(
+		contentAlignment = Alignment.Center,
+		modifier = modifier
+			.aspectRatio(1f)
+			.clip(CircleShape)
+			.background(containerColor)
+			.combinedClickable(
+				onClick = onClick,
+				onLongClick = onLongClick,
+				interactionSource = mutableInteractionSource,
+				indication = ripple(
+					bounded = true,
+					color = contentColor.copy(alpha = 0.7f),
+				),
+			),
+	) {
+		content()
+	}
+}
+
+@Composable
+internal fun KeyPadTextItem(
+	text: String,
+	onClick: () -> Unit,
+	onLongClick: (() -> Unit)?,
+	modifier: Modifier = Modifier,
+	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+	contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+) {
+	BaseKeyPadItem(
+		onClick = onClick,
+		onLongClick = onLongClick,
+		modifier = modifier,
+		containerColor = containerColor,
+		contentColor = contentColor,
+	) {
+		Text(
+			text = text,
+			color = contentColor,
+			autoSize = TextAutoSize.StepBased(),
+			textAlign = TextAlign.Center,
+			maxLines = 1,
+			modifier =
+			Modifier
+				.fillMaxSize()
+				.align(Alignment.Center)
+		)
+	}
+}
+
+@Composable
+internal fun KeyPadIconItem(
+	icon: AppIcon,
+	onClick: () -> Unit,
+	onLongClick: (() -> Unit)?,
+	modifier: Modifier = Modifier,
+	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+	contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+) {
+	BaseKeyPadItem(
+		onClick = onClick,
+		onLongClick = onLongClick,
+		modifier = modifier,
+		containerColor = containerColor,
+		contentColor = contentColor,
+	) {
+		when (icon) {
+			is AppIcon.ResourceIcon -> {
+				Icon(
+					painter = painterResource(id = icon.resourceId),
+					contentDescription = icon.contentDescription,
+					tint = contentColor,
+					modifier = Modifier.fillMaxSize(),
+				)
+			}
+			is AppIcon.VectorIcon -> {
+				Icon(
+					imageVector = icon.imageVector,
+					contentDescription = icon.contentDescription,
+					tint = contentColor,
+					modifier = Modifier.fillMaxSize(),
+				)
+			}
+		}
+	}
+}
+
 @PreviewLightDark
 @Composable
 private fun KeyboardItemNumberPreview() {
 	SudokuGameTheme {
-		KeyPadItem(
+		KeyPadTextItem(
 			text = "5",
 			onClick = { },
-			textStyle = TextStyle(fontSize = 24.sp),
+			onLongClick = null,
+			modifier = Modifier.size(80.dp)
 		)
 	}
 }
@@ -111,11 +211,11 @@ private fun KeyboardItemNumberPreview() {
 @Composable
 private fun KeyboardItemIconPreview() {
 	SudokuGameTheme {
-		KeyPadItem(
-			text = "5",
+		KeyPadIconItem(
 			icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear"),
 			onClick = { },
-			textStyle = TextStyle(fontSize = 24.sp),
+			onLongClick = null,
+			modifier = Modifier.size(80.dp)
 		)
 	}
 }
