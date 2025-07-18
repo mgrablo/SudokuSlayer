@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
@@ -35,12 +34,11 @@ enum class ActionPadOrientation {
 }
 
 @Composable
-fun ActionPad(
+internal fun ActionPad(
 	items: PersistentList<ActionPadItem>,
 	modifier: Modifier = Modifier,
 	orientation: ActionPadOrientation = ActionPadOrientation.HORIZONTAL,
 	itemSize: Dp = 60.dp,
-	textStyle: TextStyle = TextStyle(),
 	itemContainerColor: Color = MaterialTheme.colorScheme.background,
 	itemContentColor: Color = MaterialTheme.colorScheme.onBackground,
 ) {
@@ -49,13 +47,12 @@ fun ActionPad(
 		modifier = modifier,
 	) {
 		items.forEach { item ->
-			KeyPadItem(
-				text = "",
+			KeyPadIconItem(
 				icon = item.icon,
 				onClick = item.onClick,
+				onLongClick = null,
 				containerColor = itemContainerColor,
-				textColor = itemContentColor,
-				textStyle = textStyle,
+				contentColor = itemContentColor,
 				modifier =
 				Modifier
 					.size(itemSize),

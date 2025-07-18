@@ -8,4 +8,6 @@
 	<string name="content_desc_explain_hint">Explain hint</string>
     <string name="input_switch_action_to_numbers">Switch to Number input mode</string>
 	<string name="input_switch_action_to_notes">Switch to Note input mode</string>
+	<string name="action_restart">Restart</string>
+	<string name="action_hint">Hint</string>
 </resources>

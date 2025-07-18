@@ -18,16 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.feature.game.components.keypadparts.ActionPad
 import com.example.feature.game.components.keypadparts.ActionPadItem
 import com.example.feature.game.components.keypadparts.ActionPadOrientation
 import com.example.feature.game.components.keypadparts.InputModeSwitch
-import com.example.feature.game.components.keypadparts.KeyPadItem
+import com.example.feature.game.components.keypadparts.KeyPadIconItem
 import com.example.feature.game.components.keypadparts.NumberPad
 import com.example.feature.game.theme.LocalKeyPadColors
 import com.example.feature.game.theme.SudokuGameTheme
@@ -49,14 +47,12 @@ internal fun KeyPad(
 	onRedoClick: () -> Unit,
 	onSwitchInputMode: (Boolean) -> Unit,
 	onHintClick: () -> Unit,
-	onShowMistakesClick: () -> Unit,
 	onResetClick: () -> Unit,
 	noteMode: Boolean,
 	gridSize: Int,
 	isLeftHandMode: Boolean,
 	showActionButtonsOnTop: Boolean,
 	modifier: Modifier = Modifier,
-	textStyle: TextStyle = TextStyle(),
 ) {
 	val middleActionPadItems =
 		getMiddleActionPadItems(
@@ -95,8 +91,6 @@ internal fun KeyPad(
 			} else {
 				(maxHeight - totalItemHeightPadding) / itemsInColumn
 			}
-		val fontSize = (itemSize.value * 0.6f).sp
-		val textStyle = textStyle.copy(fontSize = fontSize)
 
 		LazyColumn(
 			reverseLayout = showActionButtonsOnTop,
@@ -116,26 +110,29 @@ internal fun KeyPad(
 							InputModeSwitch(
 								onClick = onSwitchInputMode,
 								checked = noteMode,
-								iconSize = fontSize.value.dp,
 								modifier = Modifier.size(itemSize),
 							)
-							KeyPadItem(
-								text = "",
-								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+							KeyPadIconItem(
+								icon = AppIcon.ResourceIcon(
+									R.drawable.lightbulb,
+									stringResource(R.string.action_hint),
+								),
 								onClick = onHintClick,
-								textStyle = textStyle,
+								onLongClick = null,
 								modifier = Modifier.size(itemSize),
 								containerColor = LocalKeyPadColors.current.actionPadBackground,
-								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
-							KeyPadItem(
-								text = "",
-								icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+							KeyPadIconItem(
+								icon = AppIcon.VectorIcon(
+									Icons.Default.Refresh,
+									stringResource(R.string.action_restart),
+								),
 								onClick = onResetClick,
-								textStyle = textStyle,
+								onLongClick = null,
 								modifier = Modifier.size(itemSize),
 								containerColor = LocalKeyPadColors.current.actionPadBackground,
-								textColor = LocalKeyPadColors.current.actionPadOnBackground,
+								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 						}
 						NumberPad(
@@ -143,7 +140,6 @@ internal fun KeyPad(
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
-							textStyle = textStyle,
 							itemSize = itemSize,
 						)
 					}
@@ -159,7 +155,6 @@ internal fun KeyPad(
 							items = middleActionPadItems,
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
-							textStyle = textStyle,
 							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
 							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
@@ -172,21 +167,22 @@ internal fun KeyPad(
 						reverseLayout = isLeftHandMode,
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
-						KeyPadItem(
-							text = "",
-							icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+						KeyPadIconItem(
+							icon = AppIcon.ResourceIcon(
+								R.drawable.lightbulb,
+								stringResource(R.string.action_hint),
+							),
 							onClick = onHintClick,
-							textStyle = textStyle,
+							onLongClick = null,
 							modifier = Modifier.size(itemSize),
 							containerColor = LocalKeyPadColors.current.actionPadBackground,
-							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						NumberPad(
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
-							textStyle = textStyle,
 							itemSize = itemSize,
 						)
 					}
@@ -195,27 +191,27 @@ internal fun KeyPad(
 					Row(
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
-						KeyPadItem(
-							text = "",
-							icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+						KeyPadIconItem(
+							icon = AppIcon.VectorIcon(
+								Icons.Default.Refresh,
+								stringResource(R.string.action_restart),
+							),
 							onClick = onResetClick,
-							textStyle = textStyle,
+							onLongClick = null,
 							modifier = Modifier.size(itemSize),
 							containerColor = LocalKeyPadColors.current.actionPadBackground,
-							textColor = LocalKeyPadColors.current.actionPadOnBackground,
+							contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						ActionPad(
 							items = middleActionPadItems,
 							orientation = ActionPadOrientation.HORIZONTAL,
 							itemSize = itemSize,
-							textStyle = textStyle,
 							itemContainerColor = LocalKeyPadColors.current.actionPadBackground,
 							itemContentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						InputModeSwitch(
 							onClick = onSwitchInputMode,
 							checked = noteMode,
-							iconSize = fontSize.value.dp,
 							modifier = Modifier.size(itemSize),
 						)
 					}
@@ -260,7 +256,6 @@ private fun KeyPadPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
@@ -282,7 +277,6 @@ private fun KeyPadFourPreview() {
 			onRedoClick = { },
 			onHintClick = { },
 			onSwitchInputMode = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
@@ -304,7 +298,6 @@ private fun KeyPadFourLeftHandPreview() {
 			onRedoClick = { },
 			onHintClick = { },
 			onSwitchInputMode = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
@@ -326,7 +319,6 @@ private fun KeyPadSixteenPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
@@ -348,7 +340,6 @@ private fun KeyPadSixteenLeftPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,

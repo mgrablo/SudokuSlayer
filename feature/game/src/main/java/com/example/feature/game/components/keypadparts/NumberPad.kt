@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
@@ -23,14 +22,13 @@ import com.example.feature.uicore.theme.extendedColorScheme
 import kotlin.math.sqrt
 
 @Composable
-fun NumberPad(
+internal fun NumberPad(
 	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
 	onButtonLongClick: (Int) -> Unit,
 	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
-	textStyle: TextStyle = TextStyle(),
 ) {
 	val numbers by remember { derivedStateOf { (1..gridSize).toList() } }
 	val keyboardRows = numbers.chunked(
@@ -58,8 +56,7 @@ fun NumberPad(
 		}
 
 	Column(
-		modifier =
-		modifier,
+		modifier = modifier,
 		verticalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
@@ -69,13 +66,12 @@ fun NumberPad(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				for (number in row) {
-					KeyPadItem(
+					KeyPadTextItem(
 						text = number.toString(),
 						onClick = { onButtonClick(number) },
 						onLongClick = { onButtonLongClick(number) },
 						containerColor = keyColor,
-						textColor = textColor,
-						textStyle = textStyle,
+						contentColor = textColor,
 						modifier = Modifier
 							.size(itemSize),
 					)
