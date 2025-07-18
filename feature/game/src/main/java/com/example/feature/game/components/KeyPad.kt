@@ -113,7 +113,10 @@ internal fun KeyPad(
 								modifier = Modifier.size(itemSize),
 							)
 							KeyPadIconItem(
-								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, stringResource(R.string.action_restart)),
+								icon = AppIcon.ResourceIcon(
+									R.drawable.lightbulb,
+									stringResource(R.string.action_hint),
+								),
 								onClick = onHintClick,
 								onLongClick = null,
 								modifier = Modifier.size(itemSize),
@@ -121,7 +124,10 @@ internal fun KeyPad(
 								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 							KeyPadIconItem(
-								icon = AppIcon.VectorIcon(Icons.Default.Refresh, stringResource(R.string.action_restart)),
+								icon = AppIcon.VectorIcon(
+									Icons.Default.Refresh,
+									stringResource(R.string.action_restart),
+								),
 								onClick = onResetClick,
 								onLongClick = null,
 								modifier = Modifier.size(itemSize),
