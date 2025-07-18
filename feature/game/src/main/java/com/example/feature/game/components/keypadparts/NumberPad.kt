@@ -22,7 +22,7 @@ import com.example.feature.uicore.theme.extendedColorScheme
 import kotlin.math.sqrt
 
 @Composable
-fun NumberPad(
+internal fun NumberPad(
 	gridSize: Int,
 	onButtonClick: (Int) -> Unit,
 	onButtonLongClick: (Int) -> Unit,

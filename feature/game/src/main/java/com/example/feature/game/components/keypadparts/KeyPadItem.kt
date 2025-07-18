@@ -29,7 +29,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.navigation.AppIcon
 
@@ -154,7 +153,7 @@ internal fun KeyPadTextItem(
 			Modifier
 				.padding(4.dp)
 				.fillMaxSize()
-				.align(Alignment.Center)
+				.align(Alignment.Center),
 		)
 	}
 }
@@ -181,15 +180,20 @@ internal fun KeyPadIconItem(
 					painter = painterResource(id = icon.resourceId),
 					contentDescription = icon.contentDescription,
 					tint = contentColor,
-					modifier = Modifier.fillMaxSize(),
+					modifier = Modifier
+						.padding(4.dp)
+						.fillMaxSize(),
 				)
 			}
+
 			is AppIcon.VectorIcon -> {
 				Icon(
 					imageVector = icon.imageVector,
 					contentDescription = icon.contentDescription,
 					tint = contentColor,
-					modifier = Modifier.fillMaxSize(),
+					modifier = Modifier
+						.padding(4.dp)
+						.fillMaxSize(),
 				)
 			}
 		}
@@ -204,7 +208,7 @@ private fun KeyboardItemNumberPreview() {
 			text = "5",
 			onClick = { },
 			onLongClick = null,
-			modifier = Modifier.size(80.dp)
+			modifier = Modifier.size(80.dp),
 		)
 	}
 }
@@ -217,7 +221,7 @@ private fun KeyboardItemIconPreview() {
 			icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear"),
 			onClick = { },
 			onLongClick = null,
-			modifier = Modifier.size(80.dp)
+			modifier = Modifier.size(80.dp),
 		)
 	}
 }
