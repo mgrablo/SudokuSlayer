@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.example.feature.game.components.keypadparts.ActionPad
@@ -46,7 +47,6 @@ internal fun KeyPad(
 	onRedoClick: () -> Unit,
 	onSwitchInputMode: (Boolean) -> Unit,
 	onHintClick: () -> Unit,
-	onShowMistakesClick: () -> Unit,
 	onResetClick: () -> Unit,
 	noteMode: Boolean,
 	gridSize: Int,
@@ -113,7 +113,7 @@ internal fun KeyPad(
 								modifier = Modifier.size(itemSize),
 							)
 							KeyPadIconItem(
-								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+								icon = AppIcon.ResourceIcon(R.drawable.lightbulb, stringResource(R.string.action_restart)),
 								onClick = onHintClick,
 								onLongClick = null,
 								modifier = Modifier.size(itemSize),
@@ -121,7 +121,7 @@ internal fun KeyPad(
 								contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 							)
 							KeyPadIconItem(
-								icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+								icon = AppIcon.VectorIcon(Icons.Default.Refresh, stringResource(R.string.action_restart)),
 								onClick = onResetClick,
 								onLongClick = null,
 								modifier = Modifier.size(itemSize),
@@ -162,7 +162,10 @@ internal fun KeyPad(
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
 						KeyPadIconItem(
-							icon = AppIcon.ResourceIcon(R.drawable.lightbulb, "Hint"),
+							icon = AppIcon.ResourceIcon(
+								R.drawable.lightbulb,
+								stringResource(R.string.action_hint),
+							),
 							onClick = onHintClick,
 							onLongClick = null,
 							modifier = Modifier.size(itemSize),
@@ -183,7 +186,10 @@ internal fun KeyPad(
 						horizontalArrangement = Arrangement.spacedBy(LocalPadding.current.tiny),
 					) {
 						KeyPadIconItem(
-							icon = AppIcon.VectorIcon(Icons.Default.Refresh, "Restart"),
+							icon = AppIcon.VectorIcon(
+								Icons.Default.Refresh,
+								stringResource(R.string.action_restart),
+							),
 							onClick = onResetClick,
 							onLongClick = null,
 							modifier = Modifier.size(itemSize),
@@ -244,7 +250,6 @@ private fun KeyPadPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
@@ -266,7 +271,6 @@ private fun KeyPadFourPreview() {
 			onRedoClick = { },
 			onHintClick = { },
 			onSwitchInputMode = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
@@ -288,7 +292,6 @@ private fun KeyPadFourLeftHandPreview() {
 			onRedoClick = { },
 			onHintClick = { },
 			onSwitchInputMode = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
@@ -310,7 +313,6 @@ private fun KeyPadSixteenPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = false,
 			isLeftHandMode = false,
@@ -332,7 +334,6 @@ private fun KeyPadSixteenLeftPreview() {
 			onRedoClick = { },
 			onSwitchInputMode = { },
 			onHintClick = { },
-			onShowMistakesClick = { },
 			onResetClick = { },
 			noteMode = true,
 			isLeftHandMode = true,
