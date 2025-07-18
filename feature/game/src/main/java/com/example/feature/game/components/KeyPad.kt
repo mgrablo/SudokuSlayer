@@ -143,7 +143,6 @@ internal fun KeyPad(
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
-							textStyle = textStyle,
 							itemSize = itemSize,
 						)
 					}
@@ -186,7 +185,6 @@ internal fun KeyPad(
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
 							noteMode = noteMode,
-							textStyle = textStyle,
 							itemSize = itemSize,
 						)
 					}
