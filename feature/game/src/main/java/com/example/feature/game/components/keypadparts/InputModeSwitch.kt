@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,12 @@ fun InputModeSwitch(
 	modifier: Modifier = Modifier,
 	iconSize: Dp = 40.dp,
 ) {
+	val contentDesc = if (checked) {
+		stringResource(R.string.input_switch_action_to_numbers)
+	} else {
+		stringResource(R.string.input_switch_action_to_notes)
+	}
+
 	IconToggleButton(
 		checked = checked,
 		onCheckedChange = { onClick(it) },
@@ -56,7 +63,7 @@ fun InputModeSwitch(
 			} else {
 				painterResource(R.drawable.tag)
 			},
-			contentDescription = "Input mode switch",
+			contentDescription = contentDesc,
 			modifier = Modifier.size(iconSize),
 		)
 	}
