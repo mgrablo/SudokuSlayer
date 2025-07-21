@@ -412,7 +412,7 @@ private fun SudokuGameScreenFourPreview() {
 			uiState =
 			SudokuGameUiState(
 				isLeftHandMode = true,
-				gameState = GameState.VICTORY,
+				gameState = GameState.PLAYING,
 			),
 			game =
 			Game(
