@@ -19,11 +19,14 @@ import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.extendedColorScheme
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlin.math.sqrt
 
 @Composable
 internal fun NumberPad(
 	gridSize: Int,
+	remainingDigitCounts: PersistentMap<Int, Int>,
 	onButtonClick: (Int) -> Unit,
 	onButtonLongClick: (Int) -> Unit,
 	noteMode: Boolean,
@@ -66,15 +69,28 @@ internal fun NumberPad(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				for (number in row) {
-					KeyPadTextItem(
-						text = number.toString(),
-						onClick = { onButtonClick(number) },
-						onLongClick = { onButtonLongClick(number) },
-						containerColor = keyColor,
-						contentColor = textColor,
-						modifier = Modifier
-							.size(itemSize),
-					)
+					if (number in remainingDigitCounts) {
+						KeyPadDigitItem(
+							digit = number,
+							remainingCount = remainingDigitCounts[number]!!,
+							onClick = { onButtonClick(number) },
+							onLongClick = { onButtonLongClick(number) },
+							containerColor = keyColor,
+							contentColor = textColor,
+							modifier = Modifier
+								.size(itemSize),
+						)
+					} else {
+						KeyPadTextItem(
+							text = number.toString(),
+							onClick = { onButtonClick(number) },
+							onLongClick = { onButtonLongClick(number) },
+							containerColor = keyColor,
+							contentColor = textColor,
+							modifier = Modifier
+								.size(itemSize),
+						)
+					}
 				}
 			}
 		}
@@ -86,6 +102,7 @@ internal fun NumberPad(
 private fun NumberPadNineItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
 			noteMode = false,
@@ -100,6 +117,7 @@ private fun NumberPadNineItemsPreview() {
 private fun NumberPadFourItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
 			noteMode = false,
@@ -114,6 +132,7 @@ private fun NumberPadFourItemsPreview() {
 private fun NumberPadSixteenItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
 			noteMode = false,

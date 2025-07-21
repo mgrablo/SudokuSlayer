@@ -29,10 +29,13 @@ import com.example.sudoku.model.fillNotes
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,6 +46,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -94,6 +98,13 @@ internal class SudokuGameViewModel(
 			started = SharingStarted.WhileSubscribed(5000L),
 			initialValue = 0L,
 		)
+	val remainingDigitCounts: StateFlow<PersistentMap<Int, Int>> = game.map {
+		calculateRemainingCounts(it.grid).toPersistentMap()
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000L),
+		initialValue = persistentMapOf(),
+	)
 
 	private val stringProvider by lazy {
 		AndroidHintStringProvider(application)
@@ -603,5 +614,14 @@ internal class SudokuGameViewModel(
 				)
 			}
 		}
+	}
+
+	private fun calculateRemainingCounts(sudokuGrid: SudokuGrid): Map<Int, Int> {
+		val remainingDigitCounts = mutableMapOf<Int, Int>()
+		val max = sudokuGrid.gridSize
+		for (i in 1..max) {
+			remainingDigitCounts[i] = max - sudokuGrid.data.count { it.number == i }
+		}
+		return remainingDigitCounts
 	}
 }

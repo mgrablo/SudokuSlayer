@@ -59,7 +59,9 @@ import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.game.R
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.random.Random
@@ -76,6 +78,7 @@ internal fun SudokuGameScreen(
 	val elapsedTime by viewModel.elapsedTime.collectAsStateWithLifecycle()
 	val uiState: SudokuGameUiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val game by viewModel.game.collectAsStateWithLifecycle()
+	val remainingDigitCounts by viewModel.remainingDigitCounts.collectAsStateWithLifecycle()
 
 	SudokuGameTheme(useSudokuSlayerTheme = false) {
 		LifecycleResumeEffect(Unit) {
@@ -88,6 +91,7 @@ internal fun SudokuGameScreen(
 		SudokuGameScreenContent(
 			uiState = uiState,
 			game = game,
+			remainingDigitCounts = remainingDigitCounts,
 			onEvent = {
 				viewModel.onEvent(it)
 			},
@@ -105,6 +109,7 @@ internal fun SudokuGameScreen(
 private fun SudokuGameScreenContent(
 	uiState: SudokuGameUiState,
 	game: Game,
+	remainingDigitCounts: PersistentMap<Int, Int>,
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
@@ -263,6 +268,7 @@ private fun SudokuGameScreenContent(
 							GameState.LOADING -> {}
 							GameState.PLAYING -> {
 								KeyPad(
+									remainingDigitCounts = remainingDigitCounts,
 									onNumberClick = { onEvent(Event.InputNumber(it)) },
 									onNumberLongClick = { onEvent(Event.LongInputNumber(it)) },
 									onClearClick = { onEvent(Event.ClearCell) },
@@ -315,6 +321,7 @@ private fun SudokuGameScreenContent(
 							GameState.LOADING -> {}
 							GameState.PLAYING -> {
 								KeyPad(
+									remainingDigitCounts = remainingDigitCounts,
 									onNumberClick = { onEvent(Event.InputNumber(it)) },
 									onNumberLongClick = { onEvent(Event.LongInputNumber(it)) },
 									onClearClick = { onEvent(Event.ClearCell) },
@@ -368,6 +375,7 @@ private fun SudokuGameScreenPreview() {
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
 			),
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
@@ -392,6 +400,7 @@ private fun SudokuGameScreenSixteenPreview() {
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
 			),
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
@@ -422,6 +431,7 @@ private fun SudokuGameScreenFourPreview() {
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
 			),
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},
 			elapsedTime = { 1 },
 			openDrawer = {},
