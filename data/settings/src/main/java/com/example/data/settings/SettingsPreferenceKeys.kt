@@ -53,4 +53,9 @@ interface SettingsPreferenceKeys {
 		name = "timer_visibility",
 		defaultValue = true,
 	)
+
+	data object RemainingDigitCounts : PreferenceStorage.Key.BooleanKey(
+		name = "remaining_digit_counts",
+		defaultValue = true,
+	)
 }

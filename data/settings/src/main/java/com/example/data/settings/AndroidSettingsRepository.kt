@@ -61,6 +61,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		SettingsPreferenceKeys.TimerVisibility,
 	).map { it == true }
 
+	override val remainingDigitCounts: Flow<Boolean> = preferenceStorage.getAsFlow(
+		SettingsPreferenceKeys.RemainingDigitCounts,
+	).map { it == true }
+
 	override suspend fun setDarkMode(darkMode: DarkMode) {
 		preferenceStorage.set(SettingsPreferenceKeys.DarkMode, darkMode.displayName)
 	}
@@ -111,6 +115,13 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		preferenceStorage.set(
 			SettingsPreferenceKeys.TimerVisibility,
 			timerVisibility,
+		)
+	}
+
+	override suspend fun setRemainingDigitCounts(remainingDigitCounts: Boolean) {
+		preferenceStorage.set(
+			SettingsPreferenceKeys.RemainingDigitCounts,
+			remainingDigitCounts,
 		)
 	}
 

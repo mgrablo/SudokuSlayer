@@ -16,6 +16,7 @@ interface SettingsRepository {
 	val highlightMatchingNumbers: Flow<Boolean>
 	val highlightInvalidNumbers: Flow<Boolean>
 	val timerVisibility: Flow<Boolean>
+	val remainingDigitCounts: Flow<Boolean>
 
 	suspend fun setDarkMode(darkMode: DarkMode)
 
@@ -38,6 +39,8 @@ interface SettingsRepository {
 	suspend fun setHighlightInvalidNumbers(highlightInvalidNumbers: Boolean)
 
 	suspend fun setTimerVisibility(timerVisibility: Boolean)
+
+	suspend fun setRemainingDigitCounts(remainingDigitCounts: Boolean)
 
 	fun getAvailableColorSchemes(): List<ColorScheme>
 

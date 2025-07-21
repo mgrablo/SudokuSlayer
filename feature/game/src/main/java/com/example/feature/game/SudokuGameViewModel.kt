@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -98,8 +97,15 @@ internal class SudokuGameViewModel(
 			started = SharingStarted.WhileSubscribed(5000L),
 			initialValue = 0L,
 		)
-	val remainingDigitCounts: StateFlow<PersistentMap<Int, Int>> = game.map {
-		calculateRemainingCounts(it.grid).toPersistentMap()
+	val remainingDigitCounts: StateFlow<PersistentMap<Int, Int>> = combine(
+		game,
+		settingsRepository.remainingDigitCounts,
+	) { game, showRemainingDigitCounts ->
+		if (showRemainingDigitCounts) {
+			calculateRemainingCounts(game.grid).toPersistentMap()
+		} else {
+			persistentMapOf()
+		}
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000L),

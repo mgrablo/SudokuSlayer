@@ -36,6 +36,7 @@ internal data class GameplaySettings(
 	val highlightMatching: Boolean = true,
 	val highlightInvalid: Boolean = true,
 	val timerVisibility: Boolean = true,
+	val remainingDigitCounts: Boolean = true,
 )
 
 internal class SettingsViewModel(private val settingsRepository: SettingsRepository) :
@@ -82,12 +83,14 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		settingsRepository.highlightMatchingNumbers,
 		settingsRepository.highlightInvalidNumbers,
 		settingsRepository.timerVisibility,
-	) { autoClearNotes, highlightMatching, highlightInvalid, timerVisibility ->
+		settingsRepository.remainingDigitCounts,
+	) { autoClearNotes, highlightMatching, highlightInvalid, timerVisibility, remainingDigitCounts ->
 		GameplaySettings(
 			autoClearNotes = autoClearNotes,
 			highlightMatching = highlightMatching,
 			highlightInvalid = highlightInvalid,
 			timerVisibility = timerVisibility,
+			remainingDigitCounts = remainingDigitCounts,
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -129,6 +132,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		data class ToggleHighlightMatching(val highlightMatching: Boolean) : Event
 		data class ToggleHighlightInvalid(val highlightInvalid: Boolean) : Event
 		data class ToggleTimerVisibility(val timerVisibility: Boolean) : Event
+		data class ToggleRemainingDigitCounts(val remainingDigitCounts: Boolean) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -147,6 +151,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 			is Event.ToggleHighlightMatching -> toggleHighlightMatching(event.highlightMatching)
 			is Event.ToggleHighlightInvalid -> toggleHighlightInvalid(event.highlightInvalid)
 			is Event.ToggleTimerVisibility -> toggleTimerVisibility(event.timerVisibility)
+			is Event.ToggleRemainingDigitCounts -> toggleRemainingDigitCounts(event.remainingDigitCounts)
 		}
 	}
 
@@ -214,6 +219,12 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		viewModelScope.launch {
 			// When timerVisibility is true (user wants to hide), we save visibility as false.
 			settingsRepository.setTimerVisibility(!timerVisibility)
+		}
+	}
+
+	private fun toggleRemainingDigitCounts(remainingDigitCounts: Boolean) {
+		viewModelScope.launch {
+			settingsRepository.setRemainingDigitCounts(remainingDigitCounts)
 		}
 	}
 }
