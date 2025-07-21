@@ -7,4 +7,6 @@
 	<string name="gameplay_mark_invalid">Mark Invalid Numbers</string>
 	<string name="gameplay_hide_in_game_timer">Hide In-Game Timer</string>
 	<string name="gameplay_hide_in_game_timer_desc">Hides the timer during gameplay so you can solve at your own pace. Your final time is still recorded.</string>
+    <string name="gameplay_show_remaining_digit_counts">Show Remaining Digit Counts</string>
+	<string name="gameplay_show_remaining_digit_counts_desc">Display a small number below each digit on the keypad indicating how many are left to place.</string>
 </resources>

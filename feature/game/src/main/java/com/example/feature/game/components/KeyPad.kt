@@ -34,12 +34,15 @@ import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlin.math.sqrt
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun KeyPad(
+	remainingDigitCounts: PersistentMap<Int, Int>,
 	onNumberClick: (Int) -> Unit,
 	onNumberLongClick: (Int) -> Unit,
 	onClearClick: () -> Unit,
@@ -136,10 +139,10 @@ internal fun KeyPad(
 							)
 						}
 						NumberPad(
+							remainingDigitCounts = remainingDigitCounts,
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
-							noteMode = noteMode,
 							itemSize = itemSize,
 						)
 					}
@@ -179,10 +182,10 @@ internal fun KeyPad(
 							contentColor = LocalKeyPadColors.current.actionPadOnBackground,
 						)
 						NumberPad(
+							remainingDigitCounts = remainingDigitCounts,
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
-							noteMode = noteMode,
 							itemSize = itemSize,
 						)
 					}
@@ -249,6 +252,7 @@ private fun getMiddleActionPadItems(
 private fun KeyPadPreview() {
 	SudokuGameTheme {
 		KeyPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 2, 3 to 3),
 			onNumberClick = { },
 			onNumberLongClick = { },
 			onClearClick = { },
@@ -270,6 +274,7 @@ private fun KeyPadPreview() {
 private fun KeyPadFourPreview() {
 	SudokuGameTheme {
 		KeyPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 2, 3 to 3),
 			onNumberClick = { },
 			onNumberLongClick = { },
 			onClearClick = { },
@@ -291,6 +296,7 @@ private fun KeyPadFourPreview() {
 private fun KeyPadFourLeftHandPreview() {
 	SudokuGameTheme {
 		KeyPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 2, 3 to 3),
 			onNumberClick = { },
 			onNumberLongClick = { },
 			onClearClick = { },
@@ -312,6 +318,7 @@ private fun KeyPadFourLeftHandPreview() {
 private fun KeyPadSixteenPreview() {
 	SudokuGameTheme {
 		KeyPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 2, 3 to 3),
 			onNumberClick = { },
 			onNumberLongClick = { },
 			onClearClick = { },
@@ -333,6 +340,7 @@ private fun KeyPadSixteenPreview() {
 private fun KeyPadSixteenLeftPreview() {
 	SudokuGameTheme {
 		KeyPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 2, 3 to 3),
 			onNumberClick = { },
 			onNumberLongClick = { },
 			onClearClick = { },

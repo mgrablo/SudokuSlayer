@@ -5,6 +5,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -93,6 +97,57 @@ internal fun KeyPadTextItem(
 	}
 }
 
+@Composable
+internal fun KeyPadDigitItem(
+	digit: Int,
+	remainingCount: Int,
+	onClick: () -> Unit,
+	onLongClick: (() -> Unit),
+	modifier: Modifier = Modifier,
+	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+	contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+	completedColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+	completedContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+) {
+	val containerColor = if (remainingCount == 0) completedColor else containerColor
+	val contentColor = if (remainingCount == 0) completedContentColor else contentColor
+	BaseKeyPadItem(
+		onClick = onClick,
+		onLongClick = onLongClick,
+		modifier = modifier,
+		containerColor = containerColor,
+		contentColor = contentColor,
+	) {
+		Column(
+			horizontalAlignment = Alignment.CenterHorizontally,
+		) {
+			Text(
+				text = digit.toString(),
+				color = contentColor,
+				autoSize = TextAutoSize.StepBased(),
+				textAlign = TextAlign.Center,
+				style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+				fontWeight = FontWeight.Bold,
+				maxLines = 1,
+				modifier =
+				Modifier
+					.weight(0.7f),
+			)
+			Text(
+				text = remainingCount.toString(),
+				color = contentColor,
+				autoSize = TextAutoSize.StepBased(),
+				textAlign = TextAlign.Center,
+				style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+				maxLines = 1,
+				modifier =
+				Modifier
+					.weight(0.3f),
+			)
+		}
+	}
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun KeyPadIconItem(
@@ -138,12 +193,20 @@ internal fun KeyPadIconItem(
 @Composable
 private fun KeyboardItemNumberPreview() {
 	SudokuGameTheme {
-		KeyPadTextItem(
-			text = "5",
-			onClick = { },
-			onLongClick = null,
-			modifier = Modifier.size(80.dp),
-		)
+		Column {
+			KeyPadTextItem(
+				text = "5",
+				onClick = { },
+				onLongClick = null,
+				modifier = Modifier.size(80.dp),
+			)
+			KeyPadTextItem(
+				text = "16",
+				onClick = { },
+				onLongClick = null,
+				modifier = Modifier.size(80.dp),
+			)
+		}
 	}
 }
 
@@ -157,5 +220,35 @@ private fun KeyboardItemIconPreview() {
 			onLongClick = null,
 			modifier = Modifier.size(80.dp),
 		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun KeyboardItemDigitPreview() {
+	SudokuGameTheme {
+		Column {
+			KeyPadDigitItem(
+				digit = 9,
+				remainingCount = 3,
+				onClick = { },
+				onLongClick = { },
+				modifier = Modifier.size(80.dp),
+			)
+			KeyPadDigitItem(
+				digit = 16,
+				remainingCount = 13,
+				onClick = { },
+				onLongClick = { },
+				modifier = Modifier.size(80.dp),
+			)
+			KeyPadDigitItem(
+				digit = 10,
+				remainingCount = 0,
+				onClick = { },
+				onLongClick = { },
+				modifier = Modifier.size(80.dp),
+			)
+		}
 	}
 }

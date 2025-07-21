@@ -19,14 +19,16 @@ import androidx.compose.ui.unit.dp
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.extendedColorScheme
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlin.math.sqrt
 
 @Composable
 internal fun NumberPad(
 	gridSize: Int,
+	remainingDigitCounts: PersistentMap<Int, Int>,
 	onButtonClick: (Int) -> Unit,
 	onButtonLongClick: (Int) -> Unit,
-	noteMode: Boolean,
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
 ) {
@@ -41,19 +43,8 @@ internal fun NumberPad(
 		},
 	)
 
-	val keyColor =
-		if (noteMode) {
-			MaterialTheme.extendedColorScheme.pink.colorContainer
-		} else {
-			MaterialTheme.extendedColorScheme.lavender.colorContainer
-		}
-
-	val textColor =
-		if (noteMode) {
-			MaterialTheme.extendedColorScheme.pink.onColorContainer
-		} else {
-			MaterialTheme.extendedColorScheme.lavender.onColorContainer
-		}
+	val keyColor = MaterialTheme.extendedColorScheme.lavender.colorContainer
+	val textColor = MaterialTheme.extendedColorScheme.lavender.onColorContainer
 
 	Column(
 		modifier = modifier,
@@ -66,15 +57,28 @@ internal fun NumberPad(
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				for (number in row) {
-					KeyPadTextItem(
-						text = number.toString(),
-						onClick = { onButtonClick(number) },
-						onLongClick = { onButtonLongClick(number) },
-						containerColor = keyColor,
-						contentColor = textColor,
-						modifier = Modifier
-							.size(itemSize),
-					)
+					if (number in remainingDigitCounts) {
+						KeyPadDigitItem(
+							digit = number,
+							remainingCount = remainingDigitCounts.getOrDefault(number, 0),
+							onClick = { onButtonClick(number) },
+							onLongClick = { onButtonLongClick(number) },
+							containerColor = keyColor,
+							contentColor = textColor,
+							modifier = Modifier
+								.size(itemSize),
+						)
+					} else {
+						KeyPadTextItem(
+							text = number.toString(),
+							onClick = { onButtonClick(number) },
+							onLongClick = { onButtonLongClick(number) },
+							containerColor = keyColor,
+							contentColor = textColor,
+							modifier = Modifier
+								.size(itemSize),
+						)
+					}
 				}
 			}
 		}
@@ -86,9 +90,9 @@ internal fun NumberPad(
 private fun NumberPadNineItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
-			noteMode = false,
 			gridSize = 9,
 			modifier = Modifier.padding(16.dp),
 		)
@@ -100,9 +104,9 @@ private fun NumberPadNineItemsPreview() {
 private fun NumberPadFourItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
-			noteMode = false,
 			gridSize = 4,
 			modifier = Modifier.padding(16.dp),
 		)
@@ -114,9 +118,9 @@ private fun NumberPadFourItemsPreview() {
 private fun NumberPadSixteenItemsPreview() {
 	SudokuGameTheme {
 		NumberPad(
+			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onButtonClick = { },
 			onButtonLongClick = { },
-			noteMode = false,
 			gridSize = 16,
 			modifier = Modifier.padding(16.dp),
 		)

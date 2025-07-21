@@ -178,6 +178,13 @@ private fun SettingsScreenContent(
 					modifier = Modifier.fillMaxWidth(),
 				)
 				SettingSwitchItem(
+					title = stringResource(R.string.gameplay_show_remaining_digit_counts),
+					value = uiState.gameplay.remainingDigitCounts,
+					description = stringResource(R.string.gameplay_show_remaining_digit_counts_desc),
+					onValueChange = { onEvent(SettingsViewModel.Event.ToggleRemainingDigitCounts(it)) },
+					modifier = Modifier.fillMaxWidth(),
+				)
+				SettingSwitchItem(
 					title = "Auto clear notes",
 					value = uiState.gameplay.autoClearNotes,
 					description = "Clear notes when a number is input",
