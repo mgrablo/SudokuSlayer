@@ -262,7 +262,7 @@ private fun SudokuGameScreenContent(
 					AnimatedContent(
 						targetState = uiState.gameState,
 						contentAlignment = Alignment.Center,
-						modifier = Modifier.weight(0.8f),
+						modifier = Modifier.weight(1f),
 					) { state ->
 						when (state) {
 							GameState.LOADING -> {}

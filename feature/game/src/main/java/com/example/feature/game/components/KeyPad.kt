@@ -143,7 +143,6 @@ internal fun KeyPad(
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
-							noteMode = noteMode,
 							itemSize = itemSize,
 						)
 					}
@@ -187,7 +186,6 @@ internal fun KeyPad(
 							gridSize = gridSize,
 							onButtonClick = onNumberClick,
 							onButtonLongClick = onNumberLongClick,
-							noteMode = noteMode,
 							itemSize = itemSize,
 						)
 					}

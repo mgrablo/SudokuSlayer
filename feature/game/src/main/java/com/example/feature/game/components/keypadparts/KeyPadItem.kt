@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -101,11 +102,15 @@ internal fun KeyPadDigitItem(
 	digit: Int,
 	remainingCount: Int,
 	onClick: () -> Unit,
-	onLongClick: (() -> Unit)?,
+	onLongClick: (() -> Unit),
 	modifier: Modifier = Modifier,
 	containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
 	contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+	completedColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+	completedContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
+	val containerColor = if (remainingCount == 0) completedColor else containerColor
+	val contentColor = if (remainingCount == 0) completedContentColor else contentColor
 	BaseKeyPadItem(
 		onClick = onClick,
 		onLongClick = onLongClick,
@@ -122,6 +127,7 @@ internal fun KeyPadDigitItem(
 				autoSize = TextAutoSize.StepBased(),
 				textAlign = TextAlign.Center,
 				style = TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+				fontWeight = FontWeight.Bold,
 				maxLines = 1,
 				modifier =
 				Modifier
@@ -226,14 +232,21 @@ private fun KeyboardItemDigitPreview() {
 				digit = 9,
 				remainingCount = 3,
 				onClick = { },
-				onLongClick = null,
+				onLongClick = { },
 				modifier = Modifier.size(80.dp),
 			)
 			KeyPadDigitItem(
 				digit = 16,
 				remainingCount = 13,
 				onClick = { },
-				onLongClick = null,
+				onLongClick = { },
+				modifier = Modifier.size(80.dp),
+			)
+			KeyPadDigitItem(
+				digit = 10,
+				remainingCount = 0,
+				onClick = { },
+				onLongClick = { },
 				modifier = Modifier.size(80.dp),
 			)
 		}
