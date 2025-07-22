@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalView
@@ -36,7 +38,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -267,7 +269,7 @@ private fun DialogScope.VictoryDialogContent(
 				)
 				Spacer(Modifier.height(16.dp))
 				if (isNewBest || bestTime == null) {
-					Text("New Best!")
+					NewBestRow()
 				} else {
 					val formattedBestTime = rememberFormattedTime(bestTime.toFloat())
 					VictoryStatRow(
@@ -308,7 +310,43 @@ private fun VictoryStatRow(
 	}
 }
 
-@Preview
+@Composable
+private fun NewBestRow(
+	modifier: Modifier = Modifier,
+	textStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(
+		color = MaterialTheme.colorScheme.secondary,
+		fontWeight = FontWeight.Bold,
+	),
+	iconTint: Color = MaterialTheme.colorScheme.secondary
+) {
+	Row(
+		modifier = modifier.fillMaxWidth(),
+		verticalAlignment = Alignment.CenterVertically,
+	) {
+		Box(
+			contentAlignment = Alignment.CenterEnd,
+			modifier = Modifier.weight(1f),
+		) {
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+			) {
+				Icon(
+					painter = painterResource(R.drawable.crown),
+					contentDescription = null,
+					tint = iconTint,
+				)
+				Spacer(modifier = Modifier.width(LocalPadding.current.normal))
+			}
+		}
+		Text(
+			text = "New Best!",
+			style = textStyle,
+		)
+		Spacer(modifier = Modifier.weight(1f))
+	}
+}
+
+@PreviewLightDark
 @Composable
 private fun VictoryDialogPreview() {
 	SudokuGameTheme {
@@ -324,7 +362,7 @@ private fun VictoryDialogPreview() {
 				gridSize = SudokuGridSize.NINE,
 				hintsUsed = 2,
 				bestTime = 100,
-				isNewBest = false,
+				isNewBest = true,
 				onDismissRequest = { },
 				modifier = Modifier,
 			)
