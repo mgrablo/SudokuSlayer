@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalView
@@ -58,6 +59,7 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.game.util.ConfettiParties
+import com.example.feature.uicore.modifiers.rememberShimmerBrush
 import com.example.feature.uicore.rememberFormattedTime
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSudokuTypography
@@ -317,8 +319,14 @@ private fun NewBestRow(
 		color = MaterialTheme.colorScheme.secondary,
 		fontWeight = FontWeight.Bold,
 	),
-	iconTint: Color = MaterialTheme.colorScheme.secondary
+	iconTint: Color = MaterialTheme.colorScheme.secondary,
 ) {
+	val shimmerBrush = rememberShimmerBrush(
+		targetColor = MaterialTheme.colorScheme.primary,
+		baseColor = textStyle.color,
+		showShimmer = true,
+		animationDuration = 700,
+	)
 	Row(
 		modifier = modifier.fillMaxWidth(),
 		verticalAlignment = Alignment.CenterVertically,
@@ -340,7 +348,10 @@ private fun NewBestRow(
 		}
 		Text(
 			text = "New Best!",
-			style = textStyle,
+			style = textStyle.copy(
+				brush = shimmerBrush,
+			),
+			modifier = Modifier.graphicsLayer(alpha = 0.99f)
 		)
 		Spacer(modifier = Modifier.weight(1f))
 	}
