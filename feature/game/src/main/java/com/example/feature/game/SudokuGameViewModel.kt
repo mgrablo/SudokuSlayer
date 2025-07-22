@@ -125,11 +125,12 @@ internal class SudokuGameViewModel(
 				)
 			}
 			loadGame()
+			val loadedGame = game.first()
 			_uiState.update {
 				it.copy(
-					gameState = if (game.value.completed) GameState.VICTORY else GameState.PLAYING,
-					isNewBestTime = if (game.value.completed) {
-						it.currentBestTime == null || it.currentBestTime >= elapsedTime.value
+					gameState = if (loadedGame.completed) GameState.VICTORY else GameState.PLAYING,
+					isNewBestTime = if (loadedGame.completed) {
+						it.currentBestTime == null || it.currentBestTime >= loadedGame.elapsedTime
 					} else {
 						it.isNewBestTime
 					},
@@ -235,7 +236,9 @@ internal class SudokuGameViewModel(
 			}
 
 			is Event.StartTimer -> {
-				elapsedTimerManager.startTracking()
+				if (uiState.value.gameState == GameState.PLAYING) {
+					elapsedTimerManager.startTracking()
+				}
 			}
 		}
 	}
@@ -454,12 +457,13 @@ internal class SudokuGameViewModel(
 						seed = game.value.grid.seed,
 					),
 				)
-				gameManagementUseCases.saveGame(
-					game.value.copy(
+				_game.update {
+					it.copy(
 						completed = true,
 						elapsedTime = elapsedTime.value,
-					),
-				)
+					)
+				}
+				saveGame()
 				operationRepository.clearOperations()
 			}
 		}
