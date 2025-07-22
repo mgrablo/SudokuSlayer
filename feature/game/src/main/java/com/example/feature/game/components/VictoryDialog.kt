@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -243,26 +244,26 @@ private fun DialogScope.VictoryDialogContent(
 				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
 				Text(
-					text = "Congratulations!",
+					text = stringResource(R.string.congratulations),
 					style = LocalSudokuTypography.current.displayLargeEmphasized,
 					fontSize = 32.sp,
 					color = MaterialTheme.colorScheme.onSurface,
 				)
 				Spacer(Modifier.height(16.dp))
 				VictoryStatRow(
-					label = "Time:",
+					label = stringResource(R.string.time),
 					value = formattedTime,
 				)
 				VictoryStatRow(
-					label = "Difficulty:",
+					label = stringResource(R.string.difficulty),
 					value = localizedDifficulty,
 				)
 				VictoryStatRow(
-					label = "Grid Size:",
+					label = stringResource(R.string.size),
 					value = localizedGridSize,
 				)
 				VictoryStatRow(
-					label = "Hints Used:",
+					label = stringResource(R.string.hints_used),
 					value = hintsUsed.toString(),
 				)
 				Spacer(Modifier.height(24.dp))
@@ -275,7 +276,7 @@ private fun DialogScope.VictoryDialogContent(
 				} else {
 					val formattedBestTime = rememberFormattedTime(bestTime.toFloat())
 					VictoryStatRow(
-						label = "Best Time:",
+						label = stringResource(R.string.best_time),
 						value = formattedBestTime,
 					)
 				}
@@ -325,7 +326,7 @@ private fun NewBestRow(
 		targetColor = MaterialTheme.colorScheme.primary,
 		baseColor = textStyle.color,
 		showShimmer = true,
-		animationDuration = 700,
+		animationDuration = 1200,
 	)
 	Row(
 		modifier = modifier.fillMaxWidth(),
@@ -347,11 +348,11 @@ private fun NewBestRow(
 			}
 		}
 		Text(
-			text = "New Best!",
+			text = stringResource(R.string.new_best),
 			style = textStyle.copy(
 				brush = shimmerBrush,
 			),
-			modifier = Modifier.graphicsLayer(alpha = 0.99f)
+			modifier = Modifier.graphicsLayer(alpha = 0.99f),
 		)
 		Spacer(modifier = Modifier.weight(1f))
 	}
