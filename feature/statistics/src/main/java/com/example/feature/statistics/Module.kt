@@ -8,6 +8,9 @@ val statisticsModule = module {
 		StatisticsViewModel(
 			statisticsRepository = get(),
 			settingsRepository = get(),
+			hasActiveGameUseCase = get(),
+			createNewGameUseCase = get(),
+			saveGameUseCase = get(),
 		)
 	}
 }

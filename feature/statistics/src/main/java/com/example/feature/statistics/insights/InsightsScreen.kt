@@ -5,14 +5,11 @@ package com.example.feature.statistics.insights
 import android.content.ClipData
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -36,14 +33,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.composables.core.rememberDialogState
 import com.composables.core.rememberMenuState
 import com.example.domain.core.GameDifficulty
@@ -52,7 +54,7 @@ import com.example.domain.core.SudokuGridSize
 import com.example.domain.statistics.GameResultFilter
 import com.example.feature.statistics.FilterUiState
 import com.example.feature.statistics.InsightsUiState
-import com.example.feature.statistics.LoadingState
+import com.example.feature.statistics.InsightsViewState
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent
 import com.example.feature.statistics.filter.FilterBottomSheet
@@ -69,12 +71,14 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun InsightsScreen(
+	onNavigateToGameScreen: () -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
@@ -82,7 +86,7 @@ internal fun InsightsScreen(
 	val uiState by viewModel.insightsUiState.collectAsStateWithLifecycle()
 	val filterUiState by viewModel.filterUiState.collectAsStateWithLifecycle()
 	val gameResultFilter by viewModel.gameResultFilter.collectAsStateWithLifecycle()
-	val loadingState by viewModel.loadingState.collectAsStateWithLifecycle()
+	val loadingState by viewModel.insightsViewState.collectAsStateWithLifecycle()
 	val tableColumnsState by viewModel.tableColumns.collectAsStateWithLifecycle()
 	val activeFilterCount by viewModel.activeFilterCount.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
@@ -92,10 +96,11 @@ internal fun InsightsScreen(
 		uiState = uiState,
 		filterUiState = filterUiState,
 		gameResultFilter = gameResultFilter,
-		loadingState = loadingState,
+		insightsViewState = loadingState,
 		tableColumnsState = tableColumnsState,
 		activeFilterCount = activeFilterCount,
 		onEvent = viewModel::onEvent,
+		onNavigateToGameScreen = onNavigateToGameScreen,
 		openDrawer = openDrawer,
 		onCopySeedClick = {
 			coroutineScope.launch {
@@ -120,11 +125,12 @@ private fun InsightsScreenContent(
 	uiState: InsightsUiState,
 	filterUiState: FilterUiState,
 	gameResultFilter: GameResultFilter,
-	loadingState: LoadingState,
+	insightsViewState: InsightsViewState,
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
+	onNavigateToGameScreen: () -> Unit,
 	onCopySeedClick: (Long) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -135,6 +141,21 @@ private fun InsightsScreenContent(
 	val dialogState = rememberDialogState()
 	var showBottomSheet by remember { mutableStateOf(false) }
 
+	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
+	if (gameCreationInProgress) {
+		val lifecycle = LocalLifecycleOwner.current.lifecycle
+		val currentNavigateToGameScreen by rememberUpdatedState(onNavigateToGameScreen)
+
+		LaunchedEffect(uiState, lifecycle) {
+			snapshotFlow { uiState }
+				.filter {
+					it.isGameCreated
+				}.flowWithLifecycle(lifecycle).collect {
+					gameCreationInProgress = false
+					currentNavigateToGameScreen()
+				}
+		}
+	}
 	LaunchedEffect(dismissState.currentValue) {
 		if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
 			dismissState.reset()
@@ -184,7 +205,7 @@ private fun InsightsScreenContent(
 				actions = {
 					TopAppBarActions(
 						menuState = actionsMenuState,
-						clearActionEnabled = loadingState is LoadingState.Success,
+						clearActionEnabled = insightsViewState is InsightsViewState.Success,
 						onClearClick = {
 							dialogState.visible = true
 						},
@@ -199,17 +220,17 @@ private fun InsightsScreenContent(
 						showBottomSheet = true
 					}
 				},
-				loadingState = loadingState,
+				insightsViewState = insightsViewState,
 				activeFilterCount = activeFilterCount,
 			)
 		},
 	) { paddingValues ->
 		Crossfade(
-			targetState = loadingState,
+			targetState = insightsViewState,
 			modifier = Modifier.padding(paddingValues),
 		) { loadingState ->
 			when (loadingState) {
-				is LoadingState.Loading -> {
+				is InsightsViewState.Loading -> {
 					Box(
 						modifier = Modifier
 							.fillMaxSize(),
@@ -219,16 +240,19 @@ private fun InsightsScreenContent(
 					}
 				}
 
-				is LoadingState.Empty -> {
+				is InsightsViewState.Empty -> {
 					EmptyStateContent(
-						onPlayFirstGameClick = { onEvent(StatisticsEvent.PlayFirstGame) },
+						onPlayFirstGameClick = {
+							gameCreationInProgress = true
+							onEvent(StatisticsEvent.PlayFirstGame)
+						},
 						modifier = Modifier
 							.fillMaxSize()
 							.padding(LocalPadding.current.big),
 					)
 				}
 
-				is LoadingState.Success -> {
+				is InsightsViewState.Success -> {
 					val coroutineScope = rememberCoroutineScope()
 					val filterSheetState = rememberModalBottomSheetState(
 						skipPartiallyExpanded = true,
@@ -272,7 +296,7 @@ private fun InsightsScreenContent(
 					)
 				}
 
-				is LoadingState.Error -> {
+				is InsightsViewState.Error -> {
 				}
 			}
 		}
@@ -321,12 +345,13 @@ private fun InsightsScreenPreview() {
 			),
 			filterUiState = FilterUiState(),
 			gameResultFilter = GameResultFilter(),
-			loadingState = LoadingState.Success,
+			insightsViewState = InsightsViewState.Success,
 			activeFilterCount = 1,
 			tableColumnsState = ColumnDisplayState.getAll(),
 			onEvent = { },
 			openDrawer = { },
 			onCopySeedClick = { },
+			onNavigateToGameScreen = { },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

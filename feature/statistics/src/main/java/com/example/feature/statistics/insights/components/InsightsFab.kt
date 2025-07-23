@@ -16,18 +16,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.feature.statistics.LoadingState
+import com.example.feature.statistics.InsightsViewState
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudokuslayer.feature.statistics.R
 
 @Composable
 internal fun InsightsFab(
 	onClick: () -> Unit,
-	loadingState: LoadingState,
+	insightsViewState: InsightsViewState,
 	activeFilterCount: Int,
 	modifier: Modifier = Modifier,
 ) {
-	if (loadingState is LoadingState.Success) {
+	if (insightsViewState is InsightsViewState.Success) {
 		BadgedBox(
 			modifier = modifier,
 			badge = {
@@ -66,7 +66,7 @@ private fun InsightsFABPreview() {
 	SudokuSlayerTheme {
 		InsightsFab(
 			onClick = {},
-			loadingState = LoadingState.Success,
+			insightsViewState = InsightsViewState.Success,
 			activeFilterCount = 0,
 		)
 	}
@@ -79,7 +79,7 @@ private fun InsightsFABPreviewActiveFilters() {
 		Box(Modifier.padding(8.dp)) {
 			InsightsFab(
 				onClick = {},
-				loadingState = LoadingState.Success,
+				insightsViewState = InsightsViewState.Success,
 				activeFilterCount = 3,
 			)
 		}
