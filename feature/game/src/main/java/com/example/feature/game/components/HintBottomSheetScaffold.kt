@@ -98,7 +98,7 @@ private fun SheetContent(
 	logs: PersistentList<HintLog> = persistentListOf(),
 ) {
 	val listState = rememberLazyListState()
-	val expandedItems = remember { mutableStateListOf<HintLog>() }
+	val expandedItems = remember { mutableStateListOf<Int>() }
 	val interactionSources = remember { mutableStateListOf<MutableInteractionSource>() }
 	val coroutineScope = rememberCoroutineScope()
 
@@ -140,16 +140,16 @@ private fun SheetContent(
 					cardContent = hintLog.structuredExplanation.drop(1).toPersistentList(),
 					onExplainClick = {
 						explainHintClick()
-						if (!expandedItems.contains(hintLog)) {
-							expandedItems.add(hintLog)
+						if (!expandedItems.contains(hintLog.id)) {
+							expandedItems.add(hintLog.id)
 						}
 					},
-					isExpanded = expandedItems.contains(hintLog),
+					isExpanded = expandedItems.contains(hintLog.id),
 					onExpandToggle = {
-						if (expandedItems.contains(hintLog)) {
-							expandedItems.remove(hintLog)
+						if (expandedItems.contains(hintLog.id)) {
+							expandedItems.remove(hintLog.id)
 						} else {
-							expandedItems.add(hintLog)
+							expandedItems.add(hintLog.id)
 						}
 					},
 					onHighlightCellClick = { onHighlightCellClick(hintLog.hint) },
