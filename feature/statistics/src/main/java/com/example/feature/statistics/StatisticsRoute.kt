@@ -21,12 +21,16 @@ data object Insights : Destination {
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderBuilder<NavKey>.insightsEntry(openDrawer: () -> Unit) {
+fun EntryProviderBuilder<NavKey>.insightsEntry(
+	openDrawer: () -> Unit,
+	onNavigateToGameScreen: () -> Unit,
+) {
 	entry<Insights> {
 		val viewModel = koinViewModel<StatisticsViewModel>()
 		InsightsScreen(
 			viewModel = viewModel,
 			openDrawer = openDrawer,
+			onNavigateToGameScreen = onNavigateToGameScreen,
 			modifier = Modifier
 				.fillMaxSize(),
 		)

@@ -164,6 +164,13 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					},
 				)
 				insightsEntry(
+					onNavigateToGameScreen = {
+						backstack.apply {
+							clear()
+							add(SudokuCreator)
+							add(SudokuGame)
+						}
+					},
 					openDrawer = {
 						scope.launch {
 							navigationRailState.expand()

@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.SudokuGridSize
+import com.example.domain.creator.CreateNewGameUseCase
+import com.example.domain.creator.HasActiveGameUseCase
+import com.example.domain.creator.SaveGameUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.domain.statistics.GameResultFilter
 import com.example.domain.statistics.StatisticsRepository
@@ -52,24 +55,28 @@ internal data class InsightsUiState(
 	val mostPlayedDifficulty: GameDifficulty? = null,
 	val mostPlayedGridSize: SudokuGridSize? = null,
 	val summariesCompactLayout: Boolean = true,
+	val isGameCreated: Boolean = false,
 )
 
-internal sealed interface LoadingState {
-	object Loading : LoadingState
-	object Success : LoadingState
-	object NoData : LoadingState
-	data class Error(val message: String) : LoadingState
+internal sealed interface InsightsViewState {
+	object Loading : InsightsViewState
+	object Success : InsightsViewState
+	object Empty : InsightsViewState
+	data class Error(val message: String) : InsightsViewState
 }
 
 internal class StatisticsViewModel(
 	private val statisticsRepository: StatisticsRepository,
 	private val settingsRepository: SettingsRepository,
+	private val hasActiveGameUseCase: HasActiveGameUseCase,
+	private val createNewGameUseCase: CreateNewGameUseCase,
+	private val saveGameUseCase: SaveGameUseCase,
 ) : ViewModel() {
 	private val _insightsUiState = MutableStateFlow(InsightsUiState())
 	val insightsUiState = _insightsUiState.asStateFlow()
 
-	private val _loadingState = MutableStateFlow<LoadingState>(LoadingState.Loading)
-	val loadingState = _loadingState.asStateFlow()
+	private val _insightsViewState = MutableStateFlow<InsightsViewState>(InsightsViewState.Loading)
+	val insightsViewState = _insightsViewState.asStateFlow()
 
 	private val _filterUiState = MutableStateFlow(FilterUiState())
 	val filterUiState: StateFlow<FilterUiState> = _filterUiState
@@ -119,6 +126,7 @@ internal class StatisticsViewModel(
 		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
 		data class PlayGameClicked(val gameSeed: Long) : StatisticsEvent
 		data object ClearData : StatisticsEvent
+		data object PlayFirstGame : StatisticsEvent
 
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
@@ -158,6 +166,7 @@ internal class StatisticsViewModel(
 			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
 			is StatisticsEvent.ClearData -> clearData()
+			is StatisticsEvent.PlayFirstGame -> handlePlayFirstGame()
 		}
 	}
 
@@ -167,10 +176,10 @@ internal class StatisticsViewModel(
 
 	private fun loadInitialData() {
 		viewModelScope.launch {
-			_loadingState.update { LoadingState.Loading }
+			_insightsViewState.update { InsightsViewState.Loading }
 			val results = statisticsRepository.getAllGameResults().toPersistentList()
 			if (results.isEmpty()) {
-				_loadingState.update { LoadingState.NoData }
+				_insightsViewState.update { InsightsViewState.Empty }
 				return@launch
 			}
 
@@ -206,7 +215,7 @@ internal class StatisticsViewModel(
 					maxHintsUsed = maxHintsUsed,
 				)
 			}
-			_loadingState.update { LoadingState.Success }
+			_insightsViewState.update { InsightsViewState.Success }
 		}
 	}
 
@@ -320,7 +329,7 @@ internal class StatisticsViewModel(
 	private fun clearData() {
 		viewModelScope.launch {
 			statisticsRepository.clearAll()
-			_loadingState.update { LoadingState.NoData }
+			_insightsViewState.update { InsightsViewState.Empty }
 		}
 	}
 
@@ -412,6 +421,37 @@ internal class StatisticsViewModel(
 		}
 
 		return count
+	}
+
+	private fun handlePlayFirstGame() {
+		viewModelScope.launch {
+			_insightsViewState.update {
+				InsightsViewState.Loading
+			}
+			if (hasActiveGameUseCase().first()) {
+				_insightsUiState.update {
+					it.copy(
+						isGameCreated = true,
+					)
+				}
+			} else {
+				_insightsUiState.update {
+					it.copy(
+						isGameCreated = false,
+					)
+				}
+				val newGame = createNewGameUseCase(
+					gridSize = SudokuGridSize.NINE,
+					difficulty = GameDifficulty.Easy,
+				)
+				saveGameUseCase(newGame)
+				_insightsUiState.update {
+					it.copy(
+						isGameCreated = true,
+					)
+				}
+			}
+		}
 	}
 }
 
