@@ -118,9 +118,11 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 			onCloseDrawer = { scope.launch { navigationRailState.collapse() } },
 		)
 		NavDisplay(
-			modifier = Modifier.fillMaxSize().background(
-				MaterialTheme.colorScheme.background,
-			),
+			modifier = Modifier
+				.fillMaxSize()
+				.background(
+					MaterialTheme.colorScheme.background,
+				),
 			backStack = backstack,
 			entryDecorators = listOf(
 				rememberSceneSetupNavEntryDecorator(),
@@ -130,12 +132,10 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 			entryProvider = entryProvider {
 				sudokuCreatorEntry(
 					navigateToGameScreen = {
-						scope.launch {
-							backstack.apply {
-								clear()
-								add(SudokuCreator)
-								add(SudokuGame)
-							}
+						backstack.apply {
+							clear()
+							add(SudokuCreator)
+							add(SudokuGame)
 						}
 					},
 					openDrawer = {
@@ -151,16 +151,15 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 						}
 					},
 					onPlayAgainClick = {
-						scope.launch {
-							backstack.removeLastOrNull()
+						backstack.apply {
+							clear()
+							add(SudokuCreator)
 						}
 					},
 					onNavigateToInsightsClick = {
-						scope.launch {
-							backstack.apply {
-								removeLastOrNull()
-								add(Insights)
-							}
+						backstack.apply {
+							removeLastOrNull()
+							add(Insights)
 						}
 					},
 				)
