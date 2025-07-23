@@ -435,6 +435,9 @@ internal class SudokuGameViewModel(
 
 	private fun handleAllCellsFilled() {
 		viewModelScope.launch {
+			if (_game.value.grid.getEmptyCellsCount() != 0) {
+				return@launch
+			}
 			val result = ClassicSudokuSolver.isValidSolution(_game.value.grid)
 			if (result) {
 				_uiState.update {
