@@ -219,29 +219,13 @@ private fun InsightsScreenContent(
 					}
 				}
 
-				is LoadingState.NoData -> {
-					Column(
+				is LoadingState.Empty -> {
+					EmptyStateContent(
+						onPlayFirstGameClick = { onEvent(StatisticsEvent.PlayFirstGame) },
 						modifier = Modifier
 							.fillMaxSize()
 							.padding(LocalPadding.current.big),
-						verticalArrangement = Arrangement.spacedBy(
-							LocalPadding.current.small,
-							Alignment.CenterVertically,
-						),
-						horizontalAlignment = Alignment.CenterHorizontally,
-					) {
-						Text(
-							text = stringResource(R.string.no_games_found),
-							autoSize = TextAutoSize.StepBased(),
-							maxLines = 1,
-						)
-						Text(
-							text = stringResource(R.string.no_data_message),
-							autoSize = TextAutoSize.StepBased(),
-							color = MaterialTheme.colorScheme.onSurfaceVariant,
-							maxLines = 1,
-						)
-					}
+					)
 				}
 
 				is LoadingState.Success -> {

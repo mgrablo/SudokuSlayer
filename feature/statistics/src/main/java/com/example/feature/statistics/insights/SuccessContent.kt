@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -73,7 +72,7 @@ internal fun SuccessContent(
 
 	ScrollArea(
 		state = scrollAreaState,
-		modifier = modifier.fillMaxSize(),
+		modifier = modifier,
 	) {
 		VerticalScrollbar(
 			modifier = Modifier

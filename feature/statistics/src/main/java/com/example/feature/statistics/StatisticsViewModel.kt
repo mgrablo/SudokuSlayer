@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,13 +56,16 @@ internal data class InsightsUiState(
 internal sealed interface LoadingState {
 	object Loading : LoadingState
 	object Success : LoadingState
-	object NoData : LoadingState
+	object Empty : LoadingState
 	data class Error(val message: String) : LoadingState
 }
 
 internal class StatisticsViewModel(
 	private val statisticsRepository: StatisticsRepository,
 	private val settingsRepository: SettingsRepository,
+	private val hasActiveGameUseCase: HasActiveGameUseCase,
+	private val createNewGameUseCase: CreateNewGameUseCase,
+	private val saveGameUseCase: SaveGameUseCase,
 ) : ViewModel() {
 	private val _insightsUiState = MutableStateFlow(InsightsUiState())
 	val insightsUiState = _insightsUiState.asStateFlow()
@@ -119,6 +121,7 @@ internal class StatisticsViewModel(
 		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
 		data class PlayGameClicked(val gameSeed: Long) : StatisticsEvent
 		data object ClearData : StatisticsEvent
+		data object PlayFirstGame : StatisticsEvent
 
 		data class ToggleDifficultyFilter(val difficulty: GameDifficulty) : StatisticsEvent
 		data class ToggleGridSizeFilter(val gridSize: SudokuGridSize) : StatisticsEvent
@@ -158,6 +161,7 @@ internal class StatisticsViewModel(
 			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
 			is StatisticsEvent.ClearData -> clearData()
+			is StatisticsEvent.PlayFirstGame -> handlePlayFirstGame()
 		}
 	}
 
@@ -170,7 +174,7 @@ internal class StatisticsViewModel(
 			_loadingState.update { LoadingState.Loading }
 			val results = statisticsRepository.getAllGameResults().toPersistentList()
 			if (results.isEmpty()) {
-				_loadingState.update { LoadingState.NoData }
+				_loadingState.update { LoadingState.Empty }
 				return@launch
 			}
 
@@ -320,7 +324,7 @@ internal class StatisticsViewModel(
 	private fun clearData() {
 		viewModelScope.launch {
 			statisticsRepository.clearAll()
-			_loadingState.update { LoadingState.NoData }
+			_loadingState.update { LoadingState.Empty }
 		}
 	}
 
@@ -412,6 +416,9 @@ internal class StatisticsViewModel(
 		}
 
 		return count
+	}
+
+	private fun handlePlayFirstGame() {
 	}
 }
 
