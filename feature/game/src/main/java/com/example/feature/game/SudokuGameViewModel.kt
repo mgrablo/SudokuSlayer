@@ -606,6 +606,7 @@ internal class SudokuGameViewModel(
 					hintLogs = updatedLogs,
 				)
 			}
+			handleAllCellsFilled()
 		}
 	}
 
