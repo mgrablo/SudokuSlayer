@@ -1,6 +1,10 @@
 package com.example.feature.creator.components
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +43,7 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.toLocalizedString
 import com.example.sudokuslayer.feature.creator.R
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ActiveGameCard(
 	isExpanded: Boolean,
@@ -56,36 +60,49 @@ internal fun ActiveGameCard(
 		colors = CardDefaults.cardColors(
 			containerColor = MaterialTheme.colorScheme.surfaceVariant,
 		),
-		modifier = modifier.animateContentSize(
-			animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-		),
+		modifier = modifier,
 	) {
-		if (isExpanded) {
-			ExpandedContent(
-				difficulty = difficulty,
-				gridSize = gridSize,
-				elapsedTime = elapsedTime,
-				completed = completed,
-				onContinueClick = onContinueClick,
-				onCollapseClick = onToggle,
-				modifier = Modifier,
-			)
-		} else {
-			CollapsedContent(
-				onExpandClick = onToggle,
-				onContinueClick = onContinueClick,
-				completed = completed,
-				modifier = Modifier,
-			)
+		SharedTransitionLayout {
+			AnimatedContent(
+				targetState = isExpanded,
+				label = "ActiveGameCardTransition",
+			) { targetState ->
+				val isAnimating = transition.currentState != transition.targetState
+				if (targetState) {
+					ExpandedContent(
+						difficulty = difficulty,
+						gridSize = gridSize,
+						elapsedTime = elapsedTime,
+						completed = completed,
+						onContinueClick = { if (!isAnimating) onContinueClick() },
+						onCollapseClick = onToggle,
+						modifier = Modifier,
+						sharedTransitionScope = this@SharedTransitionLayout,
+						animatedVisibilityScope = this@AnimatedContent,
+					)
+				} else {
+					CollapsedContent(
+						onExpandClick = onToggle,
+						onContinueClick = { if (!isAnimating) onContinueClick() },
+						completed = completed,
+						modifier = Modifier,
+						sharedTransitionScope = this@SharedTransitionLayout,
+						animatedVisibilityScope = this@AnimatedContent,
+					)
+				}
+			}
 		}
 	}
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun CollapsedContent(
 	onExpandClick: () -> Unit,
 	onContinueClick: () -> Unit,
 	completed: Boolean,
+	sharedTransitionScope: SharedTransitionScope,
+	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
 	val painter = if (completed) {
@@ -93,41 +110,64 @@ private fun CollapsedContent(
 	} else {
 		painterResource(R.drawable.play_arrow)
 	}
+	val title = if (completed) "Last Game" else "Continue Playing"
 
-	Column(
-		modifier = modifier.padding(LocalPadding.current.big),
-	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
+	with(sharedTransitionScope) {
+		Column(
+			modifier = modifier.padding(LocalPadding.current.big),
 		) {
-			Text(
-				text = "Active Game",
-				style = MaterialTheme.typography.titleLarge,
-				fontWeight = FontWeight.Bold,
-			)
-			Spacer(Modifier.weight(1f))
-			FilledIconButton(
-				onClick = onContinueClick,
-				colors = IconButtonDefaults.filledIconButtonColors(
-					containerColor = MaterialTheme.colorScheme.secondary,
-				)
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
 			) {
-				Icon(
-					painter = painter,
-					contentDescription = if (completed) "View board" else "Continue",
-				)
-			}
-			IconButton(onClick = onExpandClick) {
-				Icon(
-					Icons.Default.KeyboardArrowDown,
-					contentDescription = "Expand",
-				)
+				with(sharedTransitionScope) {
+					Text(
+						text = title,
+						style = MaterialTheme.typography.titleLarge,
+						fontWeight = FontWeight.Bold,
+						modifier = Modifier
+							.sharedElement(
+								rememberSharedContentState("title"),
+								animatedVisibilityScope = animatedVisibilityScope,
+							),
+					)
+				}
+				Spacer(Modifier.weight(1f))
+				FilledIconButton(
+					onClick = onContinueClick,
+					colors = IconButtonDefaults.filledIconButtonColors(
+						containerColor = MaterialTheme.colorScheme.secondary,
+					),
+					modifier = Modifier
+						.sharedBounds(
+							rememberSharedContentState("continue_button"),
+							animatedVisibilityScope = animatedVisibilityScope,
+							resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds(),
+						),
+				) {
+					Icon(
+						painter = painter,
+						contentDescription = if (completed) "View board" else "Continue",
+					)
+				}
+				IconButton(
+					onClick = onExpandClick,
+					modifier = Modifier
+						.sharedBounds(
+							rememberSharedContentState("toggle_button"),
+							animatedVisibilityScope = animatedVisibilityScope,
+						),
+				) {
+					Icon(
+						Icons.Default.KeyboardArrowDown,
+						contentDescription = "Expand",
+					)
+				}
 			}
 		}
 	}
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ExpandedContent(
 	difficulty: GameDifficulty,
@@ -136,65 +176,78 @@ private fun ExpandedContent(
 	completed: Boolean,
 	onContinueClick: () -> Unit,
 	onCollapseClick: () -> Unit,
+	sharedTransitionScope: SharedTransitionScope,
+	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
 	val formattedTime = rememberFormattedTime(elapsedTime.toFloat())
-	val painter = if (completed) {
-		painterResource(R.drawable.trophy_24px)
-	} else {
-		painterResource(R.drawable.pause)
-	}
+	val title = if (completed) "Last Game" else "Continue Playing"
 
-	Column(
-		modifier = modifier.padding(LocalPadding.current.big),
-	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
+	with(sharedTransitionScope) {
+		Column(
+			modifier = modifier.padding(LocalPadding.current.big),
 		) {
-			Text(
-				text = "Active Game",
-				style = MaterialTheme.typography.titleLarge,
-				fontWeight = FontWeight.Bold,
-			)
-			Spacer(Modifier.weight(1f))
-			IconButton(onClick = onContinueClick) {
-				Icon(
-					painter = painter,
-					contentDescription = if (completed) "Puzzle completed" else "Game is paused",
-					tint = if (completed) {
-						MaterialTheme.colorScheme.primary
-					} else {
-						MaterialTheme.colorScheme.secondary
-					},
-				)
-			}
-			IconButton(
-				onClick = onCollapseClick,
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
 			) {
-				Icon(
-					Icons.Default.KeyboardArrowUp,
-					contentDescription = "Collapse",
+				Text(
+					text = title,
+					style = MaterialTheme.typography.titleLarge,
+					fontWeight = FontWeight.Bold,
+					modifier = Modifier
+						.sharedElement(
+							rememberSharedContentState("title"),
+							animatedVisibilityScope = animatedVisibilityScope,
+						),
 				)
+				Spacer(Modifier.weight(1f))
+				if (completed) {
+					IconButton(onClick = onContinueClick) {
+						Icon(
+							painter = painterResource(R.drawable.trophy_24px),
+							contentDescription = "Puzzle completed",
+							tint = MaterialTheme.colorScheme.primary,
+						)
+					}
+				}
+				IconButton(
+					onClick = onCollapseClick,
+					modifier = Modifier
+						.sharedBounds(
+							rememberSharedContentState("toggle_button"),
+							animatedVisibilityScope = animatedVisibilityScope,
+						),
+				) {
+					Icon(
+						Icons.Default.KeyboardArrowUp,
+						contentDescription = "Collapse",
+					)
+				}
 			}
-		}
-		Spacer(Modifier.height(LocalPadding.current.small))
-		DataRow("Difficulty:", difficulty.toLocalizedString())
-		DataRow("Size:", gridSize.toLocalizedString())
-		DataRow("Time:", formattedTime)
-		Spacer(Modifier.height(LocalPadding.current.big))
-		Button(
-			onClick = onContinueClick,
-			shapes = ButtonShapes(
-				shape = ButtonDefaults.squareShape,
-				pressedShape = ButtonDefaults.shape,
-			),
-			modifier = Modifier.fillMaxWidth(),
-			colors = ButtonDefaults.buttonColors(
-				containerColor = MaterialTheme.colorScheme.secondary,
-				contentColor = MaterialTheme.colorScheme.onSecondary,
-			),
-		) {
-			Text(text = if (completed) "View Board" else "Continue")
+			Spacer(Modifier.height(LocalPadding.current.small))
+			DataRow("Difficulty:", difficulty.toLocalizedString())
+			DataRow("Size:", gridSize.toLocalizedString())
+			DataRow("Time:", formattedTime)
+			Spacer(Modifier.height(LocalPadding.current.big))
+			Button(
+				onClick = onContinueClick,
+				shapes = ButtonShapes(
+					shape = ButtonDefaults.squareShape,
+					pressedShape = ButtonDefaults.shape,
+				),
+				modifier = Modifier
+					.fillMaxWidth()
+					.sharedBounds(
+						rememberSharedContentState("continue_button"),
+						animatedVisibilityScope = animatedVisibilityScope,
+					),
+				colors = ButtonDefaults.buttonColors(
+					containerColor = MaterialTheme.colorScheme.secondary,
+					contentColor = MaterialTheme.colorScheme.onSecondary,
+				),
+			) {
+				Text(text = if (completed) "View Board" else "Continue")
+			}
 		}
 	}
 }
@@ -208,7 +261,7 @@ private fun DataRow(
 		color = MaterialTheme.colorScheme.onSurfaceVariant,
 	),
 	valueTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(
-		fontWeight = FontWeight.Medium,
+		fontWeight = FontWeight.Bold,
 		color = MaterialTheme.colorScheme.onSurface,
 	),
 ) {
