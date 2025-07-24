@@ -46,7 +46,7 @@ import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
-import com.example.feature.creator.components.ContinueGameCard
+import com.example.feature.creator.components.ActiveGameCard
 import com.example.feature.creator.components.HorizontalSelect
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
@@ -138,7 +138,9 @@ private fun SudokuCreatorContent(
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			AnimatedVisibility(visible = hasActiveGame) {
-				ContinueGameCard(
+				var isExpanded by rememberSaveable { mutableStateOf(true) }
+				ActiveGameCard(
+					isExpanded = isExpanded,
 					difficulty = uiState.savedGame!!.difficulty,
 					gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
 					elapsedTime = uiState.savedGame.elapsedTime,
@@ -146,6 +148,9 @@ private fun SudokuCreatorContent(
 					onContinueClick = {
 						onEvent(Event.LoadSudoku)
 						gameCreationInProgress = true
+					},
+					onToggle = {
+						isExpanded = !isExpanded
 					},
 					modifier = Modifier.padding(LocalPadding.current.small),
 				)
