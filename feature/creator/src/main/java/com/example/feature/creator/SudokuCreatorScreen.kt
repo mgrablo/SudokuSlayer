@@ -2,7 +2,6 @@ package com.example.feature.creator
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -93,7 +92,12 @@ private fun SudokuCreatorContent(
 	modifier: Modifier = Modifier,
 ) {
 	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
-	val hasActiveGame by remember(uiState) { derivedStateOf { uiState.hasActiveGame && uiState.savedGame != null } }
+	val hasActiveGame by remember(uiState) {
+		derivedStateOf {
+			uiState.hasActiveGame &&
+				uiState.savedGame != null
+		}
+	}
 
 	if (gameCreationInProgress) {
 		val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -138,6 +142,7 @@ private fun SudokuCreatorContent(
 					difficulty = uiState.savedGame!!.difficulty,
 					gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
 					elapsedTime = uiState.savedGame.elapsedTime,
+					completed = uiState.savedGame.completed,
 					onContinueClick = {
 						onEvent(Event.LoadSudoku)
 						gameCreationInProgress = true
@@ -251,7 +256,7 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 	val savedGame = Game(
 		grid = SudokuGrid(),
 		difficulty = GameDifficulty.Medium,
-		elapsedTime = 0,
+		elapsedTime = 170,
 		hintsUsed = 0,
 		hintLogs = persistentListOf(),
 		completed = false,
