@@ -17,11 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.toLocalizedString
+import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
@@ -36,7 +38,7 @@ internal fun DifficultySelector(
 	val selectedIndex = options.indexOf(selectedDifficulty)
 	Column(modifier) {
 		Text(
-			text = "Difficulty",
+			text = stringResource(R.string.difficulty),
 			style = MaterialTheme.typography.labelLarge,
 		)
 		FlowRow(
