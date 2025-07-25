@@ -237,8 +237,8 @@ private fun ExpandedContent(
 				}
 			}
 			Spacer(Modifier.height(LocalPadding.current.small))
-			DataRow(stringResource(R.string.difficulty), difficulty.toLocalizedString())
-			DataRow(stringResource(R.string.size), gridSize.toLocalizedString())
+			DataRow(stringResource(R.string.active_difficulty), difficulty.toLocalizedString())
+			DataRow(stringResource(R.string.active_size), gridSize.toLocalizedString())
 			DataRow(stringResource(R.string.time), formattedTime)
 			Spacer(Modifier.height(LocalPadding.current.big))
 			Button(
