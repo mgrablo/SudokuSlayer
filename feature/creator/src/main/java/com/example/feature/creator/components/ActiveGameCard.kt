@@ -264,6 +264,7 @@ private fun ExpandedContent(
 					} else {
 						stringResource(R.string.continue_button)
 					},
+					fontWeight = FontWeight.Medium,
 				)
 			}
 		}
