@@ -47,6 +47,7 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
+import com.example.feature.creator.components.DifficultySelector
 import com.example.feature.creator.components.HorizontalSelect
 import com.example.feature.creator.components.NewGameButton
 import com.example.feature.uicore.theme.LocalPadding
@@ -55,6 +56,7 @@ import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
@@ -171,10 +173,14 @@ private fun SudokuCreatorContent(
 
 			Selects(
 				gridSizeOptions = gridSizeOptions,
-				difficultyOptions = difficultyOptions,
 				onGridSizeChange = { onEvent(Event.ChangeGridSize(it)) },
-				onDifficultyChange = { onEvent(Event.ChangeDifficulty(it)) },
 				modifier = Modifier.fillMaxWidth(SELECTS_MAX_WIDTH),
+			)
+			DifficultySelector(
+				options = GameDifficulty.entries.toPersistentList(),
+				selectedDifficulty = uiState.selectedDifficulty,
+				onCheckedChange = { onEvent(Event.ChangeDifficulty(it.ordinal)) },
+				modifier = Modifier.padding(LocalPadding.current.small).fillMaxWidth(),
 			)
 		}
 	}
@@ -200,20 +206,13 @@ private fun PreviewBox() {
 @Composable
 private fun Selects(
 	gridSizeOptions: PersistentList<String>,
-	difficultyOptions: PersistentList<String>,
 	onGridSizeChange: (Int) -> Unit,
-	onDifficultyChange: (Int) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	Column(modifier = modifier) {
 		HorizontalSelect(
 			options = gridSizeOptions,
 			onChange = onGridSizeChange,
-			modifier = Modifier.fillMaxWidth(),
-		)
-		HorizontalSelect(
-			options = difficultyOptions,
-			onChange = onDifficultyChange,
 			modifier = Modifier.fillMaxWidth(),
 		)
 	}
