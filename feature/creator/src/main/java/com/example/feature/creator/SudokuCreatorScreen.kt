@@ -1,7 +1,7 @@
 package com.example.feature.creator
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,11 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,23 +27,32 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import com.example.domain.core.Game
+import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
+import com.example.feature.creator.components.ActiveGameCard
 import com.example.feature.creator.components.HorizontalSelect
+import com.example.feature.creator.components.NewGameButton
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.filter
@@ -86,6 +94,12 @@ private fun SudokuCreatorContent(
 	modifier: Modifier = Modifier,
 ) {
 	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
+	val hasActiveGame by remember(uiState) {
+		derivedStateOf {
+			uiState.hasActiveGame &&
+				uiState.savedGame != null
+		}
+	}
 
 	if (gameCreationInProgress) {
 		val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -113,20 +127,45 @@ private fun SudokuCreatorContent(
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
-						Icon(Icons.Default.Menu, contentDescription = "Open menu")
+						Icon(
+							Icons.Default.Menu,
+							contentDescription = stringResource(R.string.content_desc_open_nav_menu),
+						)
 					}
+				},
+			)
+		},
+		floatingActionButtonPosition = FabPosition.Center,
+		floatingActionButton = {
+			NewGameButton(
+				modifier = Modifier.fillMaxWidth(0.8f),
+				onClick = {
+					onEvent(Event.NewGame)
+					gameCreationInProgress = true
 				},
 			)
 		},
 	) { innerPadding ->
 		Column(
-			modifier =
-			Modifier
-				.fillMaxSize()
-				.padding(innerPadding),
+			modifier = Modifier.padding(innerPadding)
+				.fillMaxSize(),
 			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Center,
 		) {
+			AnimatedVisibility(visible = hasActiveGame) {
+				ActiveGameCard(
+					isExpanded = uiState.activeGameCardExpanded,
+					difficulty = uiState.savedGame!!.difficulty,
+					gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
+					elapsedTime = uiState.savedGame.elapsedTime,
+					completed = uiState.savedGame.completed,
+					onContinueClick = {
+						onEvent(Event.LoadSudoku)
+						gameCreationInProgress = true
+					},
+					onToggle = { onEvent(Event.ToggleActiveGameCard) },
+					modifier = Modifier.padding(LocalPadding.current.small),
+				)
+			}
 			PreviewBox()
 			Spacer(Modifier.height(LocalPadding.current.big))
 
@@ -137,23 +176,6 @@ private fun SudokuCreatorContent(
 				onDifficultyChange = { onEvent(Event.ChangeDifficulty(it)) },
 				modifier = Modifier.fillMaxWidth(SELECTS_MAX_WIDTH),
 			)
-
-			if (gameCreationInProgress) {
-				ContainedLoadingIndicator()
-			} else {
-				GameControls(
-					savedGame = uiState.savedGame,
-					hasActiveGame = uiState.hasActiveGame,
-					onNewGame = {
-						onEvent(Event.NewGame)
-						gameCreationInProgress = true
-					},
-					onLoadSudoku = {
-						onEvent(Event.LoadSudoku)
-						gameCreationInProgress = true
-					},
-				)
-			}
 		}
 	}
 }
@@ -171,37 +193,6 @@ private fun PreviewBox() {
 			"PREVIEW",
 			style = MaterialTheme.typography.displayMedium,
 			color = MaterialTheme.colorScheme.onError,
-		)
-	}
-}
-
-@Composable
-private fun GameControls(
-	savedGame: Game?,
-	hasActiveGame: Boolean,
-	onNewGame: () -> Unit,
-	onLoadSudoku: () -> Unit,
-) {
-	if (savedGame != null && hasActiveGame) {
-		GameButton(
-			onClick = onLoadSudoku,
-			text = "Continue ${savedGame.difficulty}",
-		)
-	}
-	GameButton(
-		onClick = onNewGame,
-		text = "New game",
-	)
-}
-
-@Composable
-private fun GameButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
-	Button(
-		onClick = onClick,
-		modifier = modifier,
-	) {
-		Text(
-			text = text,
 		)
 	}
 }
@@ -234,6 +225,63 @@ private fun SudokuCreatorScreenPreview() {
 	SudokuSlayerTheme {
 		SudokuCreatorContent(
 			uiState = SudokuCreatorUiState(),
+			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
+			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
+			onEvent = { },
+			openDrawer = { },
+			onNavigateToGameScreen = { },
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuCreatorScreenActiveGamePreview() {
+	val savedGame = Game(
+		grid = SudokuGrid(),
+		difficulty = GameDifficulty.Medium,
+		elapsedTime = 170,
+		hintsUsed = 0,
+		hintLogs = persistentListOf(),
+		completed = false,
+	)
+
+	SudokuSlayerTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(
+				savedGame = savedGame,
+				hasActiveGame = true,
+			),
+			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
+			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
+			onEvent = { },
+			openDrawer = { },
+			onNavigateToGameScreen = { },
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuCreatorScreenActiveGameExpandedPreview() {
+	val savedGame = Game(
+		grid = SudokuGrid(),
+		difficulty = GameDifficulty.Medium,
+		elapsedTime = 170,
+		hintsUsed = 0,
+		hintLogs = persistentListOf(),
+		completed = false,
+	)
+
+	SudokuSlayerTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(
+				savedGame = savedGame,
+				hasActiveGame = true,
+				activeGameCardExpanded = true,
+			),
 			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
 			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
 			onEvent = { },
