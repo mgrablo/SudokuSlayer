@@ -6,23 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonShapes
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
@@ -45,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -57,6 +47,7 @@ import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
 import com.example.feature.creator.components.HorizontalSelect
+import com.example.feature.creator.components.NewGameButton
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
@@ -141,43 +132,13 @@ private fun SudokuCreatorContent(
 		},
 		floatingActionButtonPosition = FabPosition.Center,
 		floatingActionButton = {
-			Button(
+			NewGameButton(
+				modifier = Modifier.fillMaxWidth(0.8f),
 				onClick = {
 					onEvent(Event.NewGame)
 					gameCreationInProgress = true
 				},
-				modifier = Modifier
-					.fillMaxWidth(0.8f)
-					.height(50.dp),
-				shapes = ButtonShapes(
-					shape = ButtonDefaults.squareShape,
-					pressedShape = ButtonDefaults.shape,
-				),
-				elevation = ButtonDefaults.buttonElevation(
-					defaultElevation = 6.dp,
-				),
-				colors = ButtonDefaults.buttonColors(
-					containerColor = MaterialTheme.colorScheme.primaryContainer,
-				),
-			) {
-				Box(
-					modifier = Modifier.weight(1f),
-					contentAlignment = Alignment.CenterEnd,
-				) {
-					Icon(
-						Icons.Default.Add,
-						contentDescription = null,
-						tint = MaterialTheme.colorScheme.onPrimaryContainer,
-					)
-				}
-				Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-				Text(
-					text = "New Game",
-					fontWeight = FontWeight.Bold,
-					color = MaterialTheme.colorScheme.onPrimaryContainer,
-				)
-				Spacer(Modifier.weight(1f))
-			}
+			)
 		},
 	) { innerPadding ->
 		Column(
