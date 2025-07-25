@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.feature.uicore.toLocalizedString
 import kotlinx.collections.immutable.PersistentList
@@ -27,16 +27,18 @@ import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun DifficultySelector(
-	options: PersistentList<GameDifficulty>,
-	selectedDifficulty: GameDifficulty,
-	onCheckedChange: (GameDifficulty) -> Unit,
+internal fun GridSizeSelector(
+	options: PersistentList<SudokuGridSize>,
+	selectedSize: SudokuGridSize,
+	onCheckedChange: (SudokuGridSize) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-	val selectedIndex = options.indexOf(selectedDifficulty)
-	Column(modifier) {
+	val selectedIndex = options.indexOf(selectedSize)
+	Column(
+		modifier = modifier,
+	) {
 		Text(
-			text = "Difficulty",
+			text = "Size",
 			style = MaterialTheme.typography.labelLarge,
 		)
 		FlowRow(
@@ -44,10 +46,10 @@ internal fun DifficultySelector(
 			horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
 			verticalArrangement = Arrangement.spacedBy(2.dp),
 		) {
-			options.forEachIndexed { index, difficulty ->
+			options.forEachIndexed { index, size ->
 				ToggleButton(
 					checked = index == selectedIndex,
-					onCheckedChange = { onCheckedChange(difficulty) },
+					onCheckedChange = { onCheckedChange(size) },
 					shapes =
 					when (index) {
 						0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
@@ -58,7 +60,7 @@ internal fun DifficultySelector(
 						containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
 					),
 				) {
-					Text(difficulty.toLocalizedString())
+					Text(size.toLocalizedString())
 				}
 			}
 		}
@@ -68,16 +70,14 @@ internal fun DifficultySelector(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @PreviewLightDark
 @Composable
-private fun DifficultySelectorPreview() {
-	var selectedDifficulty by remember { mutableStateOf(GameDifficulty.Easy) }
+private fun GridSizeSelectorPreview() {
+	var selected by remember { mutableStateOf(SudokuGridSize.NINE) }
 	SudokuSlayerTheme {
-		Surface(
-			color = MaterialTheme.colorScheme.background,
-		) {
-			DifficultySelector(
-				options = GameDifficulty.entries.toPersistentList(),
-				selectedDifficulty = selectedDifficulty,
-				onCheckedChange = { selectedDifficulty = it },
+		Surface {
+			GridSizeSelector(
+				options = SudokuGridSize.entries.toPersistentList(),
+				selectedSize = selected,
+				onCheckedChange = { selected = it },
 			)
 		}
 	}

@@ -48,20 +48,18 @@ import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
 import com.example.feature.creator.components.DifficultySelector
-import com.example.feature.creator.components.HorizontalSelect
+import com.example.feature.creator.components.GridSizeSelector
 import com.example.feature.creator.components.NewGameButton
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.creator.R
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.filter
 import org.koin.androidx.compose.koinViewModel
 
 private val PreviewBoxSize = 200.dp
-private const val SELECTS_MAX_WIDTH = 0.8f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,8 +76,6 @@ internal fun SudokuCreatorScreen(
 		onEvent = viewModel::onEvent,
 		openDrawer = openDrawer,
 		onNavigateToGameScreen = onNavigateToGameScreen,
-		difficultyOptions = viewModel.difficulties,
-		gridSizeOptions = viewModel.gridSizeOptions,
 		modifier = modifier,
 	)
 }
@@ -88,8 +84,6 @@ internal fun SudokuCreatorScreen(
 @Composable
 private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
-	difficultyOptions: PersistentList<String>,
-	gridSizeOptions: PersistentList<String>,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
 	onNavigateToGameScreen: () -> Unit,
@@ -171,10 +165,11 @@ private fun SudokuCreatorContent(
 			PreviewBox()
 			Spacer(Modifier.height(LocalPadding.current.big))
 
-			Selects(
-				gridSizeOptions = gridSizeOptions,
-				onGridSizeChange = { onEvent(Event.ChangeGridSize(it)) },
-				modifier = Modifier.fillMaxWidth(SELECTS_MAX_WIDTH),
+			GridSizeSelector(
+				options = SudokuGridSize.entries.toPersistentList(),
+				selectedSize = uiState.selectedGridSize,
+				onCheckedChange = { onEvent(Event.ChangeGridSize(it.ordinal)) },
+				modifier = Modifier.padding(LocalPadding.current.small).fillMaxWidth(),
 			)
 			DifficultySelector(
 				options = GameDifficulty.entries.toPersistentList(),
@@ -203,29 +198,12 @@ private fun PreviewBox() {
 	}
 }
 
-@Composable
-private fun Selects(
-	gridSizeOptions: PersistentList<String>,
-	onGridSizeChange: (Int) -> Unit,
-	modifier: Modifier = Modifier,
-) {
-	Column(modifier = modifier) {
-		HorizontalSelect(
-			options = gridSizeOptions,
-			onChange = onGridSizeChange,
-			modifier = Modifier.fillMaxWidth(),
-		)
-	}
-}
-
 @PreviewLightDark
 @Composable
 private fun SudokuCreatorScreenPreview() {
 	SudokuSlayerTheme {
 		SudokuCreatorContent(
 			uiState = SudokuCreatorUiState(),
-			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
-			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
 			onEvent = { },
 			openDrawer = { },
 			onNavigateToGameScreen = { },
@@ -252,8 +230,6 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 				savedGame = savedGame,
 				hasActiveGame = true,
 			),
-			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
-			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
 			onEvent = { },
 			openDrawer = { },
 			onNavigateToGameScreen = { },
@@ -281,8 +257,6 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 				hasActiveGame = true,
 				activeGameCardExpanded = true,
 			),
-			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
-			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
 			onEvent = { },
 			openDrawer = { },
 			onNavigateToGameScreen = { },
