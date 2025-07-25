@@ -27,6 +27,7 @@ internal data class SudokuCreatorUiState(
 	val selectedGridSize: SudokuGridSize = SudokuGridSize.FOUR,
 	val savedGame: Game? = null,
 	val hasActiveGame: Boolean = false,
+	val activeGameCardExpanded: Boolean = false,
 )
 
 @Stable
@@ -91,6 +92,8 @@ internal class SudokuCreatorViewModel(
 		data object NewGame : Event
 
 		data object LoadSudoku : Event
+
+		data object ToggleActiveGameCard : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -99,6 +102,15 @@ internal class SudokuCreatorViewModel(
 			is Event.ChangeGridSize -> handleChangeGridSize(event.num)
 			is Event.NewGame -> handleNewGame()
 			is Event.LoadSudoku -> handleLoadGame()
+			is Event.ToggleActiveGameCard -> toggleActiveGameCard()
+		}
+	}
+
+	private fun toggleActiveGameCard() {
+		_uiState.update {
+			it.copy(
+				activeGameCardExpanded = !it.activeGameCardExpanded,
+			)
 		}
 	}
 

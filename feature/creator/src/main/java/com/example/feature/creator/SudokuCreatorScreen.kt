@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -51,6 +52,7 @@ import com.example.feature.creator.components.NewGameButton
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.filter
@@ -125,7 +127,10 @@ private fun SudokuCreatorContent(
 				title = { },
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
-						Icon(Icons.Default.Menu, contentDescription = "Open menu")
+						Icon(
+							Icons.Default.Menu,
+							contentDescription = stringResource(R.string.content_desc_open_nav_menu),
+						)
 					}
 				},
 			)
@@ -147,9 +152,8 @@ private fun SudokuCreatorContent(
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			AnimatedVisibility(visible = hasActiveGame) {
-				var isExpanded by rememberSaveable { mutableStateOf(true) }
 				ActiveGameCard(
-					isExpanded = isExpanded,
+					isExpanded = uiState.activeGameCardExpanded,
 					difficulty = uiState.savedGame!!.difficulty,
 					gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
 					elapsedTime = uiState.savedGame.elapsedTime,
@@ -158,9 +162,7 @@ private fun SudokuCreatorContent(
 						onEvent(Event.LoadSudoku)
 						gameCreationInProgress = true
 					},
-					onToggle = {
-						isExpanded = !isExpanded
-					},
+					onToggle = { onEvent(Event.ToggleActiveGameCard) },
 					modifier = Modifier.padding(LocalPadding.current.small),
 				)
 			}
@@ -250,6 +252,35 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 			uiState = SudokuCreatorUiState(
 				savedGame = savedGame,
 				hasActiveGame = true,
+			),
+			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
+			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
+			onEvent = { },
+			openDrawer = { },
+			onNavigateToGameScreen = { },
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuCreatorScreenActiveGameExpandedPreview() {
+	val savedGame = Game(
+		grid = SudokuGrid(),
+		difficulty = GameDifficulty.Medium,
+		elapsedTime = 170,
+		hintsUsed = 0,
+		hintLogs = persistentListOf(),
+		completed = false,
+	)
+
+	SudokuSlayerTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(
+				savedGame = savedGame,
+				hasActiveGame = true,
+				activeGameCardExpanded = true,
 			),
 			difficultyOptions = persistentListOf("Easy", "Medium", "Hard"),
 			gridSizeOptions = persistentListOf("4x4", "9x9", "16x16"),
