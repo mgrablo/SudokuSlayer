@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="sudoku_creator_title">New Game</string>
+    <string name="last_game">Last Game</string>
+	<string name="continue_playing">Continue Playing</string>
+	<string name="content_desc_view_board">View board</string>
+	<string name="content_desc_continue">Continue</string>
+	<string name="content_desc_expand">Expand</string>
+	<string name="content_desc_puzzle_completed">Puzzle completed</string>
+	<string name="content_desc_collapse">Collapse</string>
+	<string name="view_board">View Board</string>
+	<string name="continue_button">Continue</string>
+	<string name="difficulty">Difficulty:</string>
+	<string name="size">Size:</string>
+	<string name="time">Time:</string>
 </resources>

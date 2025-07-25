@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -110,7 +111,13 @@ private fun CollapsedContent(
 	} else {
 		painterResource(R.drawable.play_arrow)
 	}
-	val title = if (completed) "Last Game" else "Continue Playing"
+	val title = if (completed) {
+		stringResource(R.string.last_game)
+	} else {
+		stringResource(
+			R.string.continue_playing,
+		)
+	}
 
 	with(sharedTransitionScope) {
 		Column(
@@ -146,7 +153,11 @@ private fun CollapsedContent(
 				) {
 					Icon(
 						painter = painter,
-						contentDescription = if (completed) "View board" else "Continue",
+						contentDescription = if (completed) {
+							stringResource(R.string.content_desc_view_board)
+						} else {
+							stringResource(R.string.content_desc_continue)
+						},
 					)
 				}
 				IconButton(
@@ -159,7 +170,7 @@ private fun CollapsedContent(
 				) {
 					Icon(
 						Icons.Default.KeyboardArrowDown,
-						contentDescription = "Expand",
+						contentDescription = stringResource(R.string.content_desc_expand),
 					)
 				}
 			}
@@ -181,7 +192,8 @@ private fun ExpandedContent(
 	modifier: Modifier = Modifier,
 ) {
 	val formattedTime = rememberFormattedTime(elapsedTime.toFloat())
-	val title = if (completed) "Last Game" else "Continue Playing"
+	val title =
+		if (completed) stringResource(R.string.last_game) else stringResource(R.string.continue_playing)
 
 	with(sharedTransitionScope) {
 		Column(
@@ -205,7 +217,7 @@ private fun ExpandedContent(
 					IconButton(onClick = onContinueClick) {
 						Icon(
 							painter = painterResource(R.drawable.trophy_24px),
-							contentDescription = "Puzzle completed",
+							contentDescription = stringResource(R.string.content_desc_puzzle_completed),
 							tint = MaterialTheme.colorScheme.primary,
 						)
 					}
@@ -220,14 +232,14 @@ private fun ExpandedContent(
 				) {
 					Icon(
 						Icons.Default.KeyboardArrowUp,
-						contentDescription = "Collapse",
+						contentDescription = stringResource(R.string.content_desc_collapse),
 					)
 				}
 			}
 			Spacer(Modifier.height(LocalPadding.current.small))
-			DataRow("Difficulty:", difficulty.toLocalizedString())
-			DataRow("Size:", gridSize.toLocalizedString())
-			DataRow("Time:", formattedTime)
+			DataRow(stringResource(R.string.difficulty), difficulty.toLocalizedString())
+			DataRow(stringResource(R.string.size), gridSize.toLocalizedString())
+			DataRow(stringResource(R.string.time), formattedTime)
 			Spacer(Modifier.height(LocalPadding.current.big))
 			Button(
 				onClick = onContinueClick,
@@ -246,7 +258,13 @@ private fun ExpandedContent(
 					contentColor = MaterialTheme.colorScheme.onSecondary,
 				),
 			) {
-				Text(text = if (completed) "View Board" else "Continue")
+				Text(
+					text = if (completed) {
+						stringResource(R.string.view_board)
+					} else {
+						stringResource(R.string.continue_button)
+					},
+				)
 			}
 		}
 	}
@@ -283,7 +301,7 @@ private fun CollapsibleActiveGameCardPreviewExpanded() {
 				isExpanded = true,
 				difficulty = GameDifficulty.Easy,
 				gridSize = SudokuGridSize.NINE,
-				elapsedTime = 120000L, // 2 minutes
+				elapsedTime = 120000L,
 				completed = false,
 				onContinueClick = {},
 				onToggle = {},
@@ -292,7 +310,7 @@ private fun CollapsibleActiveGameCardPreviewExpanded() {
 				isExpanded = true,
 				difficulty = GameDifficulty.Easy,
 				gridSize = SudokuGridSize.NINE,
-				elapsedTime = 120000L, // 2 minutes
+				elapsedTime = 120000L,
 				completed = true,
 				onContinueClick = {},
 				onToggle = {},
@@ -312,7 +330,7 @@ private fun CollapsibleActiveGameCardPreviewCollapsed() {
 				isExpanded = false,
 				difficulty = GameDifficulty.Hard,
 				gridSize = SudokuGridSize.FOUR,
-				elapsedTime = 3600000L, // 1 hour
+				elapsedTime = 3600000L,
 				completed = false,
 				onContinueClick = {},
 				onToggle = {},
@@ -321,7 +339,7 @@ private fun CollapsibleActiveGameCardPreviewCollapsed() {
 				isExpanded = false,
 				difficulty = GameDifficulty.Hard,
 				gridSize = SudokuGridSize.FOUR,
-				elapsedTime = 3600000L, // 1 hour
+				elapsedTime = 3600000L,
 				completed = true,
 				onContinueClick = {},
 				onToggle = {},
