@@ -47,9 +47,11 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
+import com.example.feature.creator.components.preview.BoardPreview
 import com.example.feature.creator.components.DifficultySelector
 import com.example.feature.creator.components.GridSizeSelector
 import com.example.feature.creator.components.NewGameButton
+import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
@@ -71,13 +73,15 @@ internal fun SudokuCreatorScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsState()
 
-	SudokuCreatorContent(
-		uiState = uiState,
-		onEvent = viewModel::onEvent,
-		openDrawer = openDrawer,
-		onNavigateToGameScreen = onNavigateToGameScreen,
-		modifier = modifier,
-	)
+	SudokuCreatorTheme(false) {
+		SudokuCreatorContent(
+			uiState = uiState,
+			onEvent = viewModel::onEvent,
+			openDrawer = openDrawer,
+			onNavigateToGameScreen = onNavigateToGameScreen,
+			modifier = modifier,
+		)
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -162,7 +166,11 @@ private fun SudokuCreatorContent(
 					modifier = Modifier.padding(LocalPadding.current.small),
 				)
 			}
-			PreviewBox()
+			BoardPreview(
+				size = uiState.selectedGridSize,
+				difficulty = uiState.selectedDifficulty,
+				modifier = Modifier.size(PreviewBoxSize),
+			)
 			Spacer(Modifier.height(LocalPadding.current.big))
 
 			GridSizeSelector(
