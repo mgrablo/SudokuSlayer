@@ -3,9 +3,11 @@ package com.example.feature.creator.components.preview
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.dp
 
 internal fun DrawScope.drawGridLines(
 	gridSize: Int,
@@ -54,4 +56,42 @@ internal fun DrawScope.drawBoardFrame(
 		cornerRadius = CornerRadius(cornerRadius, cornerRadius),
 		style = Stroke(width = strokeWidth),
 	)
+}
+
+internal fun DrawScope.drawTransitionSweepEffect(
+	progress: Float,
+	isRunning: Boolean,
+	color: Color,
+	maxWidth: Float,
+) {
+	if (isRunning) {
+		val glowWidth = 20.dp.toPx()
+
+		val sweepBrush = Brush.horizontalGradient(
+			colorStops = arrayOf(
+				0.0f to Color.Transparent,
+				0.3f to color.copy(alpha = 0.05f),
+				0.6f to color.copy(alpha = 0.2f),
+				0.8f to color.copy(alpha = 0.4f),
+				0.9f to color.copy(alpha = 0.2f),
+				1.0f to Color.Transparent,
+			),
+			startX = (maxWidth * progress) - glowWidth,
+			endX = (maxWidth * progress) + (glowWidth * 0.6f),
+		)
+
+		drawRect(
+			brush = sweepBrush,
+			topLeft = Offset(x = 0f, y = 0f),
+			size = Size(width = maxWidth, height = size.height),
+		)
+
+		drawLine(
+			color = color.copy(alpha = 0.7f),
+			start = Offset(x = maxWidth * progress, y = 0f),
+			end = Offset(x = maxWidth * progress, y = size.height),
+			strokeWidth = 1.dp.toPx(),
+			alpha = 0.5f,
+		)
+	}
 }
