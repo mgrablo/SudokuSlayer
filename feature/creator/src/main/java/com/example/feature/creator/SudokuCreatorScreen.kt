@@ -47,10 +47,11 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
-import com.example.feature.creator.components.preview.BoardPreview
 import com.example.feature.creator.components.DifficultySelector
 import com.example.feature.creator.components.GridSizeSelector
 import com.example.feature.creator.components.NewGameButton
+import com.example.feature.creator.components.preview.BoardPreview
+import com.example.feature.creator.components.preview.rememberBoardPreviewState
 import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.SudokuSlayerTheme
@@ -115,6 +116,7 @@ private fun SudokuCreatorContent(
 				}
 		}
 	}
+	val boardPreviewState = rememberBoardPreviewState(uiState.selectedGridSize)
 
 	Scaffold(
 		modifier = modifier,
@@ -167,9 +169,9 @@ private fun SudokuCreatorContent(
 				)
 			}
 			BoardPreview(
-				size = uiState.selectedGridSize,
 				difficulty = uiState.selectedDifficulty,
 				modifier = Modifier.size(PreviewBoxSize),
+				state = boardPreviewState,
 			)
 			Spacer(Modifier.height(LocalPadding.current.big))
 

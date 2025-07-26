@@ -1,19 +1,16 @@
 package com.example.feature.creator.components.preview
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.GameDifficulty
@@ -26,30 +23,26 @@ import kotlin.math.sqrt
 
 @Composable
 internal fun BoardPreview(
-	size: SudokuGridSize,
+	state: BoardPreviewState,
 	difficulty: GameDifficulty,
 	modifier: Modifier = Modifier,
 	colors: BoardPreviewColors = LocalBoardPreviewColors.current,
 ) {
-	val size = when (size) {
-		SudokuGridSize.FOUR -> 4
-		SudokuGridSize.NINE -> 9
-		SudokuGridSize.SIXTEEN -> 16
-	}
-	val blockSize by remember(size) { mutableIntStateOf(floor(sqrt(size.toFloat())).toInt()) }
+	Box(
+		modifier = modifier.drawWithContent {
+			val maxWidth = this.size.width
+			val progress = state.progress
+			val previousSize = state.previousSize.toIntSize()
+			val currentSize = state.currentSize.toIntSize()
 
-	BoxWithConstraints(
-		modifier.aspectRatio(1f),
-	) {
-		val maxWidth = constraints.maxWidth.toFloat()
-		val cellSize by remember(size) { mutableFloatStateOf(maxWidth / size) }
+			val previousCellSize = maxWidth / previousSize
+			val currentCellSize = maxWidth / currentSize
+			val previousBlockSize = floor(sqrt(previousSize.toFloat())).toInt()
+			val currentBlockSize = floor(sqrt(currentSize.toFloat())).toInt()
 
-		val thinLineWidth = with(LocalDensity.current) { 1.dp.toPx() }
-		val thickLineWidth = with(LocalDensity.current) { 2.dp.toPx() }
+			val thinLineWidth = 1.dp.toPx()
+			val thickLineWidth = 2.dp.toPx()
 
-		Canvas(
-			modifier = Modifier.fillMaxSize(),
-		) {
 			drawRoundRect(
 				color = colors.background,
 				topLeft = Offset.Zero,
@@ -62,18 +55,63 @@ internal fun BoardPreview(
 				strokeWidth = thickLineWidth,
 				cornerRadius = 16f,
 			)
-			drawGridLines(
-				gridSize = size,
-				cellSize = cellSize,
-				blockSize = blockSize,
-				canvasWidth = maxWidth,
-				thinLineWidth = thinLineWidth,
-				thickLineWidth = thickLineWidth,
-				thickLineColor = colors.thickLine,
-				thinLineColor = colors.thinLine,
-			)
-		}
-	}
+			clipRect(left = maxWidth * progress) {
+				drawGridLines(
+					gridSize = previousSize,
+					cellSize = previousCellSize,
+					blockSize = previousBlockSize,
+					canvasWidth = maxWidth,
+					thinLineWidth = thinLineWidth,
+					thickLineWidth = thickLineWidth,
+					thickLineColor = colors.thickLine,
+					thinLineColor = colors.thinLine,
+				)
+			}
+			clipRect(right = maxWidth * progress) {
+				drawGridLines(
+					gridSize = currentSize,
+					cellSize = currentCellSize,
+					blockSize = currentBlockSize,
+					canvasWidth = maxWidth,
+					thinLineWidth = thinLineWidth,
+					thickLineWidth = thickLineWidth,
+					thickLineColor = colors.thickLine,
+					thinLineColor = colors.thinLine,
+				)
+			}
+
+			if (state.isRunning) {
+				val glowWidth = 20.dp.toPx()
+
+				val sweepBrush = Brush.horizontalGradient(
+					colorStops = arrayOf(
+						0.0f to Color.Transparent,
+						0.3f to colors.frame.copy(alpha = 0.05f),
+						0.6f to colors.frame.copy(alpha = 0.2f),
+						0.8f to colors.frame.copy(alpha = 0.4f),
+						0.9f to colors.frame.copy(alpha = 0.2f),
+						1.0f to Color.Transparent,
+					),
+					startX = (maxWidth * progress) - glowWidth,
+					endX = (maxWidth * progress) + (glowWidth * 0.6f),
+				)
+
+				drawRect(
+					brush = sweepBrush,
+					topLeft = Offset(x = 0f, y = 0f),
+					size = Size(width = maxWidth, height = size.height),
+				)
+
+				drawLine(
+					color = colors.frame.copy(alpha = 0.7f),
+					start = Offset(x = maxWidth * progress, y = 0f),
+					end = Offset(x = maxWidth * progress, y = size.height),
+					strokeWidth = 1.dp.toPx(),
+					alpha = 0.5f,
+				)
+			}
+		},
+	)
 }
 
 @PreviewLightDark
@@ -81,8 +119,9 @@ internal fun BoardPreview(
 private fun BoardPreviewNinePreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			size = SudokuGridSize.NINE,
 			difficulty = GameDifficulty.Medium,
+			state = rememberBoardPreviewState(SudokuGridSize.NINE),
+			modifier = Modifier.size(200.dp),
 		)
 	}
 }
@@ -92,8 +131,9 @@ private fun BoardPreviewNinePreview() {
 private fun BoardPreviewFourPreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			size = SudokuGridSize.FOUR,
+			state = rememberBoardPreviewState(SudokuGridSize.FOUR),
 			difficulty = GameDifficulty.Medium,
+			modifier = Modifier.size(200.dp),
 		)
 	}
 }
@@ -103,8 +143,9 @@ private fun BoardPreviewFourPreview() {
 private fun BoardPreviewSixteenPreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			size = SudokuGridSize.SIXTEEN,
+			state = rememberBoardPreviewState(SudokuGridSize.SIXTEEN),
 			difficulty = GameDifficulty.Medium,
+			modifier = Modifier.size(200.dp),
 		)
 	}
 }
