@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigInteger
 
 @Stable
 @Immutable
@@ -27,6 +28,8 @@ internal data class SudokuCreatorUiState(
 	val savedGame: Game? = null,
 	val hasActiveGame: Boolean = false,
 	val activeGameCardExpanded: Boolean = false,
+	val advancedOptionsExpanded: Boolean = false,
+	val seed: Long? = null,
 )
 
 @Stable
@@ -75,6 +78,10 @@ internal class SudokuCreatorViewModel(
 		data object LoadSudoku : Event
 
 		data object ToggleActiveGameCard : Event
+
+		data object ToggleAdvancedOptions : Event
+
+		data class ChangePuzzleSeed(val seed: String) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -84,6 +91,8 @@ internal class SudokuCreatorViewModel(
 			is Event.NewGame -> handleNewGame()
 			is Event.LoadSudoku -> handleLoadGame()
 			is Event.ToggleActiveGameCard -> toggleActiveGameCard()
+			is Event.ToggleAdvancedOptions -> toggleAdvancedOptions()
+			is Event.ChangePuzzleSeed -> handleChangePuzzleSeed(event.seed)
 		}
 	}
 
@@ -137,6 +146,46 @@ internal class SudokuCreatorViewModel(
 
 	private fun handleLoadGame() {
 		viewModelScope.launch {
+		}
+	}
+
+	private fun toggleAdvancedOptions() {
+		_uiState.update {
+			it.copy(advancedOptionsExpanded = !it.advancedOptionsExpanded)
+		}
+	}
+
+	private fun handleChangePuzzleSeed(input: String) {
+		viewModelScope.launch {
+			val filteredInput = input.filter { it.isDigit() }
+			if (filteredInput.isBlank()) {
+				_uiState.update {
+					it.copy(
+						seed = null,
+					)
+				}
+				return@launch
+			}
+			try {
+				val inputAsBigInt = BigInteger(filteredInput)
+				val maxLongAsBigInt = BigInteger.valueOf(Long.MAX_VALUE)
+
+				if (inputAsBigInt > maxLongAsBigInt) {
+					return@launch
+				} else {
+					_uiState.update {
+						it.copy(
+							seed = inputAsBigInt.toLong(),
+						)
+					}
+				}
+			} catch (e: NumberFormatException) {
+				_uiState.update {
+					it.copy(
+						seed = null,
+					)
+				}
+			}
 		}
 	}
 }

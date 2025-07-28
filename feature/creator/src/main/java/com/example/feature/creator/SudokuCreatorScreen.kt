@@ -10,13 +10,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -53,6 +57,7 @@ import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.creator.SudokuCreatorViewModel.Event
 import com.example.feature.creator.components.ActiveGameCard
+import com.example.feature.creator.components.AdvancedOptions
 import com.example.feature.creator.components.DifficultySelector
 import com.example.feature.creator.components.GridSizeSelector
 import com.example.feature.creator.components.NewGameButton
@@ -159,6 +164,8 @@ private fun SudokuCreatorContent(
 		Column(
 			modifier = Modifier
 				.padding(innerPadding)
+				.consumeWindowInsets(innerPadding)
+				.imePadding()
 				.fillMaxSize(),
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
@@ -179,10 +186,12 @@ private fun SudokuCreatorContent(
 								onToggleCardClick = { onEvent(Event.ToggleActiveGameCard) },
 								onGridSizeChange = { onEvent(Event.ChangeGridSize(it)) },
 								onDifficulyChange = { onEvent(Event.ChangeDifficulty(it)) },
+								onToggleAdvancedOptions = { onEvent(Event.ToggleAdvancedOptions) },
+								onSeedChange = { onEvent(Event.ChangePuzzleSeed(it)) },
 								sharedTransitionScope = this@SharedTransitionLayout,
 								animatedVisibilityScope = this@AnimatedContent,
 								modifier = Modifier
-									.weight(1f)
+									.fillMaxWidth()
 									.sharedBounds(
 										rememberSharedContentState("creator_screen_content"),
 										animatedVisibilityScope = this@AnimatedContent,
@@ -219,6 +228,8 @@ private fun InitialContent(
 	onToggleCardClick: () -> Unit,
 	onGridSizeChange: (SudokuGridSize) -> Unit,
 	onDifficulyChange: (GameDifficulty) -> Unit,
+	onToggleAdvancedOptions: () -> Unit,
+	onSeedChange: (String) -> Unit,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
@@ -229,52 +240,73 @@ private fun InitialContent(
 				uiState.savedGame != null
 		}
 	}
+	val lazyColumnState = rememberLazyListState()
 
-	Column(
-		modifier = modifier.fillMaxWidth(),
+	LazyColumn(
+		state = lazyColumnState,
+		modifier = modifier
+			.fillMaxWidth(),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
-		AnimatedVisibility(visible = hasActiveGame) {
-			ActiveGameCard(
-				isExpanded = uiState.activeGameCardExpanded,
-				difficulty = uiState.savedGame!!.difficulty,
-				gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
-				elapsedTime = uiState.savedGame.elapsedTime,
-				completed = uiState.savedGame.completed,
-				onContinueClick = onContinueClick,
-				onToggle = onToggleCardClick,
-				modifier = Modifier.padding(LocalPadding.current.small),
-			)
+		item {
+			AnimatedVisibility(visible = hasActiveGame) {
+				ActiveGameCard(
+					isExpanded = uiState.activeGameCardExpanded,
+					difficulty = uiState.savedGame!!.difficulty,
+					gridSize = SudokuGridSize.fromIntSize(uiState.savedGame.grid.gridSize),
+					elapsedTime = uiState.savedGame.elapsedTime,
+					completed = uiState.savedGame.completed,
+					onContinueClick = onContinueClick,
+					onToggle = onToggleCardClick,
+					modifier = Modifier.padding(LocalPadding.current.small),
+				)
+			}
 		}
-		with(sharedTransitionScope) {
-			BoardPreview(
+		item {
+			with(sharedTransitionScope) {
+				BoardPreview(
+					modifier = Modifier
+						.size(PreviewBoxSize)
+						.sharedBounds(
+							sharedContentState = rememberSharedContentState("board_preview"),
+							animatedVisibilityScope = animatedVisibilityScope,
+						),
+					state = boardPreviewState,
+				)
+			}
+			Spacer(Modifier.height(LocalPadding.current.big))
+		}
+		item {
+			GridSizeSelector(
+				options = SudokuGridSize.entries.toPersistentList(),
+				selectedSize = uiState.selectedGridSize,
+				onCheckedChange = onGridSizeChange,
 				modifier = Modifier
-					.size(PreviewBoxSize)
-					.sharedBounds(
-						sharedContentState = rememberSharedContentState("board_preview"),
-						animatedVisibilityScope = animatedVisibilityScope,
-					),
-				state = boardPreviewState,
+					.padding(LocalPadding.current.small)
+					.fillMaxWidth(),
 			)
 		}
-		Spacer(Modifier.height(LocalPadding.current.big))
-
-		GridSizeSelector(
-			options = SudokuGridSize.entries.toPersistentList(),
-			selectedSize = uiState.selectedGridSize,
-			onCheckedChange = onGridSizeChange,
-			modifier = Modifier
-				.padding(LocalPadding.current.small)
-				.fillMaxWidth(),
-		)
-		DifficultySelector(
-			options = GameDifficulty.entries.toPersistentList(),
-			selectedDifficulty = uiState.selectedDifficulty,
-			onCheckedChange = onDifficulyChange,
-			modifier = Modifier
-				.padding(LocalPadding.current.small)
-				.fillMaxWidth(),
-		)
+		item {
+			DifficultySelector(
+				options = GameDifficulty.entries.toPersistentList(),
+				selectedDifficulty = uiState.selectedDifficulty,
+				onCheckedChange = onDifficulyChange,
+				modifier = Modifier
+					.padding(LocalPadding.current.small)
+					.fillMaxWidth(),
+			)
+		}
+		item {
+			AdvancedOptions(
+				expanded = uiState.advancedOptionsExpanded,
+				onToggle = onToggleAdvancedOptions,
+				seed = uiState.seed?.toString() ?: "",
+				onSeedChange = onSeedChange,
+				modifier = Modifier
+					.padding(LocalPadding.current.small)
+					.fillMaxWidth(),
+			)
+		}
 	}
 }
 
@@ -297,7 +329,6 @@ private fun LoadingContent(
 					.padding(horizontal = LocalPadding.current.big)
 					.fillMaxWidth(),
 			) {
-
 				BoardLoadingIndicator(
 					gridSize = selectedGridSize,
 					modifier = Modifier
@@ -388,6 +419,7 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 				savedGame = savedGame,
 				hasActiveGame = true,
 				activeGameCardExpanded = true,
+				advancedOptionsExpanded = true,
 			),
 			onEvent = { },
 			openDrawer = { },
