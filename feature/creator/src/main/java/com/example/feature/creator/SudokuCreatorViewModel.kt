@@ -11,7 +11,6 @@ import com.example.domain.creator.CreateNewGameUseCase
 import com.example.domain.creator.GetSavedGameUseCase
 import com.example.domain.creator.HasActiveGameUseCase
 import com.example.domain.creator.SaveGameUseCase
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,24 +44,6 @@ internal class SudokuCreatorViewModel(
 	private val _uiState = MutableStateFlow(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
 
-	val difficulties
-		get() =
-			GameDifficulty.entries
-				.map {
-					it.name.lowercase().replaceFirstChar { it.uppercase() }
-				}.toPersistentList()
-
-	val gridSizeOptions
-		get() =
-			SudokuGridSize.entries
-				.map {
-					when (it) {
-						SudokuGridSize.FOUR -> "4x4"
-						SudokuGridSize.NINE -> "9x9"
-						SudokuGridSize.SIXTEEN -> "16x16"
-					}
-				}.toPersistentList()
-
 	init {
 		viewModelScope.launch {
 			getSavedGameUseCase().collect { savedGame ->
@@ -85,9 +66,9 @@ internal class SudokuCreatorViewModel(
 	}
 
 	sealed interface Event {
-		data class ChangeDifficulty(val num: Int) : Event
+		data class ChangeDifficulty(val difficulty: GameDifficulty) : Event
 
-		data class ChangeGridSize(val num: Int) : Event
+		data class ChangeGridSize(val size: SudokuGridSize) : Event
 
 		data object NewGame : Event
 
@@ -98,8 +79,8 @@ internal class SudokuCreatorViewModel(
 
 	fun onEvent(event: Event) {
 		when (event) {
-			is Event.ChangeDifficulty -> handleChangeDifficulty(event.num)
-			is Event.ChangeGridSize -> handleChangeGridSize(event.num)
+			is Event.ChangeDifficulty -> handleChangeDifficulty(event.difficulty)
+			is Event.ChangeGridSize -> handleChangeGridSize(event.size)
 			is Event.NewGame -> handleNewGame()
 			is Event.LoadSudoku -> handleLoadGame()
 			is Event.ToggleActiveGameCard -> toggleActiveGameCard()
@@ -114,21 +95,21 @@ internal class SudokuCreatorViewModel(
 		}
 	}
 
-	private fun handleChangeGridSize(num: Int) {
+	private fun handleChangeGridSize(size: SudokuGridSize) {
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					selectedGridSize = SudokuGridSize.fromIndex(num),
+					selectedGridSize = size,
 				)
 			}
 		}
 	}
 
-	private fun handleChangeDifficulty(num: Int) {
+	private fun handleChangeDifficulty(difficulty: GameDifficulty) {
 		viewModelScope.launch {
 			_uiState.update {
 				it.copy(
-					selectedDifficulty = GameDifficulty.fromInt(num),
+					selectedDifficulty = difficulty,
 				)
 			}
 		}
