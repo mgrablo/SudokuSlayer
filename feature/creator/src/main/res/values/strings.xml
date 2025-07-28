@@ -17,4 +17,6 @@
     <string name="content_desc_open_nav_menu">Open navigation menu</string>
 	<string name="size">Size</string>
 	<string name="difficulty">Difficulty</string>
+    <string name="generating_puzzle">Generating Puzzle…</string>
+	<string name="generating_big_puzzle_info">This is a big one! Generating your 16x16 grid might take a moment.</string>
 </resources>

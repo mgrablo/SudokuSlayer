@@ -1,5 +1,6 @@
 package com.example.feature.creator.components.preview
 
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -8,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 
 internal fun DrawScope.drawGridLines(
 	gridSize: Int,
@@ -93,6 +95,43 @@ internal fun DrawScope.drawTransitionSweepEffect(
 			strokeWidth = 1.dp.toPx(),
 			alpha = 0.5f,
 		)
+	}
+}
+
+internal fun DrawScope.drawCellIllumination(
+	gridSize: Int,
+	cellSize: Float,
+	color: Color,
+	progress: Float,
+	waveWidth: Float,
+) {
+	// Loop through all cells to calculate and draw their illumination
+	for (row in 0 until gridSize) {
+		for (col in 0 until gridSize) {
+			// The "distance" of the cell from the top-left corner (row + col)
+			val cellDistance = (row + col).toFloat()
+
+			// How far this cell is from the center of the wave
+			val distanceFromWave = abs(cellDistance - progress)
+
+			// If the cell is within the wave's width, calculate its alpha
+			if (distanceFromWave < waveWidth / 2f) {
+				// Normalize the distance to a value between 0.0 (edge of wave) and 1.0 (center)
+				val normalizedDistance = 1f - (distanceFromWave / (waveWidth / 2f))
+
+				// Use a non-linear easing to make the fade look nicer (fade in fast, fade out slow)
+				val alpha = CubicBezierEasing(0.2f, 0f, 0f, 1f).transform(normalizedDistance) * 0.4f
+
+				if (alpha > 0f) {
+					drawRect(
+						color = color,
+						alpha = alpha,
+						topLeft = Offset(x = col * cellSize, y = row * cellSize),
+						size = Size(cellSize, cellSize)
+					)
+				}
+			}
+		}
 	}
 }
 
