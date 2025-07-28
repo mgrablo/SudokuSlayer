@@ -178,13 +178,13 @@ private fun SudokuCreatorContent(
 			GridSizeSelector(
 				options = SudokuGridSize.entries.toPersistentList(),
 				selectedSize = uiState.selectedGridSize,
-				onCheckedChange = { onEvent(Event.ChangeGridSize(it.ordinal)) },
+				onCheckedChange = { onEvent(Event.ChangeGridSize(it)) },
 				modifier = Modifier.padding(LocalPadding.current.small).fillMaxWidth(),
 			)
 			DifficultySelector(
 				options = GameDifficulty.entries.toPersistentList(),
 				selectedDifficulty = uiState.selectedDifficulty,
-				onCheckedChange = { onEvent(Event.ChangeDifficulty(it.ordinal)) },
+				onCheckedChange = { onEvent(Event.ChangeDifficulty(it)) },
 				modifier = Modifier.padding(LocalPadding.current.small).fillMaxWidth(),
 			)
 		}
