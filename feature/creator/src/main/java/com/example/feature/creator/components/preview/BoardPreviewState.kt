@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
+import com.example.domain.core.toCellsToRemove
+import kotlin.random.Random
 
 @Stable
 internal class BoardPreviewState(initialSize: SudokuGridSize, initialDifficulty: GameDifficulty) {
@@ -29,6 +31,15 @@ internal class BoardPreviewState(initialSize: SudokuGridSize, initialDifficulty:
 	var currentDifficulty by mutableStateOf(initialDifficulty)
 		private set
 
+	var previousPositions by mutableStateOf(
+		generateRandomPositions(initialSize, initialDifficulty),
+	)
+		private set
+	var currentPositions by mutableStateOf(
+		generateRandomPositions(initialSize, initialDifficulty),
+	)
+		private set
+
 	suspend fun animateTo(
 		newSize: SudokuGridSize,
 		newDifficulty: GameDifficulty,
@@ -37,25 +48,25 @@ internal class BoardPreviewState(initialSize: SudokuGridSize, initialDifficulty:
 			easing = EaseInOut,
 		),
 	) {
-		val needsAnimation = (newSize != currentSize || newDifficulty != previousDifficulty)
-		if (needsAnimation && !_progress.isRunning) {
-			previousSize = currentSize
-			currentSize = newSize
-			previousDifficulty = currentDifficulty
-			currentDifficulty = newDifficulty
+		val needsAnimation = (newSize != currentSize || newDifficulty != currentDifficulty)
+		if (!needsAnimation) return
 
-			_progress.snapTo(0f)
-			_progress.animateTo(
-				targetValue = 1f,
-				animationSpec = animationSpec,
-			)
-		} else if (needsAnimation && _progress.isRunning) {
+		if (_progress.isRunning) {
 			_progress.snapTo(1f)
-			previousSize = currentSize
-			currentSize = newSize
-			previousDifficulty = currentDifficulty
-			currentDifficulty = newDifficulty
 		}
+
+		previousSize = currentSize
+		currentSize = newSize
+		previousDifficulty = currentDifficulty
+		currentDifficulty = newDifficulty
+		previousPositions = currentPositions
+		currentPositions = generateRandomPositions(newSize, newDifficulty)
+
+		_progress.snapTo(0f)
+		_progress.animateTo(
+			targetValue = 1f,
+			animationSpec = animationSpec,
+		)
 	}
 }
 
@@ -74,4 +85,25 @@ internal fun rememberBoardPreviewState(
 	}
 
 	return state
+}
+
+private fun generateRandomPositions(
+	gridSize: SudokuGridSize,
+	difficulty: GameDifficulty,
+	random: Random = Random.Default,
+): List<Pair<Int, Int>> {
+	val gridSizeInt = gridSize.toIntSize()
+	val count = gridSizeInt * gridSizeInt - difficulty.toCellsToRemove(gridSize)
+
+	if (gridSizeInt <= 0 || count <= 0) {
+		return emptyList()
+	}
+
+	val allPositions = (0 until gridSizeInt).flatMap { row ->
+		(0 until gridSizeInt).map { col ->
+			row to col
+		}
+	}
+
+	return allPositions.shuffled(random).take(count)
 }

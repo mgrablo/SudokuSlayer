@@ -25,12 +25,13 @@ internal fun BoardPreview(
 	modifier: Modifier = Modifier,
 	colors: BoardPreviewColors = LocalBoardPreviewColors.current,
 ) {
+// 	val image = ImageBitmap.imageResource(R.drawable.question_mark)
 	Box(
 		modifier = modifier.drawWithContent {
 			val maxWidth = this.size.width
-			val progress = state.progress
 			val previousSize = state.previousSize.toIntSize()
 			val currentSize = state.currentSize.toIntSize()
+			val progress = state.progress
 
 			val previousCellSize = maxWidth / previousSize
 			val currentCellSize = maxWidth / currentSize
@@ -46,12 +47,7 @@ internal fun BoardPreview(
 				size = Size(maxWidth, maxWidth),
 				cornerRadius = CornerRadius(16f, 16f),
 			)
-			drawBoardFrame(
-				color = colors.frame,
-				canvasWidth = maxWidth,
-				strokeWidth = thickLineWidth,
-				cornerRadius = 16f,
-			)
+
 			clipRect(left = maxWidth * progress) {
 				drawGridLines(
 					gridSize = previousSize,
@@ -63,7 +59,13 @@ internal fun BoardPreview(
 					thickLineColor = colors.thickLine,
 					thinLineColor = colors.thinLine,
 				)
+				drawPlaceholderContent(
+					placeholderPositions = state.previousPositions,
+					cellSize = previousCellSize,
+					color = colors.placeholder,
+				)
 			}
+
 			clipRect(right = maxWidth * progress) {
 				drawGridLines(
 					gridSize = currentSize,
@@ -75,13 +77,24 @@ internal fun BoardPreview(
 					thickLineColor = colors.thickLine,
 					thinLineColor = colors.thinLine,
 				)
+				drawPlaceholderContent(
+					placeholderPositions = state.currentPositions,
+					cellSize = currentCellSize,
+					color = colors.placeholder,
+				)
 			}
 
+			drawBoardFrame(
+				color = colors.frame,
+				canvasWidth = maxWidth,
+				strokeWidth = thickLineWidth,
+				cornerRadius = 16f,
+			)
 			drawTransitionSweepEffect(
 				progress = progress,
 				isRunning = state.isRunning,
 				color = colors.frame,
-				maxWidth = maxWidth,
+				canvasWidth = maxWidth,
 			)
 		},
 	)

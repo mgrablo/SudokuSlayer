@@ -62,7 +62,7 @@ internal fun DrawScope.drawTransitionSweepEffect(
 	progress: Float,
 	isRunning: Boolean,
 	color: Color,
-	maxWidth: Float,
+	canvasWidth: Float,
 ) {
 	if (isRunning) {
 		val glowWidth = 20.dp.toPx()
@@ -76,22 +76,47 @@ internal fun DrawScope.drawTransitionSweepEffect(
 				0.9f to color.copy(alpha = 0.2f),
 				1.0f to Color.Transparent,
 			),
-			startX = (maxWidth * progress) - glowWidth,
-			endX = (maxWidth * progress) + (glowWidth * 0.6f),
+			startX = (canvasWidth * progress) - glowWidth,
+			endX = (canvasWidth * progress) + (glowWidth * 0.6f),
 		)
 
 		drawRect(
 			brush = sweepBrush,
 			topLeft = Offset(x = 0f, y = 0f),
-			size = Size(width = maxWidth, height = size.height),
+			size = Size(width = canvasWidth, height = size.height),
 		)
 
 		drawLine(
 			color = color.copy(alpha = 0.7f),
-			start = Offset(x = maxWidth * progress, y = 0f),
-			end = Offset(x = maxWidth * progress, y = size.height),
+			start = Offset(x = canvasWidth * progress, y = 0f),
+			end = Offset(x = canvasWidth * progress, y = size.height),
 			strokeWidth = 1.dp.toPx(),
 			alpha = 0.5f,
+		)
+	}
+}
+
+internal fun DrawScope.drawPlaceholderContent(
+	placeholderPositions: List<Pair<Int, Int>>,
+	cellSize: Float,
+	color: Color,
+) {
+	val iconSizeRatio = 0.6f
+	val iconSize = (cellSize * iconSizeRatio).toInt()
+
+	val offset = (cellSize - iconSize) / 2
+
+	for ((row, col) in placeholderPositions) {
+		val cellTopLeftX = col * cellSize
+		val cellTopLeftY = row * cellSize
+
+		val iconTopLeftX = (cellTopLeftX + offset)
+		val iconTopLeftY = (cellTopLeftY + offset)
+
+		drawRect(
+			color = color,
+			topLeft = Offset(iconTopLeftX, iconTopLeftY),
+			size = Size(iconSize.toFloat(), iconSize.toFloat()),
 		)
 	}
 }

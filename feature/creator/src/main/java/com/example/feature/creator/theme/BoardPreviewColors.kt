@@ -11,6 +11,7 @@ import com.example.feature.uicore.theme.CatppuccinPalette
 @Immutable
 internal data class BoardPreviewColors(
 	val background: Color,
+	val placeholder: Color,
 	val frame: Color,
 	val thinLine: Color,
 	val thickLine: Color,
@@ -27,6 +28,7 @@ internal object BoardPreviewColorSchemes {
 		frame = palette.overlay0,
 		thinLine = palette.overlay1,
 		thickLine = palette.overlay2,
+		placeholder = palette.subtext1,
 	)
 }
 
