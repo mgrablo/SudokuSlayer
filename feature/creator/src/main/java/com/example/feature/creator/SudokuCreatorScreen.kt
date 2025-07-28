@@ -116,7 +116,8 @@ private fun SudokuCreatorContent(
 				}
 		}
 	}
-	val boardPreviewState = rememberBoardPreviewState(uiState.selectedGridSize)
+	val boardPreviewState =
+		rememberBoardPreviewState(uiState.selectedGridSize, uiState.selectedDifficulty)
 
 	Scaffold(
 		modifier = modifier,
@@ -169,7 +170,6 @@ private fun SudokuCreatorContent(
 				)
 			}
 			BoardPreview(
-				difficulty = uiState.selectedDifficulty,
 				modifier = Modifier.size(PreviewBoxSize),
 				state = boardPreviewState,
 			)

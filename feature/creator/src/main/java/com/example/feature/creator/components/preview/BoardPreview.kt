@@ -22,7 +22,6 @@ import kotlin.math.sqrt
 @Composable
 internal fun BoardPreview(
 	state: BoardPreviewState,
-	difficulty: GameDifficulty,
 	modifier: Modifier = Modifier,
 	colors: BoardPreviewColors = LocalBoardPreviewColors.current,
 ) {
@@ -93,8 +92,7 @@ internal fun BoardPreview(
 private fun BoardPreviewNinePreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			difficulty = GameDifficulty.Medium,
-			state = rememberBoardPreviewState(SudokuGridSize.NINE),
+			state = rememberBoardPreviewState(SudokuGridSize.NINE, GameDifficulty.Medium),
 			modifier = Modifier.size(200.dp),
 		)
 	}
@@ -105,8 +103,7 @@ private fun BoardPreviewNinePreview() {
 private fun BoardPreviewFourPreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			state = rememberBoardPreviewState(SudokuGridSize.FOUR),
-			difficulty = GameDifficulty.Medium,
+			state = rememberBoardPreviewState(SudokuGridSize.FOUR, GameDifficulty.Expert),
 			modifier = Modifier.size(200.dp),
 		)
 	}
@@ -117,8 +114,7 @@ private fun BoardPreviewFourPreview() {
 private fun BoardPreviewSixteenPreview() {
 	SudokuCreatorTheme {
 		BoardPreview(
-			state = rememberBoardPreviewState(SudokuGridSize.SIXTEEN),
-			difficulty = GameDifficulty.Medium,
+			state = rememberBoardPreviewState(SudokuGridSize.SIXTEEN, GameDifficulty.Easy),
 			modifier = Modifier.size(200.dp),
 		)
 	}
