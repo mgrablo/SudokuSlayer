@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -26,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +62,6 @@ import com.example.feature.creator.components.preview.BoardPreviewState
 import com.example.feature.creator.components.preview.rememberBoardPreviewState
 import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
-import com.example.feature.uicore.theme.SudokuSlayerTheme
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.persistentListOf
@@ -179,10 +181,12 @@ private fun SudokuCreatorContent(
 								onDifficulyChange = { onEvent(Event.ChangeDifficulty(it)) },
 								sharedTransitionScope = this@SharedTransitionLayout,
 								animatedVisibilityScope = this@AnimatedContent,
-								modifier = Modifier.weight(1f).sharedBounds(
-									rememberSharedContentState("creator_screen_content"),
-									animatedVisibilityScope = this@AnimatedContent,
-								),
+								modifier = Modifier
+									.weight(1f)
+									.sharedBounds(
+										rememberSharedContentState("creator_screen_content"),
+										animatedVisibilityScope = this@AnimatedContent,
+									),
 							)
 						}
 
@@ -191,10 +195,12 @@ private fun SudokuCreatorContent(
 								selectedGridSize = uiState.selectedGridSize,
 								sharedTransitionScope = this@SharedTransitionLayout,
 								animatedVisibilityScope = this@AnimatedContent,
-								modifier = Modifier.weight(1f).sharedBounds(
-									rememberSharedContentState("creator_screen_content"),
-									animatedVisibilityScope = this@AnimatedContent,
-								),
+								modifier = Modifier
+									.weight(1f)
+									.sharedBounds(
+										rememberSharedContentState("creator_screen_content"),
+										animatedVisibilityScope = this@AnimatedContent,
+									),
 							)
 						}
 					}
@@ -280,20 +286,46 @@ private fun LoadingContent(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
-	Box(
-		modifier = modifier.fillMaxSize(),
-		contentAlignment = Alignment.Center,
-	) {
-		with(sharedTransitionScope) {
-			BoardLoadingIndicator(
-				gridSize = selectedGridSize,
+	with(sharedTransitionScope) {
+		Box(
+			modifier = modifier.fillMaxSize(),
+			contentAlignment = Alignment.Center,
+		) {
+			Column(
+				horizontalAlignment = Alignment.CenterHorizontally,
 				modifier = Modifier
-					.size(350.dp)
-					.sharedBounds(
-						rememberSharedContentState("board_preview"),
-						animatedVisibilityScope = animatedVisibilityScope,
-					),
-			)
+					.padding(horizontal = LocalPadding.current.big)
+					.fillMaxWidth(),
+			) {
+
+				BoardLoadingIndicator(
+					gridSize = selectedGridSize,
+					modifier = Modifier
+						.size(300.dp)
+						.sharedBounds(
+							rememberSharedContentState("board_preview"),
+							animatedVisibilityScope = animatedVisibilityScope,
+						),
+				)
+				Spacer(Modifier.size(LocalPadding.current.big))
+
+				Text(
+					text = stringResource(R.string.generating_puzzle),
+					style = MaterialTheme.typography.titleLarge,
+					autoSize = TextAutoSize.StepBased(),
+					maxLines = 1,
+					modifier = Modifier.widthIn(max = 300.dp),
+				)
+				if (selectedGridSize == SudokuGridSize.SIXTEEN) {
+					Spacer(Modifier.size(LocalPadding.current.tiny))
+					Text(
+						text = stringResource(R.string.generating_big_puzzle_info),
+						color = MaterialTheme.colorScheme.onSurfaceVariant,
+						style = MaterialTheme.typography.bodyMedium,
+						modifier = Modifier.widthIn(max = 300.dp),
+					)
+				}
+			}
 		}
 	}
 }
@@ -301,7 +333,7 @@ private fun LoadingContent(
 @PreviewLightDark
 @Composable
 private fun SudokuCreatorScreenPreview() {
-	SudokuSlayerTheme {
+	SudokuCreatorTheme {
 		SudokuCreatorContent(
 			uiState = SudokuCreatorUiState(),
 			onEvent = { },
@@ -324,7 +356,7 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 		completed = false,
 	)
 
-	SudokuSlayerTheme {
+	SudokuCreatorTheme {
 		SudokuCreatorContent(
 			uiState = SudokuCreatorUiState(
 				savedGame = savedGame,
@@ -350,12 +382,43 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 		completed = false,
 	)
 
-	SudokuSlayerTheme {
+	SudokuCreatorTheme {
 		SudokuCreatorContent(
 			uiState = SudokuCreatorUiState(
 				savedGame = savedGame,
 				hasActiveGame = true,
 				activeGameCardExpanded = true,
+			),
+			onEvent = { },
+			openDrawer = { },
+			onNavigateToGameScreen = { },
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuCreatorScreenLoadingPreview() {
+	SudokuCreatorTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(loadingState = ScreenState.LOADING),
+			onEvent = { },
+			openDrawer = { },
+			onNavigateToGameScreen = { },
+			modifier = Modifier.fillMaxSize(),
+		)
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuCreatorScreenLoadingBigPreview() {
+	SudokuCreatorTheme {
+		SudokuCreatorContent(
+			uiState = SudokuCreatorUiState(
+				loadingState = ScreenState.LOADING,
+				selectedGridSize = SudokuGridSize.SIXTEEN,
 			),
 			onEvent = { },
 			openDrawer = { },
