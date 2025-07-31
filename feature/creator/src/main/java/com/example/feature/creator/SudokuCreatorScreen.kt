@@ -309,9 +309,9 @@ private fun InitialContent(
 		}
 		item {
 			AdvancedOptions(
-				expanded = uiState.advancedOptionsExpanded,
+				expanded = uiState.advancedOptionsState.expanded,
 				onToggle = onToggleAdvancedOptions,
-				seed = uiState.seed?.toString() ?: "",
+				seed = uiState.advancedOptionsState.seedInput,
 				onSeedChange = onSeedChange,
 				modifier = Modifier
 					.padding(LocalPadding.current.small)
@@ -430,7 +430,9 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 				savedGame = savedGame,
 				hasActiveGame = true,
 				activeGameCardExpanded = true,
-				advancedOptionsExpanded = true,
+				advancedOptionsState = AdvancedOptionsState(
+					expanded = true,
+				),
 			),
 			onEvent = { },
 			openDrawer = { },
