@@ -133,6 +133,7 @@ internal class SudokuCreatorViewModel(
 				createNewGameUseCase(
 					_uiState.value.selectedGridSize,
 					_uiState.value.selectedDifficulty,
+					_uiState.value.seed,
 				)
 			saveGameUseCase(newGame)
 
