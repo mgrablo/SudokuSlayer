@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -241,11 +244,19 @@ private fun InitialContent(
 		}
 	}
 	val lazyColumnState = rememberLazyListState()
+	val focusManager = LocalFocusManager.current
 
 	LazyColumn(
 		state = lazyColumnState,
 		modifier = modifier
-			.fillMaxWidth(),
+			.fillMaxWidth()
+			.pointerInput(Unit) {
+				detectTapGestures(
+					onTap = {
+						focusManager.clearFocus()
+					},
+				)
+			},
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
 		item {
