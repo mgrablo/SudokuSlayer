@@ -13,6 +13,7 @@ val sudokuCreatorModule =
 				getSavedGameUseCase = get(),
 				saveGameUseCase = get(),
 				hasActiveGameUseCase = get(),
+				validateSeedInputUseCase = get(),
 			)
 		}
 	}

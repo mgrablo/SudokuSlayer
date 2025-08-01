@@ -12,6 +12,12 @@ enum class SudokuGridSize {
 		SIXTEEN -> "16x16"
 	}
 
+	fun toIntSize() = when (this) {
+		FOUR -> 4
+		NINE -> 9
+		SIXTEEN -> 16
+	}
+
 	companion object {
 		fun fromIndex(index: Int): SudokuGridSize = when (index) {
 			0 -> FOUR

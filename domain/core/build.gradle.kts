@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-	implementation(projects.sudokuCore)
+	api(projects.sudokuCore)
 	implementation(libs.kotlinx.datetime)
 }
