@@ -11,6 +11,7 @@ import com.example.domain.creator.CreateNewGameUseCase
 import com.example.domain.creator.GetSavedGameUseCase
 import com.example.domain.creator.HasActiveGameUseCase
 import com.example.domain.creator.SaveGameUseCase
+import com.example.domain.creator.ValidateSeedInputUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,14 @@ internal data class SudokuCreatorUiState(
 	val savedGame: Game? = null,
 	val hasActiveGame: Boolean = false,
 	val activeGameCardExpanded: Boolean = false,
+	val advancedOptionsState: AdvancedOptionsState = AdvancedOptionsState(),
+)
+
+@Immutable
+internal data class AdvancedOptionsState(
+	val expanded: Boolean = false,
+	val seedInput: String = "",
+	val parsedSeed: Long? = null,
 )
 
 @Stable
@@ -40,6 +49,7 @@ internal class SudokuCreatorViewModel(
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
 	private val hasActiveGameUseCase: HasActiveGameUseCase,
+	private val validateSeedInputUseCase: ValidateSeedInputUseCase,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow(SudokuCreatorUiState())
 	val uiState: StateFlow<SudokuCreatorUiState> = _uiState.asStateFlow()
@@ -66,6 +76,7 @@ internal class SudokuCreatorViewModel(
 	}
 
 	sealed interface Event {
+
 		data class ChangeDifficulty(val difficulty: GameDifficulty) : Event
 
 		data class ChangeGridSize(val size: SudokuGridSize) : Event
@@ -75,6 +86,9 @@ internal class SudokuCreatorViewModel(
 		data object LoadSudoku : Event
 
 		data object ToggleActiveGameCard : Event
+
+		data object ToggleAdvancedOptions : Event
+		data class ChangePuzzleSeed(val seed: String) : Event
 	}
 
 	fun onEvent(event: Event) {
@@ -84,6 +98,8 @@ internal class SudokuCreatorViewModel(
 			is Event.NewGame -> handleNewGame()
 			is Event.LoadSudoku -> handleLoadGame()
 			is Event.ToggleActiveGameCard -> toggleActiveGameCard()
+			is Event.ToggleAdvancedOptions -> toggleAdvancedOptions()
+			is Event.ChangePuzzleSeed -> handleChangePuzzleSeed(event.seed)
 		}
 	}
 
@@ -124,6 +140,7 @@ internal class SudokuCreatorViewModel(
 				createNewGameUseCase(
 					_uiState.value.selectedGridSize,
 					_uiState.value.selectedDifficulty,
+					_uiState.value.advancedOptionsState.parsedSeed,
 				)
 			saveGameUseCase(newGame)
 
@@ -138,5 +155,36 @@ internal class SudokuCreatorViewModel(
 	private fun handleLoadGame() {
 		viewModelScope.launch {
 		}
+	}
+
+	private fun toggleAdvancedOptions() {
+		_uiState.updateAdvancedOptions {
+			it.copy(expanded = !it.expanded)
+		}
+	}
+
+	private fun handleChangePuzzleSeed(input: String) {
+		viewModelScope.launch {
+			val result = validateSeedInputUseCase(
+				currentText = uiState.value.advancedOptionsState.seedInput,
+				newText = input,
+			)
+			_uiState.updateAdvancedOptions {
+				it.copy(
+					seedInput = result.seedText,
+					parsedSeed = result.parsedSeed,
+				)
+			}
+		}
+	}
+}
+
+private inline fun MutableStateFlow<SudokuCreatorUiState>.updateAdvancedOptions(
+	function: (AdvancedOptionsState) -> AdvancedOptionsState,
+) {
+	update { state ->
+		state.copy(
+			advancedOptionsState = function(state.advancedOptionsState),
+		)
 	}
 }

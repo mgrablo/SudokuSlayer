@@ -10,11 +10,15 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
 class CreateNewGameUseCase(private val operationRepository: OperationRepository) {
-	suspend operator fun invoke(gridSize: SudokuGridSize, difficulty: GameDifficulty): Game {
+	suspend operator fun invoke(
+		gridSize: SudokuGridSize,
+		difficulty: GameDifficulty,
+		seed: Long? = null,
+	): Game {
 		operationRepository.clearOperations()
 		val generator = ClassicSudokuGenerator(gridSize.toIntSize())
-		val cellsToRemove = difficulty.toCellsToRemove(gridSize)
-		val sudokuGrid = generator.createSudoku(cellsToRemove, Random.nextLong())
+		val cellsToRemove = difficulty.toCellsToRemove(gridSize, seed)
+		val sudokuGrid = generator.createSudoku(cellsToRemove, seed ?: Random.nextLong())
 
 		return Game(
 			grid = sudokuGrid,

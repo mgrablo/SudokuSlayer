@@ -71,21 +71,6 @@ class ClassicSudokuGenerator(private val gridSize: Int = 9) : SudokuGenerator {
 			}
 			i += j
 		}
-// 		for (index in cellIndices) {
-// 			if (removedCount >= cellsToRemove) break
-//
-// 			val row = index / gridSize
-// 			val col = index % gridSize
-// 			val originalValue = removedGrid.getCellAt(row, col).number
-//
-// 			removedGrid = removedGrid.withValue(row, col, 0)
-//
-// 			if (!ClassicSudokuSolver.hasUniqueSolution(removedGrid)) {
-// 				removedGrid = removedGrid.withValue(row, col, originalValue)
-// 			} else {
-// 				removedCount++
-// 			}
-// 		}
 
 		return removedGrid
 	}

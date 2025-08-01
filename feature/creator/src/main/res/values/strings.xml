@@ -19,4 +19,9 @@
 	<string name="difficulty">Difficulty</string>
     <string name="generating_puzzle">Generating Puzzle…</string>
 	<string name="generating_big_puzzle_info">This is a big one! Generating your 16x16 grid might take a moment.</string>
+    <string name="puzzle_seed">Puzzle Seed</string>
+	<string name="puzzle_seed_placeholder">Leave blank for a random puzzle</string>
+	<string name="puzzle_seed_supporting_text">The seed is a number used to generate a unique puzzle. Use the same seed on another device to play the exact same game.</string>
+	<string name="clear_puzzle_seed_content_desc">Clear Puzzle Seed</string>
+	<string name="advanced_options">Advanced Options</string>
 </resources>
