@@ -45,6 +45,7 @@ internal enum class ScreenState {
 }
 
 internal class SudokuCreatorViewModel(
+	args: PuzzlePreset? = null,
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,
@@ -71,6 +72,19 @@ internal class SudokuCreatorViewModel(
 						hasActiveGame = hasActiveGame,
 					)
 				}
+			}
+		}
+		args?.let { parameters ->
+			_uiState.update {
+				it.copy(
+					selectedDifficulty = parameters.difficulty,
+					selectedGridSize = parameters.gridSize,
+					advancedOptionsState = it.advancedOptionsState.copy(
+						expanded = true,
+						seedInput = parameters.seed.toString(),
+						parsedSeed = parameters.seed,
+					),
+				)
 			}
 		}
 	}

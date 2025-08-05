@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderBuilder
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
+import com.example.domain.core.GameDifficulty
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.insights.InsightsScreen
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
@@ -24,6 +26,7 @@ data object Insights : Destination {
 fun EntryProviderBuilder<NavKey>.insightsEntry(
 	openDrawer: () -> Unit,
 	onNavigateToGameScreen: () -> Unit,
+	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 ) {
 	entry<Insights> {
 		val viewModel = koinViewModel<StatisticsViewModel>()
@@ -31,6 +34,7 @@ fun EntryProviderBuilder<NavKey>.insightsEntry(
 			viewModel = viewModel,
 			openDrawer = openDrawer,
 			onNavigateToGameScreen = onNavigateToGameScreen,
+			onNavigateToCreator = onNavigateToCreator,
 			modifier = Modifier
 				.fillMaxSize(),
 		)

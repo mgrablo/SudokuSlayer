@@ -30,6 +30,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
+import com.example.feature.creator.PuzzlePreset
 import com.example.feature.creator.SudokuCreator
 import com.example.feature.creator.sudokuCreatorEntry
 import com.example.feature.game.SudokuGame
@@ -63,14 +64,14 @@ class MyApplication : Application() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
-	val backstack = rememberNavBackStack<Destination>(SudokuCreator)
+	val backstack = rememberNavBackStack<Destination>(SudokuCreator())
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
 	)
 	val destinations =
 		persistentListOf(
 			SudokuGame,
-			SudokuCreator,
+			SudokuCreator(),
 			Insights,
 			Settings,
 		)
@@ -134,7 +135,7 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					navigateToGameScreen = {
 						backstack.apply {
 							clear()
-							add(SudokuCreator)
+							add(SudokuCreator())
 							add(SudokuGame)
 						}
 					},
@@ -153,7 +154,7 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					onPlayAgainClick = {
 						backstack.apply {
 							clear()
-							add(SudokuCreator)
+							add(SudokuCreator())
 						}
 					},
 					onNavigateToInsightsClick = {
@@ -167,9 +168,12 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					onNavigateToGameScreen = {
 						backstack.apply {
 							clear()
-							add(SudokuCreator)
+							add(SudokuCreator())
 							add(SudokuGame)
 						}
+					},
+					onNavigateToCreator = { seed, gridSize, difficulty ->
+						backstack.add(SudokuCreator(PuzzlePreset(seed, difficulty, gridSize)))
 					},
 					openDrawer = {
 						scope.launch {

@@ -76,6 +76,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 internal fun InsightsScreen(
 	onNavigateToGameScreen: () -> Unit,
+	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: StatisticsViewModel = koinViewModel<StatisticsViewModel>(),
@@ -98,6 +99,7 @@ internal fun InsightsScreen(
 		activeFilterCount = activeFilterCount,
 		onEvent = viewModel::onEvent,
 		onNavigateToGameScreen = onNavigateToGameScreen,
+		onNavigateToCreator = onNavigateToCreator,
 		openDrawer = openDrawer,
 		onCopySeedClick = {
 			coroutineScope.launch {
@@ -128,6 +130,7 @@ private fun InsightsScreenContent(
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
 	onNavigateToGameScreen: () -> Unit,
+	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	onCopySeedClick: (Long) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
@@ -289,6 +292,7 @@ private fun InsightsScreenContent(
 								)
 							}
 						},
+						onNavigateToCreator = onNavigateToCreator,
 						modifier = Modifier.fillMaxSize(),
 					)
 				}
@@ -349,6 +353,7 @@ private fun InsightsScreenPreview() {
 			openDrawer = { },
 			onCopySeedClick = { },
 			onNavigateToGameScreen = { },
+			onNavigateToCreator = { _, _, _ -> },
 			modifier = Modifier.fillMaxSize(),
 		)
 	}

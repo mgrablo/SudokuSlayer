@@ -48,7 +48,7 @@ internal fun TableRow(
 	visibleColumns: PersistentList<InsightsTableColumn>,
 	scrollStateProvider: () -> ScrollState,
 	onCopySeedClick: (Long) -> Unit,
-	onPlayClick: (Long) -> Unit,
+	onPlayClick: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	Row(
@@ -66,7 +66,7 @@ internal fun TableRow(
 		) {
 			gameResult.seed?.let {
 				IconButton(
-					onClick = { onPlayClick(it) },
+					onClick = { onPlayClick(it, gameResult.gridSize, gameResult.difficulty) },
 				) {
 					Icon(
 						Icons.Default.PlayArrow,
@@ -177,7 +177,7 @@ private fun TableRowPreview() {
 				visibleColumns = InsightsTableColumn.ALL.toPersistentList(),
 				scrollStateProvider = { scrollState },
 				onCopySeedClick = { },
-				onPlayClick = { },
+				onPlayClick = { _, _, _ -> },
 			)
 		}
 	}
