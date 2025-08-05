@@ -53,7 +53,7 @@ internal fun InsightsTable(
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	sortState: SortState,
 	onColumnHeaderClick: (InsightsTableColumn) -> Unit,
-	onPlayClick: (Long) -> Unit,
+	onPlayClick: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val scrollState = rememberScrollState()
@@ -127,7 +127,7 @@ internal fun LazyListScope.insightsTableContent(
 	scrollState: ScrollState,
 	onColumnHeaderClick: (InsightsTableColumn) -> Unit,
 	onCopySeedClick: (Long) -> Unit,
-	onPlayClick: (Long) -> Unit,
+	onPlayClick: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	item {
@@ -168,7 +168,7 @@ private fun InsightsTablePreview() {
 						.toPersistentList(),
 					sortState = SortState(InsightsTableColumn.Date, SortDirection.DESC),
 					onColumnHeaderClick = { },
-					onPlayClick = { },
+					onPlayClick = { _, _, _ -> },
 				)
 			}
 		}

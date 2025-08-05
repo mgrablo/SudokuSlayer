@@ -7,13 +7,14 @@ import org.koin.dsl.module
 val sudokuCreatorModule =
 	module {
 		includes(domainCreatorModule)
-		viewModel {
+		viewModel { parameters ->
 			SudokuCreatorViewModel(
 				createNewGameUseCase = get(),
 				getSavedGameUseCase = get(),
 				saveGameUseCase = get(),
 				hasActiveGameUseCase = get(),
 				validateSeedInputUseCase = get(),
+				args = parameters.getOrNull(),
 			)
 		}
 	}

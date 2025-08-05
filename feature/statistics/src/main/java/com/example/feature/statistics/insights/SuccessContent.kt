@@ -52,6 +52,7 @@ internal fun SuccessContent(
 	tableColumnsState: PersistentList<ColumnDisplayState>,
 	onEvent: (StatisticsViewModel.StatisticsEvent) -> Unit,
 	onCopySeedClick: (Long) -> Unit,
+	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val formattedTimeSpent = rememberFormattedTime(uiState.totalTimeSpent.toFloat())
@@ -130,7 +131,7 @@ internal fun SuccessContent(
 				sortState = uiState.sortState,
 				visibleColumns = visibleColumns,
 				scrollState = horizontalScrollState,
-				onPlayClick = { onEvent(PlayGameClicked(it)) },
+				onPlayClick = { seed, size, difficulty -> onNavigateToCreator(seed, size, difficulty) },
 				onCopySeedClick = onCopySeedClick,
 				onColumnHeaderClick = { column ->
 					onEvent(
@@ -168,5 +169,6 @@ private fun SuccessContentPreview() {
 		tableColumnsState = tableColumnsState,
 		onEvent = {},
 		onCopySeedClick = {},
+		onNavigateToCreator = { _, _, _ -> },
 	)
 }
