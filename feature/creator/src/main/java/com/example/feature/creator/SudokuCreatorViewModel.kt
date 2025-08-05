@@ -45,7 +45,7 @@ internal enum class ScreenState {
 }
 
 internal class SudokuCreatorViewModel(
-	private val args: PuzzlePreset? = null,
+	args: PuzzlePreset? = null,
 	private val createNewGameUseCase: CreateNewGameUseCase,
 	private val getSavedGameUseCase: GetSavedGameUseCase,
 	private val saveGameUseCase: SaveGameUseCase,

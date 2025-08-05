@@ -124,7 +124,6 @@ internal class StatisticsViewModel(
 		data class ToggleColumnVisibility(val column: InsightsTableColumn) : StatisticsEvent
 		data class ReorderColumns(val from: Int, val to: Int) : StatisticsEvent
 		data class ColumnHeaderClicked(val column: InsightsTableColumn) : StatisticsEvent
-		data class PlayGameClicked(val gameSeed: Long) : StatisticsEvent
 		data object ClearData : StatisticsEvent
 		data object PlayFirstGame : StatisticsEvent
 
@@ -163,16 +162,12 @@ internal class StatisticsViewModel(
 				event.value,
 			)
 
-			is StatisticsEvent.PlayGameClicked -> handlePlayGameClicked(event.gameSeed)
 			is StatisticsEvent.ClearFilters -> clearFilters()
 			is StatisticsEvent.ClearData -> clearData()
 			is StatisticsEvent.PlayFirstGame -> handlePlayFirstGame()
 		}
 	}
 
-	private fun handlePlayGameClicked(gameSeed: Long) {
-		// TODO
-	}
 
 	private fun loadInitialData() {
 		viewModelScope.launch {

@@ -29,7 +29,6 @@ import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.InsightsUiState
 import com.example.feature.statistics.StatisticsViewModel
 import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.ColumnHeaderClicked
-import com.example.feature.statistics.StatisticsViewModel.StatisticsEvent.PlayGameClicked
 import com.example.feature.statistics.insights.components.CompactSummaryLayout
 import com.example.feature.statistics.insights.components.ExpandedSummaryLayout
 import com.example.feature.statistics.insights.components.insightsTableContent
