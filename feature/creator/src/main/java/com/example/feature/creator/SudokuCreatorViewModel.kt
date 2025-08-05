@@ -74,19 +74,17 @@ internal class SudokuCreatorViewModel(
 				}
 			}
 		}
-		viewModelScope.launch {
-			args?.let { parameters ->
-				_uiState.update {
-					it.copy(
-						selectedDifficulty = parameters.difficulty,
-						selectedGridSize = parameters.gridSize,
-						advancedOptionsState = it.advancedOptionsState.copy(
-							expanded = true,
-							seedInput = parameters.seed.toString(),
-							parsedSeed = parameters.seed,
-						),
-					)
-				}
+		args?.let { parameters ->
+			_uiState.update {
+				it.copy(
+					selectedDifficulty = parameters.difficulty,
+					selectedGridSize = parameters.gridSize,
+					advancedOptionsState = it.advancedOptionsState.copy(
+						expanded = true,
+						seedInput = parameters.seed.toString(),
+						parsedSeed = parameters.seed,
+					),
+				)
 			}
 		}
 	}
