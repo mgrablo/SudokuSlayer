@@ -5,7 +5,6 @@ import com.example.domain.game.usecases.game.ClearActiveGameUseCase
 import com.example.domain.game.usecases.game.GetGameUseCase
 import com.example.domain.game.usecases.game.ResetGameUseCase
 import com.example.domain.game.usecases.game.SaveGameUseCase
-import com.example.domain.game.usecases.hint.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.hint.GenerateHintLogUseCase
 import com.example.domain.game.usecases.hint.ProvideHintUseCase
 import com.example.domain.game.usecases.hint.RevealHintOnGridUseCase
@@ -59,7 +58,6 @@ val domainGameModule =
 		factory { AutoClearNotesUseCase() }
 
 		factory { ProvideHintUseCase(get()) }
-		factory { FocusOnHintCellsUseCase() }
 		factory { GenerateHintLogUseCase() }
 		factory { RevealHintOnGridUseCase(get()) }
 		factory { RevealLastHintLogUseCase() }
@@ -82,7 +80,6 @@ val domainGameModule =
 		factory {
 			HintUseCases(
 				provideHint = get(),
-				focusOnCells = get(),
 				revealOnGrid = get(),
 				revealLastLog = get(),
 				generateLog = get(),

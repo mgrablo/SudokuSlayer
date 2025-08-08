@@ -5,7 +5,6 @@ import com.example.domain.game.usecases.game.ClearActiveGameUseCase
 import com.example.domain.game.usecases.game.GetGameUseCase
 import com.example.domain.game.usecases.game.ResetGameUseCase
 import com.example.domain.game.usecases.game.SaveGameUseCase
-import com.example.domain.game.usecases.hint.FocusOnHintCellsUseCase
 import com.example.domain.game.usecases.hint.GenerateHintLogUseCase
 import com.example.domain.game.usecases.hint.ProvideHintUseCase
 import com.example.domain.game.usecases.hint.RevealHintOnGridUseCase
@@ -27,7 +26,6 @@ data class GameManagementUseCases(
 
 data class HintUseCases(
 	val provideHint: ProvideHintUseCase,
-	val focusOnCells: FocusOnHintCellsUseCase,
 	val revealOnGrid: RevealHintOnGridUseCase,
 	val revealLastLog: RevealLastHintLogUseCase,
 	val generateLog: GenerateHintLogUseCase,
