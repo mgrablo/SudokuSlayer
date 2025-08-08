@@ -57,6 +57,7 @@ import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.theme.SudokuGameTheme
+import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentMap
@@ -374,6 +375,7 @@ private fun SudokuGameScreenPreview() {
 				hintLogs = persistentListOf(),
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
+				solution = SolutionGrid(intArrayOf(), 0),
 			),
 			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},
@@ -399,6 +401,7 @@ private fun SudokuGameScreenSixteenPreview() {
 				hintLogs = persistentListOf(),
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
+				solution = SolutionGrid(intArrayOf(), 0),
 			),
 			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},
@@ -430,6 +433,7 @@ private fun SudokuGameScreenFourPreview() {
 				hintLogs = persistentListOf(),
 				hintsUsed = 0,
 				difficulty = GameDifficulty.Easy,
+				solution = SolutionGrid(intArrayOf(), 0),
 			),
 			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
 			onEvent = {},

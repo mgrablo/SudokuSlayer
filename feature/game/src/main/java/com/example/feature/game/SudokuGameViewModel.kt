@@ -23,6 +23,7 @@ import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.util.AndroidHintStringProvider
+import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
 import com.example.sudoku.model.fillNotes
@@ -91,6 +92,7 @@ internal class SudokuGameViewModel(
 			hintsUsed = 0,
 			hintLogs = persistentListOf(),
 			completed = false,
+			solution = SolutionGrid(intArrayOf(), 0),
 		),
 	)
 	val elapsedTime =
@@ -128,7 +130,6 @@ internal class SudokuGameViewModel(
 			}
 			loadGame()
 			val loadedGame = game.first()
-
 			_uiState.update {
 				it.copy(
 					gameState = if (loadedGame.completed) GameState.VICTORY else GameState.PLAYING,

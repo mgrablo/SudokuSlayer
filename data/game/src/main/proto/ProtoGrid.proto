@@ -9,3 +9,7 @@ message ProtoGrid {
 	repeated ProtoCell cell = 2;
 	int32 gridSize = 3;
 }
+
+message ProtoSolutionGrid {
+	repeated int32 values = 1;
+}

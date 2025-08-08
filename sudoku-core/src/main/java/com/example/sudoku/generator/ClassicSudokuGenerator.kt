@@ -2,8 +2,10 @@ package com.example.sudoku.generator
 
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudoku.model.SudokuPuzzle
 import com.example.sudoku.model.updateCells
 import com.example.sudoku.solver.ClassicSudokuSolver
+import com.example.sudoku.toSolutionGrid
 import kotlinx.collections.immutable.plus
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -11,15 +13,16 @@ import kotlin.random.Random
 class ClassicSudokuGenerator(private val gridSize: Int = 9) : SudokuGenerator {
 	private val subgridSize = sqrt(gridSize.toDouble()).toInt()
 
-	override suspend fun createSudoku(cellsToRemove: Int, seed: Long): SudokuGrid {
+	override suspend fun createSudoku(cellsToRemove: Int, seed: Long): SudokuPuzzle {
 		val fullGrid = generateFullSudokuGrid(seed)
 		val randomized = randomize(fullGrid)
+		val solution = randomized.toSolutionGrid()
 		val removedNumbers = removeNumbers(randomized, cellsToRemove)
 		val lockedNumbers = removedNumbers.updateCells(
 			{ it.number != 0 },
 			{ it.copy(attributes = it.attributes + CellAttributes.GENERATED) },
 		)
-		return lockedNumbers
+		return SudokuPuzzle(lockedNumbers, solution)
 	}
 
 	override suspend fun generateFullSudokuGrid(seed: Long): SudokuGrid {

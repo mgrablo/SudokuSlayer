@@ -70,6 +70,7 @@ import com.example.feature.creator.components.preview.BoardPreviewState
 import com.example.feature.creator.components.preview.rememberBoardPreviewState
 import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
+import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.persistentListOf
@@ -396,6 +397,7 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 		hintsUsed = 0,
 		hintLogs = persistentListOf(),
 		completed = false,
+		solution = SolutionGrid(intArrayOf(), 0),
 	)
 
 	SudokuCreatorTheme {
@@ -422,6 +424,7 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 		hintsUsed = 0,
 		hintLogs = persistentListOf(),
 		completed = false,
+		solution = SolutionGrid(intArrayOf(), 0),
 	)
 
 	SudokuCreatorTheme {

@@ -8,6 +8,7 @@ import kotlinx.collections.immutable.toPersistentList
 fun Game.toProtoGame(): ProtoGame = ProtoGame
 	.newBuilder()
 	.setGrid(grid.toProtoGrid())
+	.setSolution(solution.toProtoSolutionGrid())
 	.setDifficulty(difficulty.toProtoDifficulty())
 	.setHintsUsed(hintsUsed)
 	.setElapsedTime(elapsedTime)
@@ -22,6 +23,7 @@ fun ProtoGame.toGame(): Game = Game(
 	hintsUsed = hintsUsed,
 	hintLogs = hintLogsList.map { it.toHintLog() }.toPersistentList(),
 	completed = completed,
+	solution = solution.toSolutionGrid(),
 )
 
 fun GameDifficulty.toProtoDifficulty(): ProtoGame.Difficulty = when (this) {

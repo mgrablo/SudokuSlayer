@@ -157,7 +157,6 @@ internal class SudokuCreatorViewModel(
 					_uiState.value.advancedOptionsState.parsedSeed,
 				)
 			saveGameUseCase(newGame)
-
 			_uiState.update {
 				it.copy(
 					loadingState = ScreenState.INITIAL,

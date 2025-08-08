@@ -1,10 +1,15 @@
 package com.example.sudoku.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class SolutionGrid(private val values: IntArray, private val size: Int) {
 	fun getValue(row: Int, column: Int): Int {
 		require(row in 0 until size && column in 0 until size) { "Invalid row or column index" }
 		return values[row * size + column]
 	}
+
+	fun getArray(): IntArray = values
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
