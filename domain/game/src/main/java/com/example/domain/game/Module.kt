@@ -1,6 +1,7 @@
 package com.example.domain.game
 
 import com.example.domain.game.usecases.game.AutoClearNotesUseCase
+import com.example.domain.game.usecases.game.CalculateGridChangesUseCase
 import com.example.domain.game.usecases.game.ClearActiveGameUseCase
 import com.example.domain.game.usecases.game.GetGameUseCase
 import com.example.domain.game.usecases.game.ResetGameUseCase
@@ -10,6 +11,7 @@ import com.example.domain.game.usecases.hint.ProvideHintUseCase
 import com.example.domain.game.usecases.hint.RevealHintOnGridUseCase
 import com.example.domain.game.usecases.hint.RevealLastHintLogUseCase
 import com.example.domain.game.usecases.input.InputNumberUseCase
+import com.example.domain.game.usecases.input.RecordUndoOperationUseCase
 import com.example.domain.game.usecases.input.RedoOperationUseCase
 import com.example.domain.game.usecases.input.SelectCellUseCase
 import com.example.domain.game.usecases.input.UndoOperationUseCase
@@ -55,7 +57,14 @@ val domainGameModule =
 
 		factory { InputNumberUseCase(get()) }
 		factory { ResetGameUseCase(get()) }
-		factory { AutoClearNotesUseCase() }
+		factory { AutoClearNotesUseCase(get()) }
+		factory {
+			CalculateGridChangesUseCase(
+				inputNumber = get(),
+				highlightMatching = get(),
+				autoClearNotes = get(),
+			)
+		}
 
 		factory { ProvideHintUseCase(get()) }
 		factory { GenerateHintLogUseCase() }
@@ -76,6 +85,7 @@ val domainGameModule =
 				highlightMatchingNumbersUseCase = get(),
 			)
 		}
+		factory { RecordUndoOperationUseCase(get()) }
 
 		factory {
 			HintUseCases(
@@ -91,11 +101,9 @@ val domainGameModule =
 				getGame = get(),
 				saveGame = get(),
 				selectCell = get(),
-				inputNumber = get(),
 				resetGame = get(),
 				clearActiveGame = get(),
-				autoClearNotes = get(),
-				highlightMatching = get(),
+				calculateGridChanges = get(),
 			)
 		}
 	}

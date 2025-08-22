@@ -1,19 +1,35 @@
 package com.example.domain.game.usecases
 
 import com.example.domain.game.usecases.game.AutoClearNotesUseCase
+import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotSame
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AutoClearNotesUseCaseTest {
-	private val autoClearNotesUseCase = AutoClearNotesUseCase()
+	@RelaxedMockK
+	private lateinit var mockSettingsRepository: SettingsRepository
+	private lateinit var autoClearNotesUseCase: AutoClearNotesUseCase
+
+	@BeforeEach
+	fun setUp() {
+		MockKAnnotations.init(this)
+		autoClearNotesUseCase = AutoClearNotesUseCase(mockSettingsRepository)
+		every { mockSettingsRepository.autoClearNotes } returns flowOf(true)
+	}
 
 	@Test
-	fun `Test with number 0`() {
+	fun `Test with number 0`() = runTest {
 		// Test if the function returns the original SudokuGrid when the input number is 0.
 		val grid = SudokuGrid().withValue(0, 0, 1)
 		val result = autoClearNotesUseCase(grid, 0, 0, 0).resultingGrid
@@ -21,7 +37,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number not present in any corner notes`() {
+	fun `Test with a number not present in any corner notes`() = runTest {
 		// Test if the function returns the original SudokuGrid when the input number is not present in any corner notes of the relevant cells (same row, column, or block).
 		val grid = SudokuGrid()
 			.withReplacedCell(0, 1, SudokuCellData(0, 1, cornerNotes = persistentSetOf(2, 3)))
@@ -34,7 +50,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number present in corner notes of cells in the same column`() {
+	fun `Test with a number present in corner notes of cells in the same column`() = runTest {
 		// Test if the function correctly removes the number from the corner notes of cells in the same column (excluding the input cell).
 		val grid = SudokuGrid()
 			.withReplacedCell(1, 0, SudokuCellData(1, 0, cornerNotes = persistentSetOf(1, 2)))
@@ -53,7 +69,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number present in corner notes of cells in the same row`() {
+	fun `Test with a number present in corner notes of cells in the same row`() = runTest {
 		// Test if the function correctly removes the number from the corner notes of cells in the same row (excluding the input cell).
 		val grid = SudokuGrid()
 			.withReplacedCell(0, 1, SudokuCellData(0, 1, cornerNotes = persistentSetOf(1, 2)))
@@ -72,7 +88,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number present in corner notes of cells in the same block`() {
+	fun `Test with a number present in corner notes of cells in the same block`() = runTest {
 		// Test if the function correctly removes the number from the corner notes of cells in the same block (excluding the input cell and cells with non-zero numbers).
 		val grid = SudokuGrid()
 			.withReplacedCell(1, 1, SudokuCellData(1, 1, cornerNotes = persistentSetOf(1, 2)))
@@ -98,40 +114,41 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number present in corner notes of cells in the same row  column  and block`() {
-		// Test if the function correctly removes the number from the corner notes of all relevant cells when the number is present in cells belonging to the same row, column, and block.
-		val grid = SudokuGrid()
-			.withReplacedCell(
-				row = 0,
-				col = 1,
-				cellData = SudokuCellData(0, 1, cornerNotes = persistentSetOf(1, 2)),
-			) // Same row
-			.withReplacedCell(
-				row = 1,
-				col = 0,
-				cellData = SudokuCellData(1, 0, cornerNotes = persistentSetOf(1, 3)),
-			) // Same col
-			.withReplacedCell(
-				row = 1,
-				col = 1,
-				cellData = SudokuCellData(1, 1, cornerNotes = persistentSetOf(1, 4)),
-			) // Same block
-			.withReplacedCell(
-				row = 8,
-				col = 8,
-				cellData = SudokuCellData(8, 8, cornerNotes = persistentSetOf(1, 5)),
-			) // Unrelated
+	fun `Test with a number present in corner notes of cells in the same row  column  and block`() =
+		runTest {
+			// Test if the function correctly removes the number from the corner notes of all relevant cells when the number is present in cells belonging to the same row, column, and block.
+			val grid = SudokuGrid()
+				.withReplacedCell(
+					row = 0,
+					col = 1,
+					cellData = SudokuCellData(0, 1, cornerNotes = persistentSetOf(1, 2)),
+				) // Same row
+				.withReplacedCell(
+					row = 1,
+					col = 0,
+					cellData = SudokuCellData(1, 0, cornerNotes = persistentSetOf(1, 3)),
+				) // Same col
+				.withReplacedCell(
+					row = 1,
+					col = 1,
+					cellData = SudokuCellData(1, 1, cornerNotes = persistentSetOf(1, 4)),
+				) // Same block
+				.withReplacedCell(
+					row = 8,
+					col = 8,
+					cellData = SudokuCellData(8, 8, cornerNotes = persistentSetOf(1, 5)),
+				) // Unrelated
 
-		val result = autoClearNotesUseCase(grid, 0, 0, 1).resultingGrid
+			val result = autoClearNotesUseCase(grid, 0, 0, 1).resultingGrid
 
-		assertEquals(persistentSetOf(2), result.getCellAt(0, 1).cornerNotes)
-		assertEquals(persistentSetOf(3), result.getCellAt(1, 0).cornerNotes)
-		assertEquals(persistentSetOf(4), result.getCellAt(1, 1).cornerNotes)
-		assertEquals(persistentSetOf(1, 5), result.getCellAt(8, 8).cornerNotes)
-	}
+			assertEquals(persistentSetOf(2), result.getCellAt(0, 1).cornerNotes)
+			assertEquals(persistentSetOf(3), result.getCellAt(1, 0).cornerNotes)
+			assertEquals(persistentSetOf(4), result.getCellAt(1, 1).cornerNotes)
+			assertEquals(persistentSetOf(1, 5), result.getCellAt(8, 8).cornerNotes)
+		}
 
 	@Test
-	fun `Test with an empty SudokuGrid`() {
+	fun `Test with an empty SudokuGrid`() = runTest {
 		// Test the behavior of the function when an empty SudokuGrid is provided.
 		// This is an edge case to ensure no crashes or unexpected behavior.
 		val grid = SudokuGrid()
@@ -140,52 +157,53 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a SudokuGrid where all relevant cells have the number in their corner notes`() {
-		// Test the scenario where all cells in the same row, column, and block (that are eligible for note clearing) have the target number in their corner notes.
-		var grid = SudokuGrid()
-		for (i in 0 until 9) {
-			if (i != 4) {
-				grid = grid.withReplacedCell(
-					row = 4,
-					col = i,
-					cellData = SudokuCellData(4, i, cornerNotes = persistentSetOf(5)),
-				) // row
-			}
-			if (i != 4) {
-				grid = grid.withReplacedCell(
-					row = i,
-					col = 4,
-					cellData = SudokuCellData(i, 4, cornerNotes = persistentSetOf(5)),
-				) // col
-			}
-		}
-		for (r in 3..5) {
-			for (c in 3..5) {
-				if (r != 4 || c != 4) {
+	fun `Test with a SudokuGrid where all relevant cells have the number in their corner notes`() =
+		runTest {
+			// Test the scenario where all cells in the same row, column, and block (that are eligible for note clearing) have the target number in their corner notes.
+			var grid = SudokuGrid()
+			for (i in 0 until 9) {
+				if (i != 4) {
 					grid = grid.withReplacedCell(
-						row = r,
-						col = c,
-						cellData = SudokuCellData(r, c, cornerNotes = persistentSetOf(5)),
-					) // block
+						row = 4,
+						col = i,
+						cellData = SudokuCellData(4, i, cornerNotes = persistentSetOf(5)),
+					) // row
+				}
+				if (i != 4) {
+					grid = grid.withReplacedCell(
+						row = i,
+						col = 4,
+						cellData = SudokuCellData(i, 4, cornerNotes = persistentSetOf(5)),
+					) // col
+				}
+			}
+			for (r in 3..5) {
+				for (c in 3..5) {
+					if (r != 4 || c != 4) {
+						grid = grid.withReplacedCell(
+							row = r,
+							col = c,
+							cellData = SudokuCellData(r, c, cornerNotes = persistentSetOf(5)),
+						) // block
+					}
+				}
+			}
+
+			val result = autoClearNotesUseCase(grid, 4, 4, 5).resultingGrid
+
+			for (i in 0 until 9) {
+				if (i != 4) assertTrue(result.getCellAt(4, i).cornerNotes.isEmpty())
+				if (i != 4) assertTrue(result.getCellAt(i, 4).cornerNotes.isEmpty())
+			}
+			for (r in 3..5) {
+				for (c in 3..5) {
+					if (r != 4 || c != 4) assertTrue(result.getCellAt(r, c).cornerNotes.isEmpty())
 				}
 			}
 		}
 
-		val result = autoClearNotesUseCase(grid, 4, 4, 5).resultingGrid
-
-		for (i in 0 until 9) {
-			if (i != 4) assertTrue(result.getCellAt(4, i).cornerNotes.isEmpty())
-			if (i != 4) assertTrue(result.getCellAt(i, 4).cornerNotes.isEmpty())
-		}
-		for (r in 3..5) {
-			for (c in 3..5) {
-				if (r != 4 || c != 4) assertTrue(result.getCellAt(r, c).cornerNotes.isEmpty())
-			}
-		}
-	}
-
 	@Test
-	fun `Test with a SudokuGrid where no cells have the number in their corner notes`() {
+	fun `Test with a SudokuGrid where no cells have the number in their corner notes`() = runTest {
 		// Test the scenario where no cells in the SudokuGrid have the target number in their corner notes.
 		val grid = SudokuGrid()
 			.withReplacedCell(0, 1, SudokuCellData(0, 1, cornerNotes = persistentSetOf(2, 3)))
@@ -197,7 +215,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with various grid sizes`() {
+	fun `Test with various grid sizes`() = runTest {
 		// Test the function with different valid Sudoku grid sizes (e.g., 4x4, 9x9, 16x16) to ensure it works correctly for all supported configurations.
 		// 4x4 grid
 		val grid4 = SudokuGrid(4)
@@ -217,7 +235,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with row and column at boundary conditions  0 and gridSize 1 `() {
+	fun `Test with row and column at boundary conditions  0 and gridSize 1 `() = runTest {
 		// Test the function when the input row and column are at the boundaries of the grid (e.g., first row/column, last row/column).
 		val gridSize = 9
 		// Top-left corner
@@ -247,7 +265,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number that is the only note in a cell`() {
+	fun `Test with a number that is the only note in a cell`() = runTest {
 		// Test if the function correctly clears the corner notes when the target number is the only note present in a cell's corner notes, resulting in empty corner notes.
 		val grid =
 			SudokuGrid().withReplacedCell(
@@ -260,7 +278,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test with a number that is one of multiple notes in a cell`() {
+	fun `Test with a number that is one of multiple notes in a cell`() = runTest {
 		// Test if the function correctly removes only the target number from the corner notes when multiple notes are present in a cell.
 		val grid = SudokuGrid().withReplacedCell(
 			row = 0,
@@ -272,7 +290,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test correct handling of cellChanges list`() {
+	fun `Test correct handling of cellChanges list`() = runTest {
 		// Verify that the cellChanges list is populated correctly with the old and new cell states for each modification made.
 		val grid = SudokuGrid()
 			.withReplacedCell(0, 1, SudokuCellData(0, 1, cornerNotes = persistentSetOf(1, 2)))
@@ -298,7 +316,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test immutability of input SudokuGrid`() {
+	fun `Test immutability of input SudokuGrid`() = runTest {
 		// Ensure that the original SudokuGrid object passed as input is not modified, and a new SudokuGrid object is returned with the changes.
 		val originalGrid =
 			SudokuGrid().withReplacedCell(
@@ -315,7 +333,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test block clearing logic with different subgrid sizes`() {
+	fun `Test block clearing logic with different subgrid sizes`() = runTest {
 		// Specifically test the block clearing logic with varying subgrid sizes (e.g., 2x2 for a 4x4 grid, 3x3 for a 9x9 grid) to ensure the block identification is correct.
 		// 4x4 grid, 2x2 subgrid
 		val grid4 = SudokuGrid(4)
@@ -335,7 +353,7 @@ class AutoClearNotesUseCaseTest {
 	}
 
 	@Test
-	fun `Test block clearing exclusion of cells with non zero numbers`() {
+	fun `Test block clearing exclusion of cells with non zero numbers`() = runTest {
 		// Verify that cells within the same block that already have a non-zero number are correctly excluded from note clearing, even if their corner notes contain the target number.
 		val grid = SudokuGrid()
 			.withReplacedCell(

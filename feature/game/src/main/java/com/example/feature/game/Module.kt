@@ -17,6 +17,7 @@ val gameModule =
 				operationRepository = get(),
 				undoOperationUseCase = get(),
 				redoOperationUseCase = get(),
+				recordUndoOperation = get(),
 				getBestTimeUseCase = get(),
 				getElapsedTimeUseCase = get(),
 				saveElapsedTimeUseCase = get(),
