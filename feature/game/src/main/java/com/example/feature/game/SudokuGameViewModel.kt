@@ -350,11 +350,17 @@ internal class SudokuGameViewModel(
 		}
 
 		val updatedLogs = game.value.hintLogs.toMutableList()
-		val hintLogIndex = updatedLogs.indexOfLast { it.hint == lastHint }
+		val hintLogIndex =
+			updatedLogs.indexOfLast {
+				it.hint.row == lastHint.row &&
+					it.hint.col == lastHint.col &&
+					it.hint.value == lastHint.value &&
+					it.hint.type == lastHint.type
+			}
 
 		if (hintLogIndex != -1) {
 			val log = updatedLogs[hintLogIndex]
-			updatedLogs[hintLogIndex] = log.copy(isUserGuessed = true)
+			updatedLogs[hintLogIndex] = log.copy(isUserGuessed = true, isRevealed = true)
 		}
 
 		return updatedLogs.toPersistentList()

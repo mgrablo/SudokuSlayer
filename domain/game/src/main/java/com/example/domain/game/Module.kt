@@ -101,11 +101,8 @@ val domainGameModule =
 				getGame = get(),
 				saveGame = get(),
 				selectCell = get(),
-				inputNumber = get(),
 				resetGame = get(),
 				clearActiveGame = get(),
-				autoClearNotes = get(),
-				highlightMatching = get(),
 				calculateGridChanges = get(),
 			)
 		}
