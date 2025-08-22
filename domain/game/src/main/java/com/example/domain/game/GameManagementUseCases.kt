@@ -1,6 +1,7 @@
 package com.example.domain.game
 
 import com.example.domain.game.usecases.game.AutoClearNotesUseCase
+import com.example.domain.game.usecases.game.CalculateGridChangesUseCase
 import com.example.domain.game.usecases.game.ClearActiveGameUseCase
 import com.example.domain.game.usecases.game.GetGameUseCase
 import com.example.domain.game.usecases.game.ResetGameUseCase
@@ -22,6 +23,7 @@ data class GameManagementUseCases(
 	val clearActiveGame: ClearActiveGameUseCase,
 	val autoClearNotes: AutoClearNotesUseCase,
 	val highlightMatching: HighlightMatchingNumbersUseCase,
+	val calculateGridChanges: CalculateGridChangesUseCase,
 )
 
 data class HintUseCases(

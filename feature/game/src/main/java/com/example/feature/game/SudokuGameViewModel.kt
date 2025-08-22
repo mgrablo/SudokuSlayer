@@ -3,17 +3,17 @@ package com.example.feature.game
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.core.CellChange
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
-import com.example.domain.core.Operation
+import com.example.domain.core.HintLog
 import com.example.domain.core.OperationRepository
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.game.ElapsedTimerManager
 import com.example.domain.game.GameManagementUseCases
 import com.example.domain.game.HintUseCases
 import com.example.domain.game.repositories.GameResultWriter
+import com.example.domain.game.usecases.input.RecordUndoOperationUseCase
 import com.example.domain.game.usecases.input.RedoOperationUseCase
 import com.example.domain.game.usecases.input.UndoOperationUseCase
 import com.example.domain.game.usecases.time.GetBestTimeUseCase
@@ -29,6 +29,7 @@ import com.example.sudoku.model.fillNotes
 import com.example.sudoku.solver.ClassicSudokuSolver
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -63,6 +64,7 @@ internal class SudokuGameViewModel(
 	private val hintUseCases: HintUseCases,
 	private val undoOperationUseCase: UndoOperationUseCase,
 	private val redoOperationUseCase: RedoOperationUseCase,
+	private val recordUndoOperation: RecordUndoOperationUseCase,
 	private val getBestTimeUseCase: GetBestTimeUseCase,
 	private val gameResultWriter: GameResultWriter,
 	private val getElapsedTimeUseCase: GetElapsedTimeUseCase,
@@ -188,7 +190,7 @@ internal class SudokuGameViewModel(
 
 	fun onEvent(event: Event) {
 		when (event) {
-			is Event.SelectCell -> selectCell(event.row, event.column)
+			is Event.SelectCell -> viewModelScope.launch { selectCell(event.row, event.column) }
 			is Event.CellLongClick -> handleCellLongClick(event.row, event.column)
 			is Event.InputNumber ->
 				inputNumber(
@@ -294,21 +296,19 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private fun selectCell(row: Int, col: Int) {
-		viewModelScope.launch {
-			updateGame {
-				it.copy(
-					grid = gameManagementUseCases.selectCell(
-						sudoku = it.grid,
-						selectedCell = row to col,
-					),
-				)
-			}
-			_uiState.update {
-				it.copy(
+	private suspend fun selectCell(row: Int, col: Int) {
+		updateGame {
+			it.copy(
+				grid = gameManagementUseCases.selectCell(
+					sudoku = it.grid,
 					selectedCell = row to col,
-				)
-			}
+				),
+			)
+		}
+		_uiState.update {
+			it.copy(
+				selectedCell = row to col,
+			)
 		}
 	}
 
@@ -320,72 +320,44 @@ internal class SudokuGameViewModel(
 	) {
 		viewModelScope.launch {
 			if (uiState.value.gameState == GameState.VICTORY) return@launch
-			var updatedSudoku = game.value.grid
-			val changes = mutableListOf<CellChange>()
 			val (row, col) = selectedCell ?: return@launch
-
-			val backupCell = updatedSudoku.getCellAt(row, col)
-			updatedSudoku =
-				gameManagementUseCases.inputNumber(
-					sudokuGrid = updatedSudoku,
-					number = number,
-					row = row,
-					column = col,
-					isNote = isNote,
-					isHint = isHint,
-				)
-			if (!isNote && !isHint) {
-				updatedSudoku = gameManagementUseCases.highlightMatching(
-					sudokuGrid = updatedSudoku,
-					number = number,
-				)
-			}
-			changes.add(
-				CellChange(
-					oldCell = backupCell,
-					newCell = updatedSudoku.getCellAt(row, col),
-				),
+			val (updatedGrid, changes) = gameManagementUseCases.calculateGridChanges(
+				initialGrid = game.value.grid,
+				row = row,
+				column = col,
+				number = number,
+				isNote = isNote,
+				isHint = isHint,
 			)
-			if (uiState.value.autoClearNotes && !isNote) {
-				val (newSudoku, noteChanges) = gameManagementUseCases.autoClearNotes(
-					sudokuGrid = updatedSudoku,
-					row = row,
-					column = col,
-					number = number,
-				)
-				updatedSudoku = newSudoku
-				changes.addAll(noteChanges)
-			}
-			operationRepository.apply {
-				addUndoOperation(
-					Operation(
-						id = operationRepository.getUndoOperations().size.toLong(),
-						changes = changes,
-					),
-				)
-				clearRedoOperations()
-			}
-			val updatedLogs = game.value.hintLogs.toMutableList()
-			if (uiState.value.lastHint?.row == row &&
-				uiState.value.lastHint?.col == col &&
-				number == uiState.value.lastHint?.value
-			) {
-				val lastHintId = updatedLogs.indexOfLast { it.hint == _uiState.value.lastHint }
-				val log = updatedLogs[lastHintId]
-				updatedLogs[lastHintId] =
-					log.copy(
-						isUserGuessed = true,
-					)
-				revealHint()
-			}
+			recordUndoOperation(changes)
+			val updatedLogs = handleHintGuess(row, col, number)
 			updateGame {
 				it.copy(
-					grid = updatedSudoku,
+					grid = updatedGrid,
 					hintLogs = updatedLogs.toPersistentList(),
 				)
 			}
 			handleAllCellsFilled()
 		}
+	}
+
+	private fun handleHintGuess(row: Int, column: Int, number: Int): PersistentList<HintLog> {
+		val lastHint = _uiState.value.lastHint
+		val isCorrectGuess =
+			lastHint != null && lastHint.row == row && lastHint.col == column && lastHint.value == number
+		if (!isCorrectGuess) {
+			return game.value.hintLogs
+		}
+
+		val updatedLogs = game.value.hintLogs.toMutableList()
+		val hintLogIndex = updatedLogs.indexOfLast { it.hint == lastHint }
+
+		if (hintLogIndex != -1) {
+			val log = updatedLogs[hintLogIndex]
+			updatedLogs[hintLogIndex] = log.copy(isUserGuessed = true)
+		}
+
+		return updatedLogs.toPersistentList()
 	}
 
 	private fun resetGame() {

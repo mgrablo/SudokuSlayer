@@ -3,11 +3,19 @@ package com.example.domain.game.usecases.game
 import com.example.domain.core.CellChange
 import com.example.domain.core.changedTo
 import com.example.domain.game.GameUpdate
+import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.minus
+import kotlinx.coroutines.flow.first
 
-class AutoClearNotesUseCase {
-	operator fun invoke(sudokuGrid: SudokuGrid, row: Int, column: Int, number: Int): GameUpdate {
+class AutoClearNotesUseCase(private val settingsRepository: SettingsRepository) {
+	suspend operator fun invoke(
+		sudokuGrid: SudokuGrid,
+		row: Int,
+		column: Int,
+		number: Int,
+	): GameUpdate {
+		if (!settingsRepository.autoClearNotes.first()) return GameUpdate(sudokuGrid, emptyList())
 		if (number == 0) return GameUpdate(sudokuGrid, emptyList())
 
 		var result = sudokuGrid
