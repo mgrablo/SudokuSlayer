@@ -42,6 +42,7 @@ internal fun HintsDialog(
 	onFillNotesClick: () -> Unit,
 	onHintClick: () -> Unit,
 	onShowLogsClick: () -> Unit,
+	onShowMistakesClick: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	val buttons =
@@ -52,6 +53,9 @@ internal fun HintsDialog(
 			}),
 			HintDialogButton("Fill notes", onFillNotesClick, {
 				Icon(painterResource(R.drawable.stylus_note), null)
+			}),
+			HintDialogButton("Show Mistakes", onShowMistakesClick, {
+				Icon(painterResource(R.drawable.question_mark), null)
 			}),
 		)
 
@@ -129,7 +133,8 @@ private fun HintsDialogPreview() {
 			onDismissRequest = { },
 			onHintClick = { },
 			onFillNotesClick = { },
-			onShowLogsClick = {},
+			onShowLogsClick = { },
+			onShowMistakesClick = { },
 		)
 	}
 }

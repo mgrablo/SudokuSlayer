@@ -4,6 +4,7 @@ import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import data.game.ProtoGrid
 import data.game.ProtoSolutionGrid
+import kotlin.math.sqrt
 
 fun ProtoGrid.toSudokuGrid(): SudokuGrid = SudokuGrid
 	.fromCellData(cellList.map { it.toSudokuCellData() })
@@ -16,8 +17,10 @@ fun SudokuGrid.toProtoGrid(): ProtoGrid = ProtoGrid
 	.setSeed(seed ?: 0)
 	.build()
 
-fun ProtoSolutionGrid.toSolutionGrid(): SolutionGrid =
-	SolutionGrid(valuesList.toIntArray(), valuesList.size)
+fun ProtoSolutionGrid.toSolutionGrid(): SolutionGrid = SolutionGrid(
+	values = valuesList.toIntArray(),
+	size = sqrt(valuesList.size.toFloat()).toInt(),
+)
 
 fun SolutionGrid.toProtoSolutionGrid(): ProtoSolutionGrid = ProtoSolutionGrid.newBuilder()
 	.addAllValues(getArray().toList())

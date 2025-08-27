@@ -4,9 +4,12 @@ import androidx.collection.FloatFloatPair
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -120,4 +123,20 @@ fun DialogScope.HideSystemBars() {
 				WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 		}
 	}
+}
+
+fun Color.darken(factor: Float = 0.1f): Color {
+	val hsl = FloatArray(3)
+	ColorUtils.colorToHSL(this.toArgb(), hsl)
+	hsl[2] -= factor // Decrease Luminance
+	hsl[2] = hsl[2].coerceIn(0f, 1f) // Clamp between 0 and 1
+	return Color(ColorUtils.HSLToColor(hsl))
+}
+
+fun Color.lighten(factor: Float = 0.1f): Color {
+	val hsl = FloatArray(3)
+	ColorUtils.colorToHSL(this.toArgb(), hsl)
+	hsl[2] += factor // Increase Luminance
+	hsl[2] = hsl[2].coerceIn(0f, 1f) // Clamp between 0 and 1
+	return Color(ColorUtils.HSLToColor(hsl))
 }

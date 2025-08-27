@@ -1,6 +1,7 @@
 package com.example.feature.game
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
@@ -23,6 +24,7 @@ import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.util.AndroidHintStringProvider
+import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
@@ -222,7 +224,7 @@ internal class SudokuGameViewModel(
 			is Event.ExplainHint -> revealHint()
 
 			is Event.HintFillNotes -> fillNotes()
-			is Event.ShowMistakes -> {}
+			is Event.ShowMistakes -> handleShowMistakes()
 			is Event.SwitchInputMode -> switchInputMode(event.isNote)
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
@@ -562,6 +564,33 @@ internal class SudokuGameViewModel(
 					selectedCell = row to column,
 					isNote = false,
 					isHint = false,
+				)
+			}
+		}
+	}
+
+	private fun handleShowMistakes() {
+		viewModelScope.launch {
+			val gameGrid = game.value.grid.getArray()
+			val solutionGrid = game.value.solution
+			var updatedGrid = game.value.grid
+			Log.d("SudokuGameViewModel", solutionGrid.toString())
+			for (cell in gameGrid) {
+				if (cell.number == 0) {
+					continue
+				}
+				Log.d("SudokuGameViewModel", "handleShowMistakes: ${cell.row}, ${cell.col}")
+				if (cell.number != solutionGrid.getValue(cell.row, cell.col)) {
+					updatedGrid = updatedGrid.updateCell(cell.row, cell.col) {
+						it.copy(
+							attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
+						)
+					}
+				}
+			}
+			updateGame {
+				it.copy(
+					grid = updatedGrid,
 				)
 			}
 		}

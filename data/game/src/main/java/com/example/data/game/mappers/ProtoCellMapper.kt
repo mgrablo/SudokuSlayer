@@ -22,6 +22,7 @@ fun ProtoCell.Attributes.toCellAttributes(): CellAttributes = when (this) {
 	ProtoCell.Attributes.SELECTED -> CellAttributes.SELECTED
 	ProtoCell.Attributes.NUMBER_MATCH_HIGHLIGHTED -> CellAttributes.NUMBER_MATCH_HIGHLIGHTED
 	ProtoCell.Attributes.ROW_COLUMN_HIGHLIGHTED -> CellAttributes.ROW_COLUMN_HIGHLIGHTED
+	ProtoCell.Attributes.SOLUTION_CONFLICT -> CellAttributes.SOLUTION_CONFLICT
 	ProtoCell.Attributes.UNSPECIFIED -> CellAttributes.UNSPECIFIED
 	ProtoCell.Attributes.UNRECOGNIZED -> CellAttributes.UNSPECIFIED
 }
@@ -42,6 +43,6 @@ fun CellAttributes.toProtoCellAttribute(): ProtoCell.Attributes = when (this) {
 	CellAttributes.SELECTED -> ProtoCell.Attributes.SELECTED
 	CellAttributes.NUMBER_MATCH_HIGHLIGHTED -> ProtoCell.Attributes.NUMBER_MATCH_HIGHLIGHTED
 	CellAttributes.ROW_COLUMN_HIGHLIGHTED -> ProtoCell.Attributes.ROW_COLUMN_HIGHLIGHTED
-
-	else -> ProtoCell.Attributes.UNSPECIFIED
+	CellAttributes.SOLUTION_CONFLICT -> ProtoCell.Attributes.SOLUTION_CONFLICT
+	CellAttributes.UNSPECIFIED -> ProtoCell.Attributes.UNSPECIFIED
 }

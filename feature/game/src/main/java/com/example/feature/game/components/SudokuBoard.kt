@@ -37,8 +37,8 @@ internal fun SudokuBoard(
 	modifier: Modifier = Modifier,
 	textStyle: TextStyle = TextStyle(),
 ) {
-	val itemsInRow = remember { sudoku.gridSize }
-	val itemsInBlock = remember { sudoku.subgridSize }
+	val itemsInRow = remember(sudoku) { sudoku.gridSize }
+	val itemsInBlock = remember(sudoku) { sudoku.subgridSize }
 	BoxWithConstraints(
 		contentAlignment = Alignment.Center,
 		modifier = modifier,

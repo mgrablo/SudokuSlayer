@@ -34,8 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.game.getRoundedBlockShape
 import com.example.feature.game.theme.LocalSudokuBoardColors
+import com.example.feature.game.theme.SudokuBoardColors
 import com.example.feature.game.theme.SudokuGameTheme
+import com.example.feature.uicore.darken
+import com.example.feature.uicore.lighten
 import com.example.feature.uicore.modifiers.breathingBorder
+import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import kotlinx.collections.immutable.PersistentSet
@@ -56,8 +60,10 @@ internal fun SudokuCell(
 	val isSelected = remember(data.attributes) { data.attributes.contains(CellAttributes.SELECTED) }
 	val isHighlighted =
 		remember(data.attributes) { data.attributes.contains(CellAttributes.ROW_COLUMN_HIGHLIGHTED) }
+	val isSolutionConflict =
+		remember(data.attributes) { data.attributes.contains(CellAttributes.SOLUTION_CONFLICT) }
 
-	val backgroundColor = rememberCellBackgroundColor(isSelected, isHighlighted)
+	val backgroundColor = rememberCellBackgroundColor(isSelected, isHighlighted, isSolutionConflict)
 	val shape = getRoundedBlockShape(subgridSize, data.row, data.col)
 
 	Box(
@@ -160,15 +166,30 @@ private fun NotesCellContent(
 }
 
 @Composable
-private fun rememberCellBackgroundColor(isSelected: Boolean, isHighlighted: Boolean): Color {
-	val colors = LocalSudokuBoardColors.current
-	return remember(isSelected, isHighlighted) {
+private fun rememberCellBackgroundColor(
+	isSelected: Boolean,
+	isHighlighted: Boolean,
+	isSolutionConflict: Boolean,
+	colors: SudokuBoardColors = LocalSudokuBoardColors.current,
+	isDarkTheme: Boolean = LocalAppColorScheme.current.isDark,
+): Color {
+	val backgroundColor =
 		when {
-			isSelected -> colors.selectedBackground
+			isSolutionConflict -> colors.invalidMarkBackground
 			isHighlighted -> colors.highlightedBackground
 			else -> colors.defaultBackground
 		}
-	}
+	val finalColor =
+		if (isSelected) {
+			if (isDarkTheme) {
+				backgroundColor.lighten(0.10f)
+			} else {
+				backgroundColor.darken(0.10f)
+			}
+		} else {
+			backgroundColor
+		}
+	return finalColor
 }
 
 @Stable
@@ -180,6 +201,12 @@ private fun rememberFilledCellColors(attributes: PersistentSet<CellAttributes>):
 
 	return remember(attributes) {
 		when {
+			attributes.contains(CellAttributes.SOLUTION_CONFLICT) ->
+				FilledCellColors(
+					textColor = colors.onInvalidMarkBackground,
+					circleColor = Color.Transparent,
+				)
+
 			attributes.contains(CellAttributes.RULE_BREAKING) ->
 				FilledCellColors(
 					textColor = colors.onInvalidMarkBackground,

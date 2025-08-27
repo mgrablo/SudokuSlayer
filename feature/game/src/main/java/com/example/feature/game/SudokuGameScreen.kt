@@ -183,6 +183,10 @@ private fun SudokuGameScreenContent(
 			onEvent(Event.HintFillNotes)
 			hintsDialogState = false
 		},
+		onShowMistakesClick = {
+			onEvent(Event.ShowMistakes)
+			hintsDialogState = false
+		},
 		onShowLogsClick = {
 			hintsDialogState = false
 			scope.launch {
