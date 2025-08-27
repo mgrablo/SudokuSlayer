@@ -26,6 +26,10 @@ class InputNumberUseCase(private val markRuleBreakingCellsUseCase: MarkRuleBreak
 		}
 
 		val cell = sudokuGrid.getCellAt(row, column)
+		var attributes = cell.attributes
+		if (attributes.contains(CellAttributes.SOLUTION_CONFLICT)) {
+			attributes = attributes - CellAttributes.SOLUTION_CONFLICT
+		}
 
 		val updatedCell =
 			when {
@@ -33,11 +37,13 @@ class InputNumberUseCase(private val markRuleBreakingCellsUseCase: MarkRuleBreak
 					cell.copy(
 						number = 0,
 						cornerNotes = persistentSetOf(),
+						attributes = attributes,
 					)
 
 				isNote ->
 					cell.copy(
 						number = 0,
+						attributes = attributes,
 						cornerNotes =
 						if (cell.cornerNotes.contains(number) && !isHint) {
 							cell.cornerNotes - number
@@ -46,17 +52,19 @@ class InputNumberUseCase(private val markRuleBreakingCellsUseCase: MarkRuleBreak
 						}.sorted().toPersistentSet(),
 					)
 
-				else ->
+				else -> {
+					attributes = if (isHint) {
+						attributes + CellAttributes.HINT_REVEALED
+					} else {
+						attributes - CellAttributes.HINT_REVEALED
+					}
+
 					cell.copy(
 						number = if (number == cell.number) 0 else number,
 						cornerNotes = persistentSetOf(),
-						attributes = if (isHint) {
-							cell.attributes + CellAttributes.HINT_REVEALED
-						} else {
-							cell.attributes -
-								CellAttributes.HINT_REVEALED
-						},
+						attributes = attributes,
 					)
+				}
 			}
 
 		val updatedGrid = sudokuGrid.withReplacedCell(row, column, updatedCell)
