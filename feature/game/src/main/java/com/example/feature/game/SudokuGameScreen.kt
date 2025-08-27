@@ -5,21 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -32,9 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -46,20 +34,19 @@ import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.SudokuGameViewModel.Event
+import com.example.feature.game.components.GameTopBar
 import com.example.feature.game.components.HintBottomSheetScaffold
 import com.example.feature.game.components.HintsDialog
 import com.example.feature.game.components.KeyPad
 import com.example.feature.game.components.PostGameActions
 import com.example.feature.game.components.ResetDialog
 import com.example.feature.game.components.SudokuBoard
-import com.example.feature.game.components.TimerDisplay
 import com.example.feature.game.components.VictoryDialog
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -204,41 +191,12 @@ private fun SudokuGameScreenContent(
 		nextHintClick = { onEvent(Event.ProvideHint) },
 		onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
 		topBar = {
-			CenterAlignedTopAppBar(
-				windowInsets = WindowInsets.displayCutout,
-				title = {
-					if (uiState.timerVisible) {
-						TimerDisplay(
-							elapsedTime = elapsedTime(),
-						)
-					}
-				},
-				colors =
-				TopAppBarDefaults.topAppBarColors(
-					containerColor = MaterialTheme.colorScheme.surfaceContainer,
-				),
-				navigationIcon = {
-					IconButton(onClick = { openDrawer() }) {
-						Icon(Icons.Default.Menu, "")
-					}
-				},
-				actions = {
-					if (uiState.gameState == GameState.VICTORY) {
-						IconButton(
-							onClick = {
-								victoryDialogState.visible = true
-							},
-							modifier = Modifier.semantics {
-								this.onClick(label = "View summary", action = null)
-							},
-						) {
-							Icon(
-								painter = painterResource(R.drawable.trophy),
-								contentDescription = "View summary",
-							)
-						}
-					}
-				},
+			GameTopBar(
+				showTimer = uiState.timerVisible,
+				elapsedTime = elapsedTime,
+				isVictory = uiState.gameState == GameState.VICTORY,
+				onMenuClick = openDrawer,
+				onSummaryClick = { victoryDialogState.visible = true },
 			)
 		},
 	) { innerPadding ->

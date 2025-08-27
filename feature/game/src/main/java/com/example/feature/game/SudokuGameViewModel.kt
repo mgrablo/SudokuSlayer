@@ -1,7 +1,6 @@
 package com.example.feature.game
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
@@ -574,12 +573,10 @@ internal class SudokuGameViewModel(
 			val gameGrid = game.value.grid.getArray()
 			val solutionGrid = game.value.solution
 			var updatedGrid = game.value.grid
-			Log.d("SudokuGameViewModel", solutionGrid.toString())
 			for (cell in gameGrid) {
 				if (cell.number == 0) {
 					continue
 				}
-				Log.d("SudokuGameViewModel", "handleShowMistakes: ${cell.row}, ${cell.col}")
 				if (cell.number != solutionGrid.getValue(cell.row, cell.col)) {
 					updatedGrid = updatedGrid.updateCell(cell.row, cell.col) {
 						it.copy(
