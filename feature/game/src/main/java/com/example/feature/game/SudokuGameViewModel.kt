@@ -21,6 +21,7 @@ import com.example.domain.game.usecases.time.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
+import com.example.feature.game.model.SnackbarState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.util.AndroidHintStringProvider
 import com.example.sudoku.model.CellAttributes
@@ -177,7 +178,11 @@ internal class SudokuGameViewModel(
 
 		data class HighlightHintCells(val hint: Hint) : Event
 
+		data object FindMistakes : Event
+
 		data object ShowMistakes : Event
+
+		data object DismissSnackbar : Event
 
 		data object HintFillNotes : Event
 
@@ -223,6 +228,7 @@ internal class SudokuGameViewModel(
 			is Event.ExplainHint -> revealHint()
 
 			is Event.HintFillNotes -> fillNotes()
+			is Event.FindMistakes -> handleFindMistakes()
 			is Event.ShowMistakes -> handleShowMistakes()
 			is Event.SwitchInputMode -> switchInputMode(event.isNote)
 			is Event.ResetNotes -> resetNotes()
@@ -235,6 +241,13 @@ internal class SudokuGameViewModel(
 			is Event.StartTimer -> {
 				if (uiState.value.gameState == GameState.PLAYING) {
 					elapsedTimerManager.startTracking()
+				}
+			}
+			is Event.DismissSnackbar -> {
+				_uiState.update {
+					it.copy(
+						snackbarState = null,
+					)
 				}
 			}
 		}
@@ -568,26 +581,39 @@ internal class SudokuGameViewModel(
 		}
 	}
 
+	private fun handleFindMistakes() {
+		viewModelScope.launch {
+			val mistakes = gameManagementUseCases.findMistakes(game.value)
+			_uiState.update {
+				it.copy(
+					foundMistakes = mistakes.toPersistentList(),
+					snackbarState = if (mistakes.isNotEmpty()) {
+						SnackbarState.FoundMistakes(mistakes.size)
+					} else {
+						SnackbarState.NoMistakesFound
+					},
+				)
+			}
+		}
+	}
+
 	private fun handleShowMistakes() {
 		viewModelScope.launch {
-			val gameGrid = game.value.grid.getArray()
-			val solutionGrid = game.value.solution
+			val mistakesToShow = _uiState.value.foundMistakes
+			if (mistakesToShow.isEmpty()) return@launch
 			var updatedGrid = game.value.grid
-			for (cell in gameGrid) {
-				if (cell.number == 0) {
-					continue
-				}
-				if (cell.number != solutionGrid.getValue(cell.row, cell.col)) {
-					updatedGrid = updatedGrid.updateCell(cell.row, cell.col) {
-						it.copy(
-							attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
-						)
-					}
+			for ((row, col) in mistakesToShow) {
+				updatedGrid = updatedGrid.updateCell(row, col) {
+					it.copy(
+						attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
+					)
 				}
 			}
-			updateGame {
+			updateGame { it.copy(grid = updatedGrid) }
+			_uiState.update {
 				it.copy(
-					grid = updatedGrid,
+					foundMistakes = persistentListOf(),
+					snackbarState = null,
 				)
 			}
 		}

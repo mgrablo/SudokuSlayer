@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun SwipeToDismissSnackbar(
+fun SwipeDismissSnackbarHost(
 	snackbarHostState: SnackbarHostState,
 	onDismissSnackbar: () -> Unit,
 	modifier: Modifier = Modifier,

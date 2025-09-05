@@ -114,12 +114,6 @@ private fun SudokuGameScreenContent(
 	var hintsDialogState by remember { mutableStateOf(false) }
 	val victoryDialogState = rememberDialogState(false)
 
-	LaunchedEffect(uiState.gameState) {
-		if (uiState.gameState == GameState.VICTORY) {
-			victoryDialogState.visible = true
-		}
-	}
-
 	val scaffoldState =
 		rememberBottomSheetScaffoldState(
 			bottomSheetState =
@@ -128,6 +122,12 @@ private fun SudokuGameScreenContent(
 				skipHiddenState = false,
 			),
 		)
+
+	LaunchedEffect(uiState.gameState) {
+		if (uiState.gameState == GameState.VICTORY) {
+			victoryDialogState.visible = true
+		}
+	}
 
 	VictoryDialog(
 		dialogState = victoryDialogState,
@@ -170,8 +170,8 @@ private fun SudokuGameScreenContent(
 			onEvent(Event.HintFillNotes)
 			hintsDialogState = false
 		},
-		onShowMistakesClick = {
-			onEvent(Event.ShowMistakes)
+		onFindMistakesClick = {
+			onEvent(Event.FindMistakes)
 			hintsDialogState = false
 		},
 		onShowLogsClick = {
@@ -185,11 +185,14 @@ private fun SudokuGameScreenContent(
 	HintBottomSheetScaffold(
 		modifier = modifier,
 		sheetScaffoldState = scaffoldState,
+		snackbarState = uiState.snackbarState,
 		hintLogs = game.hintLogs,
 		showNextHint = game.hintLogs.lastOrNull()?.isRevealed ?: true,
 		explainHintClick = { onEvent(Event.ExplainHint) },
 		nextHintClick = { onEvent(Event.ProvideHint) },
 		onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
+		onShowMistakes = { onEvent(Event.ShowMistakes) },
+		onDismissSnackbar = { onEvent(Event.DismissSnackbar) },
 		topBar = {
 			GameTopBar(
 				showTimer = uiState.timerVisible,
@@ -350,7 +353,7 @@ private fun SudokuGameScreenPreview() {
 	}
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun SudokuGameScreenSixteenPreview() {
 	SudokuGameTheme {

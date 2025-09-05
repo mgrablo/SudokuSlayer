@@ -18,4 +18,9 @@
 	<string name="time">Time:</string>
 	<string name="congratulations">Congratulations!</string>
     <string name="view_summary">View summary</string>
+    <string name="no_mistakes_found">No mistakes found!</string>
+	<plurals name="mistakes_found_quantity">
+		<item quantity="one">Found 1 mistake!</item>
+		<item quantity="other">Found %1$d mistakes!</item>
+	</plurals>
 </resources>
