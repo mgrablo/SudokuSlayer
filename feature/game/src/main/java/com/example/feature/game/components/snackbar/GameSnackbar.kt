@@ -68,7 +68,7 @@ internal fun GameSnackbar(
 
 @PreviewLightDark
 @Composable
-internal fun GameSnackbarPreview(
+private fun GameSnackbarPreview(
 	@PreviewParameter(ActionLabelPreviewParameterProvider::class) actionLabel: String?,
 ) {
 	val snackbarData = object : SnackbarData {

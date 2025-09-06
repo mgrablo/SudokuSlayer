@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -47,16 +48,29 @@ internal fun HintsDialog(
 ) {
 	val buttons =
 		listOf(
-			HintDialogButton("Hint cell", onHintClick, { Icon(Icons.Default.Face, null) }),
-			HintDialogButton("Show hint logs", onShowLogsClick, {
-				Icon(Icons.AutoMirrored.Default.List, null)
-			}),
-			HintDialogButton("Fill notes", onFillNotesClick, {
-				Icon(painterResource(R.drawable.stylus_note), null)
-			}),
-			HintDialogButton("Find Mistakes", onFindMistakesClick, {
-				Icon(painterResource(R.drawable.question_mark), null)
-			}),
+			HintDialogButton(
+				stringResource(R.string.hint_cell), onHintClick, { Icon(Icons.Default.Face, null) }),
+			HintDialogButton(
+				stringResource(R.string.show_hint_logs),
+				onShowLogsClick,
+				{
+					Icon(Icons.AutoMirrored.Default.List, null)
+				},
+			),
+			HintDialogButton(
+				stringResource(R.string.fill_notes),
+				onFillNotesClick,
+				{
+					Icon(painterResource(R.drawable.stylus_note), null)
+				},
+			),
+			HintDialogButton(
+				stringResource(R.string.find_mistakes),
+				onFindMistakesClick,
+				{
+					Icon(painterResource(R.drawable.question_mark), null)
+				},
+			),
 		)
 
 	if (isVisible) {

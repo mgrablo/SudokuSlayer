@@ -18,8 +18,13 @@
 	<string name="time">Time:</string>
 	<string name="congratulations">Congratulations!</string>
     <string name="view_summary">View summary</string>
-    <string name="no_mistakes_found">No mistakes found!</string>
-	<plurals name="mistakes_found_quantity">
+	<string name="find_mistakes">Find mistakes</string>
+	<string name="fill_notes">Fill notes</string>
+	<string name="show_hint_logs">Show hint logs</string>
+	<string name="hint_cell">Hint cell</string>
+	<string name="no_mistakes_found">No mistakes found!</string>
+    <string name="show_mistakes">Show</string>
+    <plurals name="mistakes_found_quantity">
 		<item quantity="one">Found 1 mistake!</item>
 		<item quantity="other">Found %1$d mistakes!</item>
 	</plurals>

@@ -48,7 +48,7 @@ internal fun GameSnackbarHost(
 				)
 				val result = snackbarHostState.showSnackbar(
 					message = message,
-					actionLabel = "Show",
+					actionLabel = context.getString(R.string.show_mistakes),
 					duration = SnackbarDuration.Short,
 				)
 				if (result == SnackbarResult.ActionPerformed) {
