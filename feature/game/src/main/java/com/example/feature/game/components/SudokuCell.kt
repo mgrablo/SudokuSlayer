@@ -180,7 +180,7 @@ private fun rememberCellBackgroundColor(
 			else -> colors.defaultBackground
 		}
 	}
-	val finalColor = remember(isSelected, isDarkTheme) {
+	val finalColor = remember(colors, isSelected, isHighlighted, isSolutionConflict, isDarkTheme) {
 		if (isSelected) {
 			if (isDarkTheme) {
 				backgroundColor.lighten(0.10f)

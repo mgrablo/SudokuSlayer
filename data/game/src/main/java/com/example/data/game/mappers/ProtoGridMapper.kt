@@ -18,7 +18,11 @@ fun SudokuGrid.toProtoGrid(): ProtoGrid = ProtoGrid
 	.build()
 
 fun ProtoSolutionGrid.toSolutionGrid(): SolutionGrid {
-	require(this.valuesCount.let { it * it == this.valuesCount }) { "Solution grid must be square" }
+	require(
+		sqrt(this.valuesList.size.toFloat()).toInt().let {
+			it * it == this.valuesCount
+		},
+	) { "Solution grid must be square" }
 	return SolutionGrid(
 		values = valuesList.toIntArray(),
 		size = sqrt(valuesList.size.toFloat()).toInt(),
