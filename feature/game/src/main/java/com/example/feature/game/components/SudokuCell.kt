@@ -173,13 +173,14 @@ private fun rememberCellBackgroundColor(
 	colors: SudokuBoardColors = LocalSudokuBoardColors.current,
 	isDarkTheme: Boolean = LocalAppColorScheme.current.isDark,
 ): Color {
-	val backgroundColor =
+	val backgroundColor = remember(colors, isSelected, isHighlighted, isSolutionConflict) {
 		when {
 			isSolutionConflict -> colors.invalidMarkBackground
 			isHighlighted -> colors.highlightedBackground
 			else -> colors.defaultBackground
 		}
-	val finalColor =
+	}
+	val finalColor = remember(isSelected, isDarkTheme) {
 		if (isSelected) {
 			if (isDarkTheme) {
 				backgroundColor.lighten(0.10f)
@@ -189,6 +190,7 @@ private fun rememberCellBackgroundColor(
 		} else {
 			backgroundColor
 		}
+	}
 	return finalColor
 }
 

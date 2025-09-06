@@ -17,10 +17,13 @@ fun SudokuGrid.toProtoGrid(): ProtoGrid = ProtoGrid
 	.setSeed(seed ?: 0)
 	.build()
 
-fun ProtoSolutionGrid.toSolutionGrid(): SolutionGrid = SolutionGrid(
-	values = valuesList.toIntArray(),
-	size = sqrt(valuesList.size.toFloat()).toInt(),
-)
+fun ProtoSolutionGrid.toSolutionGrid(): SolutionGrid {
+	require(this.valuesCount.let { it * it == this.valuesCount }) { "Solution grid must be square" }
+	return SolutionGrid(
+		values = valuesList.toIntArray(),
+		size = sqrt(valuesList.size.toFloat()).toInt(),
+	)
+}
 
 fun SolutionGrid.toProtoSolutionGrid(): ProtoSolutionGrid = ProtoSolutionGrid.newBuilder()
 	.addAllValues(getArray().toList())
