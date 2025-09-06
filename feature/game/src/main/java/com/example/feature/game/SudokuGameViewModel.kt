@@ -21,8 +21,11 @@ import com.example.domain.game.usecases.time.GetElapsedTimeUseCase
 import com.example.domain.game.usecases.time.SaveElapsedTimeUseCase
 import com.example.domain.settings.SettingsRepository
 import com.example.feature.game.model.GameState
+import com.example.feature.game.model.SnackbarState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.util.AndroidHintStringProvider
+import com.example.sudoku.model.CellAttributes
+import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.clearAllCornerNotes
 import com.example.sudoku.model.fillNotes
@@ -91,6 +94,7 @@ internal class SudokuGameViewModel(
 			hintsUsed = 0,
 			hintLogs = persistentListOf(),
 			completed = false,
+			solution = SolutionGrid(intArrayOf(), 0),
 		),
 	)
 	val elapsedTime =
@@ -128,7 +132,6 @@ internal class SudokuGameViewModel(
 			}
 			loadGame()
 			val loadedGame = game.first()
-
 			_uiState.update {
 				it.copy(
 					gameState = if (loadedGame.completed) GameState.VICTORY else GameState.PLAYING,
@@ -175,7 +178,11 @@ internal class SudokuGameViewModel(
 
 		data class HighlightHintCells(val hint: Hint) : Event
 
+		data object FindMistakes : Event
+
 		data object ShowMistakes : Event
+
+		data object DismissSnackbar : Event
 
 		data object HintFillNotes : Event
 
@@ -221,7 +228,8 @@ internal class SudokuGameViewModel(
 			is Event.ExplainHint -> revealHint()
 
 			is Event.HintFillNotes -> fillNotes()
-			is Event.ShowMistakes -> {}
+			is Event.FindMistakes -> handleFindMistakes()
+			is Event.ShowMistakes -> handleShowMistakes()
 			is Event.SwitchInputMode -> switchInputMode(event.isNote)
 			is Event.ResetNotes -> resetNotes()
 			is Event.StopTimer -> {
@@ -233,6 +241,13 @@ internal class SudokuGameViewModel(
 			is Event.StartTimer -> {
 				if (uiState.value.gameState == GameState.PLAYING) {
 					elapsedTimerManager.startTracking()
+				}
+			}
+			is Event.DismissSnackbar -> {
+				_uiState.update {
+					it.copy(
+						snackbarState = null,
+					)
 				}
 			}
 		}
@@ -561,6 +576,44 @@ internal class SudokuGameViewModel(
 					selectedCell = row to column,
 					isNote = false,
 					isHint = false,
+				)
+			}
+		}
+	}
+
+	private fun handleFindMistakes() {
+		viewModelScope.launch {
+			val mistakes = gameManagementUseCases.findMistakes(game.value)
+			_uiState.update {
+				it.copy(
+					foundMistakes = mistakes.toPersistentList(),
+					snackbarState = if (mistakes.isNotEmpty()) {
+						SnackbarState.FoundMistakes(mistakes.size)
+					} else {
+						SnackbarState.NoMistakesFound
+					},
+				)
+			}
+		}
+	}
+
+	private fun handleShowMistakes() {
+		viewModelScope.launch {
+			val mistakesToShow = _uiState.value.foundMistakes
+			if (mistakesToShow.isEmpty()) return@launch
+			var updatedGrid = game.value.grid
+			for ((row, col) in mistakesToShow) {
+				updatedGrid = updatedGrid.updateCell(row, col) {
+					it.copy(
+						attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
+					)
+				}
+			}
+			updateGame { it.copy(grid = updatedGrid) }
+			_uiState.update {
+				it.copy(
+					foundMistakes = persistentListOf(),
+					snackbarState = null,
 				)
 			}
 		}

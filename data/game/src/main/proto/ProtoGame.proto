@@ -13,6 +13,7 @@ message ProtoGame {
 	int32 hintsUsed = 4;
 	repeated ProtoHintLog hintLogs = 5;
 	bool completed = 6;
+	ProtoSolutionGrid solution = 7;
 
 	enum Difficulty {
 		UNSPECIFIED = 0;

@@ -3,6 +3,7 @@ package com.example.domain.game
 import com.example.domain.game.usecases.game.AutoClearNotesUseCase
 import com.example.domain.game.usecases.game.CalculateGridChangesUseCase
 import com.example.domain.game.usecases.game.ClearActiveGameUseCase
+import com.example.domain.game.usecases.game.FindMistakesUseCase
 import com.example.domain.game.usecases.game.GetGameUseCase
 import com.example.domain.game.usecases.game.ResetGameUseCase
 import com.example.domain.game.usecases.game.SaveGameUseCase
@@ -54,6 +55,7 @@ val domainGameModule =
 			)
 		}
 		factory { ClearRuleBreakingCellsUseCase() }
+		factory { FindMistakesUseCase() }
 
 		factory { InputNumberUseCase(get()) }
 		factory { ResetGameUseCase(get()) }
@@ -104,6 +106,7 @@ val domainGameModule =
 				resetGame = get(),
 				clearActiveGame = get(),
 				calculateGridChanges = get(),
+				findMistakes = get(),
 			)
 		}
 	}

@@ -5,7 +5,9 @@ import com.example.domain.core.OperationRepository
 import com.example.domain.core.SudokuGridSize
 import com.example.domain.core.toCellsToRemove
 import com.example.sudoku.generator.ClassicSudokuGenerator
+import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudoku.model.SudokuPuzzle
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
@@ -112,7 +114,11 @@ class CreateNewGameUseCaseTest {
 			val difficulty = GameDifficulty.Easy
 			val seed = 123L
 			val cellsToRemove = difficulty.toCellsToRemove(gridSize, seed)
+			val sudokuPuzzle = mockk<SudokuPuzzle>()
 			val sudokuGrid = mockk<SudokuGrid>()
+			val solutionGrid = mockk<SolutionGrid>()
+			every { sudokuPuzzle.component1() } returns sudokuGrid
+			every { sudokuPuzzle.component2() } returns solutionGrid
 
 			mockkConstructor(ClassicSudokuGenerator::class)
 			val cellsToRemoveSlot = slot<Int>()
@@ -122,7 +128,7 @@ class CreateNewGameUseCaseTest {
 					capture(cellsToRemoveSlot),
 					capture(seedSlot),
 				)
-			} returns sudokuGrid
+			} returns sudokuPuzzle
 
 			useCase(gridSize, difficulty, seed)
 
@@ -136,7 +142,11 @@ class CreateNewGameUseCaseTest {
 		val gridSize = SudokuGridSize.NINE
 		val difficulty = GameDifficulty.Easy
 		val expectedCellsToRemove = 40
+		val sudokuPuzzle = mockk<SudokuPuzzle>()
 		val sudokuGrid = mockk<SudokuGrid>()
+		val solutionGrid = mockk<SolutionGrid>()
+		every { sudokuPuzzle.component1() } returns sudokuGrid
+		every { sudokuPuzzle.component2() } returns solutionGrid
 
 		mockkStatic("com.example.domain.core.GameDifficultyKt")
 		every { difficulty.toCellsToRemove(gridSize, null) } returns expectedCellsToRemove
@@ -149,7 +159,7 @@ class CreateNewGameUseCaseTest {
 				capture(cellsToRemoveSlot),
 				capture(seedSlot),
 			)
-		} returns sudokuGrid
+		} returns sudokuPuzzle
 
 		useCase(gridSize, difficulty, null)
 

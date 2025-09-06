@@ -18,10 +18,11 @@ class CreateNewGameUseCase(private val operationRepository: OperationRepository)
 		operationRepository.clearOperations()
 		val generator = ClassicSudokuGenerator(gridSize.toIntSize())
 		val cellsToRemove = difficulty.toCellsToRemove(gridSize, seed)
-		val sudokuGrid = generator.createSudoku(cellsToRemove, seed ?: Random.nextLong())
+		val (sudokuGrid, solution) = generator.createSudoku(cellsToRemove, seed ?: Random.nextLong())
 
 		return Game(
 			grid = sudokuGrid,
+			solution = solution,
 			difficulty = difficulty,
 			elapsedTime = 0,
 			hintsUsed = 0,

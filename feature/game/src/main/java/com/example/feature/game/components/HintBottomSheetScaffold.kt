@@ -25,9 +25,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
@@ -41,6 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.HintLog
+import com.example.feature.game.components.snackbar.GameSnackbar
+import com.example.feature.game.components.snackbar.GameSnackbarHost
+import com.example.feature.game.model.SnackbarState
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.sudoku.solver.Hint
 import com.example.sudoku.solver.HintType
@@ -56,9 +61,12 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun HintBottomSheetScaffold(
 	sheetScaffoldState: BottomSheetScaffoldState,
+	snackbarState: SnackbarState?,
 	explainHintClick: () -> Unit,
 	nextHintClick: () -> Unit,
 	onHighlightCellClick: (Hint) -> Unit,
+	onShowMistakes: () -> Unit,
+	onDismissSnackbar: () -> Unit,
 	modifier: Modifier = Modifier,
 	hintLogs: PersistentList<HintLog> = persistentListOf(),
 	showNextHint: Boolean = false,
@@ -74,6 +82,20 @@ internal fun HintBottomSheetScaffold(
 		containerColor = MaterialTheme.colorScheme.background,
 		contentColor = MaterialTheme.colorScheme.onBackground,
 		topBar = topBar,
+		snackbarHost = { hostState ->
+			GameSnackbarHost(
+				snackbarHostState = hostState,
+				snackbarState = snackbarState,
+				dismissBoxState = rememberSwipeToDismissBoxState(
+					initialValue = SwipeToDismissBoxValue.Settled,
+				),
+				onDismissSnackbar = onDismissSnackbar,
+				onShowMistakes = onShowMistakes,
+				snackbar = { data ->
+					GameSnackbar(data)
+				},
+			)
+		},
 		sheetContent = {
 			SheetContent(
 				logs = hintLogs,
@@ -174,7 +196,13 @@ private fun SheetContent(
 							val lastInteractionSource = interactionSources.last()
 							lastInteractionSource.tryEmit(PressInteraction.Press(Offset.Zero))
 							delay(100)
-							lastInteractionSource.tryEmit(PressInteraction.Release(PressInteraction.Press(Offset.Zero)))
+							lastInteractionSource.tryEmit(
+								PressInteraction.Release(
+									PressInteraction.Press(
+										Offset.Zero,
+									),
+								),
+							)
 						}
 					}
 				}
@@ -250,6 +278,9 @@ private fun HintBottomSheetScaffoldPreview() {
 			nextHintClick = { },
 			onHighlightCellClick = { },
 			topBar = null,
+			onShowMistakes = { },
+			onDismissSnackbar = { },
+			snackbarState = null,
 			content = { },
 		)
 	}
