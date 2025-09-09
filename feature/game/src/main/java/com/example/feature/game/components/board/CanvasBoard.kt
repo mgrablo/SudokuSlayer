@@ -1,13 +1,18 @@
 package com.example.feature.game.components.board
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -19,6 +24,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -47,57 +55,118 @@ internal fun CanvasBoard(
 ) {
 	val isDarkTheme = LocalAppColorScheme.current.isDark
 	val textMeasurer = rememberTextMeasurer()
-	val sudokuGridSize = remember(sudoku) { SudokuGridSize.fromIntSize(sudoku.gridSize) }
-	Box(
-		modifier.drawWithContent {
-			val canvasSize = min(size.width, size.height)
-			val cellSize = canvasSize / sudoku.gridSize
-			val thinLineWidth = 1.dp.toPx()
-			val thickLineWidth = 2.dp.toPx()
-			val blockSize = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
-			val cornerRadius = 8.dp.toPx()
+	val sudokuGridSize = remember(sudoku.gridSize) { SudokuGridSize.fromIntSize(sudoku.gridSize) }
 
-			val clipPath = Path().apply {
-				addRoundRect(
-					RoundRect(Rect(Offset.Zero, Size(canvasSize, canvasSize)), CornerRadius(cornerRadius)),
-				)
+	var canvasSize by remember(sudokuGridSize) { mutableFloatStateOf(0f) }
+	var cellSize by remember(sudokuGridSize) { mutableFloatStateOf(0f) }
+	var drawableCellArea by remember { mutableFloatStateOf(0f) }
+
+	val thickLineWidth = with(LocalDensity.current) { 2.dp.toPx() }
+	val thinLineWidth = with(LocalDensity.current) { 1.dp.toPx() }
+	val cornerRadius = with(LocalDensity.current) { 8.dp.toPx() }
+	val numCellsInBlock = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
+
+	fun processTap(offset: Offset, lambda: (Int, Int) -> Unit) {
+		if (cellSize == 0f) return
+
+		val col = (offset.x / cellSize).toInt()
+		val row = (offset.y / cellSize).toInt()
+
+		if (row in 0 until sudoku.gridSize && col in 0 until sudoku.gridSize) {
+			lambda(row, col)
+		}
+	}
+
+	Box(
+		modifier.onSizeChanged { newSize ->
+			val newCanvasSize = min(newSize.width, newSize.height).toFloat()
+			if (canvasSize != newCanvasSize) {
+				canvasSize = newCanvasSize
+				cellSize = canvasSize / sudoku.gridSize
+				val numThickLines = sudoku.gridSize / numCellsInBlock + 1
+				val numThinLines = sudoku.gridSize + 1 - numThickLines
+				val totalLinesWidth =
+					numThickLines * thickLineWidth + numThinLines * thinLineWidth
+				drawableCellArea = (canvasSize - totalLinesWidth) / sudoku.gridSize
+				cellSize = drawableCellArea + totalLinesWidth / sudoku.gridSize
 			}
-			clipPath(clipPath) {
-				drawRect(
-					color = colors.defaultBackground,
-				)
-				sudoku.getArray().forEach { cellData ->
-					val cellTopLeft = Offset(cellData.col * cellSize, cellData.row * cellSize)
-					val drawState = cellData.toDrawState(
-						gridSize = sudokuGridSize,
-						cellSize = cellSize,
-						isFocused = focusedCells.contains(cellData.row to cellData.col),
-						colors = colors,
-						isDarkTheme = isDarkTheme,
-					)
-					translate(left = cellTopLeft.x, top = cellTopLeft.y) {
-						drawCell(drawState, textMeasurer)
-					}
-				}
-				drawGridLines(
-					gridSize = sudoku.gridSize,
-					blockSize = blockSize,
-					canvasWidth = canvasSize,
-					cellSize = cellSize,
-					thinLineWidth = thinLineWidth,
-					thickLineWidth = thickLineWidth,
-					thinLineColor = colors.cellBorder,
-					thickLineColor = colors.blockBorder,
-				)
-			}
-			drawBoardFrame(
-				color = colors.blockBorder,
-				canvasWidth = canvasSize,
-				strokeWidth = thickLineWidth,
-				cornerRadius = cornerRadius,
+		}.pointerInput(sudoku.gridSize) {
+			detectTapGestures(
+				onTap = { processTap(it, onCellClick) },
+				onLongPress = { processTap(it, onCellLongClick) },
 			)
-		},
+		}
+			.drawWithContent {
+				if (canvasSize == 0f) return@drawWithContent
+
+				val clipPath = Path().apply {
+					addRoundRect(
+						RoundRect(Rect(Offset.Zero, Size(canvasSize, canvasSize)), CornerRadius(cornerRadius)),
+					)
+				}
+				clipPath(clipPath) {
+					sudoku.getArray().forEach { cellData ->
+						val cellTopLeft = getCellTopLeft(
+							row = cellData.row,
+							column = cellData.col,
+							numCellsInBlock = numCellsInBlock,
+							drawableCellArea = drawableCellArea,
+							thinLineWidth = thinLineWidth,
+							thickLineWidth = thickLineWidth,
+						)
+						val drawState = cellData.toDrawState(
+							gridSize = sudokuGridSize,
+							cellSize = drawableCellArea,
+							isFocused = focusedCells.contains(cellData.row to cellData.col),
+							colors = colors,
+							isDarkTheme = isDarkTheme,
+						)
+						translate(left = cellTopLeft.x, top = cellTopLeft.y) {
+							drawCell(drawState, textMeasurer)
+						}
+					}
+					drawGridLines(
+						gridSize = sudoku.gridSize,
+						blockSize = numCellsInBlock,
+						canvasWidth = canvasSize,
+						cellSize = drawableCellArea,
+						thinLineWidth = thinLineWidth,
+						thickLineWidth = thickLineWidth,
+						thinLineColor = colors.cellBorder,
+						thickLineColor = colors.blockBorder,
+					)
+				}
+				drawBoardFrame(
+					color = colors.blockBorder,
+					canvasWidth = canvasSize,
+					strokeWidth = thickLineWidth,
+					cornerRadius = cornerRadius,
+				)
+			},
 	)
+}
+
+private fun getCellTopLeft(
+	row: Int,
+	column: Int,
+	numCellsInBlock: Int,
+	drawableCellArea: Float,
+	thinLineWidth: Float,
+	thickLineWidth: Float,
+): Offset {
+	val numThickLinesBeforecolumn = (column / numCellsInBlock) + 1
+	val numThinLinesBeforecolumn = column - (column / numCellsInBlock)
+	val x =
+		numThickLinesBeforecolumn * thickLineWidth + numThinLinesBeforecolumn * thinLineWidth +
+			column * drawableCellArea
+
+	val numThickLinesBeforeRow = (row / numCellsInBlock) + 1
+	val numThinLinesBeforeRow = row - (row / numCellsInBlock)
+	val y =
+		numThickLinesBeforeRow * thickLineWidth + numThinLinesBeforeRow * thinLineWidth +
+			row * drawableCellArea
+
+	return Offset(x, y)
 }
 
 @PreviewLightDark
@@ -110,7 +179,7 @@ private fun CanvasBoardStatesPreview(
 	SudokuGameTheme {
 		Column(
 			horizontalAlignment = Alignment.CenterHorizontally,
-			modifier = Modifier.background(
+			modifier = Modifier.size(400.dp).background(
 				MaterialTheme.colorScheme.background,
 			),
 		) {
@@ -120,7 +189,7 @@ private fun CanvasBoardStatesPreview(
 				focusedCells = persistentSetOf(),
 				onCellClick = { _, _ -> },
 				onCellLongClick = { _, _ -> },
-				modifier = Modifier.size(400.dp),
+				modifier = Modifier.weight(1f).aspectRatio(1f),
 			)
 		}
 	}

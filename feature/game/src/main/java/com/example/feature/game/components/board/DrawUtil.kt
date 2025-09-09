@@ -39,34 +39,41 @@ internal fun DrawScope.drawGridLines(
 ) {
 	if (gridSize <= 1) return
 
-	for (i in 1 until gridSize) {
+	for (i in 0..gridSize) {
 		val isThickLine = i % blockSize == 0
+		val lineWidth = if (isThickLine) thickLineWidth else thinLineWidth
+		val lineColor = if (isThickLine) thickLineColor else thinLineColor
+		val lineOffset = getLineOffset(i, blockSize, cellSize, thinLineWidth, thickLineWidth)
+
 		drawLine(
-			color = if (isThickLine) thickLineColor else thinLineColor,
-			start = Offset(cellSize * i.toFloat(), 0f),
-			end = Offset(cellSize * i.toFloat(), canvasWidth),
-			strokeWidth = if (isThickLine) thickLineWidth else thinLineWidth,
+			color = lineColor,
+			start = Offset(lineOffset, 0f),
+			end = Offset(lineOffset, canvasWidth),
+			strokeWidth = lineWidth,
 		)
-	}
-	for (i in 1 until gridSize) {
-		val isThickLine = i % blockSize == 0
-		if (canvasWidth >= cellSize * i) {
-			drawLine(
-				color = if (isThickLine) thickLineColor else thinLineColor,
-				start = Offset(0f, cellSize * i.toFloat()),
-				end = Offset(canvasWidth, cellSize * i.toFloat()),
-				strokeWidth = if (isThickLine) thickLineWidth else thinLineWidth,
-			)
-		}
+		drawLine(
+			color = lineColor,
+			start = Offset(0f, lineOffset),
+			end = Offset(canvasWidth, lineOffset),
+			strokeWidth = lineWidth,
+		)
 	}
 }
 
-internal fun DrawScope.drawNumber(drawState: SudokuCellDrawState, textMeasurer: TextMeasurer) {
-	drawRect(
-		color = drawState.backgroundColor,
-		size = Size(drawState.cellSize, drawState.cellSize),
-	)
+private fun getLineOffset(
+	index: Int,
+	blockSize: Int,
+	drawableCellArea: Float,
+	thinLineWidth: Float,
+	thickLineWidth: Float,
+): Float {
+	val numThickLines = index / blockSize
+	val numThinLines = index - numThickLines
+	return numThickLines * thickLineWidth + numThinLines * thinLineWidth + index * drawableCellArea +
+		thickLineWidth / 2
+}
 
+internal fun DrawScope.drawNumber(drawState: SudokuCellDrawState, textMeasurer: TextMeasurer) {
 	val textLayoutResult = textMeasurer.measure(
 		text = drawState.numberText!!,
 		style = TextStyle(
