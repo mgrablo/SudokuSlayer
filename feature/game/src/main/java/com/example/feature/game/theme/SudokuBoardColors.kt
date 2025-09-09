@@ -2,7 +2,6 @@ package com.example.feature.game.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.example.domain.settings.models.ColorScheme
 import com.example.feature.uicore.theme.Catppuccin
@@ -33,7 +32,7 @@ internal object BoardColorSchemes {
 	val Latte = createBoardColorsScheme(Catppuccin.Latte)
 
 	private fun createBoardColorsScheme(palette: CatppuccinPalette) = SudokuBoardColors(
-		defaultBackground = palette.base,
+		defaultBackground = palette.crust,
 		onDefaultBackground = palette.text,
 		selectedBackground = palette.surface2,
 		onSelectedBackground = palette.text,
@@ -60,9 +59,4 @@ internal fun rememberBoardColors(colorScheme: ColorScheme): SudokuBoardColors =
 			is ColorScheme.Latte -> BoardColorSchemes.Latte
 			is ColorScheme.Frappe -> BoardColorSchemes.Frappe
 		}
-	}
-
-internal val LocalSudokuBoardColors =
-	staticCompositionLocalOf<SudokuBoardColors> {
-		BoardColorSchemes.Mocha
 	}

@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.domain.core.SudokuGridSize
-import com.example.feature.game.theme.LocalSudokuBoardColors
-import com.example.feature.game.theme.SudokuBoardColors
+import com.example.feature.game.theme.LocalSudokuBoardAppearance
+import com.example.feature.game.theme.SudokuBoardAppearance
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalAppColorScheme
 import com.example.sudoku.model.SudokuGrid
@@ -51,9 +51,10 @@ internal fun SudokuBoard(
 	onCellClick: (Int, Int) -> Unit,
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
-	colors: SudokuBoardColors = LocalSudokuBoardColors.current,
+	appearence: SudokuBoardAppearance = LocalSudokuBoardAppearance.current,
 ) {
 	val isDarkTheme = LocalAppColorScheme.current.isDark
+	val colors = appearence.colors
 	val textMeasurer = rememberTextMeasurer()
 	val sudokuGridSize = remember(sudoku.gridSize) { SudokuGridSize.fromIntSize(sudoku.gridSize) }
 
@@ -61,9 +62,9 @@ internal fun SudokuBoard(
 	var cellSize by remember(sudokuGridSize) { mutableFloatStateOf(0f) }
 	var drawableCellArea by remember { mutableFloatStateOf(0f) }
 
-	val thickLineWidth = with(LocalDensity.current) { 2.dp.toPx() }
-	val thinLineWidth = with(LocalDensity.current) { 1.dp.toPx() }
-	val cornerRadius = with(LocalDensity.current) { 8.dp.toPx() }
+	val thickLineWidth = with(LocalDensity.current) { appearence.thickLineWidth.toPx() }
+	val thinLineWidth = with(LocalDensity.current) { appearence.thinLineWidth.toPx() }
+	val cornerRadius = with(LocalDensity.current) { appearence.cornerRadius.toPx() }
 	val numCellsInBlock = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
 
 	fun processTap(offset: Offset, lambda: (Int, Int) -> Unit) {
