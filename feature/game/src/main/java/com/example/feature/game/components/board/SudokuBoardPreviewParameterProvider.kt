@@ -6,7 +6,7 @@ import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.persistentSetOf
 
-internal class CanvasBoardPreviewParameterProvider :
+internal class SudokuBoardPreviewParameterProvider :
 	PreviewParameterProvider<Pair<SudokuGrid, String>> {
 	override val values: Sequence<Pair<SudokuGrid, String>> = sequenceOf(
 		// 9x9 Grid Examples

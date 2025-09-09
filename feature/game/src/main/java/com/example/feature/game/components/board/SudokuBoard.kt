@@ -45,7 +45,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 @Composable
-internal fun CanvasBoard(
+internal fun SudokuBoard(
 	sudoku: SudokuGrid,
 	focusedCells: PersistentSet<Pair<Int, Int>>,
 	onCellClick: (Int, Int) -> Unit,
@@ -78,30 +78,35 @@ internal fun CanvasBoard(
 	}
 
 	Box(
-		modifier.onSizeChanged { newSize ->
-			val newCanvasSize = min(newSize.width, newSize.height).toFloat()
-			if (canvasSize != newCanvasSize) {
-				canvasSize = newCanvasSize
-				cellSize = canvasSize / sudoku.gridSize
-				val numThickLines = sudoku.gridSize / numCellsInBlock + 1
-				val numThinLines = sudoku.gridSize + 1 - numThickLines
-				val totalLinesWidth =
-					numThickLines * thickLineWidth + numThinLines * thinLineWidth
-				drawableCellArea = (canvasSize - totalLinesWidth) / sudoku.gridSize
-				cellSize = drawableCellArea + totalLinesWidth / sudoku.gridSize
+		modifier
+			.onSizeChanged { newSize ->
+				val newCanvasSize = min(newSize.width, newSize.height).toFloat()
+				if (canvasSize != newCanvasSize) {
+					canvasSize = newCanvasSize
+					cellSize = canvasSize / sudoku.gridSize
+					val numThickLines = sudoku.gridSize / numCellsInBlock + 1
+					val numThinLines = sudoku.gridSize + 1 - numThickLines
+					val totalLinesWidth =
+						numThickLines * thickLineWidth + numThinLines * thinLineWidth
+					drawableCellArea = (canvasSize - totalLinesWidth) / sudoku.gridSize
+					cellSize = drawableCellArea + totalLinesWidth / sudoku.gridSize
+				}
 			}
-		}.pointerInput(sudoku.gridSize) {
-			detectTapGestures(
-				onTap = { processTap(it, onCellClick) },
-				onLongPress = { processTap(it, onCellLongClick) },
-			)
-		}
+			.pointerInput(sudoku.gridSize) {
+				detectTapGestures(
+					onTap = { processTap(it, onCellClick) },
+					onLongPress = { processTap(it, onCellLongClick) },
+				)
+			}
 			.drawWithContent {
 				if (canvasSize == 0f) return@drawWithContent
 
 				val clipPath = Path().apply {
 					addRoundRect(
-						RoundRect(Rect(Offset.Zero, Size(canvasSize, canvasSize)), CornerRadius(cornerRadius)),
+						RoundRect(
+							Rect(Offset.Zero, Size(canvasSize, canvasSize)),
+							CornerRadius(cornerRadius),
+						),
 					)
 				}
 				clipPath(clipPath) {
@@ -172,24 +177,28 @@ private fun getCellTopLeft(
 @PreviewLightDark
 @Preview(name = "Cell States")
 @Composable
-private fun CanvasBoardStatesPreview(
-	@PreviewParameter(CanvasBoardPreviewParameterProvider::class) sudokuState:
+private fun SudokuBoardStatesPreview(
+	@PreviewParameter(SudokuBoardPreviewParameterProvider::class) sudokuState:
 	Pair<SudokuGrid, String>,
 ) {
 	SudokuGameTheme {
 		Column(
 			horizontalAlignment = Alignment.CenterHorizontally,
-			modifier = Modifier.size(400.dp).background(
-				MaterialTheme.colorScheme.background,
-			),
+			modifier = Modifier
+				.size(400.dp)
+				.background(
+					MaterialTheme.colorScheme.background,
+				),
 		) {
 			Text(text = sudokuState.second, color = MaterialTheme.colorScheme.onBackground)
-			CanvasBoard(
+			SudokuBoard(
 				sudoku = sudokuState.first,
 				focusedCells = persistentSetOf(),
 				onCellClick = { _, _ -> },
 				onCellLongClick = { _, _ -> },
-				modifier = Modifier.weight(1f).aspectRatio(1f),
+				modifier = Modifier
+					.weight(1f)
+					.aspectRatio(1f),
 			)
 		}
 	}
