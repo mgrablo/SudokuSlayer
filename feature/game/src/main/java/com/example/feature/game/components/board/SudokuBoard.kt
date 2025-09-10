@@ -121,14 +121,17 @@ internal fun SudokuBoard(
 							thickLineWidth = thickLineWidth,
 						)
 						val drawState = cellData.toDrawState(
-							gridSize = sudokuGridSize,
-							cellSize = drawableCellArea,
 							isFocused = focusedCells.contains(cellData.row to cellData.col),
 							colors = colors,
 							isDarkTheme = isDarkTheme,
 						)
 						translate(left = cellTopLeft.x, top = cellTopLeft.y) {
-							drawCell(drawState, textMeasurer)
+							drawCell(
+								drawState = drawState,
+								textMeasurer = textMeasurer,
+								cellSize = drawableCellArea,
+								gridSize = sudokuGridSize.toIntSize(),
+							)
 						}
 					}
 					drawGridLines(

@@ -1,79 +1,47 @@
 package com.example.feature.game.components.board
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.theme.SudokuBoardColors
 import com.example.feature.uicore.darken
 import com.example.feature.uicore.lighten
 import com.example.sudoku.model.SudokuCellData
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
-import kotlin.math.floor
-import kotlin.math.sqrt
 
-const val NOTE_PADDING_FACTOR = 0.7f
-const val NUMBER_PADDING_FACTOR = 0.7f
 
 @Stable
 internal data class SudokuCellDrawState(
 	val backgroundColor: Color,
 	val focusedColor: Color?,
-
 	val numberText: String?,
 	val numberTextColor: Color,
 	val numberBackgroundColor: Color, // For circle behind numbers when highlighted matching or errors
-	val numberTextSize: Float,
-
 	val notes: PersistentSet<NoteDrawState>,
-
-	val cellSize: Float,
 )
 
 @Stable
-internal data class NoteDrawState(
-	val text: String,
-	val color: Color,
-	val size: Float,
-	val offset: Offset,
-)
+internal data class NoteDrawState(val index: Int, val text: String, val color: Color)
 
 internal fun SudokuCellData.toDrawState(
-	gridSize: SudokuGridSize,
-	cellSize: Float,
 	isFocused: Boolean,
 	colors: SudokuBoardColors,
 	isDarkTheme: Boolean,
 ): SudokuCellDrawState {
-	val subgridSize = floor(sqrt(gridSize.toIntSize().toFloat())).toInt()
-
 	// Background
 	val cellBackgroundState = getCellBackgroundState(attributes)
 	val backgroundColor = determineBackgroundColor(cellBackgroundState, colors, isDarkTheme)
 
 	// Main number
 	val cellContentState = getCellContentState(attributes)
-	val numberTextSize = cellSize * NUMBER_PADDING_FACTOR
 	val (numberTextColor, numberBackgroundColor) = determineNumberColors(cellContentState, colors)
 
 	// Note
-	val noteSlotSize = cellSize / subgridSize
-	val noteTextSize = noteSlotSize * NOTE_PADDING_FACTOR
-
 	val noteDrawStates = cornerNotes.map {
-		val noteIndex = it - 1
-		val row = noteIndex / subgridSize
-		val col = noteIndex % subgridSize
-
-		val x = col * noteSlotSize + (noteSlotSize / 2)
-		val y = row * noteSlotSize + (noteSlotSize / 2)
-
 		NoteDrawState(
+			index = it - 1,
 			text = it.toString(),
 			color = colors.onDefaultBackground,
-			size = noteTextSize,
-			offset = Offset(x, y),
 		)
 	}.toPersistentSet()
 
@@ -83,9 +51,7 @@ internal fun SudokuCellData.toDrawState(
 		numberText = number.takeIf { it != 0 }?.toString(),
 		numberTextColor = numberTextColor,
 		numberBackgroundColor = numberBackgroundColor,
-		numberTextSize = numberTextSize,
 		notes = noteDrawStates,
-		cellSize = cellSize,
 	)
 }
 
