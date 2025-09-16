@@ -21,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
@@ -97,8 +96,14 @@ internal fun SudokuBoard(
 
 	Box(
 		modifier
-			.onSizeChanged { newSize ->
-				val newCanvasSize = min(newSize.width, newSize.height).toFloat()
+			.pointerInput(sudoku.gridSize) {
+				detectTapGestures(
+					onTap = { processTap(it, onCellClick) },
+					onLongPress = { processTap(it, onCellLongClick) },
+				)
+			}
+			.drawWithCache {
+				val newCanvasSize = min(this.size.width, this.size.height)
 				if (canvasSize != newCanvasSize) {
 					canvasSize = newCanvasSize
 					cellSize = canvasSize / sudoku.gridSize
@@ -109,15 +114,6 @@ internal fun SudokuBoard(
 					drawableCellArea = (canvasSize - totalLinesWidth) / sudoku.gridSize
 					cellSize = drawableCellArea + totalLinesWidth / sudoku.gridSize
 				}
-			}
-			.pointerInput(sudoku.gridSize) {
-				detectTapGestures(
-					onTap = { processTap(it, onCellClick) },
-					onLongPress = { processTap(it, onCellLongClick) },
-				)
-			}
-			.drawWithContent {
-				if (canvasSize == 0f) return@drawWithContent
 
 				val clipPath = Path().apply {
 					addRoundRect(
@@ -127,49 +123,52 @@ internal fun SudokuBoard(
 						),
 					)
 				}
-				clipPath(clipPath) {
-					sudoku.getArray().forEach { cellData ->
-						val cellTopLeft = getCellTopLeft(
-							row = cellData.row,
-							column = cellData.col,
-							numCellsInBlock = numCellsInBlock,
-							drawableCellArea = drawableCellArea,
+
+				onDrawBehind {
+					clipPath(clipPath) {
+						sudoku.getArray().forEach { cellData ->
+							val cellTopLeft = getCellTopLeft(
+								row = cellData.row,
+								column = cellData.col,
+								numCellsInBlock = numCellsInBlock,
+								drawableCellArea = drawableCellArea,
+								thinLineWidth = thinLineWidth,
+								thickLineWidth = thickLineWidth,
+							)
+							val drawState = cellData.toDrawState(
+								isFocused = focusedCells.contains(cellData.row to cellData.col),
+								colors = colors,
+								isDarkTheme = isDarkTheme,
+							)
+							translate(left = cellTopLeft.x, top = cellTopLeft.y) {
+								drawCell(
+									drawState = drawState,
+									textMeasurer = textMeasurer,
+									cellSize = drawableCellArea,
+									gridSize = sudokuGridSize.toIntSize(),
+									focusRotationAngle = rotationAngle,
+									focusGradientColors = colors.focusedGradient,
+								)
+							}
+						}
+						drawGridLines(
+							gridSize = sudoku.gridSize,
+							blockSize = numCellsInBlock,
+							canvasWidth = canvasSize,
+							cellSize = drawableCellArea,
 							thinLineWidth = thinLineWidth,
 							thickLineWidth = thickLineWidth,
+							thinLineColor = colors.cellBorder,
+							thickLineColor = colors.blockBorder,
 						)
-						val drawState = cellData.toDrawState(
-							isFocused = focusedCells.contains(cellData.row to cellData.col),
-							colors = colors,
-							isDarkTheme = isDarkTheme,
-						)
-						translate(left = cellTopLeft.x, top = cellTopLeft.y) {
-							drawCell(
-								drawState = drawState,
-								textMeasurer = textMeasurer,
-								cellSize = drawableCellArea,
-								gridSize = sudokuGridSize.toIntSize(),
-								focusRotationAngle = rotationAngle,
-								focusGradientColors = colors.focusedGradient,
-							)
-						}
 					}
-					drawGridLines(
-						gridSize = sudoku.gridSize,
-						blockSize = numCellsInBlock,
+					drawBoardFrame(
+						color = colors.blockBorder,
 						canvasWidth = canvasSize,
-						cellSize = drawableCellArea,
-						thinLineWidth = thinLineWidth,
-						thickLineWidth = thickLineWidth,
-						thinLineColor = colors.cellBorder,
-						thickLineColor = colors.blockBorder,
+						strokeWidth = thickLineWidth,
+						cornerRadius = cornerRadius,
 					)
 				}
-				drawBoardFrame(
-					color = colors.blockBorder,
-					canvasWidth = canvasSize,
-					strokeWidth = thickLineWidth,
-					cornerRadius = cornerRadius,
-				)
 			},
 	)
 }

@@ -8,9 +8,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.domain.settings.models.ColorScheme
 
-const val NOTE_PADDING_FACTOR = 0.8f
-const val NUMBER_PADDING_FACTOR = 0.7f
-
 @Immutable
 internal data class SudokuBoardAppearance(
 	val colors: SudokuBoardColors,

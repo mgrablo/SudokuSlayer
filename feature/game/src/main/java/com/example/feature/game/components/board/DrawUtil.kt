@@ -16,14 +16,15 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.style.TextAlign
-import com.example.feature.game.theme.NOTE_PADDING_FACTOR
-import com.example.feature.game.theme.NUMBER_PADDING_FACTOR
 import kotlin.math.floor
 import kotlin.math.sqrt
 
 private const val FOCUS_SCALE = 0.92f
 private const val FOCUS_CORNER_RADIUS_FACTOR = 0.15f
 private const val FOCUS_STROKE_WIDTH_FACTOR = 0.1f
+private const val NUMBER_BACKGROUND_CIRCLE_SIZE_FACTOR = 0.8f
+private const val NOTE_PADDING_FACTOR = 0.8f
+private const val NUMBER_PADDING_FACTOR = 0.7f
 
 internal fun DrawScope.drawBoardFrame(
 	color: Color,
@@ -105,7 +106,7 @@ internal fun DrawScope.drawNumber(
 	if (drawState.numberBackgroundColor != Color.Transparent) {
 		drawCircle(
 			color = drawState.numberBackgroundColor,
-			radius = cellSize / 2f * 0.8f,
+			radius = cellSize / 2f * NUMBER_BACKGROUND_CIRCLE_SIZE_FACTOR,
 			center = center,
 		)
 	}
