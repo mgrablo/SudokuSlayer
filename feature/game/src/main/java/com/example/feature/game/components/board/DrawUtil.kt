@@ -2,10 +2,16 @@ package com.example.feature.game.components.board
 
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -14,6 +20,10 @@ import com.example.feature.game.theme.NOTE_PADDING_FACTOR
 import com.example.feature.game.theme.NUMBER_PADDING_FACTOR
 import kotlin.math.floor
 import kotlin.math.sqrt
+
+private const val FOCUS_SCALE = 0.92f
+private const val FOCUS_CORNER_RADIUS_FACTOR = 0.15f
+private const val FOCUS_STROKE_WIDTH_FACTOR = 0.1f
 
 internal fun DrawScope.drawBoardFrame(
 	color: Color,
@@ -146,11 +156,71 @@ internal fun DrawScope.drawNotes(
 	}
 }
 
+internal fun DrawScope.drawFocusedBorderAnimation(
+	cellSize: Float,
+	strokeWidth: Float,
+	cornerRadius: Float,
+	scale: Float = 1f,
+	focusRotationAngle: Float,
+	focusGradientColors: List<Color>,
+) {
+	val brushSize = cellSize * 1.5f
+	val borderSize = cellSize * scale
+	val offsetValue = (cellSize - borderSize) / 2 + (strokeWidth / 2)
+	val offset = Offset(offsetValue, offsetValue)
+
+	val brush = Brush.sweepGradient(
+		colors = focusGradientColors,
+		center = Offset(cellSize / 2, cellSize / 2),
+	)
+	val outerPath = Path().apply {
+		addRoundRect(
+			RoundRect(
+				rect = Rect(
+					offset = offset,
+					size = Size(borderSize - strokeWidth, borderSize - strokeWidth),
+				),
+				cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+			),
+		)
+	}
+	val innerPath = Path().apply {
+		addRoundRect(
+			RoundRect(
+				rect = Rect(
+					offset = Offset(
+						x = offsetValue + strokeWidth / 2,
+						y = offsetValue + strokeWidth / 2,
+					),
+					size = Size(
+						width = borderSize - strokeWidth * 2,
+						height = borderSize - strokeWidth * 2,
+					),
+				),
+				cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+			),
+		)
+	}
+	val clipPath = outerPath.minus(innerPath)
+
+	clipPath(path = clipPath) {
+		rotate(focusRotationAngle, pivot = Offset(cellSize / 2, cellSize / 2)) {
+			drawRect(
+				brush = brush,
+				size = Size(brushSize, brushSize),
+				topLeft = Offset(cellSize / 2 - brushSize / 2, cellSize / 2 - brushSize / 2),
+			)
+		}
+	}
+}
+
 internal fun DrawScope.drawCell(
 	drawState: SudokuCellDrawState,
 	textMeasurer: TextMeasurer,
 	cellSize: Float,
 	gridSize: Int,
+	focusRotationAngle: Float,
+	focusGradientColors: List<Color>,
 ) {
 	drawRect(
 		color = drawState.backgroundColor,
@@ -158,13 +228,28 @@ internal fun DrawScope.drawCell(
 	)
 
 	if (drawState.numberText != null) {
-		drawNumber(drawState = drawState, textMeasurer = textMeasurer, cellSize = cellSize)
+		drawNumber(
+			drawState = drawState,
+			textMeasurer = textMeasurer,
+			cellSize = cellSize,
+		)
 	} else if (drawState.notes.isNotEmpty()) {
 		drawNotes(
 			drawState = drawState,
 			textMeasurer = textMeasurer,
 			cellSize = cellSize,
 			gridSize = gridSize,
+		)
+	}
+
+	if (drawState.focusedColor != null) {
+		drawFocusedBorderAnimation(
+			cellSize = cellSize,
+			scale = FOCUS_SCALE,
+			strokeWidth = cellSize * FOCUS_STROKE_WIDTH_FACTOR,
+			cornerRadius = cellSize * FOCUS_CORNER_RADIUS_FACTOR,
+			focusRotationAngle = focusRotationAngle,
+			focusGradientColors = focusGradientColors,
 		)
 	}
 }

@@ -1,12 +1,16 @@
 package com.example.feature.game.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.example.domain.settings.models.ColorScheme
 import com.example.feature.uicore.theme.Catppuccin
 import com.example.feature.uicore.theme.CatppuccinPalette
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 internal data class SudokuBoardColors(
 	val defaultBackground: Color,
 	val onDefaultBackground: Color,
@@ -23,6 +27,7 @@ internal data class SudokuBoardColors(
 	val onMatchingMarkBackground: Color,
 	val cellBorder: Color,
 	val blockBorder: Color,
+	val focusedGradient: PersistentList<Color>,
 )
 
 internal object BoardColorSchemes {
@@ -47,6 +52,11 @@ internal object BoardColorSchemes {
 		cellBorder = palette.overlay0,
 		blockBorder = palette.overlay2,
 		generatedNumber = palette.subtext0,
+		focusedGradient = persistentListOf(
+			palette.green,
+			palette.lavender,
+			palette.yellow,
+		),
 	)
 }
 

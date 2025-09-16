@@ -1,5 +1,11 @@
 package com.example.feature.game.components.board
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -67,6 +73,17 @@ internal fun SudokuBoard(
 	val cornerRadius = with(LocalDensity.current) { appearence.cornerRadius.toPx() }
 	val numCellsInBlock = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
 
+	val infiniteTransition = rememberInfiniteTransition(label = "FocusedCellBorderAnimation")
+	val rotationAngle by infiniteTransition.animateFloat(
+		initialValue = 0f,
+		targetValue = 360f,
+		animationSpec = infiniteRepeatable(
+			animation = tween(durationMillis = 2000, easing = LinearEasing),
+			repeatMode = RepeatMode.Restart,
+		),
+		label = "FocusedBorderRotation",
+	)
+
 	fun processTap(offset: Offset, lambda: (Int, Int) -> Unit) {
 		if (cellSize == 0f) return
 
@@ -131,6 +148,8 @@ internal fun SudokuBoard(
 								textMeasurer = textMeasurer,
 								cellSize = drawableCellArea,
 								gridSize = sudokuGridSize.toIntSize(),
+								focusRotationAngle = rotationAngle,
+								focusGradientColors = colors.focusedGradient,
 							)
 						}
 					}
@@ -198,6 +217,35 @@ private fun SudokuBoardStatesPreview(
 			SudokuBoard(
 				sudoku = sudokuState.first,
 				focusedCells = persistentSetOf(),
+				onCellClick = { _, _ -> },
+				onCellLongClick = { _, _ -> },
+				modifier = Modifier
+					.weight(1f)
+					.aspectRatio(1f),
+			)
+		}
+	}
+}
+
+@PreviewLightDark
+@Composable
+private fun SudokuBoardFocusedCellPreview() {
+	SudokuGameTheme {
+		Column(
+			horizontalAlignment = Alignment.CenterHorizontally,
+			modifier = Modifier
+				.size(400.dp)
+				.background(
+					MaterialTheme.colorScheme.background,
+				),
+		) {
+			SudokuBoard(
+				sudoku = SudokuGrid(gridSize = 9),
+				focusedCells = persistentSetOf(
+					Pair(0, 0),
+					Pair(0, 1),
+					Pair(0, 2),
+				),
 				onCellClick = { _, _ -> },
 				onCellLongClick = { _, _ -> },
 				modifier = Modifier
