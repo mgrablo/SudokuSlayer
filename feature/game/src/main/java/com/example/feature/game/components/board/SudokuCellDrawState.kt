@@ -9,7 +9,6 @@ import com.example.sudoku.model.SudokuCellData
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
 
-
 @Stable
 internal data class SudokuCellDrawState(
 	val backgroundColor: Color,
@@ -21,7 +20,7 @@ internal data class SudokuCellDrawState(
 )
 
 @Stable
-internal data class NoteDrawState(val index: Int, val text: String, val color: Color)
+internal data class NoteDrawState(val index: Int, val value: Int, val color: Color)
 
 internal fun SudokuCellData.toDrawState(
 	isFocused: Boolean,
@@ -40,7 +39,7 @@ internal fun SudokuCellData.toDrawState(
 	val noteDrawStates = cornerNotes.map {
 		NoteDrawState(
 			index = it - 1,
-			text = it.toString(),
+			value = it,
 			color = colors.onDefaultBackground,
 		)
 	}.toPersistentSet()

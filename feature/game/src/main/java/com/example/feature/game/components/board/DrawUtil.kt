@@ -12,10 +12,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.style.TextAlign
 import kotlin.math.floor
 import kotlin.math.sqrt
 
@@ -23,8 +21,6 @@ private const val FOCUS_SCALE = 0.92f
 private const val FOCUS_CORNER_RADIUS_FACTOR = 0.15f
 private const val FOCUS_STROKE_WIDTH_FACTOR = 0.1f
 private const val NUMBER_BACKGROUND_CIRCLE_SIZE_FACTOR = 0.8f
-private const val NOTE_PADDING_FACTOR = 0.8f
-private const val NUMBER_PADDING_FACTOR = 0.7f
 
 internal fun DrawScope.drawBoardFrame(
 	color: Color,
@@ -89,18 +85,9 @@ private fun getLineOffset(
 
 internal fun DrawScope.drawNumber(
 	drawState: SudokuCellDrawState,
-	textMeasurer: TextMeasurer,
+	textLayoutResult: TextLayoutResult,
 	cellSize: Float,
 ) {
-	val textLayoutResult = textMeasurer.measure(
-		text = drawState.numberText!!,
-		style = TextStyle(
-			color = drawState.numberTextColor,
-			fontSize = (cellSize * NUMBER_PADDING_FACTOR).toSp(),
-			textAlign = TextAlign.Center,
-		),
-	)
-
 	val center = Offset(cellSize / 2, cellSize / 2)
 
 	if (drawState.numberBackgroundColor != Color.Transparent) {
@@ -113,6 +100,7 @@ internal fun DrawScope.drawNumber(
 
 	drawText(
 		textLayoutResult = textLayoutResult,
+		color = drawState.numberTextColor,
 		topLeft = Offset(
 			x = center.x - textLayoutResult.size.width / 2,
 			y = center.y - textLayoutResult.size.height / 2,
@@ -122,30 +110,21 @@ internal fun DrawScope.drawNumber(
 
 internal fun DrawScope.drawNotes(
 	drawState: SudokuCellDrawState,
-	textMeasurer: TextMeasurer,
+	textLayoutResults: Map<Int, TextLayoutResult>,
 	cellSize: Float,
 	gridSize: Int,
 ) {
 	val subgridSize = floor(sqrt(gridSize.toFloat())).toInt()
 	val noteSlotSize = cellSize / subgridSize
-	val noteFontSizeInSp = (noteSlotSize * NOTE_PADDING_FACTOR).toSp()
 
 	drawState.notes.forEach { note ->
 		val row = note.index / subgridSize
 		val column = note.index % subgridSize
+		val textLayoutResult = textLayoutResults[note.value] ?: return@forEach
 
 		val center = Offset(
 			x = column * noteSlotSize + (noteSlotSize / 2),
 			y = row * noteSlotSize + (noteSlotSize / 2),
-		)
-
-		val textLayoutResult = textMeasurer.measure(
-			text = note.text,
-			style = TextStyle(
-				color = note.color,
-				fontSize = noteFontSizeInSp,
-				textAlign = TextAlign.Center,
-			),
 		)
 
 		val topLeft = Offset(
@@ -153,7 +132,11 @@ internal fun DrawScope.drawNotes(
 			y = center.y - textLayoutResult.size.height / 2,
 		)
 
-		drawText(textLayoutResult, topLeft = topLeft)
+		drawText(
+			textLayoutResult = textLayoutResult,
+			color = note.color,
+			topLeft = topLeft,
+		)
 	}
 }
 
@@ -217,7 +200,8 @@ internal fun DrawScope.drawFocusedBorderAnimation(
 
 internal fun DrawScope.drawCell(
 	drawState: SudokuCellDrawState,
-	textMeasurer: TextMeasurer,
+	numberTextLayoutResult: TextLayoutResult?,
+	noteTextLayoutResults: Map<Int, TextLayoutResult>,
 	cellSize: Float,
 	gridSize: Int,
 	focusRotationAngle: Float,
@@ -228,16 +212,16 @@ internal fun DrawScope.drawCell(
 		size = Size(cellSize, cellSize),
 	)
 
-	if (drawState.numberText != null) {
+	if (drawState.numberText != null && numberTextLayoutResult != null) {
 		drawNumber(
 			drawState = drawState,
-			textMeasurer = textMeasurer,
+			textLayoutResult = numberTextLayoutResult,
 			cellSize = cellSize,
 		)
 	} else if (drawState.notes.isNotEmpty()) {
 		drawNotes(
 			drawState = drawState,
-			textMeasurer = textMeasurer,
+			textLayoutResults = noteTextLayoutResults,
 			cellSize = cellSize,
 			gridSize = gridSize,
 		)

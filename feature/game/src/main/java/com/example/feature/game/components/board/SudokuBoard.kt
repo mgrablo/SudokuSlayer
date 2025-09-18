@@ -32,7 +32,9 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -49,6 +51,9 @@ import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt
 
+private const val NOTE_PADDING_FACTOR = 0.8f
+private const val NUMBER_PADDING_FACTOR = 0.7f
+
 @Composable
 internal fun SudokuBoard(
 	sudoku: SudokuGrid,
@@ -56,10 +61,10 @@ internal fun SudokuBoard(
 	onCellClick: (Int, Int) -> Unit,
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
-	appearence: SudokuBoardAppearance = LocalSudokuBoardAppearance.current,
+	appearance: SudokuBoardAppearance = LocalSudokuBoardAppearance.current,
 ) {
 	val isDarkTheme = LocalAppColorScheme.current.isDark
-	val colors = appearence.colors
+	val colors = appearance.colors
 	val textMeasurer = rememberTextMeasurer()
 	val sudokuGridSize = remember(sudoku.gridSize) { SudokuGridSize.fromIntSize(sudoku.gridSize) }
 
@@ -67,9 +72,9 @@ internal fun SudokuBoard(
 	var cellSize by remember(sudokuGridSize) { mutableFloatStateOf(0f) }
 	var drawableCellArea by remember { mutableFloatStateOf(0f) }
 
-	val thickLineWidth = with(LocalDensity.current) { appearence.thickLineWidth.toPx() }
-	val thinLineWidth = with(LocalDensity.current) { appearence.thinLineWidth.toPx() }
-	val cornerRadius = with(LocalDensity.current) { appearence.cornerRadius.toPx() }
+	val thickLineWidth = with(LocalDensity.current) { appearance.thickLineWidth.toPx() }
+	val thinLineWidth = with(LocalDensity.current) { appearance.thinLineWidth.toPx() }
+	val cornerRadius = with(LocalDensity.current) { appearance.cornerRadius.toPx() }
 	val numCellsInBlock = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
 
 	val infiniteTransition = rememberInfiniteTransition(label = "FocusedCellBorderAnimation")
@@ -124,6 +129,29 @@ internal fun SudokuBoard(
 					)
 				}
 
+				val numberFontSize = (drawableCellArea * NUMBER_PADDING_FACTOR).toSp()
+				val numberTextLayouts = (1..sudoku.gridSize).associateWith { number ->
+					textMeasurer.measure(
+						text = number.toString(),
+						style = TextStyle(
+							fontSize = numberFontSize,
+							textAlign = TextAlign.Center,
+						),
+					)
+				}
+
+				val blockCellCount = floor(sqrt(sudoku.gridSize.toFloat())).toInt()
+				val noteFontSize = (drawableCellArea / blockCellCount * NOTE_PADDING_FACTOR).toSp()
+				val noteTextLayouts = (1..sudoku.gridSize).associateWith { number ->
+					textMeasurer.measure(
+						text = number.toString(),
+						style = TextStyle(
+							fontSize = noteFontSize,
+							textAlign = TextAlign.Center,
+						),
+					)
+				}
+
 				onDrawBehind {
 					clipPath(clipPath) {
 						sudoku.getArray().forEach { cellData ->
@@ -143,7 +171,8 @@ internal fun SudokuBoard(
 							translate(left = cellTopLeft.x, top = cellTopLeft.y) {
 								drawCell(
 									drawState = drawState,
-									textMeasurer = textMeasurer,
+									numberTextLayoutResult = numberTextLayouts[cellData.number],
+									noteTextLayoutResults = noteTextLayouts,
 									cellSize = drawableCellArea,
 									gridSize = sudokuGridSize.toIntSize(),
 									focusRotationAngle = rotationAngle,
