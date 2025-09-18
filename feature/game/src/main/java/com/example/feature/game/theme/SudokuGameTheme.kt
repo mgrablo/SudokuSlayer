@@ -9,12 +9,12 @@ import com.example.feature.uicore.theme.SudokuSlayerTheme
 fun SudokuGameTheme(useSudokuSlayerTheme: Boolean = true, content: @Composable () -> Unit) {
 	val themeContent = @Composable {
 		val colorScheme = LocalAppColorScheme.current
-		val boardColors = rememberBoardColors(colorScheme)
+		val boardAppearance = rememberBoardAppearance(colorScheme)
 		val keypadColors = rememberKeypadColors(colorScheme)
 		val hintLogsColors = rememberHintLogsColors(colorScheme)
 
 		CompositionLocalProvider(
-			LocalSudokuBoardColors provides boardColors,
+			LocalSudokuBoardAppearance provides boardAppearance,
 			LocalKeyPadColors provides keypadColors,
 			LocalHintLogsColors provides hintLogsColors,
 		) {

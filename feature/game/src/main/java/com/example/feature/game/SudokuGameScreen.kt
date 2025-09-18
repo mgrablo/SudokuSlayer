@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -40,8 +41,8 @@ import com.example.feature.game.components.HintsDialog
 import com.example.feature.game.components.KeyPad
 import com.example.feature.game.components.PostGameActions
 import com.example.feature.game.components.ResetDialog
-import com.example.feature.game.components.SudokuBoard
 import com.example.feature.game.components.VictoryDialog
+import com.example.feature.game.components.board.SudokuBoard
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.theme.SudokuGameTheme
@@ -223,7 +224,7 @@ private fun SudokuGameScreenContent(
 						focusedCells = uiState.focusedCells,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
-						modifier = Modifier.weight(1f),
+						modifier = Modifier.weight(1f).aspectRatio(1f),
 					)
 					AnimatedContent(
 						targetState = uiState.gameState,
@@ -276,7 +277,7 @@ private fun SudokuGameScreenContent(
 						focusedCells = uiState.focusedCells,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
-						modifier = Modifier.weight(1f),
+						modifier = Modifier.weight(1f).aspectRatio(1f),
 					)
 					AnimatedContent(
 						targetState = uiState.gameState,

@@ -64,7 +64,7 @@ internal fun KeyPad(
 			onRedoClick = onRedoClick,
 		)
 
-	val itemsInRow = remember {
+	val itemsInRow = remember(gridSize) {
 		if (gridSize >
 			4
 		) {
@@ -73,7 +73,7 @@ internal fun KeyPad(
 			gridSize + 1
 		}
 	}
-	val itemsInColumn = remember { itemsInRow + 1 }
+	val itemsInColumn = remember(gridSize) { itemsInRow + 1 }
 
 	BoxWithConstraints(
 		contentAlignment = Alignment.Center,

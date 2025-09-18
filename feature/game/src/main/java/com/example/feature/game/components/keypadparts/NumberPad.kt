@@ -32,7 +32,7 @@ internal fun NumberPad(
 	modifier: Modifier = Modifier,
 	itemSize: Dp = 48.dp,
 ) {
-	val numbers by remember { derivedStateOf { (1..gridSize).toList() } }
+	val numbers by remember(gridSize) { derivedStateOf { (1..gridSize).toList() } }
 	val keyboardRows = numbers.chunked(
 		if (numbers.size >
 			4
