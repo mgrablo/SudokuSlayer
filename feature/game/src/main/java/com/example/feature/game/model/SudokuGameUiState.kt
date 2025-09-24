@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentSetOf
 
 internal data class SudokuGameUiState(
 	val selectedCell: Pair<Int, Int>? = null,
-	val gameState: GameState = GameState.PLAYING,
+	val gameState: GameState = GameState.LOADING,
 	val isInNoteMode: Boolean = false,
 	val lastHint: Hint? = null,
 	val focusedCells: PersistentSet<Pair<Int, Int>> = persistentSetOf(),

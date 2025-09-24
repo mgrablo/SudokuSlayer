@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -124,28 +124,7 @@ internal class SudokuGameViewModel(
 
 	init {
 		observeSettings()
-		viewModelScope.launch {
-			_uiState.update {
-				it.copy(
-					gameState = GameState.LOADING,
-				)
-			}
-			loadGame()
-			val loadedGame = game.first()
-			_uiState.update {
-				it.copy(
-					gameState = if (loadedGame.completed) GameState.VICTORY else GameState.PLAYING,
-					isNewBestTime = if (loadedGame.completed) {
-						it.currentBestTime == null || it.currentBestTime >= loadedGame.elapsedTime
-					} else {
-						it.isNewBestTime
-					},
-				)
-			}
-			if (_uiState.value.gameState == GameState.PLAYING) {
-				elapsedTimerManager.startTracking()
-			}
-		}
+		observeGameState()
 	}
 
 	override fun onCleared() {
@@ -243,6 +222,7 @@ internal class SudokuGameViewModel(
 					elapsedTimerManager.startTracking()
 				}
 			}
+
 			is Event.DismissSnackbar -> {
 				_uiState.update {
 					it.copy(
@@ -267,27 +247,37 @@ internal class SudokuGameViewModel(
 		}
 	}
 
-	private suspend fun loadGame() {
-		game.value.hintLogs.lastOrNull()?.let { log ->
-			if (!log.isRevealed) {
-				_uiState.update {
-					it.copy(
-						lastHint = log.hint,
+	private fun observeGameState() {
+		viewModelScope.launch {
+			game.distinctUntilChangedBy(Game::toStateKey)
+				.collect { g ->
+					val bestTime = getBestTimeUseCase(
+						g.difficulty,
+						SudokuGridSize.fromIntSize(g.grid.gridSize),
 					)
+					val lastHint = g.hintLogs.lastOrNull()?.takeIf { !it.isRevealed }?.hint
+
+					_uiState.update { state ->
+						val isNewBest = if (g.completed) {
+							bestTime == null || bestTime >= g.elapsedTime
+						} else {
+							state.isNewBestTime
+						}
+
+						state.copy(
+							gameState = if (g.completed) GameState.VICTORY else GameState.PLAYING,
+							currentBestTime = bestTime,
+							isNewBestTime = isNewBest,
+							lastHint = lastHint,
+						)
+					}
+
+					if (g.completed) {
+						elapsedTimerManager.stopTracking()
+					} else {
+						elapsedTimerManager.startTracking()
+					}
 				}
-			}
-		}
-		getBestTimeUseCase(
-			game.value.difficulty,
-			SudokuGridSize.fromIntSize(
-				game.value.grid.gridSize,
-			),
-		)?.let { bestTime ->
-			_uiState.update {
-				it.copy(
-					currentBestTime = bestTime,
-				)
-			}
 		}
 	}
 
@@ -628,3 +618,9 @@ private fun calculateRemainingCounts(sudokuGrid: SudokuGrid): Map<Int, Int> {
 	}
 	return remainingDigitCounts
 }
+
+private fun Game.toStateKey() = Triple(
+	completed,
+	Pair(difficulty, grid.gridSize),
+	hintLogs.lastOrNull(),
+)
