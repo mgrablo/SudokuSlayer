@@ -326,18 +326,18 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (uiState.value.gameState == GameState.VICTORY) return@launch
 			val (row, col) = selectedCell ?: return@launch
-			val (updatedGrid, changes) = gameManagementUseCases.calculateGridChanges(
-				initialGrid = game.value.grid,
-				row = row,
-				column = col,
-				number = number,
-				isNote = isNote,
-				isHint = isHint,
-			)
-			recordUndoOperation(changes)
-			val updatedLogs = handleHintGuess(row, col, number)
-			updateGame {
-				it.copy(
+			updateGame { currentGame ->
+				val (updatedGrid, changes) = gameManagementUseCases.calculateGridChanges(
+					initialGrid = currentGame.grid,
+					row = row,
+					column = col,
+					number = number,
+					isNote = isNote,
+					isHint = isHint,
+				)
+				recordUndoOperation(changes)
+				val updatedLogs = handleHintGuess(row, col, number)
+				currentGame.copy(
 					grid = updatedGrid,
 					hintLogs = updatedLogs.toPersistentList(),
 				)
@@ -403,6 +403,7 @@ internal class SudokuGameViewModel(
 					it.copy(
 						gameState = GameState.VICTORY,
 						isNewBestTime = it.currentBestTime == null || it.currentBestTime >= elapsedTime.value,
+						focusedCells = persistentSetOf(),
 					)
 				}
 				elapsedTimerManager.stopTracking()
@@ -467,27 +468,34 @@ internal class SudokuGameViewModel(
 			game.value.hintLogs.lastOrNull()?.isRevealed?.let { if (!it) return@launch }
 
 			val hint: Hint? = hintUseCases.provideHint(game.value)
-			if (hint != null) {
-				val grid = game.value.grid
-				selectCell(hint.row, hint.col)
-				hintFocus(hint)
-				val hintLog =
-					hintUseCases.generateLog(
-						id = game.value.hintLogs.size,
-						hint = hint,
+			updateGame { currentGame ->
+				if (hint != null) {
+					val grid = gameManagementUseCases.selectCell(
+						sudoku = currentGame.grid,
+						selectedCell = hint.row to hint.col,
+					)
+					hintFocus(hint)
+					val hintLog =
+						hintUseCases.generateLog(
+							id = game.value.hintLogs.size,
+							hint = hint,
+							grid = grid,
+							stringProvider = stringProvider,
+						)
+
+					_uiState.update {
+						it.copy(
+							lastHint = hint,
+						)
+					}
+
+					currentGame.copy(
 						grid = grid,
-						stringProvider = stringProvider,
+						hintLogs = currentGame.hintLogs + hintLog,
+						hintsUsed = currentGame.hintsUsed + 1,
 					)
-				updateGame {
-					it.copy(
-						hintLogs = it.hintLogs + hintLog,
-						hintsUsed = it.hintsUsed + 1,
-					)
-				}
-				_uiState.update {
-					it.copy(
-						lastHint = hint,
-					)
+				} else {
+					currentGame
 				}
 			}
 		}
@@ -537,11 +545,10 @@ internal class SudokuGameViewModel(
 				return@launch
 			}
 			selectCell(hint.row, hint.col)
-
-			val updatedSudoku = hintUseCases.revealOnGrid(hint, game.value.grid)
-			val updatedLogs = hintUseCases.revealLastLog(game.value.hintLogs)
-
 			updateGame {
+				val updatedSudoku = hintUseCases.revealOnGrid(hint, game.value.grid)
+				val updatedLogs = hintUseCases.revealLastLog(game.value.hintLogs)
+
 				it.copy(
 					grid = updatedSudoku,
 					hintLogs = updatedLogs,
@@ -591,15 +598,17 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			val mistakesToShow = _uiState.value.foundMistakes
 			if (mistakesToShow.isEmpty()) return@launch
-			var updatedGrid = game.value.grid
-			for ((row, col) in mistakesToShow) {
-				updatedGrid = updatedGrid.updateCell(row, col) {
-					it.copy(
-						attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
-					)
+			updateGame { currentGame ->
+				var updatedGrid = currentGame.grid
+				for ((row, col) in mistakesToShow) {
+					updatedGrid = updatedGrid.updateCell(row, col) {
+						it.copy(
+							attributes = it.attributes + CellAttributes.SOLUTION_CONFLICT,
+						)
+					}
 				}
+				currentGame.copy(grid = updatedGrid)
 			}
-			updateGame { it.copy(grid = updatedGrid) }
 			_uiState.update {
 				it.copy(
 					foundMistakes = persistentListOf(),
