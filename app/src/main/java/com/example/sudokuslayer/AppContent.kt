@@ -25,9 +25,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.example.domain.settings.models.ColorScheme
 import com.example.domain.settings.models.DarkMode
 import com.example.feature.creator.PuzzlePreset
@@ -40,7 +39,6 @@ import com.example.feature.settings.settingsEntry
 import com.example.feature.statistics.Insights
 import com.example.feature.statistics.insightsEntry
 import com.example.feature.uicore.components.SudokuNavigationRail
-import com.example.feature.uicore.navigation.Destination
 import com.example.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -64,7 +62,7 @@ class MyApplication : Application() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
-	val backstack = rememberNavBackStack<Destination>(SudokuCreator())
+	val backstack = rememberNavBackStack(SudokuCreator())
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
 	)
@@ -126,8 +124,7 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 				),
 			backStack = backstack,
 			entryDecorators = listOf(
-				rememberSceneSetupNavEntryDecorator(),
-				rememberSavedStateNavEntryDecorator(),
+				rememberSaveableStateHolderNavEntryDecorator(),
 				rememberViewModelStoreNavEntryDecorator(),
 			),
 			entryProvider = entryProvider {

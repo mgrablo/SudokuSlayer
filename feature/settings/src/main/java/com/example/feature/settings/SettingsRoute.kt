@@ -4,9 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
 import com.example.sudokuslayer.feature.settings.R
@@ -20,7 +19,7 @@ data object Settings : Destination {
 	override val icon: AppIcon = AppIcon.VectorIcon(Icons.Default.Settings)
 }
 
-fun EntryProviderBuilder<NavKey>.settingsEntry(openDrawer: () -> Unit) {
+fun EntryProviderScope<NavKey>.settingsEntry(openDrawer: () -> Unit) {
 	entry<Settings> {
 		val viewModel = koinViewModel<SettingsViewModel>()
 		SettingsScreen(

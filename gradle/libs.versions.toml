@@ -1,24 +1,24 @@
 [versions]
 
 # Android
-agp = "8.11.1"
+kotlin = "2.2.20"
+agp = "8.13.0"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "35"
 
-kotlin = "2.2.0"
-coreKtx = "1.16.0"
-lifecycleRuntimeKtx = "2.9.2"
-composeBom = "2025.07.01"
+coreKtx = "1.17.0"
+lifecycleRuntimeKtx = "2.9.4"
+composeBom = "2025.10.00"
 annotations = "1.9.1"
-activityCompose = "1.10.1"
-nav3core = "1.0.0-alpha06"
+activityCompose = "1.11.0"
+nav3core = "1.0.0-alpha11"
 lifecycleViewmodelNav3 = "1.0.0-alpha04"
 
-composeUnstyled = "1.36.0"
-reorderable = "2.5.1"
-graphics-shapes = "1.1.0-alpha01"
-confettikit = "0.5.0"
+composeUnstyled = "1.45.0"
+reorderable = "3.0.0"
+graphics-shapes = "1.1.0-rc01"
+confettikit = "0.6.0"
 
 # Kotlinx
 kotlinxImmutableCollections = "0.4.0"

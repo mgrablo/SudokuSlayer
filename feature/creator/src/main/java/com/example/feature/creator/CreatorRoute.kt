@@ -4,9 +4,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.uicore.navigation.AppIcon
@@ -23,7 +22,7 @@ data class SudokuCreator(val args: PuzzlePreset? = null) : Destination {
 	override val icon: AppIcon = AppIcon.VectorIcon(Icons.Default.Add)
 }
 
-fun EntryProviderBuilder<NavKey>.sudokuCreatorEntry(
+fun EntryProviderScope<NavKey>.sudokuCreatorEntry(
 	navigateToGameScreen: () -> Unit,
 	openDrawer: () -> Unit,
 ) {
