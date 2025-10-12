@@ -3,7 +3,7 @@ plugins {
 }
 
 ktlint {
-	version = "1.5.0"
+	version = "1.7.1"
 	ignoreFailures = false
 	android = false
 	filter {

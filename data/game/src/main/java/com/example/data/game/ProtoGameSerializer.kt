@@ -9,7 +9,7 @@ class ProtoGameSerializer : Serializer<ProtoGame> {
 		get() =
 			ProtoGame.getDefaultInstance()
 
-	override suspend fun serialize(data: ProtoGame): ByteArray = data.toByteArray()
+	override suspend fun serialize(value: ProtoGame): ByteArray = value.toByteArray()
 
 	override suspend fun deserialize(data: ByteArray): ProtoGame = try {
 		ProtoGame.parseFrom(data)

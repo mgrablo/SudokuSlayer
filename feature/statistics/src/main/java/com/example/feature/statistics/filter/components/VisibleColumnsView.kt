@@ -29,13 +29,15 @@ internal fun VisibleColumnsView(
 		},
 	) { index, item, isDragging ->
 		key(item.column) {
-			GenericFilterChip(
-				isSelected = item.visible,
-				isDraggable = true,
-				label = item.column.getDisplayText(),
-				onClick = { toggleVisibility(item.column) },
-				modifier = Modifier.fillMaxWidth().draggableHandle(),
-			)
+			ReorderableItem {
+				GenericFilterChip(
+					isSelected = item.visible,
+					isDraggable = true,
+					label = item.column.getDisplayText(),
+					onClick = { toggleVisibility(item.column) },
+					modifier = Modifier.fillMaxWidth().draggableHandle(),
+				)
+			}
 		}
 	}
 }

@@ -3,9 +3,8 @@ package com.example.feature.statistics
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
 import com.example.feature.statistics.insights.InsightsScreen
@@ -23,7 +22,7 @@ data object Insights : Destination {
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderBuilder<NavKey>.insightsEntry(
+fun EntryProviderScope<NavKey>.insightsEntry(
 	openDrawer: () -> Unit,
 	onNavigateToGameScreen: () -> Unit,
 	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,

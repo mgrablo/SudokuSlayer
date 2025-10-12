@@ -54,9 +54,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock.System
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 internal class SudokuGameViewModel(
 	private val application: Application,
@@ -79,7 +80,7 @@ internal class SudokuGameViewModel(
 	)
 	private val updateGameMutex = Mutex()
 
-	private val _uiState = MutableStateFlow<SudokuGameUiState>(SudokuGameUiState())
+	private val _uiState = MutableStateFlow(SudokuGameUiState())
 	val uiState: StateFlow<SudokuGameUiState> = _uiState
 	private var hintFocusJob: Job? = null
 
@@ -389,6 +390,7 @@ internal class SudokuGameViewModel(
 		}
 	}
 
+	@OptIn(ExperimentalTime::class)
 	private fun handleAllCellsFilled() {
 		viewModelScope.launch {
 			game.value?.let { currentGame ->
@@ -412,7 +414,7 @@ internal class SudokuGameViewModel(
 							difficulty = currentGame.difficulty,
 							gridSize = gridSize,
 							hintsUsed = currentGame.hintsUsed,
-							completionDate = System.now().toLocalDateTime(
+							completionDate = Clock.System.now().toLocalDateTime(
 								TimeZone.currentSystemDefault(),
 							),
 							seed = currentGame.grid.seed,

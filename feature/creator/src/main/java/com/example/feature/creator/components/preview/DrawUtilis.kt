@@ -127,7 +127,7 @@ internal fun DrawScope.drawCellIllumination(
 						color = color,
 						alpha = alpha,
 						topLeft = Offset(x = col * cellSize, y = row * cellSize),
-						size = Size(cellSize, cellSize)
+						size = Size(cellSize, cellSize),
 					)
 				}
 			}

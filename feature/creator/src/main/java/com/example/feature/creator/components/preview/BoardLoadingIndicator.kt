@@ -33,7 +33,7 @@ internal fun BoardLoadingIndicator(
 	animationSpec: InfiniteRepeatableSpec<Float> = infiniteRepeatable(
 		animation = tween(1800, easing = LinearEasing),
 		repeatMode = RepeatMode.Restart,
-	)
+	),
 ) {
 	val infiniteTransition = rememberInfiniteTransition(label = "game_creation_transition")
 	val waveWidth = 4f
@@ -97,7 +97,7 @@ private fun BoardLoadingIndicatorPreview() {
 	SudokuCreatorTheme {
 		BoardLoadingIndicator(
 			gridSize = SudokuGridSize.NINE,
-			modifier = Modifier.size(200.dp)
+			modifier = Modifier.size(200.dp),
 		)
 	}
 }

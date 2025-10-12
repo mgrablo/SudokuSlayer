@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -105,14 +105,13 @@ internal fun <T> SettingDropDownMenu(
 					trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
 					modifier =
 					Modifier
-						.menuAnchor(type = MenuAnchorType.PrimaryNotEditable)
+						.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
 						.width(200.dp),
 				)
 
 				ExposedDropdownMenu(
 					expanded = isExpanded,
 					onDismissRequest = { onExpandedChange(false) },
-					containerColor = MaterialTheme.colorScheme.surface,
 				) {
 					options.forEach { option ->
 						DropdownMenuItem(
