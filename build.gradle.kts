@@ -9,6 +9,15 @@ plugins {
 	alias(libs.plugins.android.library) apply false
 	alias(libs.plugins.ktlint) apply false
 }
+
+allprojects {
+	afterEvaluate {
+		extensions.findByType(JavaPluginExtension::class)?.toolchain {
+			languageVersion.set(JavaLanguageVersion.of(17))
+		}
+	}
+}
+
 subprojects {
 	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
 		compilerOptions {

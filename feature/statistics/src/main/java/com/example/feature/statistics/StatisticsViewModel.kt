@@ -28,12 +28,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 internal data class FilterUiState(
 	val isSolveTimeRangeEnabled: Boolean = false,
@@ -167,7 +168,6 @@ internal class StatisticsViewModel(
 			is StatisticsEvent.PlayFirstGame -> handlePlayFirstGame()
 		}
 	}
-
 
 	private fun loadInitialData() {
 		viewModelScope.launch {
@@ -469,6 +469,7 @@ fun <T> PersistentList<T>.moveItem(fromIndex: Int, toIndex: Int): PersistentList
 	}.toPersistentList()
 }
 
+@OptIn(ExperimentalTime::class)
 internal fun LocalDateTime.toLong(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {
 	val instant = this.toInstant(timeZone)
 	return instant.toEpochMilliseconds()
@@ -482,6 +483,7 @@ internal fun LocalDateTime.atEndOfDay(
 	second = 59,
 )
 
+@OptIn(ExperimentalTime::class)
 internal fun Long.toLocalDateTime(
 	timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ): LocalDateTime {
