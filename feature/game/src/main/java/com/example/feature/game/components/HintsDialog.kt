@@ -48,8 +48,9 @@ internal fun HintsDialog(
 ) {
 	val buttons =
 		listOf(
-			HintDialogButton(
-				stringResource(R.string.hint_cell), onHintClick, { Icon(Icons.Default.Face, null) }),
+			HintDialogButton(stringResource(R.string.hint_cell), onHintClick, {
+				Icon(Icons.Default.Face, null)
+			}),
 			HintDialogButton(
 				stringResource(R.string.show_hint_logs),
 				onShowLogsClick,
