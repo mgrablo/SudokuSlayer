@@ -206,25 +206,28 @@ internal fun DrawScope.drawCell(
 	gridSize: Int,
 	focusRotationAngle: Float,
 	focusGradientColors: List<Color>,
+	shouldDrawContent: Boolean = true,
 ) {
 	drawRect(
 		color = drawState.backgroundColor,
 		size = Size(cellSize, cellSize),
 	)
 
-	if (drawState.numberText != null && numberTextLayoutResult != null) {
-		drawNumber(
-			drawState = drawState,
-			textLayoutResult = numberTextLayoutResult,
-			cellSize = cellSize,
-		)
-	} else if (drawState.notes.isNotEmpty()) {
-		drawNotes(
-			drawState = drawState,
-			textLayoutResults = noteTextLayoutResults,
-			cellSize = cellSize,
-			gridSize = gridSize,
-		)
+	if (shouldDrawContent) {
+		if (drawState.numberText != null && numberTextLayoutResult != null) {
+			drawNumber(
+				drawState = drawState,
+				textLayoutResult = numberTextLayoutResult,
+				cellSize = cellSize,
+			)
+		} else if (drawState.notes.isNotEmpty()) {
+			drawNotes(
+				drawState = drawState,
+				textLayoutResults = noteTextLayoutResults,
+				cellSize = cellSize,
+				gridSize = gridSize,
+			)
+		}
 	}
 
 	if (drawState.focusedColor != null) {

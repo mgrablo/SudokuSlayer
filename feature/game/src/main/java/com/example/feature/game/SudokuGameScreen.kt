@@ -239,6 +239,7 @@ private fun SudokuGameScreenContent(
 						focusedCells = uiState.focusedCells,
 						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
 						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
+						animateInitialReveal = uiState.gameState == GameState.PLAYING,
 						modifier = Modifier
 							.weight(1f)
 							.aspectRatio(1f),
