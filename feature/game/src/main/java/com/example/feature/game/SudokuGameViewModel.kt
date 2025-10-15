@@ -60,6 +60,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 internal class SudokuGameViewModel(
+	private val sudokuGridSize: SudokuGridSize,
 	private val application: Application,
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
@@ -115,6 +116,11 @@ internal class SudokuGameViewModel(
 	}
 
 	init {
+		_uiState.update {
+			it.copy(
+				sudokuGridSize = this.sudokuGridSize,
+			)
+		}
 		observeSettings()
 		observeGameState()
 	}

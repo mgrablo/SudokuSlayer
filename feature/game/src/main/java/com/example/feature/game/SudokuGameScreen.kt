@@ -173,7 +173,7 @@ private fun SudokuGameScreenContent(
 						modifier = Modifier.fillMaxSize(),
 					) {
 						BoardLoadingIndicator(
-							gridSize = 9,
+							sudokuGridSize = uiState.sudokuGridSize,
 							modifier = Modifier
 								.aspectRatio(1f)
 								.sharedElement(

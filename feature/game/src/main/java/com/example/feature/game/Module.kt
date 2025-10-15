@@ -8,8 +8,9 @@ import org.koin.dsl.module
 val gameModule =
 	module {
 		includes(domainGameModule)
-		viewModel {
+		viewModel { parameters ->
 			SudokuGameViewModel(
+				sudokuGridSize = parameters.get(),
 				application = androidApplication(),
 				settingsRepository = get(),
 				gameManagementUseCases = get(),

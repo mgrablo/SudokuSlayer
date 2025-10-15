@@ -87,7 +87,7 @@ private val PreviewBoxSize = 200.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SudokuCreatorScreen(
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
@@ -115,7 +115,7 @@ private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
@@ -130,7 +130,7 @@ private fun SudokuCreatorContent(
 					it.savedGame != null && it.loadingState != ScreenState.LOADING
 				}.flowWithLifecycle(lifecycle).collect {
 					gameCreationInProgress = false
-					currentNavigateToGameScreen()
+					currentNavigateToGameScreen(uiState.selectedGridSize)
 				}
 		}
 	}

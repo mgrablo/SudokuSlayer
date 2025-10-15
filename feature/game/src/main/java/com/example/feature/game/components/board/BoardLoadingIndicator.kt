@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.game.theme.LocalSudokuBoardAppearance
 import com.example.feature.game.theme.SudokuBoardAppearance
 import com.example.feature.game.theme.SudokuGameTheme
@@ -21,10 +22,11 @@ import kotlin.math.sqrt
 
 @Composable
 internal fun BoardLoadingIndicator(
-	gridSize: Int,
+	sudokuGridSize: SudokuGridSize,
 	modifier: Modifier = Modifier,
 	boardAppearance: SudokuBoardAppearance = LocalSudokuBoardAppearance.current,
 ) {
+	val gridSize = remember(sudokuGridSize) { sudokuGridSize.toIntSize() }
 	val numCellsInBlock = remember(gridSize) { sqrt(gridSize.toDouble()).toInt() }
 	Box(
 		modifier = modifier.drawWithCache {
@@ -81,6 +83,6 @@ internal fun BoardLoadingIndicator(
 @Composable
 private fun BoardLoadingIndicatorPreview() {
 	SudokuGameTheme {
-		BoardLoadingIndicator(gridSize = 9, modifier = Modifier.aspectRatio(1f))
+		BoardLoadingIndicator(sudokuGridSize = SudokuGridSize.NINE, modifier = Modifier.aspectRatio(1f))
 	}
 }

@@ -75,7 +75,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun InsightsScreen(
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
@@ -129,7 +129,7 @@ private fun InsightsScreenContent(
 	activeFilterCount: Int,
 	onEvent: (StatisticsEvent) -> Unit,
 	openDrawer: () -> Unit,
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 	onCopySeedClick: (Long) -> Unit,
 	modifier: Modifier = Modifier,
@@ -152,7 +152,7 @@ private fun InsightsScreenContent(
 					it.isGameCreated
 				}.flowWithLifecycle(lifecycle).collect {
 					gameCreationInProgress = false
-					currentNavigateToGameScreen()
+					currentNavigateToGameScreen(SudokuGridSize.NINE)
 				}
 		}
 	}

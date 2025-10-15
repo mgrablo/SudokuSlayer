@@ -23,7 +23,7 @@ data class SudokuCreator(val args: PuzzlePreset? = null) : Destination {
 }
 
 fun EntryProviderScope<NavKey>.sudokuCreatorEntry(
-	navigateToGameScreen: () -> Unit,
+	navigateToGameScreen: (SudokuGridSize) -> Unit,
 	openDrawer: () -> Unit,
 ) {
 	entry<SudokuCreator> {
