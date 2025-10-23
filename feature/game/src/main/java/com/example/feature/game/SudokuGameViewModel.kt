@@ -266,6 +266,7 @@ internal class SudokuGameViewModel(
 							state.isNewBestTime
 						}
 
+						delay(1100)
 						state.copy(
 							gameState = if (g.completed) GameState.VICTORY else GameState.PLAYING,
 							currentBestTime = bestTime,

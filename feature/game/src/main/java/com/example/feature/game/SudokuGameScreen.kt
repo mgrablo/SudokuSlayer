@@ -3,15 +3,20 @@ package com.example.feature.game
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -24,10 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -43,16 +50,19 @@ import com.example.feature.game.components.KeyPad
 import com.example.feature.game.components.PostGameActions
 import com.example.feature.game.components.ResetDialog
 import com.example.feature.game.components.VictoryDialog
-import com.example.feature.game.components.board.BoardLoadingIndicator
+import com.example.feature.game.components.board.BreathingBoardLoadingIndicator
 import com.example.feature.game.components.board.SudokuBoard
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
 import com.example.feature.game.theme.GameSharedElementKey
 import com.example.feature.game.theme.SudokuGameTheme
+import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSharedTransitionScope
+import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SharedElementKey
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -116,8 +126,8 @@ private fun SudokuGameScreenContent(
 	val isPortrait = containerSize.height > containerSize.width
 
 	val scope = rememberCoroutineScope()
-	var resetDialogState by remember { mutableStateOf(false) }
-	var hintsDialogState by remember { mutableStateOf(false) }
+	var resetDialogVisible by remember { mutableStateOf(false) }
+	var hintsDialogVisible by remember { mutableStateOf(false) }
 	val victoryDialogState = rememberDialogState(false)
 
 	val scaffoldState =
@@ -166,17 +176,29 @@ private fun SudokuGameScreenContent(
 
 			AnimatedContent(
 				targetState = uiState.gameState == GameState.LOADING || game == null,
+				modifier = Modifier.padding(innerPadding),
 			) { loading ->
 				if (loading) {
-					Box(
-						contentAlignment = Alignment.Center,
-						modifier = Modifier.fillMaxSize(),
+					Column(
+						verticalArrangement = Arrangement.Center,
+						horizontalAlignment = Alignment.CenterHorizontally,
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(LocalPadding.current.large),
 					) {
-						BoardLoadingIndicator(
+						Text(
+							text = stringResource(R.string.good_luck),
+							autoSize = TextAutoSize.StepBased(),
+							maxLines = 1,
+							style = LocalSudokuTypography.current.displayLargeEmphasized,
+						)
+						Spacer(Modifier.height(LocalPadding.current.large))
+						BreathingBoardLoadingIndicator(
 							sudokuGridSize = uiState.sudokuGridSize,
 							modifier = Modifier
+								.size(300.dp)
 								.aspectRatio(1f)
-								.sharedElement(
+								.sharedBounds(
 									sharedContentState = rememberSharedContentState(
 										GameSharedElementKey.Board,
 									),
@@ -203,39 +225,39 @@ private fun SudokuGameScreenContent(
 					)
 
 					ResetDialog(
-						isVisible = resetDialogState,
+						isVisible = resetDialogVisible,
 						onConfirmClick = {
 							onEvent(Event.ResetGame)
 							onEvent(Event.ResetNotes)
-							resetDialogState = false
+							resetDialogVisible = false
 						},
-						onDismissClick = { resetDialogState = false },
+						onDismissClick = { resetDialogVisible = false },
 						onClearNotesClick = {
 							onEvent(Event.ResetNotes)
-							resetDialogState = false
+							resetDialogVisible = false
 						},
 					)
 
 					HintsDialog(
-						isVisible = hintsDialogState,
-						onDismissRequest = { hintsDialogState = false },
+						isVisible = hintsDialogVisible,
+						onDismissRequest = { hintsDialogVisible = false },
 						onHintClick = {
 							onEvent(Event.ProvideHint)
-							hintsDialogState = false
+							hintsDialogVisible = false
 							scope.launch {
 								scaffoldState.bottomSheetState.expand()
 							}
 						},
 						onFillNotesClick = {
 							onEvent(Event.HintFillNotes)
-							hintsDialogState = false
+							hintsDialogVisible = false
 						},
 						onFindMistakesClick = {
 							onEvent(Event.FindMistakes)
-							hintsDialogState = false
+							hintsDialogVisible = false
 						},
 						onShowLogsClick = {
-							hintsDialogState = false
+							hintsDialogVisible = false
 							scope.launch {
 								scaffoldState.bottomSheetState.expand()
 							}
@@ -249,8 +271,8 @@ private fun SudokuGameScreenContent(
 							gridSize = game.grid.gridSize,
 							summaryOpen = victoryDialogState.visible,
 							onEvent = onEvent,
-							onHintClick = { hintsDialogState = true },
-							onResetClick = { resetDialogState = true },
+							onHintClick = { hintsDialogVisible = true },
+							onResetClick = { resetDialogVisible = true },
 							onPlayAgainClick = onPlayAgainClick,
 							onNavigateToInsightsClick = onNavigateToInsightsClick,
 							onViewSummary = { victoryDialogState.visible = true },
@@ -260,9 +282,7 @@ private fun SudokuGameScreenContent(
 
 					if (isPortrait) {
 						Column(
-							modifier =
-							Modifier
-								.fillMaxSize(),
+							modifier = Modifier.fillMaxSize(),
 							horizontalAlignment = Alignment.CenterHorizontally,
 						) {
 							SudokuBoard(
@@ -281,7 +301,7 @@ private fun SudokuGameScreenContent(
 								modifier = Modifier
 									.weight(1f)
 									.aspectRatio(1f)
-									.sharedElement(
+									.sharedBounds(
 										sharedContentState = rememberSharedContentState(
 											GameSharedElementKey.Board,
 										),
@@ -293,7 +313,7 @@ private fun SudokuGameScreenContent(
 						}
 					} else {
 						Row(
-							modifier = Modifier,
+							modifier = Modifier.fillMaxSize(),
 							horizontalArrangement = Arrangement.Center,
 							verticalAlignment = Alignment.CenterVertically,
 						) {
@@ -309,11 +329,14 @@ private fun SudokuGameScreenContent(
 										),
 									)
 								},
+								animateInitialReveal = uiState.gameState == GameState.PLAYING,
 								modifier = Modifier
 									.weight(1f)
 									.aspectRatio(1f)
-									.sharedElement(
-										sharedContentState = rememberSharedContentState(GameSharedElementKey.Board),
+									.sharedBounds(
+										sharedContentState = rememberSharedContentState(
+											GameSharedElementKey.Board,
+										),
 										animatedVisibilityScope = this@AnimatedContent,
 									)
 									.then(sharedLoadingIndicatorModifier),
@@ -470,9 +493,9 @@ private fun SudokuGameScreenFourPreview() {
 }
 
 private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
-	val list = mutableListOf<IntArray>()
+	val gridRows = mutableListOf<IntArray>()
 	repeat(gridSize) {
-		list += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
+		gridRows += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
 	}
-	return SudokuGrid.fromIntArray(list, gridSize)
+	return SudokuGrid.fromIntArray(gridRows, gridSize)
 }
