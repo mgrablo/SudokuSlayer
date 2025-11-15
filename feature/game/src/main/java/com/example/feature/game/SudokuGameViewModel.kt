@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.core.Game
+import com.example.domain.core.GameDifficulty
 import com.example.domain.core.GameResult
 import com.example.domain.core.HintLog
 import com.example.domain.core.OperationRepository
@@ -253,6 +254,7 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			game.filterNotNull().distinctUntilChangedBy(Game::toStateKey)
 				.collect { g ->
+					delay(1100)
 					val bestTime = getBestTimeUseCase(
 						g.difficulty,
 						SudokuGridSize.fromIntSize(g.grid.gridSize),
@@ -266,7 +268,6 @@ internal class SudokuGameViewModel(
 							state.isNewBestTime
 						}
 
-						delay(1100)
 						state.copy(
 							gameState = if (g.completed) GameState.VICTORY else GameState.PLAYING,
 							currentBestTime = bestTime,
@@ -640,8 +641,16 @@ private fun calculateRemainingCounts(sudokuGrid: SudokuGrid): Map<Int, Int> {
 	return remainingDigitCounts
 }
 
-private fun Game.toStateKey() = Triple(
+private data class GameStateKey(
+	val completed: Boolean,
+	val difficulty: GameDifficulty,
+	val gridSize: Int,
+	val seed: Long?,
+)
+
+private fun Game.toStateKey() = GameStateKey(
 	completed,
-	Pair(difficulty, grid.gridSize),
-	hintLogs.lastOrNull(),
+	difficulty,
+	grid.gridSize,
+	grid.seed,
 )
