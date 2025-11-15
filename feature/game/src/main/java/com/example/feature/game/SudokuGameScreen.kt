@@ -5,18 +5,14 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -29,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -58,11 +53,9 @@ import com.example.feature.game.theme.GameSharedElementKey
 import com.example.feature.game.theme.SudokuGameTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSharedTransitionScope
-import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SharedElementKey
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
-import com.example.sudokuslayer.feature.game.R
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -186,13 +179,6 @@ private fun SudokuGameScreenContent(
 							.fillMaxSize()
 							.padding(LocalPadding.current.large),
 					) {
-						Text(
-							text = stringResource(R.string.good_luck),
-							autoSize = TextAutoSize.StepBased(),
-							maxLines = 1,
-							style = LocalSudokuTypography.current.displayLargeEmphasized,
-						)
-						Spacer(Modifier.height(LocalPadding.current.large))
 						BreathingBoardLoadingIndicator(
 							sudokuGridSize = uiState.sudokuGridSize,
 							modifier = Modifier

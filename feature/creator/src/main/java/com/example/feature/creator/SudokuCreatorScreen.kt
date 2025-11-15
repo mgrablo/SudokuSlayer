@@ -73,6 +73,7 @@ import com.example.feature.creator.theme.CreatorSharedElementKey
 import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
 import com.example.feature.uicore.theme.LocalSharedTransitionScope
+import com.example.feature.uicore.theme.LocalSudokuTypography
 import com.example.feature.uicore.theme.SharedElementKey
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
@@ -332,7 +333,7 @@ private fun InitialContent(
 	}
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LoadingContent(
 	selectedGridSize: SudokuGridSize,
@@ -358,6 +359,14 @@ private fun LoadingContent(
 							animatedVisibilityScope = LocalNavAnimatedContentScope.current,
 						)
 					}
+
+				Text(
+					text = stringResource(R.string.good_luck),
+					autoSize = TextAutoSize.StepBased(),
+					maxLines = 1,
+					style = LocalSudokuTypography.current.displayLargeEmphasized,
+				)
+				Spacer(Modifier.height(LocalPadding.current.large))
 				BoardLoadingIndicator(
 					gridSize = selectedGridSize,
 					modifier = Modifier
