@@ -1,14 +1,15 @@
 package com.example.feature.game
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SheetValue
@@ -28,8 +29,10 @@ import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.composables.core.rememberDialogState
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
@@ -42,10 +45,15 @@ import com.example.feature.game.components.KeyPad
 import com.example.feature.game.components.PostGameActions
 import com.example.feature.game.components.ResetDialog
 import com.example.feature.game.components.VictoryDialog
+import com.example.feature.game.components.board.BreathingBoardLoadingIndicator
 import com.example.feature.game.components.board.SudokuBoard
 import com.example.feature.game.model.GameState
 import com.example.feature.game.model.SudokuGameUiState
+import com.example.feature.game.theme.GameSharedElementKey
 import com.example.feature.game.theme.SudokuGameTheme
+import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.LocalSharedTransitionScope
+import com.example.feature.uicore.theme.SharedElementKey
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.PersistentMap
@@ -111,8 +119,8 @@ private fun SudokuGameScreenContent(
 	val isPortrait = containerSize.height > containerSize.width
 
 	val scope = rememberCoroutineScope()
-	var resetDialogState by remember { mutableStateOf(false) }
-	var hintsDialogState by remember { mutableStateOf(false) }
+	var resetDialogVisible by remember { mutableStateOf(false) }
+	var hintsDialogVisible by remember { mutableStateOf(false) }
 	val victoryDialogState = rememberDialogState(false)
 
 	val scaffoldState =
@@ -130,137 +138,198 @@ private fun SudokuGameScreenContent(
 		}
 	}
 
-	HintBottomSheetScaffold(
-		modifier = modifier,
-		sheetScaffoldState = scaffoldState,
-		snackbarState = uiState.snackbarState,
-		hintLogs = game?.hintLogs ?: persistentListOf(),
-		showNextHint = game?.hintLogs?.lastOrNull()?.isRevealed ?: true,
-		explainHintClick = { onEvent(Event.ExplainHint) },
-		nextHintClick = { onEvent(Event.ProvideHint) },
-		onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
-		onShowMistakes = { onEvent(Event.ShowMistakes) },
-		onDismissSnackbar = { onEvent(Event.DismissSnackbar) },
-		topBar = {
-			GameTopBar(
-				showTimer = uiState.timerVisible,
-				elapsedTime = elapsedTime,
-				isVictory = uiState.gameState == GameState.VICTORY,
-				onMenuClick = openDrawer,
-				onSummaryClick = { victoryDialogState.visible = true },
-			)
-		},
-	) { innerPadding ->
-		if (uiState.gameState == GameState.LOADING || game == null) {
-			Box(
-				contentAlignment = Alignment.Center,
-				modifier = Modifier.fillMaxSize(),
-			) {
-				CircularWavyProgressIndicator()
-			}
-		} else {
-			VictoryDialog(
-				dialogState = victoryDialogState,
-				timeSpent = elapsedTime(),
-				difficulty = game.difficulty,
-				gridSize = SudokuGridSize.fromIntSize(game.grid.gridSize),
-				hintsUsed = game.hintsUsed,
-				bestTime = uiState.currentBestTime,
-				isNewBest = uiState.isNewBestTime,
-				onDismissRequest = {
-					victoryDialogState.visible = false
-				},
-			)
-
-			ResetDialog(
-				isVisible = resetDialogState,
-				onConfirmClick = {
-					onEvent(Event.ResetGame)
-					onEvent(Event.ResetNotes)
-					resetDialogState = false
-				},
-				onDismissClick = { resetDialogState = false },
-				onClearNotesClick = {
-					onEvent(Event.ResetNotes)
-					resetDialogState = false
-				},
-			)
-
-			HintsDialog(
-				isVisible = hintsDialogState,
-				onDismissRequest = { hintsDialogState = false },
-				onHintClick = {
-					onEvent(Event.ProvideHint)
-					hintsDialogState = false
-					scope.launch {
-						scaffoldState.bottomSheetState.expand()
-					}
-				},
-				onFillNotesClick = {
-					onEvent(Event.HintFillNotes)
-					hintsDialogState = false
-				},
-				onFindMistakesClick = {
-					onEvent(Event.FindMistakes)
-					hintsDialogState = false
-				},
-				onShowLogsClick = {
-					hintsDialogState = false
-					scope.launch {
-						scaffoldState.bottomSheetState.expand()
-					}
-				},
-			)
-			val actions: @Composable (Modifier) -> Unit = {
-				GameActions(
-					gameState = uiState.gameState,
-					remainingDigitCounts = remainingDigitCounts,
-					uiState = uiState,
-					gridSize = game.grid.gridSize,
-					summaryOpen = victoryDialogState.visible,
-					onEvent = onEvent,
-					onHintClick = { hintsDialogState = true },
-					onResetClick = { resetDialogState = true },
-					onPlayAgainClick = onPlayAgainClick,
-					onNavigateToInsightsClick = onNavigateToInsightsClick,
-					onViewSummary = { victoryDialogState.visible = true },
-					modifier = it,
+	SharedTransitionLayout {
+		HintBottomSheetScaffold(
+			modifier = modifier,
+			sheetScaffoldState = scaffoldState,
+			snackbarState = uiState.snackbarState,
+			hintLogs = game?.hintLogs ?: persistentListOf(),
+			showNextHint = game?.hintLogs?.lastOrNull()?.isRevealed ?: true,
+			explainHintClick = { onEvent(Event.ExplainHint) },
+			nextHintClick = { onEvent(Event.ProvideHint) },
+			onHighlightCellClick = { onEvent(Event.HighlightHintCells(it)) },
+			onShowMistakes = { onEvent(Event.ShowMistakes) },
+			onDismissSnackbar = { onEvent(Event.DismissSnackbar) },
+			topBar = {
+				GameTopBar(
+					showTimer = uiState.timerVisible,
+					elapsedTime = elapsedTime,
+					isVictory = uiState.gameState == GameState.VICTORY,
+					onMenuClick = openDrawer,
+					onSummaryClick = { victoryDialogState.visible = true },
+				)
+			},
+		) { innerPadding ->
+			val sharedLoadingIndicatorModifier = with(LocalSharedTransitionScope.current) {
+				Modifier.sharedElement(
+					rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
+					animatedVisibilityScope = LocalNavAnimatedContentScope.current,
 				)
 			}
-			if (isPortrait) {
-				Column(
-					modifier =
-					Modifier
-						.fillMaxSize(),
-					horizontalAlignment = Alignment.CenterHorizontally,
-				) {
-					SudokuBoard(
-						sudoku = game.grid,
-						focusedCells = uiState.focusedCells,
-						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
-						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
+
+			AnimatedContent(
+				targetState = uiState.gameState == GameState.LOADING || game == null,
+				modifier = Modifier.padding(innerPadding),
+			) { loading ->
+				if (loading) {
+					Column(
+						verticalArrangement = Arrangement.Center,
+						horizontalAlignment = Alignment.CenterHorizontally,
 						modifier = Modifier
-							.weight(1f)
-							.aspectRatio(1f),
+							.fillMaxSize()
+							.padding(LocalPadding.current.large),
+					) {
+						BreathingBoardLoadingIndicator(
+							sudokuGridSize = uiState.sudokuGridSize,
+							modifier = Modifier
+								.size(300.dp)
+								.aspectRatio(1f)
+								.sharedBounds(
+									sharedContentState = rememberSharedContentState(
+										GameSharedElementKey.Board,
+									),
+									animatedVisibilityScope = this@AnimatedContent,
+								)
+								.then(sharedLoadingIndicatorModifier),
+						)
+					}
+				} else {
+					// Should not happen, but used to not use null-checks in the composables
+					if (game == null) return@AnimatedContent
+
+					VictoryDialog(
+						dialogState = victoryDialogState,
+						timeSpent = elapsedTime(),
+						difficulty = game.difficulty,
+						gridSize = SudokuGridSize.fromIntSize(game.grid.gridSize),
+						hintsUsed = game.hintsUsed,
+						bestTime = uiState.currentBestTime,
+						isNewBest = uiState.isNewBestTime,
+						onDismissRequest = {
+							victoryDialogState.visible = false
+						},
 					)
-					actions(Modifier.weight(1f))
-				}
-			} else {
-				Row(
-					modifier = Modifier,
-					horizontalArrangement = Arrangement.Center,
-					verticalAlignment = Alignment.CenterVertically,
-				) {
-					SudokuBoard(
-						sudoku = game.grid,
-						focusedCells = uiState.focusedCells,
-						onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
-						onCellLongClick = { row, col -> onEvent(Event.CellLongClick(row, col)) },
-						modifier = Modifier
-							.weight(1f)
-							.aspectRatio(1f),
+
+					ResetDialog(
+						isVisible = resetDialogVisible,
+						onConfirmClick = {
+							onEvent(Event.ResetGame)
+							onEvent(Event.ResetNotes)
+							resetDialogVisible = false
+						},
+						onDismissClick = { resetDialogVisible = false },
+						onClearNotesClick = {
+							onEvent(Event.ResetNotes)
+							resetDialogVisible = false
+						},
 					)
-					actions(Modifier.weight(1f))
+
+					HintsDialog(
+						isVisible = hintsDialogVisible,
+						onDismissRequest = { hintsDialogVisible = false },
+						onHintClick = {
+							onEvent(Event.ProvideHint)
+							hintsDialogVisible = false
+							scope.launch {
+								scaffoldState.bottomSheetState.expand()
+							}
+						},
+						onFillNotesClick = {
+							onEvent(Event.HintFillNotes)
+							hintsDialogVisible = false
+						},
+						onFindMistakesClick = {
+							onEvent(Event.FindMistakes)
+							hintsDialogVisible = false
+						},
+						onShowLogsClick = {
+							hintsDialogVisible = false
+							scope.launch {
+								scaffoldState.bottomSheetState.expand()
+							}
+						},
+					)
+					val actions: @Composable (Modifier) -> Unit = {
+						GameActions(
+							gameState = uiState.gameState,
+							remainingDigitCounts = remainingDigitCounts,
+							uiState = uiState,
+							gridSize = game.grid.gridSize,
+							summaryOpen = victoryDialogState.visible,
+							onEvent = onEvent,
+							onHintClick = { hintsDialogVisible = true },
+							onResetClick = { resetDialogVisible = true },
+							onPlayAgainClick = onPlayAgainClick,
+							onNavigateToInsightsClick = onNavigateToInsightsClick,
+							onViewSummary = { victoryDialogState.visible = true },
+							modifier = it,
+						)
+					}
+
+					if (isPortrait) {
+						Column(
+							modifier = Modifier.fillMaxSize(),
+							horizontalAlignment = Alignment.CenterHorizontally,
+						) {
+							SudokuBoard(
+								sudoku = game.grid,
+								focusedCells = uiState.focusedCells,
+								onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
+								onCellLongClick = { row, col ->
+									onEvent(
+										Event.CellLongClick(
+											row,
+											col,
+										),
+									)
+								},
+								animateInitialReveal = uiState.gameState == GameState.PLAYING,
+								modifier = Modifier
+									.weight(1f)
+									.aspectRatio(1f)
+									.sharedBounds(
+										sharedContentState = rememberSharedContentState(
+											GameSharedElementKey.Board,
+										),
+										animatedVisibilityScope = this@AnimatedContent,
+									)
+									.then(sharedLoadingIndicatorModifier),
+							)
+							actions(Modifier.weight(1f))
+						}
+					} else {
+						Row(
+							modifier = Modifier.fillMaxSize(),
+							horizontalArrangement = Arrangement.Center,
+							verticalAlignment = Alignment.CenterVertically,
+						) {
+							SudokuBoard(
+								sudoku = game.grid,
+								focusedCells = uiState.focusedCells,
+								onCellClick = { row, col -> onEvent(Event.SelectCell(row, col)) },
+								onCellLongClick = { row, col ->
+									onEvent(
+										Event.CellLongClick(
+											row,
+											col,
+										),
+									)
+								},
+								animateInitialReveal = uiState.gameState == GameState.PLAYING,
+								modifier = Modifier
+									.weight(1f)
+									.aspectRatio(1f)
+									.sharedBounds(
+										sharedContentState = rememberSharedContentState(
+											GameSharedElementKey.Board,
+										),
+										animatedVisibilityScope = this@AnimatedContent,
+									)
+									.then(sharedLoadingIndicatorModifier),
+							)
+							actions(Modifier.weight(1f))
+						}
+					}
 				}
 			}
 		}
@@ -410,9 +479,9 @@ private fun SudokuGameScreenFourPreview() {
 }
 
 private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
-	val list = mutableListOf<IntArray>()
+	val gridRows = mutableListOf<IntArray>()
 	repeat(gridSize) {
-		list += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
+		gridRows += IntArray(gridSize) { Random.nextInt(0, gridSize + 1) }
 	}
-	return SudokuGrid.fromIntArray(list, gridSize)
+	return SudokuGrid.fromIntArray(gridRows, gridSize)
 }

@@ -1,5 +1,6 @@
 package com.example.feature.game.components.board
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,7 @@ import com.example.sudoku.model.SudokuGrid
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlin.math.floor
+import kotlin.math.hypot
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -61,6 +64,7 @@ internal fun SudokuBoard(
 	onCellClick: (Int, Int) -> Unit,
 	onCellLongClick: (Int, Int) -> Unit,
 	modifier: Modifier = Modifier,
+	animateInitialReveal: Boolean = false,
 	appearance: SudokuBoardAppearance = LocalSudokuBoardAppearance.current,
 ) {
 	val isDarkTheme = LocalAppColorScheme.current.isDark
@@ -87,6 +91,16 @@ internal fun SudokuBoard(
 		),
 		label = "FocusedBorderRotation",
 	)
+
+	val revealProgress = remember { Animatable(if (animateInitialReveal) 0f else 1f) }
+	LaunchedEffect(animateInitialReveal) {
+		if (animateInitialReveal) {
+			revealProgress.animateTo(
+				targetValue = 1f,
+				animationSpec = tween(durationMillis = 800, easing = LinearEasing),
+			)
+		}
+	}
 
 	fun processTap(offset: Offset, lambda: (Int, Int) -> Unit) {
 		if (cellSize == 0f) return
@@ -120,7 +134,7 @@ internal fun SudokuBoard(
 					cellSize = drawableCellArea + totalLinesWidth / sudoku.gridSize
 				}
 
-				val clipPath = Path().apply {
+				val boardClipPath = Path().apply {
 					addRoundRect(
 						RoundRect(
 							Rect(Offset.Zero, Size(canvasSize, canvasSize)),
@@ -151,9 +165,11 @@ internal fun SudokuBoard(
 						),
 					)
 				}
+				val boardCenter = Offset(canvasSize / 2, canvasSize / 2)
+				val maxRevealRadius = hypot(boardCenter.x, boardCenter.y)
 
 				onDrawBehind {
-					clipPath(clipPath) {
+					clipPath(boardClipPath) {
 						sudoku.getArray().forEach { cellData ->
 							val cellTopLeft = getCellTopLeft(
 								row = cellData.row,
@@ -163,11 +179,19 @@ internal fun SudokuBoard(
 								thinLineWidth = thinLineWidth,
 								thickLineWidth = thickLineWidth,
 							)
+							val cellCenter = Offset(
+								x = cellTopLeft.x + drawableCellArea / 2,
+								y = cellTopLeft.y + drawableCellArea / 2,
+							)
+							val distanceToCenter = (cellCenter - boardCenter).getDistance()
 							val drawState = cellData.toDrawState(
 								isFocused = focusedCells.contains(cellData.row to cellData.col),
 								colors = colors,
 								isDarkTheme = isDarkTheme,
 							)
+							val shouldDrawContent =
+								!animateInitialReveal || distanceToCenter < maxRevealRadius * revealProgress.value
+
 							translate(left = cellTopLeft.x, top = cellTopLeft.y) {
 								drawCell(
 									drawState = drawState,
@@ -177,6 +201,7 @@ internal fun SudokuBoard(
 									gridSize = sudokuGridSize.toIntSize(),
 									focusRotationAngle = rotationAngle,
 									focusGradientColors = colors.focusedGradient,
+									shouldDrawContent = shouldDrawContent,
 								)
 							}
 						}

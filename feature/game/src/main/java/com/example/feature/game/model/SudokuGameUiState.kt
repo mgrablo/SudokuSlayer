@@ -1,5 +1,6 @@
 package com.example.feature.game.model
 
+import com.example.domain.core.SudokuGridSize
 import com.example.sudoku.solver.Hint
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
@@ -7,6 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
 internal data class SudokuGameUiState(
+	val sudokuGridSize: SudokuGridSize = SudokuGridSize.NINE,
 	val selectedCell: Pair<Int, Int>? = null,
 	val gameState: GameState = GameState.LOADING,
 	val isInNoteMode: Boolean = false,

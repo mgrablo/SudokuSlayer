@@ -68,7 +68,7 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 	)
 	val destinations =
 		persistentListOf(
-			SudokuGame,
+			SudokuGame(),
 			SudokuCreator(),
 			Insights,
 			Settings,
@@ -129,11 +129,11 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 			),
 			entryProvider = entryProvider {
 				sudokuCreatorEntry(
-					navigateToGameScreen = {
+					navigateToGameScreen = { gridSize ->
 						backstack.apply {
 							clear()
 							add(SudokuCreator())
-							add(SudokuGame)
+							add(SudokuGame(gridSize))
 						}
 					},
 					openDrawer = {
@@ -162,11 +162,11 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 					},
 				)
 				insightsEntry(
-					onNavigateToGameScreen = {
+					onNavigateToGameScreen = { gridSize ->
 						backstack.apply {
 							clear()
 							add(SudokuCreator())
-							add(SudokuGame)
+							add(SudokuGame(gridSize))
 						}
 					},
 					onNavigateToCreator = { seed, gridSize, difficulty ->

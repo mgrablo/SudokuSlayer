@@ -55,6 +55,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.example.domain.core.Game
 import com.example.domain.core.GameDifficulty
 import com.example.domain.core.SudokuGridSize
@@ -68,8 +69,12 @@ import com.example.feature.creator.components.preview.BoardLoadingIndicator
 import com.example.feature.creator.components.preview.BoardPreview
 import com.example.feature.creator.components.preview.BoardPreviewState
 import com.example.feature.creator.components.preview.rememberBoardPreviewState
+import com.example.feature.creator.theme.CreatorSharedElementKey
 import com.example.feature.creator.theme.SudokuCreatorTheme
 import com.example.feature.uicore.theme.LocalPadding
+import com.example.feature.uicore.theme.LocalSharedTransitionScope
+import com.example.feature.uicore.theme.LocalSudokuTypography
+import com.example.feature.uicore.theme.SharedElementKey
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudokuslayer.feature.creator.R
@@ -83,7 +88,7 @@ private val PreviewBoxSize = 200.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SudokuCreatorScreen(
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	openDrawer: () -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
@@ -111,7 +116,7 @@ private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
 	var gameCreationInProgress by rememberSaveable { mutableStateOf(false) }
@@ -126,7 +131,7 @@ private fun SudokuCreatorContent(
 					it.savedGame != null && it.loadingState != ScreenState.LOADING
 				}.flowWithLifecycle(lifecycle).collect {
 					gameCreationInProgress = false
-					currentNavigateToGameScreen()
+					currentNavigateToGameScreen(uiState.selectedGridSize)
 				}
 		}
 	}
@@ -193,11 +198,11 @@ private fun SudokuCreatorContent(
 								onToggleAdvancedOptions = { onEvent(Event.ToggleAdvancedOptions) },
 								onSeedChange = { onEvent(Event.ChangePuzzleSeed(it)) },
 								sharedTransitionScope = this@SharedTransitionLayout,
-								animatedVisibilityScope = this@AnimatedContent,
+								animatedVisibilityScope = this,
 								modifier = Modifier
 									.fillMaxWidth()
 									.sharedBounds(
-										rememberSharedContentState("creator_screen_content"),
+										rememberSharedContentState(CreatorSharedElementKey.CreatorScreenContent),
 										animatedVisibilityScope = this@AnimatedContent,
 									),
 							)
@@ -207,11 +212,11 @@ private fun SudokuCreatorContent(
 							LoadingContent(
 								selectedGridSize = uiState.selectedGridSize,
 								sharedTransitionScope = this@SharedTransitionLayout,
-								animatedVisibilityScope = this@AnimatedContent,
+								animatedVisibilityScope = this,
 								modifier = Modifier
 									.weight(1f)
 									.sharedBounds(
-										rememberSharedContentState("creator_screen_content"),
+										rememberSharedContentState(CreatorSharedElementKey.CreatorScreenContent),
 										animatedVisibilityScope = this@AnimatedContent,
 									),
 							)
@@ -276,13 +281,19 @@ private fun InitialContent(
 		}
 		item {
 			with(sharedTransitionScope) {
+				val sharedLoadingIndicatorModifier = with(LocalSharedTransitionScope.current) {
+					Modifier.sharedElement(
+						rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
+						animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+					)
+				}
 				BoardPreview(
 					modifier = Modifier
 						.size(PreviewBoxSize)
 						.sharedBounds(
-							sharedContentState = rememberSharedContentState("board_preview"),
+							rememberSharedContentState(CreatorSharedElementKey.BoardPreview),
 							animatedVisibilityScope = animatedVisibilityScope,
-						),
+						).then(sharedLoadingIndicatorModifier),
 					state = boardPreviewState,
 				)
 			}
@@ -322,7 +333,7 @@ private fun InitialContent(
 	}
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LoadingContent(
 	selectedGridSize: SudokuGridSize,
@@ -341,14 +352,29 @@ private fun LoadingContent(
 					.padding(horizontal = LocalPadding.current.big)
 					.fillMaxWidth(),
 			) {
+				val sharedLoadingIndicatorModifier =
+					with(LocalSharedTransitionScope.current) {
+						Modifier.sharedElement(
+							rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
+							animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+						)
+					}
+
+				Text(
+					text = stringResource(R.string.good_luck),
+					autoSize = TextAutoSize.StepBased(),
+					maxLines = 1,
+					style = LocalSudokuTypography.current.displayLargeEmphasized,
+				)
+				Spacer(Modifier.height(LocalPadding.current.large))
 				BoardLoadingIndicator(
 					gridSize = selectedGridSize,
 					modifier = Modifier
 						.size(300.dp)
 						.sharedBounds(
-							rememberSharedContentState("board_preview"),
+							rememberSharedContentState(CreatorSharedElementKey.BoardPreview),
 							animatedVisibilityScope = animatedVisibilityScope,
-						),
+						).then(sharedLoadingIndicatorModifier),
 				)
 				Spacer(Modifier.size(LocalPadding.current.big))
 

@@ -24,4 +24,5 @@
 	<string name="puzzle_seed_supporting_text">The seed is a number used to generate a unique puzzle. Use the same seed on another device to play the exact same game.</string>
 	<string name="clear_puzzle_seed_content_desc">Clear Puzzle Seed</string>
 	<string name="advanced_options">Advanced Options</string>
+	<string name="good_luck">Good Luck!</string>
 </resources>

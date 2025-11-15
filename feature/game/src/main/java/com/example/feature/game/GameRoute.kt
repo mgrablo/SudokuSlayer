@@ -4,14 +4,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.example.domain.core.SudokuGridSize
 import com.example.feature.uicore.navigation.AppIcon
 import com.example.feature.uicore.navigation.Destination
 import com.example.sudokuslayer.feature.game.R
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Serializable
-data object SudokuGame : Destination {
+data class SudokuGame(val sudokuGridSize: SudokuGridSize = SudokuGridSize.NINE) : Destination {
 	override val routeId: String = "sudoku_game"
 	override val displayNameRes: Int = R.string.game_screen_title
 	override val icon: AppIcon = AppIcon.ResourceIcon(R.drawable.tag)
@@ -23,7 +25,9 @@ fun EntryProviderScope<NavKey>.gameEntry(
 	onNavigateToInsightsClick: () -> Unit,
 ) {
 	entry<SudokuGame> {
-		val viewmodel = koinViewModel<SudokuGameViewModel>()
+		val viewmodel = koinViewModel<SudokuGameViewModel> {
+			parametersOf(it.sudokuGridSize)
+		}
 		SudokuGameScreen(
 			openDrawer = openDrawer,
 			modifier = Modifier.fillMaxSize(),

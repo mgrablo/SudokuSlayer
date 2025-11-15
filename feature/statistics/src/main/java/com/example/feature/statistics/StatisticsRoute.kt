@@ -24,7 +24,7 @@ data object Insights : Destination {
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.insightsEntry(
 	openDrawer: () -> Unit,
-	onNavigateToGameScreen: () -> Unit,
+	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	onNavigateToCreator: (Long, SudokuGridSize, GameDifficulty) -> Unit,
 ) {
 	entry<Insights> {
