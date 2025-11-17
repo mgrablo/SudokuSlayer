@@ -1,4 +1,4 @@
-import com.example.sudoku.dlxalgorithm.SudokuExactCoverMatrix
+import io.github.mgrablo.sudokucore.dlxalgorithm.SudokuExactCoverMatrix
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -85,11 +85,7 @@ class SudokuExactCoverMatrixTest {
 			// In the covered cells, the constraint corresponding to the given number
 			// should be excluded (true), while other numbers in the same cell should be covered (false).
 
-			fun checkCell(
-				r: Int,
-				c: Int,
-				num: Int,
-			) {
+			fun checkCell(r: Int, c: Int, num: Int) {
 				val baseOptionRow = (r * 9 + c) * 9
 				val assignedOptionRow = baseOptionRow + (num - 1)
 				val rowColConstraint = r * 9 + c
@@ -166,7 +162,10 @@ class SudokuExactCoverMatrixTest {
 			// In cell (0,0), all non-selected option rows should be covered (false)
 			for (i in 0 until 9) {
 				if (i != 0) {
-					assertFalse(matrix.matrix[baseRowCell1 + i][(0 * 9 + 0)], "Non-selected option in cell (0,0) should be covered")
+					assertFalse(
+						matrix.matrix[baseRowCell1 + i][(0 * 9 + 0)],
+						"Non-selected option in cell (0,0) should be covered",
+					)
 					// Also, their row-number constraint (index 81) should be covered since only the selected row holds the uncovered constraint.
 					assertFalse(
 						matrix.matrix[baseRowCell1 + i][81 + (0 * 9 + 0)],
@@ -174,7 +173,10 @@ class SudokuExactCoverMatrixTest {
 					)
 				} else {
 					// For the selected option, the cell and row-number constraints should be excluded (true)
-					assertTrue(matrix.matrix[selectedRowCell1][(0 * 9 + 0)], "Selected cell constraint in cell (0,0) should be excluded")
+					assertTrue(
+						matrix.matrix[selectedRowCell1][(0 * 9 + 0)],
+						"Selected cell constraint in cell (0,0) should be excluded",
+					)
 					assertTrue(
 						matrix.matrix[selectedRowCell1][81 + (0 * 9 + 0)],
 						"Selected row-number constraint in cell (0,0) should be excluded",
@@ -185,13 +187,19 @@ class SudokuExactCoverMatrixTest {
 			// In cell (0,1), similar expectations apply
 			for (i in 0 until 9) {
 				if (i != 1) {
-					assertFalse(matrix.matrix[baseRowCell2 + i][(0 * 9 + 1)], "Non-selected option in cell (0,1) should be covered")
+					assertFalse(
+						matrix.matrix[baseRowCell2 + i][(0 * 9 + 1)],
+						"Non-selected option in cell (0,1) should be covered",
+					)
 					assertFalse(
 						matrix.matrix[baseRowCell2 + i][81 + (0 * 9 + i % 9)],
 						"Non-selected row-number constraint in cell (0,1) should be covered",
 					)
 				} else {
-					assertTrue(matrix.matrix[selectedRowCell2][(0 * 9 + 1)], "Selected cell constraint in cell (0,1) should be excluded")
+					assertTrue(
+						matrix.matrix[selectedRowCell2][(0 * 9 + 1)],
+						"Selected cell constraint in cell (0,1) should be excluded",
+					)
 					assertTrue(
 						matrix.matrix[selectedRowCell2][81 + (0 * 9 + 1)],
 						"Selected row-number constraint in cell (0,1) should be excluded",

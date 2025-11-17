@@ -16,7 +16,7 @@ dependencies {
 sqldelight {
 	databases {
 		create("AppDatabase") {
-			packageName.set("com.example.data.core")
+			packageName.set("io.github.mgrablo.sudokuslayer.data.core")
 		}
 	}
 }

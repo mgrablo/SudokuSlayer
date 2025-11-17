@@ -1,10 +1,10 @@
-package com.example.domain.game.usecases
+package io.github.mgrablo.domain.game.usecases
 
-import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
-import com.example.sudoku.model.CellAttributes
-import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.model.updateCells
-import com.example.sudokuslayer.domain.settings.SettingsRepository
+import io.github.mgrablo.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
+import io.github.mgrablo.sudokucore.model.CellAttributes
+import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokucore.model.updateCells
+import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK

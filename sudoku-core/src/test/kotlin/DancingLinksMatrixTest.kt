@@ -1,8 +1,8 @@
 
-import com.example.sudoku.dlxalgorithm.model.DataNode
-import com.example.sudoku.dlxalgorithm.model.HeaderNode
-import com.example.sudoku.dlxalgorithm.toRootNode
-import org.junit.jupiter.api.Assertions.*
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.DataNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.HeaderNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.toRootNode
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class DancingLinksMatrixTest {

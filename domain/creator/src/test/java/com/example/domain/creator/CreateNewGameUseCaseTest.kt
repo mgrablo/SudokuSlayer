@@ -1,14 +1,14 @@
-package com.example.domain.creator
+package io.github.mgrablo.domain.creator
 
-import com.example.sudoku.generator.ClassicSudokuGenerator
-import com.example.sudoku.model.SolutionGrid
-import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.model.SudokuPuzzle
-import com.example.sudokuslayer.domain.core.GameDifficulty
-import com.example.sudokuslayer.domain.core.OperationRepository
-import com.example.sudokuslayer.domain.core.SudokuGridSize
-import com.example.sudokuslayer.domain.core.toCellsToRemove
-import com.example.sudokuslayer.domain.creator.CreateNewGameUseCase
+import io.github.mgrablo.sudokucore.generator.ClassicSudokuGenerator
+import io.github.mgrablo.sudokucore.model.SolutionGrid
+import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokucore.model.SudokuPuzzle
+import io.github.mgrablo.sudokuslayer.domain.core.GameDifficulty
+import io.github.mgrablo.sudokuslayer.domain.core.OperationRepository
+import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
+import io.github.mgrablo.sudokuslayer.domain.core.toCellsToRemove
+import io.github.mgrablo.sudokuslayer.domain.creator.CreateNewGameUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
@@ -99,7 +99,7 @@ class CreateNewGameUseCaseTest {
 		val gridSize = SudokuGridSize.NINE
 		val seed = 1L
 
-		mockkStatic("com.example.domain.core.GameDifficultyKt")
+		mockkStatic("io.github.mgrablo.domain.core.GameDifficultyKt")
 		every { GameDifficulty.Easy.toCellsToRemove(gridSize, seed) } returns 30
 
 		useCase(gridSize, GameDifficulty.Easy, 1L)
@@ -149,7 +149,7 @@ class CreateNewGameUseCaseTest {
 		every { sudokuPuzzle.component1() } returns sudokuGrid
 		every { sudokuPuzzle.component2() } returns solutionGrid
 
-		mockkStatic("com.example.domain.core.GameDifficultyKt")
+		mockkStatic("io.github.mgrablo.domain.core.GameDifficultyKt")
 		every { difficulty.toCellsToRemove(gridSize, null) } returns expectedCellsToRemove
 
 		mockkConstructor(ClassicSudokuGenerator::class)

@@ -1,10 +1,11 @@
 
-import com.example.sudoku.dlxalgorithm.DLXAlgorithm.solve
-import com.example.sudoku.dlxalgorithm.DLXAlgorithm.solveAll
-import com.example.sudoku.dlxalgorithm.model.HeaderNode
-import com.example.sudoku.dlxalgorithm.model.RootNode
-import com.example.sudoku.dlxalgorithm.toRootNode
-import org.junit.jupiter.api.Assertions.*
+import io.github.mgrablo.sudokucore.dlxalgorithm.DLXAlgorithm.solve
+import io.github.mgrablo.sudokucore.dlxalgorithm.DLXAlgorithm.solveAll
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.HeaderNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.RootNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.toRootNode
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -28,10 +29,18 @@ class AlgorithmTests {
 			assertEquals("root", root.name, "Root node name should be 'Root node'")
 			assertEquals("H0", (root.right as HeaderNode).name, "First column header should be 'H0'")
 			assertEquals("H1", (root.right.right as HeaderNode).name, "Second column header should be 'H1'")
-			assertEquals("H2", (root.right.right.right as HeaderNode).name, "Third column header should be 'H2'")
+			assertEquals(
+				"H2",
+				(root.right.right.right as HeaderNode).name,
+				"Third column header should be 'H2'",
+			)
 			assertEquals(1, (root.right as HeaderNode).numOfNodes, "Column 0 should have 1 nodes")
 			assertEquals(2, (root.right.right as HeaderNode).numOfNodes, "Column 1 should have 2 nodes")
-			assertEquals(0, (root.right.right.right.right.right as HeaderNode).numOfNodes, "Column 4 should have 0 nodes")
+			assertEquals(
+				0,
+				(root.right.right.right.right.right as HeaderNode).numOfNodes,
+				"Column 4 should have 0 nodes",
+			)
 		}
 
 		@Test
@@ -152,10 +161,7 @@ class AlgorithmTests {
 			)
 		}
 
-		private fun createLargeMatrix(
-			rows: Int,
-			cols: Int,
-		): RootNode {
+		private fun createLargeMatrix(rows: Int, cols: Int): RootNode {
 			val matrix = Array(rows) { BooleanArray(cols) { row -> (row) % 2 == 0 } }
 			val root = matrix.toRootNode()
 			return root

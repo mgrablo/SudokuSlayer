@@ -1,12 +1,16 @@
 
-import com.example.sudoku.model.House
-import com.example.sudoku.model.SudokuCellData
-import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.solver.Hint
-import com.example.sudoku.solver.HintProvider
-import com.example.sudoku.solver.HintType
-import com.example.sudoku.solver.fillCandidates
-import org.junit.jupiter.api.Assertions.*
+import io.github.mgrablo.sudokucore.model.House
+import io.github.mgrablo.sudokucore.model.SudokuCellData
+import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokucore.solver.Hint
+import io.github.mgrablo.sudokucore.solver.HintProvider
+import io.github.mgrablo.sudokucore.solver.HintType
+import io.github.mgrablo.sudokucore.solver.fillCandidates
+import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -131,10 +135,15 @@ class HintProviderTest {
 					break
 				}
 			}
-			assertTrue(claimingCandidates.isNotEmpty(), "Should find claiming candidates for non-Block house")
+			assertTrue(
+				claimingCandidates.isNotEmpty(),
+				"Should find claiming candidates for non-Block house",
+			)
 
 			val blockHouse = houses.first { it is House.Block }
-			assertThrows<IllegalArgumentException>("Should throw exception for House.Block in claiming candidates") {
+			assertThrows<IllegalArgumentException>(
+				"Should throw exception for House.Block in claiming candidates",
+			) {
 				hintProvider.findClaimingCandidates(blockHouse, updatedGrid)
 			}
 		}
@@ -150,25 +159,23 @@ class HintProviderTest {
 		}
 	}
 
-	private fun generateHouses(grid: Collection<SudokuCellData>) =
-		buildList {
-			(0..8).forEach { i ->
-				add(House.Row(grid.filter { it.row == i }, i))
-				add(House.Column(grid.filter { it.col == i }, i))
-				add(House.Block(grid.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
-			}
+	private fun generateHouses(grid: Collection<SudokuCellData>) = buildList {
+		(0..8).forEach { i ->
+			add(House.Row(grid.filter { it.row == i }, i))
+			add(House.Column(grid.filter { it.col == i }, i))
+			add(House.Block(grid.filter { it.row / 3 == i / 3 && it.col / 3 == i % 3 }, i))
 		}
+	}
 
-	private fun generateBlockHouses(grid: Collection<SudokuCellData>) =
-		buildList {
-			for (blockRow in 0 until 3) {
-				for (blockCol in 0 until 3) {
-					val blockCells =
-						grid.filter {
-							it.row / 3 == blockRow && it.col / 3 == blockCol
-						}
-					add(House.Block(blockCells, blockRow * 3 + blockCol))
-				}
+	private fun generateBlockHouses(grid: Collection<SudokuCellData>) = buildList {
+		for (blockRow in 0 until 3) {
+			for (blockCol in 0 until 3) {
+				val blockCells =
+					grid.filter {
+						it.row / 3 == blockRow && it.col / 3 == blockCol
+					}
+				add(House.Block(blockCells, blockRow * 3 + blockCol))
 			}
 		}
+	}
 }

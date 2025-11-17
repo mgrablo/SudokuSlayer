@@ -1,4 +1,4 @@
-import com.example.sudoku.model.SudokuGrid
+import io.github.mgrablo.sudokucore.model.SudokuGrid
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

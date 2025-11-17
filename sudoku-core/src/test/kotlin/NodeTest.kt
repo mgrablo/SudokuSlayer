@@ -1,6 +1,6 @@
-import com.example.sudoku.dlxalgorithm.model.HeaderNode
-import com.example.sudoku.dlxalgorithm.model.findBestColumn
-import com.example.sudoku.dlxalgorithm.toRootNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.HeaderNode
+import io.github.mgrablo.sudokucore.dlxalgorithm.model.findBestColumn
+import io.github.mgrablo.sudokucore.dlxalgorithm.toRootNode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -60,8 +60,16 @@ class NodeTest {
 		println("Uncover second column")
 		secondColumn.uncover()
 
-		assertEquals(2, firstColumn.numOfNodes, "First column should have 2 node after uncovering second column")
-		assertEquals(1, secondColumn.numOfNodes, "Second column should have 2 nodes after uncovering second column")
+		assertEquals(
+			2,
+			firstColumn.numOfNodes,
+			"First column should have 2 node after uncovering second column",
+		)
+		assertEquals(
+			1,
+			secondColumn.numOfNodes,
+			"Second column should have 2 nodes after uncovering second column",
+		)
 
 		println("Uncover first column")
 		firstColumn.uncover()

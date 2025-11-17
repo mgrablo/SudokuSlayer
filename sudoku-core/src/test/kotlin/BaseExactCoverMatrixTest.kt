@@ -1,4 +1,4 @@
-import com.example.sudoku.dlxalgorithm.BaseExactCoverMatrix
+import io.github.mgrablo.sudokucore.dlxalgorithm.BaseExactCoverMatrix
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows

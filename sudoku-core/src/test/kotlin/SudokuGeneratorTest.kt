@@ -1,5 +1,5 @@
-import com.example.sudoku.generator.ClassicSudokuGenerator
-import com.example.sudoku.solver.ClassicSudokuSolver
+import io.github.mgrablo.sudokucore.generator.ClassicSudokuGenerator
+import io.github.mgrablo.sudokucore.solver.ClassicSudokuSolver
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

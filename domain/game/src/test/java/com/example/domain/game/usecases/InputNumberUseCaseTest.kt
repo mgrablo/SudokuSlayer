@@ -1,10 +1,10 @@
-package com.example.domain.game.usecases
+package io.github.mgrablo.domain.game.usecases
 
-import com.example.domain.game.usecases.input.InputNumberUseCase
-import com.example.domain.game.usecases.visuals.MarkRuleBreakingCellsUseCase
-import com.example.sudoku.model.CellAttributes
-import com.example.sudoku.model.SudokuCellData
-import com.example.sudoku.model.SudokuGrid
+import io.github.mgrablo.domain.game.usecases.input.InputNumberUseCase
+import io.github.mgrablo.domain.game.usecases.visuals.MarkRuleBreakingCellsUseCase
+import io.github.mgrablo.sudokucore.model.CellAttributes
+import io.github.mgrablo.sudokucore.model.SudokuCellData
+import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

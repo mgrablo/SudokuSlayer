@@ -1,12 +1,12 @@
-package com.example.domain.game.usecases
+package io.github.mgrablo.domain.game.usecases
 
-import com.example.domain.game.usecases.input.SelectCellUseCase
-import com.example.domain.game.usecases.visuals.ClearHighlightedRowAndColumnUseCase
-import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
-import com.example.domain.game.usecases.visuals.HighlightRowAndColumnUseCase
-import com.example.sudoku.model.CellAttributes
-import com.example.sudoku.model.SudokuGrid
-import com.example.sudoku.model.addAttribute
+import io.github.mgrablo.domain.game.usecases.input.SelectCellUseCase
+import io.github.mgrablo.domain.game.usecases.visuals.ClearHighlightedRowAndColumnUseCase
+import io.github.mgrablo.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
+import io.github.mgrablo.domain.game.usecases.visuals.HighlightRowAndColumnUseCase
+import io.github.mgrablo.sudokucore.model.CellAttributes
+import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokucore.model.addAttribute
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder

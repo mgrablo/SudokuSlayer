@@ -1,4 +1,4 @@
-package com.example.sudokuslayer.feature.settings
+package io.github.mgrablo.sudokuslayer.feature.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
