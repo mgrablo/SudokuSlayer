@@ -1,7 +1,7 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoCellChange
-import data.game.ProtoOperation
+import io.github.mgrablo.sudokuslayer.data.game.ProtoCellChange
+import io.github.mgrablo.sudokuslayer.data.game.ProtoOperation
 import io.github.mgrablo.sudokuslayer.domain.core.CellChange
 import io.github.mgrablo.sudokuslayer.domain.core.Operation
 

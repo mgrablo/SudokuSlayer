@@ -1,6 +1,5 @@
 package io.github.mgrablo.sudokuslayer.data.game
 
-import data.game.ProtoOperationHistory
 import io.github.mgrablo.sudokuslayer.data.core.proto.Serializer
 
 class ProtoOperationHistorySerializer : Serializer<ProtoOperationHistory> {

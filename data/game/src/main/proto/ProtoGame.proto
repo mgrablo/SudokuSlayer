@@ -1,5 +1,5 @@
 syntax = "proto3";
-package data.game;
+package io.github.mgrablo.sudokuslayer.data.game;
 import "ProtoCell.proto";
 import "ProtoGrid.proto";
 import "ProtoHintLog.proto";

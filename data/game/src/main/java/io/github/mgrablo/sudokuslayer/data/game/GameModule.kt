@@ -1,6 +1,5 @@
 package io.github.mgrablo.sudokuslayer.data.game
 
-import data.game.ProtoGame
 import io.github.mgrablo.sudokuslayer.data.core.proto.ProtoStorage
 import io.github.mgrablo.sudokuslayer.data.core.proto.ProtoStorageFactory
 import io.github.mgrablo.sudokuslayer.domain.core.GameRepository

@@ -1,9 +1,9 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoCell
-import data.game.protoCell
 import io.github.mgrablo.sudokucore.model.CellAttributes
 import io.github.mgrablo.sudokucore.model.SudokuCellData
+import io.github.mgrablo.sudokuslayer.data.game.ProtoCell
+import io.github.mgrablo.sudokuslayer.data.game.protoCell
 import kotlinx.collections.immutable.toPersistentSet
 
 fun ProtoCell.toSudokuCellData(): io.github.mgrablo.sudokucore.model.SudokuCellData =

@@ -1,11 +1,5 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoHint
-import data.game.ProtoHintType
-import data.game.ProtoHintType.ProtoHintHouse
-import data.game.ProtoHintTypeKt.protoHintHouse
-import data.game.protoHint
-import data.game.protoHintType
 import io.github.mgrablo.sudokucore.solver.GroupType
 import io.github.mgrablo.sudokucore.solver.Hint
 import io.github.mgrablo.sudokucore.solver.HintExplanationFactory
@@ -14,6 +8,12 @@ import io.github.mgrablo.sudokucore.solver.HintType.ClaimingCandidate
 import io.github.mgrablo.sudokucore.solver.HintType.HiddenSingle
 import io.github.mgrablo.sudokucore.solver.HintType.NakedSingle
 import io.github.mgrablo.sudokucore.solver.HintType.PointingCandidate
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHint
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType.ProtoHintHouse
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintTypeKt.protoHintHouse
+import io.github.mgrablo.sudokuslayer.data.game.protoHint
+import io.github.mgrablo.sudokuslayer.data.game.protoHintType
 import kotlinx.collections.immutable.toPersistentSet
 
 fun ProtoHint.toHint(): Hint {

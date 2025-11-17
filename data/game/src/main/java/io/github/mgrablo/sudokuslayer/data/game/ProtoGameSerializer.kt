@@ -1,7 +1,6 @@
 package io.github.mgrablo.sudokuslayer.data.game
 
 import com.google.protobuf.InvalidProtocolBufferException
-import data.game.ProtoGame
 import io.github.mgrablo.sudokuslayer.data.core.proto.Serializer
 
 class ProtoGameSerializer : Serializer<ProtoGame> {

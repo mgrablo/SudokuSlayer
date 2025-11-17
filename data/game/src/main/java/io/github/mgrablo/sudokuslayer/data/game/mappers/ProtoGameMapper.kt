@@ -1,6 +1,6 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoGame
+import io.github.mgrablo.sudokuslayer.data.game.ProtoGame
 import io.github.mgrablo.sudokuslayer.domain.core.Game
 import io.github.mgrablo.sudokuslayer.domain.core.GameDifficulty
 import kotlinx.collections.immutable.toPersistentList

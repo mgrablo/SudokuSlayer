@@ -1,11 +1,11 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoHintExplanationPart
-import data.game.ProtoHintExplanationStep
-import data.game.ProtoHintLog
 import io.github.mgrablo.sudokucore.solver.HintExplanationPart
 import io.github.mgrablo.sudokucore.solver.HintExplanationStep
 import io.github.mgrablo.sudokucore.solver.ScopeType
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintExplanationPart
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintExplanationStep
+import io.github.mgrablo.sudokuslayer.data.game.ProtoHintLog
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

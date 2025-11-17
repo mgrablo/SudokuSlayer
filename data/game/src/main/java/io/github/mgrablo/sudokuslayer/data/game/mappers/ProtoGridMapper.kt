@@ -1,9 +1,9 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import data.game.ProtoGrid
-import data.game.ProtoSolutionGrid
 import io.github.mgrablo.sudokucore.model.SolutionGrid
 import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokuslayer.data.game.ProtoGrid
+import io.github.mgrablo.sudokuslayer.data.game.ProtoSolutionGrid
 import kotlin.math.sqrt
 
 fun ProtoGrid.toSudokuGrid(): SudokuGrid = SudokuGrid
