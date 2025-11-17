@@ -2,10 +2,10 @@ package com.example.sudokuslayer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.core.GameRepository
-import com.example.domain.settings.SettingsRepository
-import com.example.domain.settings.models.ColorScheme
-import com.example.domain.settings.models.DarkMode
+import com.example.sudokuslayer.domain.core.GameRepository
+import com.example.sudokuslayer.domain.settings.SettingsRepository
+import com.example.sudokuslayer.domain.settings.models.ColorScheme
+import com.example.sudokuslayer.domain.settings.models.DarkMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

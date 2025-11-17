@@ -1,5 +1,6 @@
 package com.example.domain.creator
 
+import com.example.sudokuslayer.domain.creator.ValidateSeedInputUseCase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull

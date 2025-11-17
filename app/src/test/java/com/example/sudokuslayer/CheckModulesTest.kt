@@ -2,7 +2,7 @@ package com.example.sudokuslayer
 
 import android.app.Application
 import android.content.Context
-import com.example.domain.core.SudokuGridSize
+import com.example.sudokuslayer.domain.core.SudokuGridSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.annotation.KoinExperimentalAPI

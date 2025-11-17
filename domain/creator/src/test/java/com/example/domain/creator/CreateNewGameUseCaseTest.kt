@@ -1,13 +1,14 @@
 package com.example.domain.creator
 
-import com.example.domain.core.GameDifficulty
-import com.example.domain.core.OperationRepository
-import com.example.domain.core.SudokuGridSize
-import com.example.domain.core.toCellsToRemove
 import com.example.sudoku.generator.ClassicSudokuGenerator
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuGrid
 import com.example.sudoku.model.SudokuPuzzle
+import com.example.sudokuslayer.domain.core.GameDifficulty
+import com.example.sudokuslayer.domain.core.OperationRepository
+import com.example.sudokuslayer.domain.core.SudokuGridSize
+import com.example.sudokuslayer.domain.core.toCellsToRemove
+import com.example.sudokuslayer.domain.creator.CreateNewGameUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified

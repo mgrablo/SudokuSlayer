@@ -1,14 +1,14 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.core.Operation
-import com.example.domain.core.OperationRepository
-import com.example.domain.core.changedTo
 import com.example.domain.game.usecases.input.InputNumberUseCase
 import com.example.domain.game.usecases.input.UndoOperationUseCase
 import com.example.domain.game.usecases.visuals.HighlightMatchingNumbersUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.domain.core.Operation
+import com.example.sudokuslayer.domain.core.OperationRepository
+import com.example.sudokuslayer.domain.core.changedTo
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify

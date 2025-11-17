@@ -1,0 +1,20 @@
+package com.example.sudokuslayer.feature.creator
+
+import com.example.sudokuslayer.domain.creator.domainCreatorModule
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val sudokuCreatorModule =
+	module {
+		includes(domainCreatorModule)
+		viewModel { parameters ->
+			SudokuCreatorViewModel(
+				createNewGameUseCase = get(),
+				getSavedGameUseCase = get(),
+				saveGameUseCase = get(),
+				hasActiveGameUseCase = get(),
+				validateSeedInputUseCase = get(),
+				args = parameters.getOrNull(),
+			)
+		}
+	}

@@ -1,9 +1,9 @@
 package com.example.domain.game.usecases
 
 import com.example.domain.game.usecases.game.AutoClearNotesUseCase
-import com.example.domain.settings.SettingsRepository
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.domain.settings.SettingsRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK

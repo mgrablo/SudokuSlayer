@@ -1,4 +1,4 @@
-package com.example.feature.settings
+package com.example.sudokuslayer.feature.settings
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

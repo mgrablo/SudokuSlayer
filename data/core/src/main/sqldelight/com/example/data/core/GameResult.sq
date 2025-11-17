@@ -1,5 +1,5 @@
-import com.example.domain.core.GameDifficulty;
-import com.example.domain.core.SudokuGridSize;
+import com.example.sudokuslayer.domain.core.GameDifficulty;
+import com.example.sudokuslayer.domain.core.SudokuGridSize;
 import kotlinx.datetime.LocalDateTime;
 
 CREATE TABLE IF NOT EXISTS GameResultEntity (

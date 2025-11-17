@@ -1,13 +1,13 @@
 package com.example.domain.game.usecases
 
-import com.example.domain.core.Game
-import com.example.domain.core.GameDifficulty
-import com.example.domain.core.HintLog
 import com.example.domain.game.usecases.game.FindMistakesUseCase
 import com.example.sudoku.model.CellAttributes
 import com.example.sudoku.model.SolutionGrid
 import com.example.sudoku.model.SudokuCellData
 import com.example.sudoku.model.SudokuGrid
+import com.example.sudokuslayer.domain.core.Game
+import com.example.sudokuslayer.domain.core.GameDifficulty
+import com.example.sudokuslayer.domain.core.HintLog
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.Assertions.assertEquals

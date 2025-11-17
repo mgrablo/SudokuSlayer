@@ -27,19 +27,19 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.example.domain.settings.models.ColorScheme
-import com.example.domain.settings.models.DarkMode
-import com.example.feature.creator.PuzzlePreset
-import com.example.feature.creator.SudokuCreator
-import com.example.feature.creator.sudokuCreatorEntry
-import com.example.feature.game.SudokuGame
-import com.example.feature.game.gameEntry
-import com.example.feature.settings.Settings
-import com.example.feature.settings.settingsEntry
-import com.example.feature.statistics.Insights
-import com.example.feature.statistics.insightsEntry
-import com.example.feature.uicore.components.SudokuNavigationRail
-import com.example.feature.uicore.theme.SudokuSlayerTheme
+import com.example.sudokuslayer.domain.settings.models.ColorScheme
+import com.example.sudokuslayer.domain.settings.models.DarkMode
+import com.example.sudokuslayer.feature.creator.PuzzlePreset
+import com.example.sudokuslayer.feature.creator.SudokuCreator
+import com.example.sudokuslayer.feature.creator.sudokuCreatorEntry
+import com.example.sudokuslayer.feature.game.SudokuGame
+import com.example.sudokuslayer.feature.game.gameEntry
+import com.example.sudokuslayer.feature.settings.Settings
+import com.example.sudokuslayer.feature.settings.settingsEntry
+import com.example.sudokuslayer.feature.statistics.Insights
+import com.example.sudokuslayer.feature.statistics.insightsEntry
+import com.example.sudokuslayer.feature.uicore.components.SudokuNavigationRail
+import com.example.sudokuslayer.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
@@ -62,15 +62,16 @@ class MyApplication : Application() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
-	val backstack = rememberNavBackStack(SudokuCreator())
+	val backstack =
+		rememberNavBackStack(_root_ide_package_.com.example.sudokuslayer.feature.creator.SudokuCreator())
 	val navigationRailState = rememberWideNavigationRailState(
 		initialValue = WideNavigationRailValue.Collapsed,
 	)
 	val destinations =
 		persistentListOf(
-			SudokuGame(),
-			SudokuCreator(),
-			Insights,
+			_root_ide_package_.com.example.sudokuslayer.feature.game.SudokuGame(),
+			_root_ide_package_.com.example.sudokuslayer.feature.creator.SudokuCreator(),
+			_root_ide_package_.com.example.sudokuslayer.feature.statistics.Insights,
 			Settings,
 		)
 	val scope = rememberCoroutineScope()
