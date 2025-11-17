@@ -1,8 +1,8 @@
-package com.example.sudokuslayer
+package io.github.mgrablo.sudokuslayer
 
 import android.app.Application
 import android.content.Context
-import com.example.domain.core.SudokuGridSize
+import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.koin.core.annotation.KoinExperimentalAPI

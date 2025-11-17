@@ -11,14 +11,14 @@ plugins {
 }
 
 android {
-	namespace = "com.example.sudokuslayer"
+	namespace = "io.github.mgrablo.sudokuslayer"
 	compileSdk =
 		libs.versions.android.compileSdk
 			.get()
 			.toInt()
 
 	defaultConfig {
-		applicationId = "com.example.sudokuslayer"
+		applicationId = "io.github.mgrablo.sudokuslayer"
 		minSdk =
 			libs.versions.android.minSdk
 				.get()

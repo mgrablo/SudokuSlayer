@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-	namespace = "com.example.sudokuslayer.$modulePackageName"
+	namespace = "io.github.mgrablo.sudokuslayer.$modulePackageName"
 	compileSdk =
 		libs.versions.android.compileSdk
 			.get()
