@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
 import io.github.mgrablo.sudokuslayer.feature.uicore.navigation.AppIcon
 import io.github.mgrablo.sudokuslayer.feature.uicore.navigation.Destination
@@ -33,6 +34,7 @@ fun EntryProviderScope<NavKey>.gameEntry(
 			onPlayAgainClick = onPlayAgainClick,
 			onNavigateToInsightsClick = onNavigateToInsightsClick,
 			viewModel = viewmodel,
+			navAnimatedContentScope = LocalNavAnimatedContentScope.current
 		)
 	}
 }

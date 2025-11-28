@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokuslayer.feature.creator
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -7,8 +8,10 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -51,11 +54,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import io.github.mgrablo.sudokucore.model.SolutionGrid
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokuslayer.domain.core.Game
@@ -89,6 +91,7 @@ private val PreviewBoxSize = 200.dp
 internal fun SudokuCreatorScreen(
 	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
 	openDrawer: () -> Unit,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuCreatorViewModel = koinViewModel(),
 ) {
@@ -96,6 +99,7 @@ internal fun SudokuCreatorScreen(
 
 	SudokuCreatorTheme(false) {
 		SudokuCreatorContent(
+			navAnimatedContentScope = navAnimatedContentScope,
 			uiState = uiState,
 			onEvent = viewModel::onEvent,
 			openDrawer = openDrawer,
@@ -113,6 +117,7 @@ internal fun SudokuCreatorScreen(
 @Composable
 private fun SudokuCreatorContent(
 	uiState: SudokuCreatorUiState,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	onEvent: (Event) -> Unit,
 	openDrawer: () -> Unit,
 	onNavigateToGameScreen: (SudokuGridSize) -> Unit,
@@ -198,6 +203,7 @@ private fun SudokuCreatorContent(
 								onSeedChange = { onEvent(Event.ChangePuzzleSeed(it)) },
 								sharedTransitionScope = this@SharedTransitionLayout,
 								animatedVisibilityScope = this,
+								navAnimatedContentScope = navAnimatedContentScope,
 								modifier = Modifier
 									.fillMaxWidth()
 									.sharedBounds(
@@ -212,6 +218,7 @@ private fun SudokuCreatorContent(
 								selectedGridSize = uiState.selectedGridSize,
 								sharedTransitionScope = this@SharedTransitionLayout,
 								animatedVisibilityScope = this,
+								navAnimatedContentScope = navAnimatedContentScope,
 								modifier = Modifier
 									.weight(1f)
 									.sharedBounds(
@@ -240,6 +247,7 @@ private fun InitialContent(
 	onSeedChange: (String) -> Unit,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
 	val hasActiveGame by remember(uiState) {
@@ -263,6 +271,8 @@ private fun InitialContent(
 				)
 			},
 		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
+		contentPadding = PaddingValues(LocalPadding.current.small)
 	) {
 		item {
 			AnimatedVisibility(visible = hasActiveGame) {
@@ -274,7 +284,7 @@ private fun InitialContent(
 					completed = uiState.savedGame.completed,
 					onContinueClick = onContinueClick,
 					onToggle = onToggleCardClick,
-					modifier = Modifier.padding(LocalPadding.current.small),
+					modifier = Modifier,
 				)
 			}
 		}
@@ -283,7 +293,7 @@ private fun InitialContent(
 				val sharedLoadingIndicatorModifier = with(LocalSharedTransitionScope.current) {
 					Modifier.sharedElement(
 						rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
-						animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+						animatedVisibilityScope = navAnimatedContentScope,
 					)
 				}
 				BoardPreview(
@@ -292,7 +302,8 @@ private fun InitialContent(
 						.sharedBounds(
 							rememberSharedContentState(CreatorSharedElementKey.BoardPreview),
 							animatedVisibilityScope = animatedVisibilityScope,
-						).then(sharedLoadingIndicatorModifier),
+						)
+						.then(sharedLoadingIndicatorModifier),
 					state = boardPreviewState,
 				)
 			}
@@ -304,7 +315,6 @@ private fun InitialContent(
 				selectedSize = uiState.selectedGridSize,
 				onCheckedChange = onGridSizeChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
@@ -314,7 +324,6 @@ private fun InitialContent(
 				selectedDifficulty = uiState.selectedDifficulty,
 				onCheckedChange = onDifficulyChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
@@ -325,7 +334,6 @@ private fun InitialContent(
 				seed = uiState.advancedOptionsState.seedInput,
 				onSeedChange = onSeedChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
@@ -338,6 +346,7 @@ private fun LoadingContent(
 	selectedGridSize: SudokuGridSize,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 ) {
 	with(sharedTransitionScope) {
@@ -355,7 +364,7 @@ private fun LoadingContent(
 					with(LocalSharedTransitionScope.current) {
 						Modifier.sharedElement(
 							rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
-							animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+							animatedVisibilityScope = navAnimatedContentScope,
 						)
 					}
 
@@ -373,7 +382,8 @@ private fun LoadingContent(
 						.sharedBounds(
 							rememberSharedContentState(CreatorSharedElementKey.BoardPreview),
 							animatedVisibilityScope = animatedVisibilityScope,
-						).then(sharedLoadingIndicatorModifier),
+						)
+						.then(sharedLoadingIndicatorModifier),
 				)
 				Spacer(Modifier.size(LocalPadding.current.big))
 
@@ -398,21 +408,34 @@ private fun LoadingContent(
 	}
 }
 
-@PreviewLightDark
+//region Previews
 @Composable
-private fun SudokuCreatorScreenPreview() {
+private fun SudokuCreatorScreenPreview(
+	uiState: SudokuCreatorUiState,
+) {
 	SudokuCreatorTheme {
-		SudokuCreatorContent(
-			uiState = SudokuCreatorUiState(),
-			onEvent = { },
-			openDrawer = { },
-			onNavigateToGameScreen = { },
-			modifier = Modifier.fillMaxSize(),
-		)
+		AnimatedVisibility(visible = true) {
+			SudokuCreatorContent(
+				uiState = uiState,
+				onEvent = { },
+				openDrawer = { },
+				onNavigateToGameScreen = { },
+				navAnimatedContentScope = this,
+				modifier = Modifier.fillMaxSize(),
+			)
+		}
 	}
 }
 
-@PreviewLightDark
+@Preview(name = "Initial", showBackground = true)
+@Preview(name = "Initial Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SudokuCreatorScreenInitialPreview() {
+	SudokuCreatorScreenPreview(uiState = SudokuCreatorUiState())
+}
+
+@Preview(name = "Active Game", showBackground = true)
+@Preview(name = "Active Game Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SudokuCreatorScreenActiveGamePreview() {
 	val savedGame = Game(
@@ -425,21 +448,20 @@ private fun SudokuCreatorScreenActiveGamePreview() {
 		solution = SolutionGrid(intArrayOf(), 0),
 	)
 
-	SudokuCreatorTheme {
-		SudokuCreatorContent(
-			uiState = SudokuCreatorUiState(
-				savedGame = savedGame,
-				hasActiveGame = true,
-			),
-			onEvent = { },
-			openDrawer = { },
-			onNavigateToGameScreen = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+	SudokuCreatorScreenPreview(
+		uiState = SudokuCreatorUiState(
+			savedGame = savedGame,
+			hasActiveGame = true,
+		),
+	)
 }
 
-@PreviewLightDark
+@Preview(name = "Active Game Expanded", showBackground = true)
+@Preview(
+	name = "Active Game Expanded Dark",
+	showBackground = true,
+	uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 	val savedGame = Game(
@@ -452,51 +474,36 @@ private fun SudokuCreatorScreenActiveGameExpandedPreview() {
 		solution = SolutionGrid(intArrayOf(), 0),
 	)
 
-	SudokuCreatorTheme {
-		SudokuCreatorContent(
-			uiState = SudokuCreatorUiState(
-				savedGame = savedGame,
-				hasActiveGame = true,
-				activeGameCardExpanded = true,
-				advancedOptionsState = AdvancedOptionsState(
-					expanded = true,
-				),
+	SudokuCreatorScreenPreview(
+		uiState = SudokuCreatorUiState(
+			savedGame = savedGame,
+			hasActiveGame = true,
+			activeGameCardExpanded = true,
+			advancedOptionsState = AdvancedOptionsState(
+				expanded = true,
 			),
-			onEvent = { },
-			openDrawer = { },
-			onNavigateToGameScreen = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+		),
+	)
 }
 
-@PreviewLightDark
+@Preview(name = "Loading", showBackground = true)
+@Preview(name = "Loading Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SudokuCreatorScreenLoadingPreview() {
-	SudokuCreatorTheme {
-		SudokuCreatorContent(
-			uiState = SudokuCreatorUiState(loadingState = ScreenState.LOADING),
-			onEvent = { },
-			openDrawer = { },
-			onNavigateToGameScreen = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+	SudokuCreatorScreenPreview(
+		uiState = SudokuCreatorUiState(loadingState = ScreenState.LOADING),
+	)
 }
 
-@PreviewLightDark
+@Preview(name = "Loading Big", showBackground = true)
+@Preview(name = "Loading Big Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SudokuCreatorScreenLoadingBigPreview() {
-	SudokuCreatorTheme {
-		SudokuCreatorContent(
-			uiState = SudokuCreatorUiState(
-				loadingState = ScreenState.LOADING,
-				selectedGridSize = SudokuGridSize.SIXTEEN,
-			),
-			onEvent = { },
-			openDrawer = { },
-			onNavigateToGameScreen = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+	SudokuCreatorScreenPreview(
+		uiState = SudokuCreatorUiState(
+			loadingState = ScreenState.LOADING,
+			selectedGridSize = SudokuGridSize.SIXTEEN,
+		),
+	)
 }
+//endregion
