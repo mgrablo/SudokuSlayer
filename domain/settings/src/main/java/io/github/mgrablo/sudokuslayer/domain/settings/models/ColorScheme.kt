@@ -28,7 +28,7 @@ sealed class ColorScheme(open val name: String, open val isDark: Boolean) {
 	data class Latte(override val name: String = "latte", override val isDark: Boolean = false) :
 		ColorScheme(name, isDark)
 
-	data class Frappe(override val name: String = "frappe", override val isDark: Boolean = false) :
+	data class Frappe(override val name: String = "frappe", override val isDark: Boolean = true) :
 		ColorScheme(name, isDark)
 
 	companion object {
