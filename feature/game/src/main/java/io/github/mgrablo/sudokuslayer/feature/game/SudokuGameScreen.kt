@@ -1,6 +1,9 @@
 package io.github.mgrablo.sudokuslayer.feature.game
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,14 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.tooling.preview.Devices.AUTOMOTIVE_1024p
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.composables.core.rememberDialogState
 import io.github.mgrablo.sudokucore.model.SolutionGrid
 import io.github.mgrablo.sudokucore.model.SudokuGrid
@@ -69,6 +69,7 @@ internal fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	onPlayAgainClick: () -> Unit,
 	onNavigateToInsightsClick: () -> Unit,
+	animatedVisibilityScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
 ) {
@@ -97,6 +98,7 @@ internal fun SudokuGameScreen(
 			elapsedTime = { elapsedTime },
 			onNavigateToInsightsClick = onNavigateToInsightsClick,
 			openDrawer = openDrawer,
+			animatedVisibilityScope = animatedVisibilityScope,
 		)
 	}
 }
@@ -107,6 +109,7 @@ private fun SudokuGameScreenContent(
 	uiState: SudokuGameUiState,
 	game: Game?,
 	remainingDigitCounts: PersistentMap<Int, Int>,
+	animatedVisibilityScope: AnimatedVisibilityScope,
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
@@ -126,10 +129,10 @@ private fun SudokuGameScreenContent(
 	val scaffoldState =
 		rememberBottomSheetScaffoldState(
 			bottomSheetState =
-			rememberStandardBottomSheetState(
-				initialValue = SheetValue.Hidden,
-				skipHiddenState = false,
-			),
+				rememberStandardBottomSheetState(
+					initialValue = SheetValue.Hidden,
+					skipHiddenState = false,
+				),
 		)
 
 	LaunchedEffect(uiState.gameState) {
@@ -140,7 +143,7 @@ private fun SudokuGameScreenContent(
 
 	SharedTransitionLayout {
 		HintBottomSheetScaffold(
-			modifier = modifier,
+			modifier = modifier.fillMaxSize(),
 			sheetScaffoldState = scaffoldState,
 			snackbarState = uiState.snackbarState,
 			hintLogs = game?.hintLogs ?: persistentListOf(),
@@ -163,7 +166,7 @@ private fun SudokuGameScreenContent(
 			val sharedLoadingIndicatorModifier = with(LocalSharedTransitionScope.current) {
 				Modifier.sharedElement(
 					rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
-					animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+					animatedVisibilityScope = animatedVisibilityScope,
 				)
 			}
 
@@ -358,6 +361,7 @@ private fun GameActions(
 	) { state ->
 		when (state) {
 			GameState.LOADING -> Unit
+
 			GameState.PLAYING -> {
 				KeyPad(
 					remainingDigitCounts = remainingDigitCounts,
@@ -373,6 +377,7 @@ private fun GameActions(
 					gridSize = gridSize,
 					isLeftHandMode = uiState.isLeftHandMode,
 					showActionButtonsOnTop = uiState.showActionButtonsOnTop,
+					modifier = Modifier,
 				)
 			}
 
@@ -390,92 +395,162 @@ private fun GameActions(
 	}
 }
 
-@PreviewScreenSizes
-@PreviewLightDark
+// region Previews
 @Composable
-private fun SudokuGameScreenPreview() {
+private fun SudokuGameScreenPreview(uiState: SudokuGameUiState, game: Game?) {
 	SudokuGameTheme {
-		SudokuGameScreenContent(
-			uiState = SudokuGameUiState(
-				selectedCell = 1 to 1,
-				gameState = GameState.VICTORY,
-			),
-			game =
-			Game(
-				grid = createFilledSudokuGrid(9),
-				elapsedTime = 0,
-				hintLogs = persistentListOf(),
-				hintsUsed = 0,
-				difficulty = GameDifficulty.Easy,
-				solution = SolutionGrid(intArrayOf(), 0),
-			),
-			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
-			onEvent = {},
-			elapsedTime = { 1 },
-			openDrawer = {},
-			onPlayAgainClick = { },
-			onNavigateToInsightsClick = { },
-			modifier = Modifier.fillMaxSize(),
-		)
+		AnimatedVisibility(true) {
+			SudokuGameScreenContent(
+				uiState = uiState,
+				game = game,
+				remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
+				onEvent = {},
+				elapsedTime = { 1 },
+				openDrawer = {},
+				onPlayAgainClick = { },
+				onNavigateToInsightsClick = { },
+				modifier = Modifier.fillMaxSize(),
+				animatedVisibilityScope = this,
+			)
+		}
 	}
 }
 
-@PreviewLightDark
+@Preview(name = "Loading", showBackground = true)
+@Preview(name = "Loading Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun SudokuGameScreenSixteenPreview() {
-	SudokuGameTheme {
-		SudokuGameScreenContent(
-			uiState = SudokuGameUiState(),
-			game =
-			Game(
-				grid = createFilledSudokuGrid(16),
-				elapsedTime = 0,
-				hintLogs = persistentListOf(),
-				hintsUsed = 0,
-				difficulty = GameDifficulty.Easy,
-				solution = SolutionGrid(intArrayOf(), 0),
-			),
-			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
-			onEvent = {},
-			elapsedTime = { 1 },
-			openDrawer = {},
-			onPlayAgainClick = { },
-			onNavigateToInsightsClick = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+private fun SudokuGameScreenLoadingPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(gameState = GameState.LOADING),
+		game = null,
+	)
 }
 
+@Preview(name = "Playing 9x9", showBackground = true)
+@Preview(name = "Playing 9x9 Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SudokuGameScreen9x9PlayingPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(
+			selectedCell = 1 to 1,
+			gameState = GameState.PLAYING,
+		),
+		game = Game(
+			grid = createFilledSudokuGrid(9),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
+}
+
+@Preview(name = "Playing 9x9 Landscape", showBackground = true, device = Devices.AUTOMOTIVE_1024p)
 @Preview(
-	device = AUTOMOTIVE_1024p,
+	name = "Playing 9x9 Landscape Dark",
+	showBackground = true,
+	device = Devices.AUTOMOTIVE_1024p,
+	uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-private fun SudokuGameScreenFourPreview() {
-	SudokuGameTheme {
-		SudokuGameScreenContent(
-			uiState =
-			SudokuGameUiState(
-				isLeftHandMode = true,
-				gameState = GameState.PLAYING,
-			),
-			game =
-			Game(
-				grid = createFilledSudokuGrid(4),
-				elapsedTime = 0,
-				hintLogs = persistentListOf(),
-				hintsUsed = 0,
-				difficulty = GameDifficulty.Easy,
-				solution = SolutionGrid(intArrayOf(), 0),
-			),
-			remainingDigitCounts = persistentMapOf(1 to 1, 2 to 1, 3 to 1, 4 to 1),
-			onEvent = {},
-			elapsedTime = { 1 },
-			openDrawer = {},
-			onPlayAgainClick = { },
-			onNavigateToInsightsClick = { },
-			modifier = Modifier.fillMaxSize(),
-		)
-	}
+private fun SudokuGameScreen9x9PlayingLandscapePreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(
+			selectedCell = 1 to 1,
+			gameState = GameState.PLAYING,
+		),
+		game = Game(
+			grid = createFilledSudokuGrid(9),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
+}
+
+@Preview(name = "Playing 16x16", showBackground = true)
+@Preview(
+	name = "Playing 16x16 Dark",
+	showBackground = true,
+	uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun SudokuGameScreen16x16PlayingPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(gameState = GameState.PLAYING),
+		game = Game(
+			grid = createFilledSudokuGrid(16),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
+}
+
+@Preview(name = "Playing 4x4", showBackground = true)
+@Preview(name = "Playing 4x4 Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SudokuGameScreen4x4PlayingPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(gameState = GameState.PLAYING),
+		game = Game(
+			grid = createFilledSudokuGrid(4),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
+}
+
+@Preview(name = "Playing Left Hand Mode", showBackground = true)
+@Preview(
+	name = "Playing Left Hand Mode Dark",
+	showBackground = true,
+	uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun SudokuGameScreenLeftHandModePlayingPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(
+			isLeftHandMode = true,
+			gameState = GameState.PLAYING,
+		),
+		game = Game(
+			grid = createFilledSudokuGrid(9),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
+}
+
+@Preview(name = "Victory", showBackground = true)
+@Preview(name = "Victory Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SudokuGameScreenVictoryPreview() {
+	SudokuGameScreenPreview(
+		uiState = SudokuGameUiState(
+			selectedCell = 1 to 1,
+			gameState = GameState.VICTORY,
+		),
+		game = Game(
+			grid = createFilledSudokuGrid(9),
+			elapsedTime = 0,
+			hintLogs = persistentListOf(),
+			hintsUsed = 0,
+			difficulty = GameDifficulty.Easy,
+			solution = SolutionGrid(intArrayOf(), 0),
+		),
+	)
 }
 
 private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
@@ -485,3 +560,4 @@ private fun createFilledSudokuGrid(gridSize: Int): SudokuGrid {
 	}
 	return SudokuGrid.fromIntArray(gridRows, gridSize)
 }
+// endregion
