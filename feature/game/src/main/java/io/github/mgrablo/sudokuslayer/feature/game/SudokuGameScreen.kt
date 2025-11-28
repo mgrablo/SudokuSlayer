@@ -69,7 +69,7 @@ internal fun SudokuGameScreen(
 	openDrawer: () -> Unit,
 	onPlayAgainClick: () -> Unit,
 	onNavigateToInsightsClick: () -> Unit,
-	animatedVisibilityScope: AnimatedVisibilityScope,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	modifier: Modifier = Modifier,
 	viewModel: SudokuGameViewModel = koinViewModel(),
 ) {
@@ -98,7 +98,7 @@ internal fun SudokuGameScreen(
 			elapsedTime = { elapsedTime },
 			onNavigateToInsightsClick = onNavigateToInsightsClick,
 			openDrawer = openDrawer,
-			animatedVisibilityScope = animatedVisibilityScope,
+			navAnimatedContentScope = navAnimatedContentScope,
 		)
 	}
 }
@@ -109,7 +109,7 @@ private fun SudokuGameScreenContent(
 	uiState: SudokuGameUiState,
 	game: Game?,
 	remainingDigitCounts: PersistentMap<Int, Int>,
-	animatedVisibilityScope: AnimatedVisibilityScope,
+	navAnimatedContentScope: AnimatedVisibilityScope,
 	onEvent: (Event) -> Unit,
 	elapsedTime: () -> Long,
 	openDrawer: () -> Unit,
@@ -166,13 +166,13 @@ private fun SudokuGameScreenContent(
 			val sharedLoadingIndicatorModifier = with(LocalSharedTransitionScope.current) {
 				Modifier.sharedElement(
 					rememberSharedContentState(SharedElementKey.BoardLoadingIndicator),
-					animatedVisibilityScope = animatedVisibilityScope,
+					animatedVisibilityScope = navAnimatedContentScope,
 				)
 			}
 
 			AnimatedContent(
 				targetState = uiState.gameState == GameState.LOADING || game == null,
-				modifier = Modifier.padding(innerPadding),
+				modifier = Modifier.fillMaxSize().padding(LocalPadding.current.tiny),
 			) { loading ->
 				if (loading) {
 					Column(
@@ -410,7 +410,7 @@ private fun SudokuGameScreenPreview(uiState: SudokuGameUiState, game: Game?) {
 				onPlayAgainClick = { },
 				onNavigateToInsightsClick = { },
 				modifier = Modifier.fillMaxSize(),
-				animatedVisibilityScope = this,
+				navAnimatedContentScope = this,
 			)
 		}
 	}

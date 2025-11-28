@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import io.github.mgrablo.sudokuslayer.domain.core.GameDifficulty
 import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
 import io.github.mgrablo.sudokuslayer.feature.uicore.navigation.AppIcon
@@ -31,6 +32,7 @@ fun EntryProviderScope<NavKey>.sudokuCreatorEntry(
 		}
 		SudokuCreatorScreen(
 			onNavigateToGameScreen = navigateToGameScreen,
+			navAnimatedContentScope = LocalNavAnimatedContentScope.current,
 			openDrawer = openDrawer,
 			viewModel = viewModel,
 			modifier = Modifier.fillMaxSize(),

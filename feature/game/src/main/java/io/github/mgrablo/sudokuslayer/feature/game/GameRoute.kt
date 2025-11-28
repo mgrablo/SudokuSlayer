@@ -34,7 +34,7 @@ fun EntryProviderScope<NavKey>.gameEntry(
 			onPlayAgainClick = onPlayAgainClick,
 			onNavigateToInsightsClick = onNavigateToInsightsClick,
 			viewModel = viewmodel,
-			animatedVisibilityScope = LocalNavAnimatedContentScope.current
+			navAnimatedContentScope = LocalNavAnimatedContentScope.current
 		)
 	}
 }
