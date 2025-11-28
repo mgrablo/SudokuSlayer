@@ -8,8 +8,10 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -269,6 +271,8 @@ private fun InitialContent(
 				)
 			},
 		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.spacedBy(LocalPadding.current.small),
+		contentPadding = PaddingValues(LocalPadding.current.small)
 	) {
 		item {
 			AnimatedVisibility(visible = hasActiveGame) {
@@ -280,7 +284,7 @@ private fun InitialContent(
 					completed = uiState.savedGame.completed,
 					onContinueClick = onContinueClick,
 					onToggle = onToggleCardClick,
-					modifier = Modifier.padding(LocalPadding.current.small),
+					modifier = Modifier,
 				)
 			}
 		}
@@ -311,7 +315,6 @@ private fun InitialContent(
 				selectedSize = uiState.selectedGridSize,
 				onCheckedChange = onGridSizeChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
@@ -321,7 +324,6 @@ private fun InitialContent(
 				selectedDifficulty = uiState.selectedDifficulty,
 				onCheckedChange = onDifficulyChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
@@ -332,7 +334,6 @@ private fun InitialContent(
 				seed = uiState.advancedOptionsState.seedInput,
 				onSeedChange = onSeedChange,
 				modifier = Modifier
-					.padding(LocalPadding.current.small)
 					.fillMaxWidth(),
 			)
 		}
