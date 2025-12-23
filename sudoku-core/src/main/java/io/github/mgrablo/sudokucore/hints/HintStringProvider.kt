@@ -1,4 +1,4 @@
-package io.github.mgrablo.sudokucore.solver
+package io.github.mgrablo.sudokucore.hints
 
 /**
  * Interface for providing localized strings to the hint explanation strategies.
@@ -46,6 +46,11 @@ enum class HintStringKey {
 	CANNOT_APPEAR_IN_THE,
 	SINCE_CONFINED_TO,
 	ONE_POSSIBLE_CANDIDATE,
+
+	// Naked Single
+	NAKED_SINGLE_STEP_1,
+	NAKED_SINGLE_STEP_2,
+	NAKED_SINGLE_STEP_3,
 
 	// Scope parts
 	ROW,

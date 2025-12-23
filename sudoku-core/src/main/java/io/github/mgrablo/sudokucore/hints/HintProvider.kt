@@ -1,9 +1,11 @@
-package io.github.mgrablo.sudokucore.solver
+package io.github.mgrablo.sudokucore.hints
 
 import androidx.compose.runtime.Stable
+import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.model.SudokuGrid
+import io.github.mgrablo.sudokucore.solver.ClassicSudokuSolver
 import io.github.mgrablo.sudokucore.symmetricDifference
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -248,15 +250,15 @@ class HintProvider {
 								col = it.col,
 								value = digit,
 								type =
-								HintType.ClaimingCandidate(
-									if (house is House.Row) {
-										GroupType.Row(
-											it.row,
-										)
-									} else {
-										GroupType.Column(it.col)
-									},
-								),
+									HintType.ClaimingCandidate(
+										if (house is House.Row) {
+											GroupType.Row(
+												it.row,
+											)
+										} else {
+											GroupType.Column(it.col)
+										},
+									),
 								explanationStrategy = ClaimingCandidateExplanation(),
 								enforcingCells = candidateCells.toPersistentSet(),
 							),

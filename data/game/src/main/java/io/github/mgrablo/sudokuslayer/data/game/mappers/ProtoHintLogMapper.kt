@@ -1,8 +1,8 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import io.github.mgrablo.sudokucore.solver.HintExplanationPart
-import io.github.mgrablo.sudokucore.solver.HintExplanationStep
-import io.github.mgrablo.sudokucore.solver.ScopeType
+import io.github.mgrablo.sudokucore.hints.HintExplanationPart
+import io.github.mgrablo.sudokucore.hints.HintExplanationStep
+import io.github.mgrablo.sudokucore.hints.ScopeType
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintExplanationPart
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintExplanationStep
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintLog
@@ -66,12 +66,14 @@ fun HintExplanationPart.toProtoHintExplanationPart(): ProtoHintExplanationPart {
 				.setContent(content)
 				.build()
 		}
+
 		is HintExplanationPart.CellCoordinate -> {
 			builder.cellCoordinate = ProtoHintExplanationPart.CellCoordinatePart.newBuilder()
 				.setRow(row)
 				.setCol(col)
 				.build()
 		}
+
 		is HintExplanationPart.CellCoordinatesGroup -> {
 			val cellsBuilder = ProtoHintExplanationPart.CellCoordinatesGroupPart.newBuilder()
 			cells.forEach { (row, col) ->
@@ -84,16 +86,19 @@ fun HintExplanationPart.toProtoHintExplanationPart(): ProtoHintExplanationPart {
 			}
 			builder.cellCoordinatesGroup = cellsBuilder.build()
 		}
+
 		is HintExplanationPart.Value -> {
 			builder.value = ProtoHintExplanationPart.ValuePart.newBuilder()
 				.setValue(value)
 				.build()
 		}
+
 		is HintExplanationPart.TechniqueName -> {
 			builder.techniqueName = ProtoHintExplanationPart.TechniqueNamePart.newBuilder()
 				.setName(name)
 				.build()
 		}
+
 		is HintExplanationPart.ScopeReference -> {
 			val scopeBuilder = ProtoHintExplanationPart.ScopeReferencePart.newBuilder()
 				.setType(
@@ -110,6 +115,7 @@ fun HintExplanationPart.toProtoHintExplanationPart(): ProtoHintExplanationPart {
 
 			builder.scopeReference = scopeBuilder.build()
 		}
+
 		is HintExplanationPart.ValueGroup -> {
 			builder.valueGroup = ProtoHintExplanationPart.ValueGroupPart.newBuilder()
 				.addAllValues(values)

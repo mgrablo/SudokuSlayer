@@ -1,4 +1,4 @@
-package io.github.mgrablo.sudokucore.solver
+package io.github.mgrablo.sudokucore.hints
 
 import androidx.compose.runtime.Stable
 import io.github.mgrablo.sudokucore.model.SudokuCellData
@@ -13,63 +13,6 @@ interface HintExplanationStrategy {
 	): List<HintExplanationStep>
 }
 
-class NakedSingleExplanation : HintExplanationStrategy {
-	override fun generateStructuredHintExplanation(
-		grid: SudokuGrid,
-		hint: Hint,
-		stringProvider: HintStringProvider,
-	): List<HintExplanationStep> {
-		val (row, column, value) = hint
-		return listOf(
-			// Step 1: Focus on the cell
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.FOCUS_ON_CELL)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.CellCoordinate(row + 1, column + 1),
-					HintExplanationPart.Text("!"),
-				),
-			),
-			// Step 2: Explain the naked single logic
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THE_CELL_AT)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.CellCoordinate(row + 1, column + 1),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.ONE_POSSIBLE_CANDIDATE)),
-					HintExplanationPart.Text("."),
-				),
-			),
-			// Step 3: Explain the conclusion
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.ONLY_POSSIBLE_CANDIDATE)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Value(value),
-					HintExplanationPart.Text(", "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THE_CELL_AT)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.CellCoordinate(row + 1, column + 1),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.MUST_CONTAIN)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Value(value),
-					HintExplanationPart.Text("."),
-				),
-			),
-			// Step 4: Name the technique
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.TechniqueName(
-						stringProvider.getString(HintStringKey.TECHNIQUE_NAKED_SINGLE),
-					),
-				),
-			),
-		)
-	}
-}
-
 class HiddenSingleExplanation : HintExplanationStrategy {
 	override fun generateStructuredHintExplanation(
 		grid: SudokuGrid,
@@ -81,7 +24,9 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 		// Determine the scope type (row, column, or block)
 		val (scopeType, scopeIndex) = when (hintType.groupType) {
 			is GroupType.Row -> ScopeType.ROW to hint.row + 1
+
 			is GroupType.Column -> ScopeType.COLUMN to hint.col + 1
+
 			is GroupType.Block -> {
 				val blockId =
 					(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1

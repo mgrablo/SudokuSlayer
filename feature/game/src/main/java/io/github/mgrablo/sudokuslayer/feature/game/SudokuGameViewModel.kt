@@ -3,13 +3,13 @@ package io.github.mgrablo.sudokuslayer.feature.game
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.model.CellAttributes
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.model.clearAllCornerNotes
 import io.github.mgrablo.sudokucore.model.fillNotes
 import io.github.mgrablo.sudokucore.solver.ClassicSudokuSolver
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintType
 import io.github.mgrablo.sudokuslayer.domain.core.Game
 import io.github.mgrablo.sudokuslayer.domain.core.GameDifficulty
 import io.github.mgrablo.sudokuslayer.domain.core.GameResult
@@ -176,7 +176,9 @@ internal class SudokuGameViewModel(
 	fun onEvent(event: Event) {
 		when (event) {
 			is Event.SelectCell -> viewModelScope.launch { selectCell(event.row, event.column) }
+
 			is Event.CellLongClick -> handleCellLongClick(event.row, event.column)
+
 			is Event.InputNumber ->
 				inputNumber(
 					number = event.number,
@@ -198,18 +200,27 @@ internal class SudokuGameViewModel(
 				)
 
 			is Event.Undo -> undoLastMove()
+
 			is Event.Redo -> redoLastMove()
+
 			is Event.ResetGame -> resetGame()
+
 			is Event.ProvideHint -> provideHint()
+
 			is Event.HighlightHintCells -> hintFocus(event.hint)
 
 			is Event.ExplainHint -> revealHint()
 
 			is Event.HintFillNotes -> fillNotes()
+
 			is Event.FindMistakes -> handleFindMistakes()
+
 			is Event.ShowMistakes -> handleShowMistakes()
+
 			is Event.SwitchInputMode -> switchInputMode(event.isNote)
+
 			is Event.ResetNotes -> resetNotes()
+
 			is Event.StopTimer -> {
 				viewModelScope.launch {
 					elapsedTimerManager.stopTracking()

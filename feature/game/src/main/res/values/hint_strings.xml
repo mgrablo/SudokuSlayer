@@ -45,5 +45,10 @@
     <string name="hint_technique_hidden_single">Hidden Single</string>
     <string name="hint_technique_pointing_candidate">Pointing Candidate</string>
     <string name="hint_technique_claiming_candidate">Claiming Candidate</string>
+
+    <!-- Naked Single Explanation -->
+    <string name="hint_naked_single_step_1">Focus on the cell {0}!</string>
+    <string name="hint_naked_single_step_2">The cell at {0} has only one possible candidate remaining after considering the numbers already present in its row, column, and block.</string>
+    <string name="hint_naked_single_step_3">Since the only possible candidate for the cell is {0}, the cell at {1} must contain {2}.</string>
 </resources>
 

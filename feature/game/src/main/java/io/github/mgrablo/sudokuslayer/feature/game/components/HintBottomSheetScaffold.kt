@@ -42,9 +42,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintType
-import io.github.mgrablo.sudokucore.solver.NakedSingleExplanation
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.components.snackbar.GameSnackbar
@@ -134,20 +134,20 @@ private fun SheetContent(
 
 	Column(
 		modifier =
-		modifier
-			.fillMaxSize()
-			.padding(horizontal = 16.dp)
-			.padding(
-				bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-			),
+			modifier
+				.fillMaxSize()
+				.padding(horizontal = 16.dp)
+				.padding(
+					bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+				),
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
 		LazyColumn(
 			state = listState,
 			modifier =
-			Modifier
-				.fillMaxWidth()
-				.weight(1f),
+				Modifier
+					.fillMaxWidth()
+					.weight(1f),
 		) {
 			itemsIndexed(items = logs, key = { id, v -> id }) { index, hintLog ->
 				val interactionSource = remember { MutableInteractionSource() }
@@ -225,10 +225,10 @@ internal fun BottomSheetElevatedButton(
 		modifier = modifier,
 		onClick = onClick,
 		colors =
-		ButtonDefaults.elevatedButtonColors(
-			containerColor = containerColor,
-			contentColor = contentColor,
-		),
+			ButtonDefaults.elevatedButtonColors(
+				containerColor = containerColor,
+				contentColor = contentColor,
+			),
 	) {
 		Text(
 			text = text,
@@ -250,30 +250,30 @@ private fun HintBottomSheetScaffoldPreview() {
 		val scaffoldState =
 			rememberBottomSheetScaffoldState(
 				bottomSheetState =
-				rememberStandardBottomSheetState(
-					initialValue = SheetValue.Expanded,
-				),
+					rememberStandardBottomSheetState(
+						initialValue = SheetValue.Expanded,
+					),
 			)
 		HintBottomSheetScaffold(
 			sheetScaffoldState = scaffoldState,
 			hintLogs =
-			persistentListOf(
-				HintLog(
-					id = 1,
-					hint =
-					Hint(
-						row = 1,
-						col = 1,
-						value = 4,
-						type = HintType.NakedSingle,
-						explanationStrategy = NakedSingleExplanation(),
-						additionalInfo = "",
+				persistentListOf(
+					HintLog(
+						id = 1,
+						hint =
+							Hint(
+								row = 1,
+								col = 1,
+								value = 4,
+								type = HintType.NakedSingle,
+								explanationStrategy = NakedSingleExplanation(),
+								additionalInfo = "",
+							),
+						isUserGuessed = false,
+						isRevealed = false,
+						structuredExplanation = persistentListOf(),
 					),
-					isUserGuessed = false,
-					isRevealed = false,
-					structuredExplanation = persistentListOf(),
 				),
-			),
 			explainHintClick = { },
 			nextHintClick = { },
 			onHighlightCellClick = { },

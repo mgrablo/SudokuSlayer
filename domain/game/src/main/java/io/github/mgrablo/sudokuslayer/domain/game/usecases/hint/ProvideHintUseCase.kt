@@ -1,10 +1,10 @@
 package io.github.mgrablo.sudokuslayer.domain.game.usecases.hint
 
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintProvider
+import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.fillCandidates
 import io.github.mgrablo.sudokucore.model.SudokuCellData
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintProvider
-import io.github.mgrablo.sudokucore.solver.HintType
-import io.github.mgrablo.sudokucore.solver.fillCandidates
 import io.github.mgrablo.sudokuslayer.domain.core.Game
 import kotlinx.collections.immutable.minus
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +54,7 @@ class ProvideHintUseCase(private val hintProvider: HintProvider) {
 							}
 					}
 				}
+
 				// Hints that fill cells
 				is HintType.NakedSingle, is HintType.HiddenSingle -> Unit
 			}
