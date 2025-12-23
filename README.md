@@ -1,10 +1,16 @@
 <div align="center">
-  <a href="">
-    <img src="./assets/logo.png" alt="" width="80" height="80">
+  <a href="https://github.com/mgrablo/SudokuSlayer">
+    <img src="./assets/logo.png" alt="SudokuSlayer Logo" width="80" height="80">
   </a>
   <br>
   <h1 align="center">SudokuSlayer</h1>
 </div>
+
+<p align="center">
+  <img src="https://img.shields.io/github/license/mgrablo/SudokuSlayer?style=flat-square" alt="License" />
+  <img src="https://img.shields.io/badge/Kotlin-2.2.20-purple?logo=kotlin&style=flat-square" alt="Kotlin" />
+  <img src="https://img.shields.io/badge/platform-Android-green?logo=android&style=flat-square" alt="Platform" />
+</p>
 
 <p align="center">
 Feature-rich Sudoku app for Android, designed for both beginners and experienced players.
@@ -45,19 +51,34 @@ Feature-rich Sudoku app for Android, designed for both beginners and experienced
 
 ## Screenshots
 
-*(Placeholder for screenshots)*
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center"><img src="assets/screenshots/Slice%201.png" alt="SudokuSlayer Screenshot 1" width="300" /></td>
+    <td align="center"><img src="assets/screenshots/Slice%202.png" alt="SudokuSlayer Screenshot 2" width="300" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/screenshots/Slice%203.png" alt="SudokuSlayer Screenshot 3" width="300" /></td>
+    <td align="center"><img src="assets/screenshots/Slice%204.png" alt="SudokuSlayer Screenshot 4" width="300" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/screenshots/Slice%205.png" alt="SudokuSlayer Screenshot 5" width="300" /></td>
+    <td align="center"><img src="assets/screenshots/Slice%206.png" alt="SudokuSlayer Screenshot 6" width="300" /></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/screenshots/Slice%207.png" alt="SudokuSlayer Screenshot 7" width="300" /></td>
+    <td align="center"><img src="assets/screenshots/Slice%208.png" alt="SudokuSlayer Screenshot 8" width="300" /></td>
+  </tr>
+</table>
 
 ## Installation
 
-Currently, you need to build the app from the source to install it.
+To build the app from source:
 
 ```bash
 git clone https://github.com/mgrablo/SudokuSlayer
 cd SudokuSlayer
 ./gradlew assembleDebug
 ```
-
-I plan to publish SudokuSlayer on F-Droid soon.
 
 ## Contributing
 
@@ -68,6 +89,8 @@ Contributions are welcome! If you want to contribute to SudokuSlayer, please fol
 3. Make your changes and commit them with a descriptive message.
 4. Push your changes to your fork.
 5. Create a pull request to the main repository.
+
+Feel free to open an [issue](https://github.com/mgrablo/SudokuSlayer/issues) for bugs or feature requests.
 
 ## License
 
