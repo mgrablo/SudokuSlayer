@@ -109,5 +109,14 @@ class AndroidHintStringProvider(private val context: Context) : HintStringProvid
 		HintStringKey.HIDDEN_SINGLE_STEP_2 -> R.string.hint_hidden_single_step_2
 
 		HintStringKey.HIDDEN_SINGLE_STEP_3 -> R.string.hint_hidden_single_step_3
+
+		// Claiming Candidate
+		HintStringKey.CLAIMING_CANDIDATE_STEP_1 -> R.string.hint_claiming_candidate_step_1
+
+		HintStringKey.CLAIMING_CANDIDATE_STEP_2 -> R.string.hint_claiming_candidate_step_2
+
+		HintStringKey.CLAIMING_CANDIDATE_STEP_3 -> R.string.hint_claiming_candidate_step_3
+
+		HintStringKey.CLAIMING_CANDIDATE_STEP_4 -> R.string.hint_claiming_candidate_step_4
 	}
 }

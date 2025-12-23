@@ -56,6 +56,10 @@
 	<string name="hint_hidden_single_step_2">In {0}, the only cell that can contain the number {1} is {2}.</string>
 	<string name="hint_hidden_single_step_3">Therefore, the cell at {0} must contain {1}.</string>
 
-
+	<!-- Claiming Candidate Explanation -->
+	<string name="hint_claiming_candidate_step_1">Focus on {0}!</string>
+	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} can only be placed in the following cells: {2}.</string>
+	<string name="hint_claiming_candidate_step_3">Therefore, you can eliminate {0} from the candidates in the rest of {1}.</string>
+	<string name="hint_claiming_candidate_step_4">The affected cells are: {0}.</string>
 </resources>
 
