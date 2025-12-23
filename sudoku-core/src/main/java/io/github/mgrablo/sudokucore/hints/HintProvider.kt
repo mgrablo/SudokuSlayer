@@ -1,6 +1,7 @@
 package io.github.mgrablo.sudokucore.hints
 
 import androidx.compose.runtime.Stable
+import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData

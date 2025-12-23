@@ -13,146 +13,6 @@ interface HintExplanationStrategy {
 	): List<HintExplanationStep>
 }
 
-class HiddenSingleExplanation : HintExplanationStrategy {
-	override fun generateStructuredHintExplanation(
-		grid: SudokuGrid,
-		hint: Hint,
-		stringProvider: HintStringProvider,
-	): List<HintExplanationStep> {
-		val hintType = hint.type as HintType.HiddenSingle
-
-		// Determine the scope type (row, column, or block)
-		val (scopeType, scopeIndex) = when (hintType.groupType) {
-			is GroupType.Row -> ScopeType.ROW to hint.row + 1
-
-			is GroupType.Column -> ScopeType.COLUMN to hint.col + 1
-
-			is GroupType.Block -> {
-				val blockId =
-					(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
-				ScopeType.BLOCK to blockId
-			}
-		}
-
-		// Get the affected cells (cells that can't have the value)
-		val affectedCells = when (hintType.groupType) {
-			is GroupType.Row -> {
-				grid.getRow(hint.row)
-					.filter { it.number == 0 && it.col != hint.col }
-					.map { Pair(it.row + 1, it.col + 1) }
-			}
-
-			is GroupType.Column -> {
-				grid.getColumn(hint.col)
-					.filter { it.number == 0 && it.row != hint.row }
-					.map { Pair(it.row + 1, it.col + 1) }
-			}
-
-			is GroupType.Block -> {
-				val blockRow = (hint.row / grid.subgridSize) * grid.subgridSize
-				val blockCol = (hint.col / grid.subgridSize) * grid.subgridSize
-
-				val cells = mutableListOf<Pair<Int, Int>>()
-				for (r in blockRow until blockRow + grid.subgridSize) {
-					for (c in blockCol until blockCol + grid.subgridSize) {
-						if ((r != hint.row || c != hint.col) && grid.getCellAt(r, c).number == 0) {
-							cells.add(Pair(r + 1, c + 1))
-						}
-					}
-				}
-				cells
-			}
-		}
-
-		// Determine which string to use for blocked reason based on the group type
-		val blockedReasonKey = when (hintType.groupType) {
-			is GroupType.Row -> HintStringKey.SAME_COLUMN
-			is GroupType.Column -> HintStringKey.SAME_ROW
-			is GroupType.Block -> HintStringKey.SAME_ROW
-		}
-
-		// Build explanation steps with proper structured parts
-		return listOf(
-			// Step 1: Focus on the cell
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.FOCUS_ON_CELL)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.CellCoordinate(hint.row + 1, hint.col + 1),
-					HintExplanationPart.Text("!"),
-				),
-			),
-
-			// Step 2: Explain hidden single logic - the value can only go in this cell
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.IN)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.ScopeReference(scopeType, scopeIndex),
-					HintExplanationPart.Text(", "),
-					HintExplanationPart.Value(hint.value),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.CANNOT_BE_PLACED_IN)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THEY_ARE_BLOCKED_BY)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Value(hint.value),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(blockedReasonKey)),
-					HintExplanationPart.Text("."),
-				),
-			),
-
-			// Step 3: Show affected cells if there are any
-			HintExplanationStep(
-				if (affectedCells.isNotEmpty()) {
-					listOf(
-						HintExplanationPart.Text(stringProvider.getString(HintStringKey.AFFECTED_CELLS_ARE)),
-						HintExplanationPart.Text(" "),
-						HintExplanationPart.CellCoordinatesGroup(affectedCells),
-						HintExplanationPart.Text("."),
-					)
-				} else {
-					listOf(
-						HintExplanationPart.Text(
-							stringProvider.getString(
-								HintStringKey.NO_OTHER_EMPTY_CELLS,
-								getScopeTypeString(scopeType, stringProvider),
-							),
-						),
-						HintExplanationPart.Text("."),
-					)
-				},
-			),
-
-			// Step 4: Conclusion
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THEREFORE)),
-					HintExplanationPart.Text(", "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.THE_CELL_AT)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.CellCoordinate(hint.row + 1, hint.col + 1),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Text(stringProvider.getString(HintStringKey.MUST_CONTAIN)),
-					HintExplanationPart.Text(" "),
-					HintExplanationPart.Value(hint.value),
-					HintExplanationPart.Text("."),
-				),
-			),
-
-			// Step 5: Technique name
-			HintExplanationStep(
-				listOf(
-					HintExplanationPart.TechniqueName(
-						stringProvider.getString(HintStringKey.TECHNIQUE_HIDDEN_SINGLE),
-					),
-				),
-			),
-		)
-	}
-}
-
 class ClaimingCandidateExplanation : HintExplanationStrategy {
 	override fun generateStructuredHintExplanation(
 		grid: SudokuGrid,
@@ -476,7 +336,7 @@ private fun getScopePartStringLocalized(
 	}
 }
 
-private fun getScopePartStringLocalized(
+internal fun getScopePartStringLocalized(
 	number: Int,
 	groupType: GroupType,
 	stringProvider: HintStringProvider,
@@ -500,7 +360,7 @@ private fun getScopePartStringLocalized(
 	else -> "null"
 }
 
-private fun getScopeTypeString(scopeType: ScopeType, stringProvider: HintStringProvider): String =
+internal fun getScopeTypeString(scopeType: ScopeType, stringProvider: HintStringProvider): String =
 	when (scopeType) {
 		ScopeType.ROW -> stringProvider.getString(HintStringKey.ROW)
 		ScopeType.COLUMN -> stringProvider.getString(HintStringKey.COLUMN)

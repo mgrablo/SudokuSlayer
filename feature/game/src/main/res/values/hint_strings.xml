@@ -50,5 +50,12 @@
     <string name="hint_naked_single_step_1">Focus on the cell {0}!</string>
     <string name="hint_naked_single_step_2">The cell at {0} has only one possible candidate remaining after considering the numbers already present in its row, column, and block.</string>
     <string name="hint_naked_single_step_3">Since the only possible candidate for the cell is {0}, the cell at {1} must contain {2}.</string>
+
+	<!-- Hidden Single Explanation -->
+	<string name="hint_hidden_single_step_1">Focus on the cell {0}!</string>
+	<string name="hint_hidden_single_step_2">In {0}, the only cell that can contain the number {1} is {2}.</string>
+	<string name="hint_hidden_single_step_3">Therefore, the cell at {0} must contain {1}.</string>
+
+
 </resources>
 

@@ -52,6 +52,11 @@ enum class HintStringKey {
 	NAKED_SINGLE_STEP_2,
 	NAKED_SINGLE_STEP_3,
 
+	// Hidden Single
+	HIDDEN_SINGLE_STEP_1,
+	HIDDEN_SINGLE_STEP_2,
+	HIDDEN_SINGLE_STEP_3,
+
 	// Scope parts
 	ROW,
 	COLUMN,

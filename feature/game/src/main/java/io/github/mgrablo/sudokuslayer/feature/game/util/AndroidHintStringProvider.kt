@@ -95,5 +95,19 @@ class AndroidHintStringProvider(private val context: Context) : HintStringProvid
 		HintStringKey.TECHNIQUE_POINTING_CANDIDATE -> R.string.hint_technique_pointing_candidate
 
 		HintStringKey.TECHNIQUE_CLAIMING_CANDIDATE -> R.string.hint_technique_claiming_candidate
+
+		// Naked Single
+		HintStringKey.NAKED_SINGLE_STEP_1 -> R.string.hint_naked_single_step_1
+
+		HintStringKey.NAKED_SINGLE_STEP_2 -> R.string.hint_naked_single_step_2
+
+		HintStringKey.NAKED_SINGLE_STEP_3 -> R.string.hint_naked_single_step_3
+
+		// Hidden Single
+		HintStringKey.HIDDEN_SINGLE_STEP_1 -> R.string.hint_hidden_single_step_1
+
+		HintStringKey.HIDDEN_SINGLE_STEP_2 -> R.string.hint_hidden_single_step_2
+
+		HintStringKey.HIDDEN_SINGLE_STEP_3 -> R.string.hint_hidden_single_step_3
 	}
 }

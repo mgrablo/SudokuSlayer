@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokucore.hints
 
+import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
 
 object HintExplanationFactory {
