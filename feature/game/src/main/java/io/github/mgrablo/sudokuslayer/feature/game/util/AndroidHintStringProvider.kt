@@ -118,5 +118,14 @@ class AndroidHintStringProvider(private val context: Context) : HintStringProvid
 		HintStringKey.CLAIMING_CANDIDATE_STEP_3 -> R.string.hint_claiming_candidate_step_3
 
 		HintStringKey.CLAIMING_CANDIDATE_STEP_4 -> R.string.hint_claiming_candidate_step_4
+
+		// Pointing Candidate
+		HintStringKey.POINTING_CANDIDATE_STEP_1 -> R.string.hint_pointing_candidate_step_1
+
+		HintStringKey.POINTING_CANDIDATE_STEP_2 -> R.string.hint_pointing_candidate_step_2
+
+		HintStringKey.POINTING_CANDIDATE_STEP_3 -> R.string.hint_pointing_candidate_step_3
+
+		HintStringKey.POINTING_CANDIDATE_STEP_4 -> R.string.hint_pointing_candidate_step_4
 	}
 }

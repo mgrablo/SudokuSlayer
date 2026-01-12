@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- General hint parts -->
-    <string name="hint_focus_on_cell">Focus on the cell</string>
-    <string name="hint_focus_on_block">Focus on</string>
-    <string name="hint_therefore">Therefore</string>
-    <string name="hint_must_contain">must contain</string>
-    <string name="hint_the_cell_at">The cell at</string>
-    <string name="hint_in">In</string>
-    <string name="hint_affected_cells_are">The affected cells are:</string>
-    <string name="hint_no_other_empty_cells">There are no other empty cells in this %s</string>
-    <string name="hint_can_only_be_placed_in">can only be placed in</string>
-    <string name="hint_cannot_be_placed_in">cannot be placed in</string>
-    <string name="hint_only_possible_candidate">Since the only possible candidate for the cell is</string>
-    <string name="hint_following_cells">the following cells:</string>
-    <string name="hint_since">since</string>
-    <string name="hint_thus_remove_from">Thus, you can remove</string>
-    <string name="hint_they_are_blocked_by">they are blocked by</string>
-    <string name="hint_can_only_appear_in_the">can only appear in the</string>
-    <string name="hint_cannot_appear_in_the">cannot appear in the</string>
-    <string name="hint_since_confined_to">since it is confined to the</string>
+	<!-- General hint parts -->
+	<string name="hint_focus_on_cell">Focus on the cell</string>
+	<string name="hint_focus_on_block">Focus on</string>
+	<string name="hint_therefore">Therefore</string>
+	<string name="hint_must_contain">must contain</string>
+	<string name="hint_the_cell_at">The cell at</string>
+	<string name="hint_in">In</string>
+	<string name="hint_affected_cells_are">The affected cells are:</string>
+	<string name="hint_no_other_empty_cells">There are no other empty cells in this %s</string>
+	<string name="hint_can_only_be_placed_in">can only be placed in</string>
+	<string name="hint_cannot_be_placed_in">cannot be placed in</string>
+	<string name="hint_only_possible_candidate">Since the only possible candidate for the cell is</string>
+	<string name="hint_following_cells">the following cells:</string>
+	<string name="hint_since">since</string>
+	<string name="hint_thus_remove_from">Thus, you can remove</string>
+	<string name="hint_they_are_blocked_by">they are blocked by</string>
+	<string name="hint_can_only_appear_in_the">can only appear in the</string>
+	<string name="hint_cannot_appear_in_the">cannot appear in the</string>
+	<string name="hint_since_confined_to">since it is confined to the</string>
 	<string name="hint_one_possible_candidate">has only one possible candidate remaining after considering the numbers already present in its row, column, and block</string>
 
-    <!-- Scope parts -->
-    <string name="hint_row">row</string>
-    <string name="hint_column">column</string>
-    <string name="hint_block">block</string>
-    <string name="hint_block_part">block part</string>
+	<!-- Scope parts -->
+	<string name="hint_row">row</string>
+	<string name="hint_column">column</string>
+	<string name="hint_block">block</string>
+	<string name="hint_block_part">block part</string>
 
-    <!-- Position descriptions -->
-    <string name="hint_top">top</string>
-    <string name="hint_middle">middle</string>
-    <string name="hint_bottom">bottom</string>
-    <string name="hint_left">left</string>
-    <string name="hint_center">center</string>
-    <string name="hint_right">right</string>
+	<!-- Position descriptions -->
+	<string name="hint_top">top</string>
+	<string name="hint_middle">middle</string>
+	<string name="hint_bottom">bottom</string>
+	<string name="hint_left">left</string>
+	<string name="hint_center">center</string>
+	<string name="hint_right">right</string>
 
-    <!-- Other hints context -->
-    <string name="hint_same_row">in the same row</string>
-    <string name="hint_same_column">in the same column</string>
-    <string name="hint_same_block">in the same block</string>
+	<!-- Other hints context -->
+	<string name="hint_same_row">in the same row</string>
+	<string name="hint_same_column">in the same column</string>
+	<string name="hint_same_block">in the same block</string>
 
-    <!-- Technique names -->
-    <string name="hint_technique_naked_single">Naked Single</string>
-    <string name="hint_technique_hidden_single">Hidden Single</string>
-    <string name="hint_technique_pointing_candidate">Pointing Candidate</string>
-    <string name="hint_technique_claiming_candidate">Claiming Candidate</string>
+	<!-- Technique names -->
+	<string name="hint_technique_naked_single">Naked Single</string>
+	<string name="hint_technique_hidden_single">Hidden Single</string>
+	<string name="hint_technique_pointing_candidate">Pointing Candidate</string>
+	<string name="hint_technique_claiming_candidate">Claiming Candidate</string>
 
-    <!-- Naked Single Explanation -->
-    <string name="hint_naked_single_step_1">Focus on the cell {0}!</string>
-    <string name="hint_naked_single_step_2">The cell at {0} has only one possible candidate remaining after considering the numbers already present in its row, column, and block.</string>
-    <string name="hint_naked_single_step_3">Since the only possible candidate for the cell is {0}, the cell at {1} must contain {2}.</string>
+	<!-- Naked Single Explanation -->
+	<string name="hint_naked_single_step_1">Focus on the cell {0}!</string>
+	<string name="hint_naked_single_step_2">The cell at {0} has only one possible candidate remaining after considering the numbers already present in its row, column, and block.</string>
+	<string name="hint_naked_single_step_3">Since the only possible candidate for the cell is {0}, the cell at {1} must contain {2}.</string>
 
 	<!-- Hidden Single Explanation -->
 	<string name="hint_hidden_single_step_1">Focus on the cell {0}!</string>
@@ -61,5 +61,11 @@
 	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} can only be placed in the following cells: {2}.</string>
 	<string name="hint_claiming_candidate_step_3">Therefore, you can eliminate {0} from the candidates in the rest of {1}.</string>
 	<string name="hint_claiming_candidate_step_4">The affected cells are: {0}.</string>
+
+	<!-- Pointing Candidate Explanation -->
+	<string name="hint_pointing_candidate_step_1">Check {0}!</string>
+	<string name="hint_pointing_candidate_step_2">In {0}, the number {1} points in a straight line. It must be in {2}.</string>
+	<string name="hint_pointing_candidate_step_3">Since {0} must be in this line, you can remove it from the notes in the rest of the row or column.</string>
+	<string name="hint_pointing_candidate_step_4">Update notes in: {0}.</string>
 </resources>
 

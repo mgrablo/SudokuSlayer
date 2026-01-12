@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import io.github.mgrablo.sudokucore.hints.strategies.ClaimingCandidateExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
+import io.github.mgrablo.sudokucore.hints.strategies.PointingCandidateExplanation
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.model.SudokuGrid

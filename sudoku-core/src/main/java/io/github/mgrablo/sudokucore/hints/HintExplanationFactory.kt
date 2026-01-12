@@ -3,6 +3,7 @@ package io.github.mgrablo.sudokucore.hints
 import io.github.mgrablo.sudokucore.hints.strategies.ClaimingCandidateExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleExplanation
 import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
+import io.github.mgrablo.sudokucore.hints.strategies.PointingCandidateExplanation
 
 object HintExplanationFactory {
 	fun createStrategyFor(hintType: HintType): HintExplanationStrategy = when (hintType) {
