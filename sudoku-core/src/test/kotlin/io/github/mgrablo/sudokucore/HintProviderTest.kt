@@ -1,9 +1,12 @@
 package io.github.mgrablo.sudokucore
 
-import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintProvider
 import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.fillCandidates
+import io.github.mgrablo.sudokucore.hints.strategies.ClaimingCandidateStrategy
+import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleStrategy
+import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleStrategy
+import io.github.mgrablo.sudokucore.hints.strategies.PointingCandidateStrategy
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.model.SudokuGrid
@@ -17,7 +20,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertInstanceOf
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.assertTimeout
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
@@ -25,10 +27,19 @@ import kotlin.time.toJavaDuration
 @DisplayName("HintProvider Tests")
 class HintProviderTest {
 	private lateinit var hintProvider: HintProvider
+	private val nakedSingleStrategy = NakedSingleStrategy()
+	private val hiddenSingleStrategy = HiddenSingleStrategy()
+	private val pointingCandidateStrategy = PointingCandidateStrategy()
+	private val claimingCandidateStrategy = ClaimingCandidateStrategy()
 
 	@BeforeEach
 	fun setup() {
-		hintProvider = HintProvider()
+		hintProvider = HintProvider(
+			nakedSingleStrategy,
+			hiddenSingleStrategy,
+			pointingCandidateStrategy,
+			claimingCandidateStrategy,
+		)
 	}
 
 	@Nested
@@ -50,7 +61,8 @@ class HintProviderTest {
 		fun `findNakedSingle should identify correct cell and value`() {
 			val grid = SudokuGrid.fromStringArray(TestData.standardGrid)
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
-			val hint = hintProvider.findNakedSingle(updatedGrid)
+			val houses = generateHouses(updatedGrid)
+			val hint = nakedSingleStrategy.findHints(updatedGrid, houses).firstOrNull()
 
 			assertNotNull(hint, "Should find a naked single")
 			assertAll(
@@ -72,10 +84,7 @@ class HintProviderTest {
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val houses = generateHouses(updatedGrid)
 
-			val hiddenSingle =
-				houses.firstNotNullOfOrNull { house ->
-					hintProvider.findHiddenSingle(house)
-				}
+			val hiddenSingle = hiddenSingleStrategy.findHints(updatedGrid, houses).firstOrNull()
 
 			assertNotNull(hiddenSingle, "Should find a hidden single")
 			assertInstanceOf<HintType.HiddenSingle>(hiddenSingle!!.type)
@@ -89,12 +98,11 @@ class HintProviderTest {
 			val houses = generateHouses(updatedGrid)
 
 			val lockedCandidates =
-				houses.firstNotNullOfOrNull { house ->
-					hintProvider.findLockedCandidate(house, updatedGrid)
-				}
+				pointingCandidateStrategy.findHints(updatedGrid, houses) +
+					claimingCandidateStrategy.findHints(updatedGrid, houses)
 
 			assertNotNull(lockedCandidates, "Should find locked candidates")
-			assertTrue(lockedCandidates!!.isNotEmpty(), "Should have at least one locked candidate")
+			assertTrue(lockedCandidates.isNotEmpty(), "Should have at least one locked candidate")
 		}
 
 		@Test
@@ -104,49 +112,30 @@ class HintProviderTest {
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val blockHouses = generateBlockHouses(updatedGrid)
 
-			val pointingCandidates =
-				blockHouses
-					.mapNotNull { house ->
-						hintProvider.findPointingCandidates(house, updatedGrid)
-							.takeIf { it.isNotEmpty() }
-					}
-					.firstOrNull()
+			val pointingCandidates = pointingCandidateStrategy.findHints(updatedGrid, blockHouses)
 
 			assertNotNull(pointingCandidates, "Should find pointing candidates")
 			assertTrue(
-				pointingCandidates!!.isNotEmpty(),
+				pointingCandidates.isNotEmpty(),
 				"Should have at least one pointing candidate",
 			)
 		}
 
 		@Test
-		@DisplayName("Should throw exception for House.Block in claiming candidates")
+		@DisplayName("Should find claiming candidates")
 		fun findClaimingCandidates() {
 			val grid = SudokuGrid.fromStringArray(TestData.claimingCandidateGrid)
 			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
 			val houses = generateHouses(updatedGrid)
 
-			val nonBlockHouses = houses.filter { it !is House.Block }
-			// this call should work without throwing an exception
-			val claimingCandidates: MutableList<Hint> = mutableListOf()
-			for (house in nonBlockHouses) {
-				val result = hintProvider.findClaimingCandidates(house, updatedGrid)
-				if (result.isNotEmpty()) {
-					claimingCandidates += result.first()
-					break
-				}
-			}
+			val claimingCandidates = claimingCandidateStrategy.findHints(updatedGrid, houses)
+
 			assertTrue(
 				claimingCandidates.isNotEmpty(),
 				"Should find claiming candidates for non-Block house",
 			)
 
-			val blockHouse = houses.first { it is House.Block }
-			assertThrows<IllegalArgumentException>(
-				"Should throw exception for House.Block in claiming candidates",
-			) {
-				hintProvider.findClaimingCandidates(blockHouse, updatedGrid)
-			}
+			// Strategy now handles filtering internally, so explicit block check exception is not needed.
 		}
 	}
 
