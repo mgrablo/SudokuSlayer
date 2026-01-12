@@ -47,20 +47,20 @@
 	<string name="hint_technique_claiming_candidate">Claiming Candidate</string>
 
 	<!-- Naked Single Explanation -->
-	<string name="hint_naked_single_step_1">Focus on the cell {0}!</string>
-	<string name="hint_naked_single_step_2">The cell at {0} has only one possible candidate remaining after considering the numbers already present in its row, column, and block.</string>
-	<string name="hint_naked_single_step_3">Since the only possible candidate for the cell is {0}, the cell at {1} must contain {2}.</string>
+	<string name="hint_naked_single_step_1">Inspect cell {0}!</string>
+	<string name="hint_naked_single_step_2">If you look at the numbers already placed in this row, column, and block, everything else is ruled out.</string>
+	<string name="hint_naked_single_step_3">Only the number {0} is left as a possibility, so fill it in!</string>
 
 	<!-- Hidden Single Explanation -->
-	<string name="hint_hidden_single_step_1">Focus on the cell {0}!</string>
-	<string name="hint_hidden_single_step_2">In {0}, the only cell that can contain the number {1} is {2}.</string>
-	<string name="hint_hidden_single_step_3">Therefore, the cell at {0} must contain {1}.</string>
+	<string name="hint_hidden_single_step_1">Look at {0}!</string>
+	<string name="hint_hidden_single_step_2">We need to place a {0} somewhere in {1}, but only one cell is empty and valid: {2}.</string>
+	<string name="hint_hidden_single_step_3">Therefore, the cell at {0} has to be {1}.</string>
 
 	<!-- Claiming Candidate Explanation -->
-	<string name="hint_claiming_candidate_step_1">Focus on {0}!</string>
-	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} can only be placed in the following cells: {2}.</string>
-	<string name="hint_claiming_candidate_step_3">Therefore, you can eliminate {0} from the candidates in the rest of {1}.</string>
-	<string name="hint_claiming_candidate_step_4">The affected cells are: {0}.</string>
+	<string name="hint_claiming_candidate_step_1">Check {0}!</string>
+	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} is forced to be in one of these specific cells: {2}.</string>
+	<string name="hint_claiming_candidate_step_3">This means {0} is "claimed" by this row or column. You can erase {0} from the notes in the rest of the block.</string>
+	<string name="hint_claiming_candidate_step_4">Update notes in: {0}.</string>
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_step_1">Check {0}!</string>

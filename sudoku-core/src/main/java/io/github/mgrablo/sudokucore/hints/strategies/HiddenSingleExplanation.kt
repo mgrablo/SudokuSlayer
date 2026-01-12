@@ -38,7 +38,7 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 		val valuePart = HintExplanationPart.Value(hint.value)
 
 		return listOf(
-			// Step 1: Focus on the cell
+			// Step 1: Look at {0}!
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.HIDDEN_SINGLE_STEP_1),
@@ -46,16 +46,16 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 				),
 			),
 
-			// Step 2: Explain hidden single logic - the value can only go in this cell
+			// Step 2: We need to place a {0} somewhere in {1}, but only one cell is empty and valid: {2}.
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.HIDDEN_SINGLE_STEP_2),
-					scopePart,
 					valuePart,
+					scopePart,
 					cellPart,
 				),
 			),
-			// Step 4: Conclusion
+			// Step 4: Therefore, the cell at {0} has to be {1}.
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.HIDDEN_SINGLE_STEP_3),

@@ -44,7 +44,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId)
 		val valuePart = HintExplanationPart.Value(hint.value)
 
-		// Step 1: Focus on block
+		// Step 1: Check {0}!
 		steps.add(
 			HintExplanationStep(
 				HintMessageFormatter.format(
@@ -54,7 +54,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			),
 		)
 
-		// Step 2: Explain for each row/column where the value can be placed
+		// Step 2: In this {0}, the number {1} is forced to be in one of these specific cells: {2}.
 		enforcingCellsByScope.forEach { (scopeIndex, cells) ->
 			val scopePart = HintExplanationPart.ScopeReference(scopeType, scopeIndex + 1)
 			val cellsPart = HintExplanationPart.CellCoordinatesGroup(cells)
@@ -71,7 +71,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			)
 		}
 
-		// Step 3: Conclusion - removing candidates from other cells in the block
+		// Step 3: This means {0} is "claimed" by this row or column. You can erase {0} from the notes in the rest of the block.
 		steps.add(
 			HintExplanationStep(
 				HintMessageFormatter.format(
@@ -82,7 +82,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			),
 		)
 
-		// Step 4: Show affected cells
+		// Step 4: Update notes in: {0}.
 		if (affectedCells.isNotEmpty()) {
 			val affectedPart = HintExplanationPart.CellCoordinatesGroup(affectedCells)
 			steps.add(
