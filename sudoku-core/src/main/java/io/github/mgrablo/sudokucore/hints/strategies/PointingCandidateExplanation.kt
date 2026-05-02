@@ -53,13 +53,18 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 		}
 
 		// 3. Prepare Parts
-		val scopeType = if (isRow) ScopeType.ROW else ScopeType.COLUMN
 		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, enforcingBlockId)
 		val valuePart = HintExplanationPart.Value(hint.value)
 		val enforcingCellsPart = HintExplanationPart.CellCoordinatesGroup(
 			finalEnforcingCells.map { Pair(it.row + 1, it.col + 1) },
 		)
-		val linePart = HintExplanationPart.ScopeReference(scopeType, scopeIndex + 1)
+		val lineScopePart = HintExplanationPart.Text(
+			if (isRow) {
+				stringProvider.getString(HintStringKey.ROW)
+			} else {
+				stringProvider.getString(HintStringKey.COLUMN)
+			},
+		)
 		val affectedCellsPart = HintExplanationPart.CellCoordinatesGroup(
 			hint.affectedCells.map { Pair(it.row + 1, it.col + 1) },
 		)
@@ -88,13 +93,13 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 			),
 		)
 
-		// Step 3: Since {0} must be in this line, you can remove it from the notes in the rest of the row or column.
+		// Step 3: Since {0} must be in this line, you can remove it from the notes in the rest of the {1}.
 		steps.add(
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.POINTING_CANDIDATE_STEP_3),
 					valuePart,
-					linePart,
+					lineScopePart,
 				),
 			),
 		)

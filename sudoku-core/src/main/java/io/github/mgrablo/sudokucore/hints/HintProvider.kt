@@ -8,7 +8,6 @@ import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.solver.ClassicSudokuSolver
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
 import kotlin.math.sqrt
 
@@ -42,38 +41,9 @@ class HintProvider internal constructor(
 		// Loop over houses and try to find a hidden single
 		hiddenSingleStrategy.findHints(data, houses).firstOrNull()?.let { return it }
 
-		// Loop over houses and try to find locked candidate eliminations
-		val lockedEliminations =
-			pointingCandidateStrategy.findHints(data, houses) +
-				claimingCandidateStrategy.findHints(data, houses)
-
-		if (lockedEliminations.isNotEmpty()) {
-			// Use the candidate from the first elimination (could be refined to focus candidate that results in singles)
-			val representative = lockedEliminations.first()
-			// Merge locked eliminations into one Hint.
-			val aggregatedCells =
-				lockedEliminations
-					.filter { it.value == representative.value }
-					.flatMap { locked ->
-						// Assuming each returned Hint's position represents an affected cell.
-						listOf(
-							SudokuCellData(
-								row = locked.row,
-								col = locked.col,
-								number = locked.value,
-							),
-						)
-					}.toPersistentList()
-			val enforcingCells =
-				lockedEliminations
-					.filter { it.value == representative.value }
-					.flatMap { it.enforcingCells }
-					.toPersistentList()
-			return representative.copy(
-				affectedCells = aggregatedCells.toPersistentSet(),
-				enforcingCells = enforcingCells.toPersistentSet(),
-			)
-		}
+		// Return the first available locked-candidate pattern.
+		pointingCandidateStrategy.findHints(data, houses).firstOrNull()?.let { return it }
+		claimingCandidateStrategy.findHints(data, houses).firstOrNull()?.let { return it }
 		return null
 	}
 

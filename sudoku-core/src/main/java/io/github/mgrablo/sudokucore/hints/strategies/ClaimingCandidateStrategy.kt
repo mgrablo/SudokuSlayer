@@ -7,6 +7,7 @@ import io.github.mgrablo.sudokucore.hints.containsCell
 import io.github.mgrablo.sudokucore.hints.getBlock
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlin.math.sqrt
 
@@ -56,6 +57,7 @@ internal class ClaimingCandidateStrategy : HintStrategy {
 										},
 									),
 								explanationStrategy = ClaimingCandidateExplanation(),
+												affectedCells = persistentSetOf(it),
 								enforcingCells = candidateCells.toPersistentSet(),
 							),
 						)

@@ -43,6 +43,13 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 		val steps = mutableListOf<HintExplanationStep>()
 		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId)
 		val valuePart = HintExplanationPart.Value(hint.value)
+		val lineScopePart = HintExplanationPart.Text(
+			if (groupType is GroupType.Row) {
+				stringProvider.getString(HintStringKey.ROW)
+			} else {
+				stringProvider.getString(HintStringKey.COLUMN)
+			},
+		)
 
 		// Step 1: Check {0}!
 		steps.add(
@@ -71,13 +78,13 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 			)
 		}
 
-		// Step 3: This means {0} is "claimed" by this row or column. You can erase {0} from the notes in the rest of the block.
+		// Step 3: This means {0} is "claimed" by this {1}. You can erase {0} from the notes in the rest of the block.
 		steps.add(
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.CLAIMING_CANDIDATE_STEP_3),
 					valuePart,
-					blockPart,
+					lineScopePart,
 				),
 			),
 		)

@@ -37,14 +37,16 @@ internal class PointingCandidateStrategy : HintStrategy {
 						.filter { !emptyCells.containsCell(it) && it.number == 0 }
 						.filter { digit in it.candidates }
 
-				rowCells.forEach {
+				if (rowCells.isNotEmpty()) {
+					val anchor = rowCells.first()
 					hints.add(
 						Hint(
-							row = it.row,
-							col = it.col,
+							row = anchor.row,
+							col = anchor.col,
 							value = digit,
-							type = HintType.PointingCandidate(GroupType.Row(it.row)),
+							type = HintType.PointingCandidate(GroupType.Row(anchor.row)),
 							explanationStrategy = PointingCandidateExplanation(),
+							affectedCells = rowCells.toPersistentSet(),
 							enforcingCells = candidateCells.toPersistentSet(),
 						),
 					)
@@ -58,14 +60,16 @@ internal class PointingCandidateStrategy : HintStrategy {
 						.filter { !emptyCells.containsCell(it) && it.number == 0 }
 						.filter { digit in it.candidates }
 
-				colCells.forEach {
+				if (colCells.isNotEmpty()) {
+					val anchor = colCells.first()
 					hints.add(
 						Hint(
-							row = it.row,
-							col = it.col,
+							row = anchor.row,
+							col = anchor.col,
 							value = digit,
-							type = HintType.PointingCandidate(GroupType.Column(it.col)),
+							type = HintType.PointingCandidate(GroupType.Column(anchor.col)),
 							explanationStrategy = PointingCandidateExplanation(),
+							affectedCells = colCells.toPersistentSet(),
 							enforcingCells = candidateCells.toPersistentSet(),
 						),
 					)

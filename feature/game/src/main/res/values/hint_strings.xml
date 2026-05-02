@@ -59,13 +59,13 @@
 	<!-- Claiming Candidate Explanation -->
 	<string name="hint_claiming_candidate_step_1">Check {0}!</string>
 	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} is forced to be in one of these specific cells: {2}.</string>
-	<string name="hint_claiming_candidate_step_3">This means {0} is "claimed" by this row or column. You can erase {0} from the notes in the rest of the block.</string>
+	<string name="hint_claiming_candidate_step_3">This means {0} is "claimed" by this {1}. You can erase {0} from the notes in the rest of the block.</string>
 	<string name="hint_claiming_candidate_step_4">Update notes in: {0}.</string>
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_step_1">Check {0}!</string>
 	<string name="hint_pointing_candidate_step_2">In {0}, the number {1} points in a straight line. It must be in {2}.</string>
-	<string name="hint_pointing_candidate_step_3">Since {0} must be in this line, you can remove it from the notes in the rest of the row or column.</string>
+	<string name="hint_pointing_candidate_step_3">Since {0} must be in this line, you can remove it from the notes in the rest of the {1}.</string>
 	<string name="hint_pointing_candidate_step_4">Update notes in: {0}.</string>
 </resources>
 

@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokucore
 
+import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.HintProvider
 import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.fillCandidates
@@ -118,6 +119,74 @@ class HintProviderTest {
 			assertTrue(
 				pointingCandidates.isNotEmpty(),
 				"Should have at least one pointing candidate",
+			)
+			assertTrue(
+				pointingCandidates.all { hint ->
+					val type = hint.type as HintType.PointingCandidate
+					when (val group = type.groupType) {
+						is GroupType.Row ->
+							hint.affectedCells.isNotEmpty() &&
+								hint.affectedCells.all { it.row == group.id } &&
+								hint.affectedCells.any { it.row == hint.row && it.col == hint.col }
+
+						is GroupType.Column ->
+							hint.affectedCells.isNotEmpty() &&
+								hint.affectedCells.all { it.col == group.id } &&
+								hint.affectedCells.any { it.row == hint.row && it.col == hint.col }
+
+						else -> false
+					}
+				},
+				"Each pointing candidate hint should contain eliminations from exactly one pointed line",
+			)
+			assertTrue(
+				pointingCandidates
+					.map { hint ->
+						val type = hint.type as HintType.PointingCandidate
+						Triple(
+							hint.value,
+							type.groupType,
+							hint.enforcingCells.map { cell -> cell.row to cell.col }.toSet(),
+						)
+					}.distinct().size == pointingCandidates.size,
+				"There should be at most one pointing hint per locked pattern",
+			)
+		}
+
+		@Test
+		@DisplayName("Should provide grouped pointing candidate eliminations for one pointed line")
+		fun provideGroupedPointingCandidateHint() {
+			val grid = SudokuGrid.fromStringArray(TestData.lockedCandidateGrid)
+			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
+
+			val hint = hintProvider.provideHint(updatedGrid)
+
+			assertNotNull(hint, "Should provide a hint")
+			assertInstanceOf<HintType.PointingCandidate>(hint!!.type)
+			assertTrue(hint.affectedCells.isNotEmpty(), "Hint should contain affected cells")
+
+			val hintType = hint.type
+			when (val group = hintType.groupType) {
+				is GroupType.Row -> {
+					assertTrue(
+						hint.affectedCells.all { it.row == group.id },
+						"All affected cells should belong to one row",
+					)
+				}
+
+				is GroupType.Column -> {
+					assertTrue(
+						hint.affectedCells.all { it.col == group.id },
+						"All affected cells should belong to one column",
+					)
+				}
+
+				else -> error("Unexpected pointing-candidate group type")
+			}
+
+			assertTrue(
+				hint.affectedCells.any { it.row == hint.row && it.col == hint.col },
+				"Hint anchor cell should be one of the affected cells",
 			)
 		}
 
