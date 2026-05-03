@@ -1,6 +1,6 @@
 package io.github.mgrablo.sudokuslayer.feature.game.model
 
-import io.github.mgrablo.sudokucore.solver.Hint
+import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet

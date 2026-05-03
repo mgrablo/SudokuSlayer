@@ -1,7 +1,7 @@
 package io.github.mgrablo.sudokuslayer.domain.core
 
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintExplanationStep
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintExplanationStep
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 

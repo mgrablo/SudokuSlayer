@@ -13,9 +13,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import io.github.mgrablo.sudokucore.solver.HintExplanationPart
-import io.github.mgrablo.sudokucore.solver.HintExplanationStep
-import io.github.mgrablo.sudokucore.solver.ScopeType
+import io.github.mgrablo.sudokucore.hints.HintExplanationPart
+import io.github.mgrablo.sudokucore.hints.HintExplanationStep
+import io.github.mgrablo.sudokucore.hints.ScopeType
 import io.github.mgrablo.sudokuslayer.feature.game.theme.HintLogsColors
 import kotlinx.collections.immutable.PersistentList
 

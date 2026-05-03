@@ -1,8 +1,8 @@
 package io.github.mgrablo.sudokuslayer.domain.game.usecases.hint
 
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.model.SudokuGrid
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintType
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.input.InputNumberUseCase
 
 class RevealHintOnGridUseCase(private val inputNumberUseCase: InputNumberUseCase) {

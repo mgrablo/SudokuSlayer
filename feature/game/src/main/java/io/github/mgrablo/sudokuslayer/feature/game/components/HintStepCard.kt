@@ -31,8 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import io.github.mgrablo.sudokucore.solver.HintExplanationPart
-import io.github.mgrablo.sudokucore.solver.HintExplanationStep
+import io.github.mgrablo.sudokucore.hints.HintExplanationPart
+import io.github.mgrablo.sudokucore.hints.HintExplanationStep
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.theme.LocalHintLogsColors
 import io.github.mgrablo.sudokuslayer.feature.game.theme.SudokuGameTheme
@@ -56,28 +56,28 @@ internal fun HintStepCard(
 ) {
 	Card(
 		modifier =
-		modifier
-			.fillMaxWidth()
-			.clip(RoundedCornerShape(8.dp))
-			.clickable(
-				interactionSource = interactionSource,
-				indication = ripple(),
-				onClick = {
-					if (isRevealed || isUserGuessed) {
-						onExpandToggle()
-					}
-				},
-			),
+			modifier
+				.fillMaxWidth()
+				.clip(RoundedCornerShape(8.dp))
+				.clickable(
+					interactionSource = interactionSource,
+					indication = ripple(),
+					onClick = {
+						if (isRevealed || isUserGuessed) {
+							onExpandToggle()
+						}
+					},
+				),
 		colors =
-		CardDefaults.cardColors(
-			containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-		),
+			CardDefaults.cardColors(
+				containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+			),
 	) {
 		Column(
 			modifier =
-			Modifier
-				.fillMaxWidth()
-				.padding(16.dp),
+				Modifier
+					.fillMaxWidth()
+					.padding(16.dp),
 		) {
 			Row(
 				modifier = Modifier.padding(4.dp),
@@ -86,10 +86,10 @@ internal fun HintStepCard(
 			) {
 				Text(
 					text =
-					buildAnnotatedStringFromExplanationParts(
-						title.parts,
-						LocalHintLogsColors.current,
-					),
+						buildAnnotatedStringFromExplanationParts(
+							title.parts,
+							LocalHintLogsColors.current,
+						),
 					maxLines = 1,
 					modifier = Modifier.weight(1f),
 				)

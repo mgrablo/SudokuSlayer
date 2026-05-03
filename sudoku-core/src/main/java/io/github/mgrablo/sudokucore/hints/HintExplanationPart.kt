@@ -1,4 +1,4 @@
-package io.github.mgrablo.sudokucore.solver
+package io.github.mgrablo.sudokucore.hints
 
 /**
  * Represents different types of parts that can appear in a hint explanation.

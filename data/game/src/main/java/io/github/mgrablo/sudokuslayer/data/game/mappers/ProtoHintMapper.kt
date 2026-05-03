@@ -1,13 +1,13 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
-import io.github.mgrablo.sudokucore.solver.GroupType
-import io.github.mgrablo.sudokucore.solver.Hint
-import io.github.mgrablo.sudokucore.solver.HintExplanationFactory
-import io.github.mgrablo.sudokucore.solver.HintType
-import io.github.mgrablo.sudokucore.solver.HintType.ClaimingCandidate
-import io.github.mgrablo.sudokucore.solver.HintType.HiddenSingle
-import io.github.mgrablo.sudokucore.solver.HintType.NakedSingle
-import io.github.mgrablo.sudokucore.solver.HintType.PointingCandidate
+import io.github.mgrablo.sudokucore.hints.GroupType
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintExplanationFactory
+import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.HintType.ClaimingCandidate
+import io.github.mgrablo.sudokucore.hints.HintType.HiddenSingle
+import io.github.mgrablo.sudokucore.hints.HintType.NakedSingle
+import io.github.mgrablo.sudokucore.hints.HintType.PointingCandidate
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHint
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType.ProtoHintHouse
@@ -41,13 +41,19 @@ fun Hint.toProtoHint(): ProtoHint = protoHint {
 
 fun ProtoHintType.toHintType(): HintType = when (this.type) {
 	ProtoHintType.Type.NakedSingle -> NakedSingle
+
 	ProtoHintType.Type.HiddenSingle -> HiddenSingle(this.house.toGroupType())
+
 	ProtoHintType.Type.ClaimingCandidate -> ClaimingCandidate(this.house.toGroupType())
+
 	ProtoHintType.Type.PointingCandidate -> PointingCandidate(this.house.toGroupType())
+
 	ProtoHintType.Type.HintType_UNSPECIFIED -> throw IllegalArgumentException(
 		"Hint type is unspecified",
 	)
+
 	ProtoHintType.Type.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized hint type")
+
 	else -> throw IllegalArgumentException("Unknown hint type: $this")
 }
 
@@ -85,10 +91,14 @@ fun GroupType.toProtoHintHouse() = protoHintHouse {
 
 fun ProtoHintHouse.toGroupType(): GroupType = when (this.houseType) {
 	ProtoHintHouse.Type.Row -> GroupType.Row(id - 1)
+
 	ProtoHintHouse.Type.Column -> GroupType.Column(id - 1)
+
 	ProtoHintHouse.Type.Block -> GroupType.Block(id - 1)
+
 	ProtoHintHouse.Type.HouseType_UNSPECIFIED -> throw IllegalArgumentException(
 		"House type is unspecified",
 	)
+
 	ProtoHintHouse.Type.UNRECOGNIZED -> throw IllegalArgumentException("Unrecognized house type")
 }
