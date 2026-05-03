@@ -7,7 +7,6 @@ import io.github.mgrablo.sudokucore.hints.containsCell
 import io.github.mgrablo.sudokucore.hints.getBlock
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
-import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentSet
 import kotlin.math.sqrt
 
@@ -40,24 +39,25 @@ internal class ClaimingCandidateStrategy : HintStrategy {
 									digit in it.candidates
 							}
 
-					blockCells.forEach {
+					if (blockCells.isNotEmpty()) {
+						// Create a single grouped hint for this claiming pattern: remove `digit` from
+						// all `blockCells` in the block since the candidate is claimed by the row/col.
+						val anchor = blockCells.first()
 						hints.add(
 							Hint(
-								row = it.row,
-								col = it.col,
+								row = anchor.row,
+								col = anchor.col,
 								value = digit,
 								type =
 									HintType.ClaimingCandidate(
 										if (house is House.Row) {
-											GroupType.Row(
-												house.id,
-											)
+											GroupType.Row(house.id)
 										} else {
 											GroupType.Column(house.id)
 										},
 									),
 								explanationStrategy = ClaimingCandidateExplanation(),
-												affectedCells = persistentSetOf(it),
+								affectedCells = blockCells.toPersistentSet(),
 								enforcingCells = candidateCells.toPersistentSet(),
 							),
 						)
