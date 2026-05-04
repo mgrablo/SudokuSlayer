@@ -10,27 +10,27 @@ plugins {
 	alias(libs.plugins.ktlint) apply false
 }
 
-allprojects {
-	afterEvaluate {
-		extensions.findByType(JavaPluginExtension::class)?.toolchain {
-			languageVersion.set(JavaLanguageVersion.of(17))
+subprojects {
+	plugins.withId("org.jetbrains.kotlin.android") {
+		extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
+			jvmToolchain(17)
 		}
 	}
-}
+	plugins.withId("org.jetbrains.kotlin.jvm") {
+		extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
+			jvmToolchain(17)
+		}
+	}
 
-subprojects {
 	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
 		compilerOptions {
 			if (project.findProperty("enableComposeCompilerReports") == "true") {
+				val metricsDir = project.layout.buildDirectory.dir("compose_metrics").get().asFile.path
 				freeCompilerArgs.addAll(
 					"-P",
-					"plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-						project.projectDir.toPath().toString() + "/build/compose_metrics",
-				)
-				freeCompilerArgs.addAll(
+					"plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$metricsDir",
 					"-P",
-					"plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-						project.projectDir.toPath().toString() + "/build/compose_metrics",
+					"plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$metricsDir",
 				)
 			}
 		}
