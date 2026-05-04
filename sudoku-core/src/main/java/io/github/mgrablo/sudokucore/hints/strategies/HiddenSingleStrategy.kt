@@ -6,35 +6,41 @@ import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.symmetricDifference
+import kotlinx.collections.immutable.toPersistentSet
 
+/**
+ * Hidden Single strategy.
+ *
+ * Occurs when a candidate digit appears only once in a specific house (row, column, or block).
+ * Even if the cell has other candidates, this digit must be the value for that cell.
+ */
 internal class HiddenSingleStrategy : HintStrategy {
 	override fun findHints(data: List<SudokuCellData>, houses: List<House>): List<Hint> {
-		val hints = mutableListOf<Hint>()
-		for (house in houses) {
+		return houses.flatMap { house ->
 			val emptyCells = house.cells.filter { it.number == 0 }
-			if (emptyCells.isEmpty()) continue
+			if (emptyCells.isEmpty()) return@flatMap emptyList()
 
-			val diff = symmetricDifference(emptyCells.map { it.candidates })
-			if (diff.isEmpty()) continue
+			// Find digits that appear exactly once across all candidate sets in this house
+			val uniqueCandidates = symmetricDifference(emptyCells.map { it.candidates })
 
-			for (digit in diff) {
-				val hintCell = emptyCells.find { it.candidates.contains(digit) }!!
-				val hiddenSingleType = when (house) {
-					is House.Row -> HintType.HiddenSingle(GroupType.Row(house.id))
-					is House.Column -> HintType.HiddenSingle(GroupType.Column(house.id))
-					is House.Block -> HintType.HiddenSingle(GroupType.Block(house.id))
-				}
-				hints.add(
-					Hint(
-						row = hintCell.row,
-						col = hintCell.col,
-						value = digit,
-						type = hiddenSingleType,
-						explanationStrategy = HiddenSingleExplanation(),
-					),
+			uniqueCandidates.map { digit ->
+				val hintCell = emptyCells.first { digit in it.candidates }
+				Hint(
+					row = hintCell.row,
+					col = hintCell.col,
+					value = digit,
+					type = HintType.HiddenSingle(house.toGroupType()),
+					explanationStrategy = HiddenSingleExplanation(),
+					// The other cells in the house are enforcing this cell to have this digit
+					enforcingCells = house.cells.toPersistentSet(),
 				)
 			}
 		}
-		return hints
+	}
+
+	private fun House.toGroupType(): GroupType = when (this) {
+		is House.Row -> GroupType.Row(id)
+		is House.Column -> GroupType.Column(id)
+		is House.Block -> GroupType.Block(id)
 	}
 }
