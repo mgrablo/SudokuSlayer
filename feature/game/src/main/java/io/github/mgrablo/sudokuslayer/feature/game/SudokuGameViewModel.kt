@@ -568,11 +568,12 @@ internal class SudokuGameViewModel(
 			}
 			selectCell(hint.row, hint.col)
 			updateGame { currentGame ->
-				val updatedSudoku = hintUseCases.revealOnGrid(hint, currentGame.grid)
+				val (updatedGrid, changes) = hintUseCases.revealOnGrid(hint, currentGame.grid)
 				val updatedLogs = hintUseCases.revealLastLog(currentGame.hintLogs)
 
+				recordUndoOperation(changes)
 				currentGame.copy(
-					grid = updatedSudoku,
+					grid = updatedGrid,
 					hintLogs = updatedLogs,
 				)
 			}
