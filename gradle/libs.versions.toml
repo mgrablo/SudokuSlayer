@@ -1,4 +1,7 @@
 [versions]
+appVersionName = "1.0.0"
+appVersionCode = "1"
+
 
 # Android
 kotlin = "2.2.20"
