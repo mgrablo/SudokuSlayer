@@ -27,22 +27,29 @@ android {
 			libs.versions.android.targetSdk
 				.get()
 				.toInt()
-		versionCode = 1
-		versionName = "1.0"
+		versionCode =
+			libs.versions.appVersionCode
+				.get()
+				.toInt()
+		versionName =
+			libs.versions.appVersionName
+				.get()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
 
 	buildTypes {
 		release {
-			isMinifyEnabled = false
+			isMinifyEnabled = true
+			isShrinkResources = true
+			isDebuggable = false
 			proguardFiles(
 				getDefaultProguardFile("proguard-android-optimize.txt"),
 				"proguard-rules.pro",
 			)
-			signingConfig = signingConfigs.getByName("debug")
 		}
 		debug {
+			isDebuggable = true
 			applicationIdSuffix = ".debug"
 		}
 	}
