@@ -28,4 +28,5 @@
 	<string name="language_system">System Default</string>
 	<string name="language_english" translatable="false">English</string>
 	<string name="language_polish" translatable="false">Polski</string>
+	<string name="language">Language</string>
 </resources>

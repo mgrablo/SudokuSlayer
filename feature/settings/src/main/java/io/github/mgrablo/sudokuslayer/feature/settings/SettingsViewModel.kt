@@ -6,6 +6,7 @@ import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.domain.settings.models.ColorScheme
 import io.github.mgrablo.sudokuslayer.domain.settings.models.DarkMode
 import io.github.mgrablo.sudokuslayer.domain.settings.models.Language
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,8 @@ internal data class SettingsUiState(
 	val appearance: AppearanceSettings = AppearanceSettings(),
 	val accessibility: AccessibilitySettings = AccessibilitySettings(),
 	val gameplay: GameplaySettings = GameplaySettings(),
+	val availableLanguages: PersistentSet<Language> = Language.getAvailableLanguages()
+		.toPersistentSet(),
 )
 
 internal data class AppearanceSettings(
