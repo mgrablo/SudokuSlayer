@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="settings_screen_title">Ustawienia</string>
+	<string name="gameplay_highlight_matching_desc">Gdy zaznaczysz komórkę z liczbą, wszystkie inne komórki z tą samą liczbą zostaną podświetlone.</string>
+	<string name="gameplay_highlight_matching">Podświetl takie same liczby</string>
+	<string name="gameplay_mark_invalid_desc">Automatycznie oznaczaj liczby, które łamią zasady Sudoku (np. powtórzenia w wierszu, kolumnie lub bloku).</string>
+	<string name="gameplay_mark_invalid">Oznacz nieprawidłowe liczby</string>
+	<string name="gameplay_hide_in_game_timer">Ukryj licznik czasu podczas gry</string>
+	<string name="gameplay_hide_in_game_timer_desc">Ukrywa licznik czasu w trakcie gry, pozwalając na rozwiązywanie w swoim własnym tempie. Twój czas wciąż jest zapisywany w tle.</string>
+	<string name="gameplay_show_remaining_digit_counts">Pokaż licznik pozostałych cyfr</string>
+	<string name="gameplay_show_remaining_digit_counts_desc">Wyświetla małą cyfrę pod każdym przyciskiem numerycznym, informując ile razy trzeba jeszcze użyć danej wartości na planszy.</string>
+</resources>
