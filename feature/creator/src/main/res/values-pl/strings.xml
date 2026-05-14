@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="sudoku_creator_title">Nowa Gra</string>
+	<string name="last_game">Ostatnia Gra</string>
+	<string name="continue_playing">Kontynuuj Grę</string>
+	<string name="content_desc_view_board">Zobacz planszę</string>
+	<string name="content_desc_continue">Kontynuuj</string>
+	<string name="content_desc_expand">Rozwiń</string>
+	<string name="content_desc_puzzle_completed">Łamigłówka ukończona</string>
+	<string name="content_desc_collapse">Zwiń</string>
+	<string name="view_board">Zobacz planszę</string>
+	<string name="continue_button">Kontynuuj</string>
+	<string name="active_difficulty">Poziom trudności:</string>
+	<string name="active_size">Rozmiar:</string>
+	<string name="time">Czas:</string>
+	<string name="new_game_button">Nowa Gra</string>
+	<string name="content_desc_open_nav_menu">Otwórz menu nawigacji</string>
+	<string name="size">Rozmiar</string>
+	<string name="difficulty">Poziom trudności</string>
+	<string name="generating_puzzle">Generuję łamigłówkę…</string>
+	<string name="generating_big_puzzle_info">Duża plansza! Generowanie siatki 16x16 może potrwać chwilę.</string>
+	<string name="puzzle_seed">Kod planszy</string>
+	<string name="puzzle_seed_placeholder">Zostaw puste dla losowej łamigłówki</string>
+	<string name="puzzle_seed_supporting_text">Kod planszy jest wykorzystywany do generacji unikalnych plansz. Użyj tego samego kodu na innym urządzeniu, aby zagrać w dokładnie tę samą grę.</string>
+	<string name="clear_puzzle_seed_content_desc">Wyczyść kod planszy</string>
+	<string name="advanced_options">Opcje zaawansowane</string>
+	<string name="good_luck">Powodzenia!</string>
+</resources>

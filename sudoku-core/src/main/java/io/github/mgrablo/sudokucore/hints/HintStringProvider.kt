@@ -26,26 +26,6 @@ interface HintStringProvider {
  * These correspond to string resource IDs in the Android resources.
  */
 enum class HintStringKey {
-	// General hint parts
-	FOCUS_ON_CELL,
-	FOCUS_ON_BLOCK,
-	THEREFORE,
-	MUST_CONTAIN,
-	THE_CELL_AT,
-	IN,
-	AFFECTED_CELLS_ARE,
-	NO_OTHER_EMPTY_CELLS,
-	CAN_ONLY_BE_PLACED_IN,
-	CANNOT_BE_PLACED_IN,
-	ONLY_POSSIBLE_CANDIDATE,
-	FOLLOWING_CELLS,
-	SINCE,
-	THUS_REMOVE_FROM,
-	THEY_ARE_BLOCKED_BY,
-	CAN_ONLY_APPEAR_IN_THE,
-	CANNOT_APPEAR_IN_THE,
-	SINCE_CONFINED_TO,
-	ONE_POSSIBLE_CANDIDATE,
 
 	// Naked Single
 	NAKED_SINGLE_STEP_1,
@@ -72,21 +52,6 @@ enum class HintStringKey {
 	// Scope parts
 	ROW,
 	COLUMN,
-	BLOCK,
-	BLOCK_PART,
-
-	// Position descriptions
-	TOP,
-	MIDDLE,
-	BOTTOM,
-	LEFT,
-	CENTER,
-	RIGHT,
-
-	// Other hints context
-	SAME_ROW,
-	SAME_COLUMN,
-	SAME_BLOCK,
 
 	// Technique names
 	TECHNIQUE_NAKED_SINGLE,

@@ -23,7 +23,7 @@
 	<string name="show_hint_logs">Show hint logs</string>
 	<string name="hint_cell">Hint cell</string>
 	<string name="no_mistakes_found">No mistakes found!</string>
-    <string name="show_mistakes">Show</string>
+    <string name="show_mistakes">Show mistakes</string>
     <plurals name="mistakes_found_quantity">
 		<item quantity="one">Found 1 mistake!</item>
 		<item quantity="other">Found %1$d mistakes!</item>

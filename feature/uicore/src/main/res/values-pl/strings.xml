@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="time_hours_minutes_seconds">%1$dg %2$dm %3$ds</string>
+	<string name="time_minutes_seconds">%1$dm %2$ds</string>
+	<string name="time_seconds_only">%1$ds</string>
+	<string name="time_hours_minutes">%1$dg %2$dm</string>
+	<string name="time_hours_only">%1$dg</string>
+	<string name="time_minutes_only">%1$dm</string>
+	<string name="time_less_than_a_second">0s</string>
+	<string name="difficulty_easy">Łatwy</string>
+	<string name="difficulty_medium">Średni</string>
+	<string name="difficulty_hard">Trudny</string>
+	<string name="difficulty_expert">Ekspert</string>
+	<string name="preview_destination_name">Ustawienia</string>
+	<string name="gridsize_4x4">4x4</string>
+	<string name="gridsize_9x9">9x9</string>
+	<string name="gridsize_16x16">16x16</string>
+</resources>

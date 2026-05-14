@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="game_screen_title">Aktualna gra</string>
+	<string name="content_desc_correctly_guessed">Poprawnie odgadnięto</string>
+	<string name="content_desc_highlight_cells">Podświetl komórki</string>
+	<string name="content_desc_collapse">Zwiń</string>
+	<string name="content_desc_expand">Rozwiń</string>
+	<string name="content_desc_explain_hint">Wyjaśnij podpowiedź</string>
+	<string name="input_switch_action_to_numbers">Zmień na tryb liczb</string>
+	<string name="input_switch_action_to_notes">Zmień na tryb notatek</string>
+	<string name="action_restart">Zrestartuj</string>
+	<string name="action_hint">Podpowiedź</string>
+	<string name="new_best">Nowy rekord!</string>
+	<string name="best_time">Najlepszy czas:</string>
+	<string name="hints_used">Użyte podpowiedzi:</string>
+	<string name="size">Rozmiar:</string>
+	<string name="difficulty">Poziom trudności:</string>
+	<string name="time">Czas:</string>
+	<string name="congratulations">Gratulacje!</string>
+	<string name="view_summary">Zobacz podsumowanie</string>
+	<string name="find_mistakes">Znajdź błędy</string>
+	<string name="fill_notes">Uzupełnij notatki</string>
+	<string name="show_hint_logs">Pokaż historię podpowiedzi</string>
+	<string name="hint_cell">Podpowiedz komórkę</string>
+	<string name="no_mistakes_found">Nie znaleziono błędów!</string>
+	<string name="show_mistakes">Pokaż błędy</string>
+	<plurals name="mistakes_found_quantity">
+		<item quantity="one">Znaleziono 1 błąd!</item>
+		<item quantity="few">Znaleziono %1$d błędy!</item>
+		<item quantity="many">Znaleziono %1$d błędów!</item>
+		<item quantity="other">Znaleziono %1$d błędów!</item>
+	</plurals>
+</resources>
