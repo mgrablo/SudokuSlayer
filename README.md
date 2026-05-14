@@ -6,6 +6,7 @@
   <h1 align="center">SudokuSlayer</h1>
 </div>
 
+
 <p align="center">
   <img src="https://img.shields.io/github/license/mgrablo/SudokuSlayer?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/Kotlin-2.2.20-purple?logo=kotlin&style=flat-square" alt="Kotlin" />
@@ -15,6 +16,17 @@
 <p align="center">
 Feature-rich Sudoku app for Android, designed for both beginners and experienced players.
 </p>
+
+<div align="center">
+<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/mgrablo/sudokuslayer">
+	<img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" align="center" height="54" />
+</a>
+</div>
+
+<div align="center">
+	<strong>SHA-256 hash of the signing certificate:</strong></br>
+	<code> 5B:04:C6:C7:45:6C:9A:63:44:81:04:1B:ED:18:F8:3E:C2:E9:07:22:FA:12:96:A3:A2:45:A1:55:80:6D:6F:E1 </code>
+</div>
 
 <details>
     <summary>Table of Contents</summary>
@@ -72,12 +84,33 @@ Feature-rich Sudoku app for Android, designed for both beginners and experienced
 
 ## Installation
 
+<table>
+  <tr>
+    <td><strong>Method</strong></td>
+    <td><strong>Link</strong></td>
+  </tr>
+  <tr>
+    <td><strong>Direct Download</strong></td>
+    <td><a href="https://github.com/mgrablo/sudokuslayer/releases/latest">Latest Release</a></td>
+  </tr>
+  <tr>
+    <td><strong>Obtainium</strong></td>
+    <td><a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/mgrablo/sudokuslayer"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="54" /></a></td>
+  </tr>
+</table>
+
+### Signature Verification
+SHA-256 hash of the signing certificate:
+
+`5B:04:C6:C7:45:6C:9A:63:44:81:04:1B:ED:18:F8:3E:C2:E9:07:22:FA:12:96:A3:A2:45:A1:55:80:6D:6F:E1`
+
+### Build from source
 To build the app from source:
 
 ```bash
 git clone https://github.com/mgrablo/SudokuSlayer
 cd SudokuSlayer
-./gradlew assembleDebug
+./gradlew assembleRelease
 ```
 
 ## Contributing
