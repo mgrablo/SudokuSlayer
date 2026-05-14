@@ -4,6 +4,7 @@ import io.github.mgrablo.sudokuslayer.data.core.preferences.PreferenceStorage
 import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.domain.settings.models.ColorScheme
 import io.github.mgrablo.sudokuslayer.domain.settings.models.DarkMode
+import io.github.mgrablo.sudokuslayer.domain.settings.models.Language
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -27,10 +28,10 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 			.map { it.orEmpty() }
 			.map { ColorScheme.fromName(it) }
 
-	override val language: Flow<String> = preferenceStorage.getAsFlow(
+	override val language: Flow<Language> = preferenceStorage.getAsFlow(
 		SettingsPreferenceKeys.Language,
 	).map {
-		it.orEmpty()
+		Language.fromTag(it.orEmpty())
 	}
 	override val leftHandMode: Flow<Boolean> = preferenceStorage.getAsFlow(
 		SettingsPreferenceKeys.LeftHandMode,
@@ -77,8 +78,8 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 		preferenceStorage.set(SettingsPreferenceKeys.LightColorScheme, colorScheme.name)
 	}
 
-	override suspend fun setLanguage(language: String) {
-		preferenceStorage.set(SettingsPreferenceKeys.Language, language)
+	override suspend fun setLanguage(language: Language) {
+		preferenceStorage.set(SettingsPreferenceKeys.Language, language.tag)
 	}
 
 	override suspend fun setLeftHandMode(leftHandMode: Boolean) {
@@ -126,6 +127,8 @@ class AndroidSettingsRepository(private val preferenceStorage: PreferenceStorage
 	}
 
 	override fun getAvailableColorSchemes(): List<ColorScheme> = ColorScheme.getAvailableColorSchemes()
+
+	override fun getAvailableLanguages(): List<Language> = Language.getAvailableLanguages()
 
 	override fun getDarkColorSchemes(): List<ColorScheme> = ColorScheme.getDarkColorSchemes()
 
