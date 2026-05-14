@@ -13,6 +13,12 @@ dependencies {
 	implementation(libs.protobuf.javalite)
 }
 
+android {
+	defaultConfig {
+		consumerProguardFiles("consumer-rules.pro")
+	}
+}
+
 protobuf {
 	protoc {
 		artifact =

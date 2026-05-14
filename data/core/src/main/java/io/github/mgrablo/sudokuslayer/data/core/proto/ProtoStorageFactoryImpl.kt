@@ -2,6 +2,7 @@ package io.github.mgrablo.sudokuslayer.data.core.proto
 
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
 import java.io.InputStream
 import java.io.OutputStream
@@ -32,6 +33,7 @@ class ProtoStorageFactoryImpl(private val context: Context) : ProtoStorageFactor
 				DataStoreFactory.create(
 					serializer = dataStoreSerializer,
 					produceFile = { context.dataStoreFile(filename) },
+					corruptionHandler = ReplaceFileCorruptionHandler { serializer.defaultValue },
 				)
 			}
 			ProtoStorageImpl(dataStore, serializer.defaultValue)
