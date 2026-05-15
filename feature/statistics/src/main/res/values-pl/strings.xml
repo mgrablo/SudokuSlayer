@@ -50,4 +50,9 @@
 	<string name="delete_dialog_header">Zresetować logi i statystyki?</string>
 	<string name="delete_dialog_confirm">Usuń</string>
 	<string name="delete_dialog_cancel">Anuluj</string>
+	<string name="select_date_range">Wybierz zakres dat</string>
+	<string name="play_first_game">Zagraj pierwszą grę</string>
+	<string name="filter_by_completion_date">Filtruj po dacie ukończenia</string>
+	<string name="drag_handle_content_desc">Uchwyt do zmiany kolejności kolumn</string>
+	<string name="copied_seed">Skopiowano kod planszy!</string>
 </resources>

@@ -30,4 +30,19 @@
 		<item quantity="many">Znaleziono %1$d błędów!</item>
 		<item quantity="other">Znaleziono %1$d błędów!</item>
 	</plurals>
+    <string name="play_again">Zagraj Ponownie</string>
+	<string name="insights">Statystyki</string>
+	<string name="clear_sudoku">Wyczyść Sudoku</string>
+	<string name="clear_sudoku_confirmation">Czy na pewno chcesz wyczyścić całą planszę Sudoku? Tego nie da się cofnąć.</string>
+	<string name="yes">Tak</string>
+	<string name="no">Nie</string>
+	<string name="next_hint">Następna podpowiedź</string>
+	<string name="undo">Cofnij</string>
+	<string name="clear">Wyczyść</string>
+	<string name="redo">Ponów</string>
+	<string name="undo_last_move">Cofnij ostatni ruch</string>
+	<string name="clear_cell">Wyczyść komórkę</string>
+	<string name="redo_last_move">Ponów ostatni ruch</string>
+	<string name="puzzle_complete">Puzzle Ukończone!</string>
+	<string name="clear_only_notes">Wyczyść tylko notatki</string>
 </resources>

@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -135,6 +136,9 @@ private fun InsightsScreenContent(
 	modifier: Modifier = Modifier,
 ) {
 	val coroutineScope = rememberCoroutineScope()
+	val resources = LocalResources.current
+
+
 	val snackBarHostState = remember { SnackbarHostState() }
 	val dismissState = rememberSwipeToDismissBoxState()
 	val actionsMenuState = rememberMenuState()
@@ -286,7 +290,7 @@ private fun InsightsScreenContent(
 							coroutineScope.launch {
 								snackBarHostState.currentSnackbarData?.dismiss()
 								snackBarHostState.showSnackbar(
-									"Copied seed!",
+									resources.getString(R.string.copied_seed),
 									duration = SnackbarDuration.Short,
 									withDismissAction = true,
 								)

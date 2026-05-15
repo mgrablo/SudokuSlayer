@@ -243,7 +243,7 @@ private fun FilterBottomSheetContent(
 					)
 				}
 				FilterCategory(
-					label = "Filter by Completion Date",
+					label = stringResource(R.string.filter_by_completion_date),
 				) {
 					CompletionDateFilterView(
 						isRangeEnabled = uiState.isCompletionDateRangeEnabled,

@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import io.github.mgrablo.sudokuslayer.feature.game.R
 
 @Composable
 internal fun ResetDialog(
@@ -20,15 +22,15 @@ internal fun ResetDialog(
 	if (isVisible) {
 		AlertDialog(
 			title = {
-				Text(text = "Clear Sudoku", color = MaterialTheme.colorScheme.onSurface)
+				Text(text = stringResource(R.string.clear_sudoku), color = MaterialTheme.colorScheme.onSurface)
 			},
 			text = {
 				Text(
-					text = "Are you sure you want to clear the entire Sudoku board? This action cannot be undone.",
+					text = stringResource(R.string.clear_sudoku_confirmation),
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
 				)
 			},
-			icon = { Icon(Icons.Default.Warning, "") },
+			icon = { Icon(Icons.Default.Warning, null) },
 			containerColor = MaterialTheme.colorScheme.surface,
 			textContentColor = MaterialTheme.colorScheme.onSurface,
 			onDismissRequest = onDismissClick,
@@ -41,7 +43,7 @@ internal fun ResetDialog(
 					),
 				) {
 					Text(
-						text = "Yes",
+						text = stringResource(R.string.yes),
 						color = MaterialTheme.colorScheme.primary,
 					)
 				}
@@ -49,13 +51,13 @@ internal fun ResetDialog(
 			dismissButton = {
 				TextButton(onDismissClick) {
 					Text(
-						text = "No",
+						text = stringResource(R.string.no),
 						color = MaterialTheme.colorScheme.primary,
 					)
 				}
 				TextButton(onClearNotesClick) {
 					Text(
-						text = "Clear only notes",
+						text = stringResource(R.string.clear_only_notes),
 						color = MaterialTheme.colorScheme.primary,
 					)
 				}

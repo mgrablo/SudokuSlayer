@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +61,7 @@ internal fun PostGameActions(
 				.padding(LocalPadding.current.large),
 		) {
 			Text(
-				text = "Puzzle Complete!",
+				text = stringResource(R.string.puzzle_complete),
 				style = LocalSudokuTypography.current.displayMediumEmphasized,
 				color = MaterialTheme.colorScheme.onSurface,
 				fontSize = 24.sp,
@@ -73,11 +74,11 @@ internal fun PostGameActions(
 			) {
 				Icon(
 					Icons.Default.PlayArrow,
-					contentDescription = "",
+					contentDescription = null,
 					modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
 				)
 				Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-				Text(text = "Play Again", color = MaterialTheme.colorScheme.onPrimary)
+				Text(text = stringResource(R.string.play_again), color = MaterialTheme.colorScheme.onPrimary)
 			}
 			Spacer(Modifier.size(LocalPadding.current.small))
 			SplitButtonLayout(
@@ -92,12 +93,12 @@ internal fun PostGameActions(
 					) {
 						Icon(
 							Icons.Default.DateRange,
-							contentDescription = "",
+							contentDescription = null,
 							modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
 						)
 						Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 						Text(
-							text = "Insights",
+							text = stringResource(R.string.insights),
 							color = MaterialTheme.colorScheme.onSecondary,
 						)
 					}
@@ -113,7 +114,7 @@ internal fun PostGameActions(
 					) {
 						Icon(
 							painter = painterResource(R.drawable.trophy),
-							contentDescription = "View summary",
+							contentDescription = stringResource(R.string.view_summary),
 						)
 					}
 				},

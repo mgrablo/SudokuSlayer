@@ -9,4 +9,20 @@
 	<string name="gameplay_hide_in_game_timer_desc">Ukrywa licznik czasu w trakcie gry, pozwalając na rozwiązywanie w swoim własnym tempie. Twój czas wciąż jest zapisywany w tle.</string>
 	<string name="gameplay_show_remaining_digit_counts">Pokaż licznik pozostałych cyfr</string>
 	<string name="gameplay_show_remaining_digit_counts_desc">Wyświetla małą cyfrę pod każdym przyciskiem numerycznym, informując ile razy trzeba jeszcze użyć danej wartości na planszy.</string>
+	<string name="appearance">Wygląd</string>
+	<string name="theme">Motyw</string>
+	<string name="follow_system_theme">Dopasuj do motywu systemu</string>
+	<string name="light_color_scheme">Jasny motyw kolorystyczny</string>
+	<string name="dark_color_scheme">Ciemny motyw kolorystyczny</string>
+	<string name="compact_insights_summaries">Kompaktowe podsumowania statystyk</string>
+	<string name="left_hand_mode">Tryb leworęczny</string>
+	<string name="swap_the_layout_of_the_keypad">Zamień układ klawiatury</string>
+	<string name="show_action_buttons_on_top">Pokaż przyciski akcji u góry</string>
+	<string name="move_the_action_buttons_to_the_top_of_the_screen">Przenieś przyciski akcji na górę ekranu</string>
+	<string name="accessibility">Ułatwienia dostępu</string>
+	<string name="gameplay">Rozgrywka</string>
+	<string name="auto_clear_notes">Automatyczne czyszczenie notatek</string>
+	<string name="clear_notes_when_a_number_is_input">Wyczyść notatki po wpisaniu liczby</string>
+	<string name="settings_title">Ustawienia</string>
+	<string name="open_menu_content_desc">Otwórz menu</string>
 </resources>

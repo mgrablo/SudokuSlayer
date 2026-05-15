@@ -64,7 +64,7 @@ internal fun EmptyStateContent(onPlayFirstGameClick: () -> Unit, modifier: Modif
 				contentDescription = null,
 			)
 			Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-			Text("Play First Game")
+			Text(stringResource(R.string.play_first_game))
 		}
 	}
 }

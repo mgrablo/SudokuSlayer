@@ -25,4 +25,6 @@
 	<string name="clear_puzzle_seed_content_desc">Clear Puzzle Seed</string>
 	<string name="advanced_options">Advanced Options</string>
 	<string name="good_luck">Good Luck!</string>
+    <string name="previous_content_desc">Previous</string>
+	<string name="next_content_desc">Next</string>
 </resources>

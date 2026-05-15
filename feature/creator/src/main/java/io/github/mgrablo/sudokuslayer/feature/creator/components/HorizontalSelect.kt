@@ -20,7 +20,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import io.github.mgrablo.sudokuslayer.feature.creator.R
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -53,7 +55,10 @@ internal fun HorizontalSelect(
 				}
 			},
 		) {
-			Icon(Icons.AutoMirrored.Default.KeyboardArrowLeft, "Previous")
+			Icon(
+				Icons.AutoMirrored.Default.KeyboardArrowLeft,
+				stringResource(R.string.previous_content_desc),
+			)
 		}
 		HorizontalPager(
 			state = pagerState,
@@ -77,7 +82,10 @@ internal fun HorizontalSelect(
 				}
 			},
 		) {
-			Icon(Icons.AutoMirrored.Default.KeyboardArrowRight, "Next")
+			Icon(
+				Icons.AutoMirrored.Default.KeyboardArrowRight,
+				stringResource(R.string.next_content_desc),
+			)
 		}
 	}
 }
