@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.domain.settings.models.ColorScheme
 import io.github.mgrablo.sudokuslayer.domain.settings.models.DarkMode
+import io.github.mgrablo.sudokuslayer.domain.settings.models.Language
+import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +18,8 @@ internal data class SettingsUiState(
 	val appearance: AppearanceSettings = AppearanceSettings(),
 	val accessibility: AccessibilitySettings = AccessibilitySettings(),
 	val gameplay: GameplaySettings = GameplaySettings(),
+	val availableLanguages: PersistentSet<Language> = Language.getAvailableLanguages()
+		.toPersistentSet(),
 )
 
 internal data class AppearanceSettings(
@@ -23,7 +27,7 @@ internal data class AppearanceSettings(
 	val darkColorScheme: ColorScheme = ColorScheme.fromName("mocha"),
 	val lightColorScheme: ColorScheme = ColorScheme.fromName("latte"),
 	val insightsSummaryCompactLayout: Boolean = true,
-	val language: String = "system",
+	val language: Language = Language.SYSTEM,
 )
 
 internal data class AccessibilitySettings(
@@ -116,17 +120,11 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 
 	sealed interface Event {
 		data class SetDarkMode(val darkMode: DarkMode) : Event
-
+		data class SetLanguage(val language: Language) : Event
 		data class SetDarkColorScheme(val colorScheme: ColorScheme) : Event
-
 		data class SetLightColorScheme(val colorScheme: ColorScheme) : Event
-
-		data class SetLanguage(val language: String) : Event
-
 		data class ToggleLeftHandMode(val leftHandMode: Boolean) : Event
-
 		data class ToggleActionButtonsOnTop(val actionButtonsOnTop: Boolean) : Event
-
 		data class ToggleInsightsSummaryCompactLayout(val compactLayout: Boolean) : Event
 		data class ToggleAutoClearNotes(val autoClearNotes: Boolean) : Event
 		data class ToggleHighlightMatching(val highlightMatching: Boolean) : Event
@@ -138,19 +136,29 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 	fun onEvent(event: Event) {
 		when (event) {
 			is Event.SetDarkMode -> setDarkMode(event.darkMode)
-			is Event.SetLightColorScheme -> setLightColorScheme(event.colorScheme)
+
 			is Event.SetDarkColorScheme -> setDarkColorScheme(event.colorScheme)
+
 			is Event.SetLanguage -> setLanguage(event.language)
+
+			is Event.SetLightColorScheme -> setLightColorScheme(event.colorScheme)
+
 			is Event.ToggleLeftHandMode -> toggleLeftHandMode(event.leftHandMode)
+
 			is Event.ToggleActionButtonsOnTop -> toggleActionButtonsOnTop(event.actionButtonsOnTop)
+
 			is Event.ToggleInsightsSummaryCompactLayout -> toggleInsightsSummaryCompactLayout(
 				event.compactLayout,
 			)
 
 			is Event.ToggleAutoClearNotes -> toggleAutoClearNotes(event.autoClearNotes)
+
 			is Event.ToggleHighlightMatching -> toggleHighlightMatching(event.highlightMatching)
+
 			is Event.ToggleHighlightInvalid -> toggleHighlightInvalid(event.highlightInvalid)
+
 			is Event.ToggleTimerVisibility -> toggleTimerVisibility(event.timerVisibility)
+
 			is Event.ToggleRemainingDigitCounts -> toggleRemainingDigitCounts(event.remainingDigitCounts)
 		}
 	}
@@ -179,7 +187,7 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 		}
 	}
 
-	private fun setLanguage(language: String) {
+	private fun setLanguage(language: Language) {
 		viewModelScope.launch {
 			settingsRepository.setLanguage(language)
 		}

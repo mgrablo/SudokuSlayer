@@ -85,17 +85,28 @@ private fun SettingsScreenContent(
 	) { paddingValues ->
 		Column(
 			modifier =
-			Modifier
-				.fillMaxSize()
-				.verticalScroll(rememberScrollState())
-				.padding(paddingValues)
-				.padding(LocalPadding.current.normal),
+				Modifier
+					.fillMaxSize()
+					.verticalScroll(rememberScrollState())
+					.padding(paddingValues)
+					.padding(LocalPadding.current.normal),
 		) {
 			var themeExpanded by remember { mutableStateOf(false) }
 			var lightColorSchemeExpanded by remember { mutableStateOf(false) }
 			var darkColorSchemeExpanded by remember { mutableStateOf(false) }
+			var languageExpanded by remember { mutableStateOf(false) }
 
 			SettingsCategory(stringResource(R.string.appearance)) {
+				SettingDropDownMenu(
+					title = stringResource(R.string.language),
+					isExpanded = languageExpanded,
+					onExpandedChange = { languageExpanded = it },
+					selectedValue = uiState.appearance.language,
+					onSelect = { onEvent(SettingsViewModel.Event.SetLanguage(it)) },
+					optionToString = { stringResource(it.getTitleRes()) },
+					options = uiState.availableLanguages,
+					modifier = Modifier.fillMaxWidth(),
+				)
 				SettingDropDownMenu(
 					title = stringResource(R.string.theme),
 					description = if (uiState.appearance.darkMode == DarkMode.SYSTEM) {

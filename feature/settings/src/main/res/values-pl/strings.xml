@@ -25,4 +25,6 @@
 	<string name="clear_notes_when_a_number_is_input">Wyczyść notatki po wpisaniu liczby</string>
 	<string name="settings_title">Ustawienia</string>
 	<string name="open_menu_content_desc">Otwórz menu</string>
+	<string name="language_system">Domyślny systemowy</string>
+	<string name="language">Język</string>
 </resources>

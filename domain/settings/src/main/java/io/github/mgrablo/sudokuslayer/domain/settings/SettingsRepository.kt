@@ -2,13 +2,14 @@ package io.github.mgrablo.sudokuslayer.domain.settings
 
 import io.github.mgrablo.sudokuslayer.domain.settings.models.ColorScheme
 import io.github.mgrablo.sudokuslayer.domain.settings.models.DarkMode
+import io.github.mgrablo.sudokuslayer.domain.settings.models.Language
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
 	val darkMode: Flow<DarkMode>
 	val darkModeColorScheme: Flow<ColorScheme>
 	val lightModeColorScheme: Flow<ColorScheme>
-	val language: Flow<String>
+	val language: Flow<Language>
 	val leftHandMode: Flow<Boolean>
 	val showActionButtonsOnTop: Flow<Boolean>
 	val insightsSummaryCompactLayout: Flow<Boolean>
@@ -24,7 +25,7 @@ interface SettingsRepository {
 
 	suspend fun setLightColorScheme(colorScheme: ColorScheme)
 
-	suspend fun setLanguage(language: String)
+	suspend fun setLanguage(language: Language)
 
 	suspend fun setLeftHandMode(leftHandMode: Boolean)
 
@@ -43,6 +44,8 @@ interface SettingsRepository {
 	suspend fun setRemainingDigitCounts(remainingDigitCounts: Boolean)
 
 	fun getAvailableColorSchemes(): List<ColorScheme>
+
+	fun getAvailableLanguages(): List<Language>
 
 	fun getDarkColorSchemes(): List<ColorScheme>
 

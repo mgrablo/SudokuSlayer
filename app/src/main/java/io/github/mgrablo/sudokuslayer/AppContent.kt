@@ -1,7 +1,6 @@
 package io.github.mgrablo.sudokuslayer
 
 import android.app.Activity
-import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,22 +41,7 @@ import io.github.mgrablo.sudokuslayer.feature.uicore.components.SudokuNavigation
 import io.github.mgrablo.sudokuslayer.feature.uicore.theme.SudokuSlayerTheme
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.context.startKoin
-
-class MyApplication : Application() {
-	override fun onCreate() {
-		super.onCreate()
-
-		startKoin {
-			modules(appModule)
-			androidContext(this@MyApplication)
-			androidLogger()
-		}
-	}
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -69,9 +53,9 @@ internal fun AppContent(viewModel: AppViewModel = koinViewModel()) {
 	)
 	val destinations =
 		persistentListOf(
-			_root_ide_package_.io.github.mgrablo.sudokuslayer.feature.game.SudokuGame(),
+			SudokuGame(),
 			SudokuCreator(),
-			_root_ide_package_.io.github.mgrablo.sudokuslayer.feature.statistics.Insights,
+			Insights,
 			Settings,
 		)
 	val scope = rememberCoroutineScope()
