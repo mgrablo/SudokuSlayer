@@ -65,7 +65,7 @@ internal fun CompletionDateFilterView(
 			verticalAlignment = Alignment.CenterVertically,
 			modifier = Modifier.fillMaxWidth(),
 		) {
-			Text("Select date range")
+			Text(stringResource(R.string.select_date_range))
 			Spacer(Modifier.weight(1f))
 			Switch(
 				checked = isRangeEnabled,

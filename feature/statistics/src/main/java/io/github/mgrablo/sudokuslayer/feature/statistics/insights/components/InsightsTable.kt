@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.composables.core.HorizontalScrollbar
@@ -64,6 +65,7 @@ internal fun InsightsTable(
 	val clipboard = LocalClipboard.current
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
+	val resources = LocalResources.current
 
 	ScrollArea(state = scrollAreaState) {
 		HorizontalScrollbar(
@@ -109,7 +111,7 @@ internal fun InsightsTable(
 							clipboard.setClipEntry(ClipEntry(data))
 							Toast.makeText(
 								context,
-								context.getString(R.string.copied_seed_to_clipboard),
+								resources.getString(R.string.copied_seed_to_clipboard),
 								Toast.LENGTH_SHORT,
 							).show()
 						}

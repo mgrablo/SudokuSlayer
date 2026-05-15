@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.mgrablo.sudokuslayer.feature.statistics.R
 
@@ -43,7 +44,12 @@ internal fun GenericFilterChip(
 			},
 			trailingIcon = {
 				if (isDraggable) {
-					Icon(painter = painterResource(R.drawable.drag_indicator), contentDescription = "Drag handle")
+					Icon(
+						painter = painterResource(R.drawable.drag_indicator),
+						contentDescription = stringResource(
+							R.string.drag_handle_content_desc,
+						),
+					)
 				}
 			},
 			colors = FilterChipDefaults.filterChipColors(
