@@ -24,7 +24,22 @@
 	<string name="hint_cell">Hint cell</string>
 	<string name="no_mistakes_found">No mistakes found!</string>
     <string name="show_mistakes">Show mistakes</string>
-    <plurals name="mistakes_found_quantity">
+    <string name="next_hint">Next hint</string>
+	<string name="undo">Undo</string>
+	<string name="clear">Clear</string>
+	<string name="redo">Redo</string>
+	<string name="undo_last_move">Undo last move</string>
+	<string name="clear_cell">Clear cell</string>
+	<string name="redo_last_move">Redo last move</string>
+	<string name="puzzle_complete">Puzzle Complete!</string>
+	<string name="play_again">Play Again</string>
+	<string name="insights">Insights</string>
+	<string name="clear_sudoku">Clear Sudoku</string>
+	<string name="clear_sudoku_confirmation">Are you sure you want to clear the entire Sudoku board? This action cannot be undone.</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="clear_only_notes">Clear only notes</string>
+	<plurals name="mistakes_found_quantity">
 		<item quantity="one">Found 1 mistake!</item>
 		<item quantity="other">Found %1$d mistakes!</item>
 	</plurals>

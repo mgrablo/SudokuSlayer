@@ -231,19 +231,19 @@ private fun getMiddleActionPadItems(
 	onRedoClick: () -> Unit,
 ): PersistentList<ActionPadItem> = persistentListOf(
 	ActionPadItem(
-		icon = AppIcon.ResourceIcon(R.drawable.undo, "Undo icon"),
+		icon = AppIcon.ResourceIcon(R.drawable.undo, stringResource(R.string.undo)),
 		onClick = onUndoClick,
-		contentDescription = "Undo last move",
+		contentDescription = stringResource(R.string.undo_last_move),
 	),
 	ActionPadItem(
-		icon = AppIcon.VectorIcon(Icons.Default.Clear, "Clear icon"),
+		icon = AppIcon.VectorIcon(Icons.Default.Clear, stringResource(R.string.clear)),
 		onClick = onClearClick,
-		contentDescription = "Clear cell",
+		contentDescription = stringResource(R.string.clear_cell),
 	),
 	ActionPadItem(
-		icon = AppIcon.ResourceIcon(R.drawable.redo, "Redo icon"),
+		icon = AppIcon.ResourceIcon(R.drawable.redo, stringResource(R.string.redo)),
 		onClick = onRedoClick,
-		contentDescription = "Redo last move",
+		contentDescription = stringResource(R.string.redo_last_move),
 	),
 )
 
