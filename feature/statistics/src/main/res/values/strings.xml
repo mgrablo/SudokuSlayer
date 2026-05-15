@@ -53,6 +53,6 @@
     <string name="select_date_range">Select date range</string>
 	<string name="play_first_game">Play First Game</string>
 	<string name="filter_by_completion_date">Filter by Completion Date</string>
-	<string name="drag_handle_content_desc">Drag handle</string>
+	<string name="drag_handle_content_desc">Drag handle to reorder columns</string>
 	<string name="copied_seed">Copied seed!</string>
 </resources>
