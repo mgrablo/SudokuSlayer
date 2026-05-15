@@ -9,4 +9,20 @@
 	<string name="gameplay_hide_in_game_timer_desc">Hides the timer during gameplay so you can solve at your own pace. Your final time is still recorded.</string>
     <string name="gameplay_show_remaining_digit_counts">Show Remaining Digit Counts</string>
 	<string name="gameplay_show_remaining_digit_counts_desc">Display a small number below each digit on the keypad indicating how many are left to place.</string>
+    <string name="appearance">Appearance</string>
+	<string name="theme">Theme</string>
+	<string name="follow_system_theme">Follow system theme</string>
+	<string name="light_color_scheme">Light color scheme</string>
+	<string name="dark_color_scheme">Dark color scheme</string>
+	<string name="compact_insights_summaries">Compact Insights summaries</string>
+	<string name="left_hand_mode">Left hand mode</string>
+	<string name="swap_the_layout_of_the_keypad">Swap the layout of the keypad</string>
+	<string name="show_action_buttons_on_top">Show action buttons on top</string>
+	<string name="move_the_action_buttons_to_the_top_of_the_screen">Move the action buttons to the top of the screen</string>
+	<string name="accessibility">Accessibility</string>
+	<string name="gameplay">Gameplay</string>
+	<string name="auto_clear_notes">Auto clear notes</string>
+	<string name="clear_notes_when_a_number_is_input">Clear notes when a number is input</string>
+	<string name="settings_title">Settings</string>
+	<string name="open_menu_content_desc">Open menu</string>
 </resources>

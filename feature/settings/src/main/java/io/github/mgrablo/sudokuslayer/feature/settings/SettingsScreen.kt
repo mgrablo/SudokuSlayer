@@ -70,13 +70,13 @@ private fun SettingsScreenContent(
 	Scaffold(
 		topBar = {
 			CenterAlignedTopAppBar(
-				title = { Text("Settings") },
+				title = { Text(stringResource(R.string.settings_title)) },
 				colors = TopAppBarDefaults.topAppBarColors(
 					containerColor = MaterialTheme.colorScheme.surfaceContainer,
 				),
 				navigationIcon = {
 					IconButton(onClick = openDrawer) {
-						Icon(Icons.Default.Menu, contentDescription = "Open menu")
+						Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.open_menu_content_desc))
 					}
 				},
 			)
@@ -95,11 +95,11 @@ private fun SettingsScreenContent(
 			var lightColorSchemeExpanded by remember { mutableStateOf(false) }
 			var darkColorSchemeExpanded by remember { mutableStateOf(false) }
 
-			SettingsCategory("Appearance") {
+			SettingsCategory(stringResource(R.string.appearance)) {
 				SettingDropDownMenu(
-					title = "Theme",
+					title = stringResource(R.string.theme),
 					description = if (uiState.appearance.darkMode == DarkMode.SYSTEM) {
-						"Follow system theme"
+						stringResource(R.string.follow_system_theme)
 					} else {
 						null
 					},
@@ -115,7 +115,7 @@ private fun SettingsScreenContent(
 				)
 
 				SettingDropDownMenu(
-					title = "Light color scheme",
+					title = stringResource(R.string.light_color_scheme),
 					isExpanded = lightColorSchemeExpanded,
 					onExpandedChange = { lightColorSchemeExpanded = it },
 					onSelect = { onEvent(SettingsViewModel.Event.SetLightColorScheme(it)) },
@@ -128,7 +128,7 @@ private fun SettingsScreenContent(
 				)
 
 				SettingDropDownMenu(
-					title = "Dark color scheme",
+					title = stringResource(R.string.dark_color_scheme),
 					isExpanded = darkColorSchemeExpanded,
 					onExpandedChange = { darkColorSchemeExpanded = it },
 					selectedValue = uiState.appearance.darkColorScheme,
@@ -141,7 +141,7 @@ private fun SettingsScreenContent(
 				)
 
 				SettingSwitchItem(
-					title = "Compact Insights summaries",
+					title = stringResource(R.string.compact_insights_summaries),
 					value = uiState.appearance.insightsSummaryCompactLayout,
 					onValueChange = {
 						onEvent(SettingsViewModel.Event.ToggleInsightsSummaryCompactLayout(it))
@@ -150,25 +150,25 @@ private fun SettingsScreenContent(
 				)
 			}
 
-			SettingsCategory("Accessibility") {
+			SettingsCategory(stringResource(R.string.accessibility)) {
 				SettingSwitchItem(
-					title = "Left hand mode",
-					description = "Swap the layout of the keypad",
+					title = stringResource(R.string.left_hand_mode),
+					description = stringResource(R.string.swap_the_layout_of_the_keypad),
 					value = uiState.accessibility.leftHandMode,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleLeftHandMode(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
 
 				SettingSwitchItem(
-					title = "Show action buttons on top",
-					description = "Move the action buttons to the top of the screen",
+					title = stringResource(R.string.show_action_buttons_on_top),
+					description = stringResource(R.string.move_the_action_buttons_to_the_top_of_the_screen),
 					value = uiState.accessibility.actionButtonsOnTop,
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleActionButtonsOnTop(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
 			}
 
-			SettingsCategory("Gameplay") {
+			SettingsCategory(stringResource(R.string.gameplay)) {
 				SettingSwitchItem(
 					title = stringResource(R.string.gameplay_hide_in_game_timer),
 					value = !uiState.gameplay.timerVisibility,
@@ -184,9 +184,9 @@ private fun SettingsScreenContent(
 					modifier = Modifier.fillMaxWidth(),
 				)
 				SettingSwitchItem(
-					title = "Auto clear notes",
+					title = stringResource(R.string.auto_clear_notes),
 					value = uiState.gameplay.autoClearNotes,
-					description = "Clear notes when a number is input",
+					description = stringResource(R.string.clear_notes_when_a_number_is_input),
 					onValueChange = { onEvent(SettingsViewModel.Event.ToggleAutoClearNotes(it)) },
 					modifier = Modifier.fillMaxWidth(),
 				)
