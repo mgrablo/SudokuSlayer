@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.model.CellAttributes
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.model.clearAllCornerNotes
@@ -58,6 +57,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
 internal class SudokuGameViewModel(
@@ -265,7 +265,7 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			game.filterNotNull().distinctUntilChangedBy(Game::toStateKey)
 				.collect { g ->
-					delay(1100)
+					delay(1100.milliseconds)
 					val bestTime = getBestTimeUseCase(
 						g.difficulty,
 						SudokuGridSize.fromIntSize(g.grid.gridSize),
@@ -363,8 +363,9 @@ internal class SudokuGameViewModel(
 
 	private fun handleHintGuess(row: Int, column: Int, number: Int): PersistentList<HintLog> {
 		val lastHint = _uiState.value.lastHint
-		val isCorrectGuess =
-			lastHint != null && lastHint.row == row && lastHint.col == column && lastHint.value == number
+		if (lastHint !is Hint.ResolutionHint) return persistentListOf()
+
+		val isCorrectGuess = lastHint.row == row && lastHint.col == column && lastHint.number == number
 
 		val hintLogs = game.value?.hintLogs
 		if (!isCorrectGuess) {
@@ -372,13 +373,7 @@ internal class SudokuGameViewModel(
 		}
 
 		val updatedLogs = hintLogs?.toMutableList() ?: mutableListOf()
-		val hintLogIndex =
-			updatedLogs.indexOfLast {
-				it.hint.row == lastHint.row &&
-					it.hint.col == lastHint.col &&
-					it.hint.value == lastHint.value &&
-					it.hint.type == lastHint.type
-			}
+		val hintLogIndex = updatedLogs.indexOfLast { it.hint == lastHint }
 
 		if (hintLogIndex != -1) {
 			val log = updatedLogs[hintLogIndex]
@@ -491,10 +486,15 @@ internal class SudokuGameViewModel(
 
 				updateGame { currentGame ->
 					if (hint != null) {
-						val grid = gameManagementUseCases.selectCell(
-							sudoku = currentGame.grid,
-							selectedCell = hint.row to hint.col,
-						)
+						val grid = if (hint is Hint.ResolutionHint) {
+							gameManagementUseCases.selectCell(
+								sudoku = currentGame.grid,
+								selectedCell = hint.row to hint.col,
+							)
+						} else {
+							currentGame.grid
+						}
+
 						hintFocus(hint)
 						val hintLog =
 							hintUseCases.generateLog(
@@ -528,12 +528,12 @@ internal class SudokuGameViewModel(
 		hintFocusJob = viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 
-			val cellsToFocus = when (hint.type) {
-				is HintType.HiddenSingle, is HintType.NakedSingle -> {
-					listOf(Pair(hint.row, hint.col))
+			val cellsToFocus = when (hint) {
+				is Hint.ResolutionHint -> {
+					listOf(hint.row to hint.col)
 				}
 
-				is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
+				is Hint.EliminationHint -> {
 					hint.enforcingCells.map { it.row to it.col }
 				}
 			}
@@ -546,7 +546,7 @@ internal class SudokuGameViewModel(
 				)
 			}
 
-			delay(3000)
+			delay(3000.milliseconds)
 
 			_uiState.update { state ->
 				state.copy(
@@ -560,13 +560,16 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			val hint: Hint = _uiState.value.lastHint ?: return@launch
-			if (game.value?.grid
-					?.getCellAt(hint.row, hint.col)
-					?.number != 0
-			) {
-				return@launch
+			if (hint is Hint.ResolutionHint) {
+				if (game.value?.grid
+						?.getCellAt(hint.row, hint.col)
+						?.number != 0
+				) {
+					return@launch
+				}
+				selectCell(hint.row, hint.col)
 			}
-			selectCell(hint.row, hint.col)
+
 			updateGame { currentGame ->
 				val (updatedGrid, changes) = hintUseCases.revealOnGrid(hint, currentGame.grid)
 				val updatedLogs = hintUseCases.revealLastLog(currentGame.hintLogs)

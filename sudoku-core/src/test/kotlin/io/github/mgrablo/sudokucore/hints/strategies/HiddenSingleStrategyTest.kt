@@ -1,13 +1,13 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
 import io.github.mgrablo.sudokucore.generateHouses
-import io.github.mgrablo.sudokucore.hints.GroupType
-import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.withCandidates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertInstanceOf
 import org.junit.jupiter.api.assertNotNull
 
 class HiddenSingleStrategyTest {
@@ -23,13 +23,13 @@ class HiddenSingleStrategyTest {
 
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
-		val rowHint = hints.singleOrNull {
-			it.type is HintType.HiddenSingle && it.type.groupType is GroupType.Row
+		val rowHint = hints.single {
+			it is Hint.HiddenSingle && it.groupType is Hint.GroupType.Row
 		}
-		assertNotNull(rowHint)
+		assertInstanceOf<Hint.HiddenSingle>(rowHint)
 		assertEquals(0, rowHint.row)
 		assertEquals(0, rowHint.col)
-		assertEquals(1, rowHint.value)
+		assertEquals(1, rowHint.number)
 	}
 
 	@Test
@@ -44,13 +44,13 @@ class HiddenSingleStrategyTest {
 
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
-		val colHint = hints.singleOrNull {
-			it.type is HintType.HiddenSingle && it.type.groupType is GroupType.Column
+		val colHint = hints.single {
+			it is Hint.HiddenSingle && it.groupType is Hint.GroupType.Column
 		}
-		assertNotNull(colHint)
+		assertInstanceOf<Hint.HiddenSingle>(colHint)
 		assertEquals(0, colHint.row)
 		assertEquals(0, colHint.col)
-		assertEquals(1, colHint.value)
+		assertEquals(1, colHint.number)
 	}
 
 	@Test
@@ -66,14 +66,15 @@ class HiddenSingleStrategyTest {
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
 		val blockHint = hints.find {
-			it.type is HintType.HiddenSingle &&
-				it.type.groupType is GroupType.Block &&
-				it.value == 1 && it.row == 0 && it.col == 0
+			it is Hint.HiddenSingle &&
+				it.groupType is Hint.GroupType.Block &&
+				it.number == 1 && it.row == 0 && it.col == 0
 		}
 		assertNotNull(blockHint)
+		assertInstanceOf<Hint.HiddenSingle>(blockHint)
 		assertEquals(0, blockHint.row)
 		assertEquals(0, blockHint.col)
-		assertEquals(1, blockHint.value)
+		assertEquals(1, blockHint.number)
 	}
 
 	@Test
@@ -87,8 +88,8 @@ class HiddenSingleStrategyTest {
 
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
-		assertTrue(hints.any { it.value == 1 && it.row == 0 && it.col == 0 })
-		assertTrue(hints.any { it.value == 9 && it.row == 8 && it.col == 8 })
+		assertTrue(hints.any { it is Hint.HiddenSingle && it.number == 1 && it.row == 0 && it.col == 0 })
+		assertTrue(hints.any { it is Hint.HiddenSingle && it.number == 9 && it.row == 8 && it.col == 8 })
 	}
 
 	@Test

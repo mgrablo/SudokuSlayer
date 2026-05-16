@@ -44,8 +44,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
-import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.components.snackbar.GameSnackbar
@@ -262,13 +260,10 @@ private fun HintBottomSheetScaffoldPreview() {
 					HintLog(
 						id = 1,
 						hint =
-							Hint(
+							Hint.NakedSingle(
 								row = 1,
 								col = 1,
-								value = 4,
-								type = HintType.NakedSingle,
-								explanationStrategy = NakedSingleExplanation(),
-								additionalInfo = "",
+								number = 4,
 							),
 						isUserGuessed = false,
 						isRevealed = false,

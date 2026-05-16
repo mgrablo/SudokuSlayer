@@ -1,14 +1,13 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
 import io.github.mgrablo.sudokucore.generateHouses
-import io.github.mgrablo.sudokucore.hints.GroupType
-import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.withCandidates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNotNull
+import org.junit.jupiter.api.assertInstanceOf
 
 class ClaimingCandidateStrategyTest {
 	private val claimingCandidateStrategy = ClaimingCandidateStrategy()
@@ -25,17 +24,13 @@ class ClaimingCandidateStrategyTest {
 
 		val hints = claimingCandidateStrategy.findHints(grid.data, houses)
 
-		val rowHint = hints.singleOrNull {
-			it.type is HintType.ClaimingCandidate &&
-				it.type.groupType is GroupType.Row
+		val rowHint = hints.single {
+			it is Hint.ClaimingCandidate &&
+				it.groupType is Hint.GroupType.Row
 		}
-		assertNotNull(rowHint)
-		assertEquals(1, rowHint.row)
-		assertEquals(1, rowHint.col)
-		assertEquals(1, rowHint.value)
-
-		val rowType = rowHint.type as HintType.ClaimingCandidate
-		assertEquals(GroupType.Row(0), rowType.groupType)
+		assertInstanceOf<Hint.ClaimingCandidate>(rowHint)
+		assertEquals(1, rowHint.number)
+		assertEquals(Hint.GroupType.Row(0), rowHint.groupType)
 
 		assertTrue(rowHint.enforcingCells.all { it.row == 0 && it.col < 3 })
 		assertTrue(rowHint.affectedCells.all { it.row / 3 == 0 && it.col / 3 == 0 })
@@ -54,17 +49,13 @@ class ClaimingCandidateStrategyTest {
 
 		val hints = claimingCandidateStrategy.findHints(grid.data, houses)
 
-		val colHint = hints.singleOrNull {
-			it.type is HintType.ClaimingCandidate &&
-				it.type.groupType is GroupType.Column
+		val colHint = hints.single {
+			it is Hint.ClaimingCandidate &&
+				it.groupType is Hint.GroupType.Column
 		}
-		assertNotNull(colHint)
-		assertEquals(0, colHint.row)
-		assertEquals(1, colHint.col)
-		assertEquals(1, colHint.value)
-
-		val colType = colHint.type as HintType.ClaimingCandidate
-		assertEquals(GroupType.Column(0), colType.groupType)
+		assertInstanceOf<Hint.ClaimingCandidate>(colHint)
+		assertEquals(1, colHint.number)
+		assertEquals(Hint.GroupType.Column(0), colHint.groupType)
 
 		assertTrue(colHint.enforcingCells.all { it.col == 0 && it.row < 3 })
 		assertTrue(colHint.affectedCells.all { it.row / 3 == 0 && it.col / 3 == 0 })
@@ -90,14 +81,14 @@ class ClaimingCandidateStrategyTest {
 		assertTrue(hints.size >= 2)
 		assertTrue(
 			hints.any {
-				it.value == 1 && it.type is HintType.ClaimingCandidate &&
-					it.type.groupType is GroupType.Row
+				it is Hint.ClaimingCandidate && it.number == 1 &&
+					it.groupType is Hint.GroupType.Row
 			},
 		)
 		assertTrue(
 			hints.any {
-				it.value == 9 && it.type is HintType.ClaimingCandidate &&
-					it.type.groupType is GroupType.Column
+				it is Hint.ClaimingCandidate && it.number == 9 &&
+					it.groupType is Hint.GroupType.Column
 			},
 		)
 	}

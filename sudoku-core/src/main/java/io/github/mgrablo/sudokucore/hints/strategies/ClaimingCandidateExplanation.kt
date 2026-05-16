@@ -1,6 +1,5 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintExplanationPart
 import io.github.mgrablo.sudokucore.hints.HintExplanationStep
@@ -8,7 +7,6 @@ import io.github.mgrablo.sudokucore.hints.HintExplanationStrategy
 import io.github.mgrablo.sudokucore.hints.HintMessageFormatter
 import io.github.mgrablo.sudokucore.hints.HintStringKey
 import io.github.mgrablo.sudokucore.hints.HintStringProvider
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.ScopeType
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 
@@ -18,15 +16,11 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 		hint: Hint,
 		stringProvider: HintStringProvider,
 	): List<HintExplanationStep> {
-		val hintType = hint.type as HintType.ClaimingCandidate
-
-		// Calculate block id
-		val blockId =
-			(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
+		require(hint is Hint.ClaimingCandidate)
 
 		// Organize enforcing cells by row or column
-		val groupType = hintType.groupType
-		val scopeType = if (groupType is GroupType.Row) ScopeType.ROW else ScopeType.COLUMN
+		val groupType = hint.groupType
+		val scopeType = if (groupType is Hint.GroupType.Row) ScopeType.ROW else ScopeType.COLUMN
 
 		// Get affected cells coordinates (1-indexed)
 		val affectedCells = hint.affectedCells
@@ -35,16 +29,19 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 
 		// Group enforcing cells by row/column
 		val enforcingCellsByScope = hint.enforcingCells
-			.groupBy { if (groupType is GroupType.Row) it.row else it.col }
+			.groupBy { if (groupType is Hint.GroupType.Row) it.row else it.col }
 			.map { (scopeIndex, cells) ->
 				scopeIndex to cells.map { Pair(it.row + 1, it.col + 1) }
 			}
 
 		val steps = mutableListOf<HintExplanationStep>()
-		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, blockId)
-		val valuePart = HintExplanationPart.Value(hint.value)
+
+		// This should use group type and will be changed when refactoring Explanation classes
+		// For now changed index to 0
+		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, 0)
+		val valuePart = HintExplanationPart.Value(hint.number)
 		val lineScopePart = HintExplanationPart.Text(
-			if (groupType is GroupType.Row) {
+			if (groupType is Hint.GroupType.Row) {
 				stringProvider.getString(HintStringKey.ROW)
 			} else {
 				stringProvider.getString(HintStringKey.COLUMN)
