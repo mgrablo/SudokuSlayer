@@ -1,12 +1,14 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
 import io.github.mgrablo.sudokucore.generateHouses
-import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.withCandidates
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertInstanceOf
 
 class NakedSingleStrategyTest {
 	private val nakedSingleStrategy = NakedSingleStrategy()
@@ -29,12 +31,13 @@ class NakedSingleStrategyTest {
 		val houses = generateHouses(grid.data)
 
 		val hints = nakedSingleStrategy.findHints(grid.data, houses)
+		val hint = assertInstanceOf<Hint.NakedSingle>(hints[0])
 
+		assertTrue(hints.all { it is Hint.NakedSingle })
 		assertEquals(1, hints.size)
-		assertEquals(0, hints[0].row)
-		assertEquals(8, hints[0].col)
-		assertEquals(9, hints[0].value)
-		assertEquals(HintType.NakedSingle, hints[0].type)
+		assertEquals(0, hint.row)
+		assertEquals(8, hint.col)
+		assertEquals(9, hint.number)
 	}
 
 	@Test
@@ -55,11 +58,13 @@ class NakedSingleStrategyTest {
 		val houses = generateHouses(grid.data)
 
 		val hints = nakedSingleStrategy.findHints(grid.data, houses)
+		val hint = assertInstanceOf<Hint.NakedSingle>(hints[0])
 
+		assertTrue(hints.all { it is Hint.NakedSingle })
 		assertEquals(1, hints.size)
-		assertEquals(8, hints[0].row)
-		assertEquals(0, hints[0].col)
-		assertEquals(9, hints[0].value)
+		assertEquals(8, hint.row)
+		assertEquals(0, hint.col)
+		assertEquals(9, hint.number)
 	}
 
 	@Test
@@ -80,11 +85,12 @@ class NakedSingleStrategyTest {
 		val houses = generateHouses(grid.data)
 
 		val hints = nakedSingleStrategy.findHints(grid.data, houses)
+		val hint = assertInstanceOf<Hint.NakedSingle>(hints[0])
 
 		assertEquals(1, hints.size)
-		assertEquals(1, hints[0].row)
-		assertEquals(1, hints[0].col)
-		assertEquals(5, hints[0].value)
+		assertEquals(1, hint.row)
+		assertEquals(1, hint.col)
+		assertEquals(5, hint.number)
 	}
 
 	@Test
@@ -108,8 +114,14 @@ class NakedSingleStrategyTest {
 		val hints = nakedSingleStrategy.findHints(grid.data, houses)
 
 		assertEquals(2, hints.size)
-		assertEquals(9, hints.find { it.row == 8 && it.col == 0 }?.value)
-		assertEquals(2, hints.find { it.row == 0 && it.col == 1 }?.value)
+		assertEquals(
+			9,
+			hints.filterIsInstance<Hint.NakedSingle>().find { it.row == 8 && it.col == 0 }?.number,
+		)
+		assertEquals(
+			2,
+			hints.filterIsInstance<Hint.NakedSingle>().find { it.row == 0 && it.col == 1 }?.number,
+		)
 	}
 
 	@Test

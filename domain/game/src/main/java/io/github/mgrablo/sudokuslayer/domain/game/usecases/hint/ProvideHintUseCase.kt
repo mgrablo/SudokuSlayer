@@ -2,7 +2,6 @@ package io.github.mgrablo.sudokuslayer.domain.game.usecases.hint
 
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintProvider
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.fillCandidates
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokuslayer.domain.core.Game
@@ -27,36 +26,25 @@ class ProvideHintUseCase(private val hintProvider: HintProvider) {
 	): List<SudokuCellData> {
 		val filledCandidatesGrid = gridData.toMutableList()
 		hints.forEach { hint ->
-			when (hint.type) {
+			when (hint) {
 				// Hint that removes candidates from cells
-				is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
-					if (hint.affectedCells.isNotEmpty()) {
-						hint.affectedCells.forEach { affectedCell ->
-							filledCandidatesGrid
-								.indexOfFirst { it.row == affectedCell.row && it.col == affectedCell.col }
-								.takeIf { it != -1 }
-								?.let { index ->
-									val cell = filledCandidatesGrid[index]
-									filledCandidatesGrid[index] =
-										cell.copy(
-											candidates = cell.candidates - hint.value,
-										)
-								}
-						}
-					} else {
+				is Hint.EliminationHint -> {
+					hint.affectedCells.forEach { affectedCell ->
 						filledCandidatesGrid
-							.indexOfFirst { it.row == hint.row && it.col == hint.col }
+							.indexOfFirst { it.row == affectedCell.row && it.col == affectedCell.col }
 							.takeIf { it != -1 }
 							?.let { index ->
 								val cell = filledCandidatesGrid[index]
 								filledCandidatesGrid[index] =
-									cell.copy(candidates = cell.candidates - hint.value)
+									cell.copy(
+										candidates = cell.candidates - hint.number,
+									)
 							}
 					}
 				}
 
 				// Hints that fill cells
-				is HintType.NakedSingle, is HintType.HiddenSingle -> Unit
+				is Hint.ResolutionHint -> Unit
 			}
 		}
 		return filledCandidatesGrid

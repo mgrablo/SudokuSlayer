@@ -1,6 +1,5 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintExplanationPart
 import io.github.mgrablo.sudokucore.hints.HintExplanationStep
@@ -8,7 +7,6 @@ import io.github.mgrablo.sudokucore.hints.HintExplanationStrategy
 import io.github.mgrablo.sudokucore.hints.HintMessageFormatter
 import io.github.mgrablo.sudokucore.hints.HintStringKey
 import io.github.mgrablo.sudokucore.hints.HintStringProvider
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.ScopeType
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 
@@ -18,8 +16,8 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 		hint: Hint,
 		stringProvider: HintStringProvider,
 	): List<HintExplanationStep> {
-		val hintType = hint.type as HintType.PointingCandidate
-		val isRow = hintType.groupType is GroupType.Row
+		require(hint is Hint.PointingCandidate)
+		val isRow = hint.groupType is Hint.GroupType.Row
 		val subgridSize = grid.subgridSize
 
 		// 1. Identify the Line (Affected Scope - Row or Column)
@@ -54,7 +52,7 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 
 		// 3. Prepare Parts
 		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, enforcingBlockId)
-		val valuePart = HintExplanationPart.Value(hint.value)
+		val valuePart = HintExplanationPart.Value(hint.number)
 		val enforcingCellsPart = HintExplanationPart.CellCoordinatesGroup(
 			finalEnforcingCells.map { Pair(it.row + 1, it.col + 1) },
 		)

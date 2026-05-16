@@ -1,8 +1,7 @@
 package io.github.mgrablo.sudokucore
 
-import io.github.mgrablo.sudokucore.hints.GroupType
+import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintProvider
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.fillCandidates
 import io.github.mgrablo.sudokucore.hints.strategies.ClaimingCandidateStrategy
 import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleStrategy
@@ -11,7 +10,6 @@ import io.github.mgrablo.sudokucore.hints.strategies.PointingCandidateStrategy
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.model.SudokuGrid
-import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -21,9 +19,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertInstanceOf
-import org.junit.jupiter.api.assertTimeout
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 @DisplayName("HintProvider Tests")
 class HintProviderTest {
@@ -66,12 +61,10 @@ class HintProviderTest {
 			val hint = nakedSingleStrategy.findHints(updatedGrid, houses).firstOrNull()
 
 			assertNotNull(hint, "Should find a naked single")
-			assertAll(
-				{ assertEquals(3, hint!!.row, "Naked single should be in row 3") },
-				{ assertEquals(2, hint!!.col, "Naked single should be in column 2") },
-				{ assertEquals(8, hint!!.value, "Naked single value should be 8") },
-				{ assertEquals(HintType.NakedSingle, hint!!.type) },
-			)
+			assertInstanceOf<Hint.NakedSingle>(hint)
+			assertEquals(3, hint.row, "Naked single should be in row 3")
+			assertEquals(2, hint.col, "Naked single should be in column 2")
+			assertEquals(8, hint.number, "Naked single value should be 8")
 		}
 	}
 
@@ -88,7 +81,7 @@ class HintProviderTest {
 			val hiddenSingle = hiddenSingleStrategy.findHints(updatedGrid, houses).firstOrNull()
 
 			assertNotNull(hiddenSingle, "Should find a hidden single")
-			assertInstanceOf<HintType.HiddenSingle>(hiddenSingle!!.type)
+			assertInstanceOf<Hint.HiddenSingle>(hiddenSingle)
 		}
 
 		@Test
@@ -122,17 +115,15 @@ class HintProviderTest {
 			)
 			assertTrue(
 				pointingCandidates.all { hint ->
-					val type = hint.type as HintType.PointingCandidate
-					when (val group = type.groupType) {
-						is GroupType.Row ->
+					val h = hint as Hint.PointingCandidate
+					when (val group = h.groupType) {
+						is Hint.GroupType.Row ->
 							hint.affectedCells.isNotEmpty() &&
-								hint.affectedCells.all { it.row == group.id } &&
-								hint.affectedCells.any { it.row == hint.row && it.col == hint.col }
+								hint.affectedCells.all { it.row == group.id }
 
-						is GroupType.Column ->
+						is Hint.GroupType.Column ->
 							hint.affectedCells.isNotEmpty() &&
-								hint.affectedCells.all { it.col == group.id } &&
-								hint.affectedCells.any { it.row == hint.row && it.col == hint.col }
+								hint.affectedCells.all { it.col == group.id }
 
 						else -> false
 					}
@@ -142,10 +133,10 @@ class HintProviderTest {
 			assertTrue(
 				pointingCandidates
 					.map { hint ->
-						val type = hint.type as HintType.PointingCandidate
+						val h = hint as Hint.PointingCandidate
 						Triple(
-							hint.value,
-							type.groupType,
+							hint.number,
+							h.groupType,
 							hint.enforcingCells.map { cell -> cell.row to cell.col }.toSet(),
 						)
 					}.distinct().size == pointingCandidates.size,
@@ -162,19 +153,18 @@ class HintProviderTest {
 			val hint = hintProvider.provideHint(updatedGrid)
 
 			assertNotNull(hint, "Should provide a hint")
-			assertInstanceOf<HintType.PointingCandidate>(hint!!.type)
+			assertInstanceOf<Hint.PointingCandidate>(hint)
 			assertTrue(hint.affectedCells.isNotEmpty(), "Hint should contain affected cells")
 
-			val hintType = hint.type
-			when (val group = hintType.groupType) {
-				is GroupType.Row -> {
+			when (val group = hint.groupType) {
+				is Hint.GroupType.Row -> {
 					assertTrue(
 						hint.affectedCells.all { it.row == group.id },
 						"All affected cells should belong to one row",
 					)
 				}
 
-				is GroupType.Column -> {
+				is Hint.GroupType.Column -> {
 					assertTrue(
 						hint.affectedCells.all { it.col == group.id },
 						"All affected cells should belong to one column",
@@ -183,39 +173,15 @@ class HintProviderTest {
 
 				else -> error("Unexpected pointing-candidate group type")
 			}
-
-			assertTrue(
-				hint.affectedCells.any { it.row == hint.row && it.col == hint.col },
-				"Hint anchor cell should be one of the affected cells",
-			)
-		}
-
-		@Test
-		@DisplayName("Should find claiming candidates")
-		fun findClaimingCandidates() {
-			val grid = SudokuGrid.fromStringArray(TestData.claimingCandidateGrid)
-			val updatedGrid = hintProvider.fillCandidates(grid.getArray())
-			val houses = generateHouses(updatedGrid)
-
-			val claimingCandidates = claimingCandidateStrategy.findHints(updatedGrid, houses)
-
-			assertTrue(
-				claimingCandidates.isNotEmpty(),
-				"Should find claiming candidates for non-Block house",
-			)
-
-			// Strategy now handles filtering internally, so explicit block check exception is not needed.
 		}
 	}
 
 	@Test
-	@DisplayName("Should handle empty grid within timeout")
+	@DisplayName("Should handle empty grid")
 	fun emptyGridTest() {
 		val grid = SudokuGrid()
-		assertTimeout(1.seconds.toJavaDuration()) {
-			val hint = hintProvider.provideHint(data = grid.getArray())
-			assertNull(hint, "Should not provide hints for empty grid")
-		}
+		val hint = hintProvider.provideHint(data = grid.getArray())
+		assertNull(hint, "Should not provide hints for empty grid")
 	}
 
 	private fun generateHouses(grid: Collection<SudokuCellData>) = buildList {

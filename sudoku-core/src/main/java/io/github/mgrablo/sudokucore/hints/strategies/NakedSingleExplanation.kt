@@ -15,7 +15,8 @@ class NakedSingleExplanation : HintExplanationStrategy {
 		hint: Hint,
 		stringProvider: HintStringProvider,
 	): List<HintExplanationStep> {
-		val (row, column, value) = hint
+		require(hint is Hint.NakedSingle)
+		val (row, column, number) = hint
 		return listOf(
 			// Step 1: Focus on the cell
 			HintExplanationStep(
@@ -35,9 +36,9 @@ class NakedSingleExplanation : HintExplanationStrategy {
 			HintExplanationStep(
 				HintMessageFormatter.format(
 					stringProvider.getString(HintStringKey.NAKED_SINGLE_STEP_3),
-					HintExplanationPart.Value(value),
+					HintExplanationPart.Value(number),
 					HintExplanationPart.CellCoordinate(row + 1, column + 1),
-					HintExplanationPart.Value(value),
+					HintExplanationPart.Value(number),
 				),
 			),
 			// Step 4: Name the technique

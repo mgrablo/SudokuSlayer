@@ -1,6 +1,5 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.HintExplanationPart
 import io.github.mgrablo.sudokucore.hints.HintExplanationStep
@@ -8,7 +7,6 @@ import io.github.mgrablo.sudokucore.hints.HintExplanationStrategy
 import io.github.mgrablo.sudokucore.hints.HintMessageFormatter
 import io.github.mgrablo.sudokucore.hints.HintStringKey
 import io.github.mgrablo.sudokucore.hints.HintStringProvider
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.ScopeType
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 
@@ -18,15 +16,15 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 		hint: Hint,
 		stringProvider: HintStringProvider,
 	): List<HintExplanationStep> {
-		val hintType = hint.type as HintType.HiddenSingle
+		require(hint is Hint.HiddenSingle)
 
 		// Determine the scope type (row, column, or block)
-		val (scopeType, scopeIndex) = when (hintType.groupType) {
-			is GroupType.Row -> ScopeType.ROW to hint.row + 1
+		val (scopeType, scopeIndex) = when (hint.groupType) {
+			is Hint.GroupType.Row -> ScopeType.ROW to hint.row + 1
 
-			is GroupType.Column -> ScopeType.COLUMN to hint.col + 1
+			is Hint.GroupType.Column -> ScopeType.COLUMN to hint.col + 1
 
-			is GroupType.Block -> {
+			is Hint.GroupType.Block -> {
 				val blockId =
 					(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 				ScopeType.BLOCK to blockId
@@ -35,7 +33,7 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 
 		val cellPart = HintExplanationPart.CellCoordinate(hint.row + 1, hint.col + 1)
 		val scopePart = HintExplanationPart.ScopeReference(scopeType, scopeIndex)
-		val valuePart = HintExplanationPart.Value(hint.value)
+		val valuePart = HintExplanationPart.Value(hint.number)
 
 		return listOf(
 			// Step 1: Look at {0}!

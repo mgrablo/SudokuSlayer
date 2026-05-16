@@ -1,8 +1,6 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.containsCell
 import io.github.mgrablo.sudokucore.hints.getColumnCells
 import io.github.mgrablo.sudokucore.hints.getRowCells
@@ -44,7 +42,7 @@ internal class PointingCandidateStrategy : HintStrategy {
 					fullGridData = data,
 					getGroupId = { it.row },
 					getGroupCells = ::getRowCells,
-					createGroupType = { GroupType.Row(it) },
+					createGroupType = { Hint.GroupType.Row(it) },
 				),
 				checkDirection(
 					digit = digit,
@@ -53,7 +51,7 @@ internal class PointingCandidateStrategy : HintStrategy {
 					fullGridData = data,
 					getGroupId = { it.col },
 					getGroupCells = ::getColumnCells,
-					createGroupType = { GroupType.Column(it) },
+					createGroupType = { Hint.GroupType.Column(it) },
 				),
 			)
 		}
@@ -70,7 +68,7 @@ internal class PointingCandidateStrategy : HintStrategy {
 		fullGridData: List<SudokuCellData>,
 		getGroupId: (SudokuCellData) -> Int,
 		getGroupCells: (List<SudokuCellData>, Int) -> List<SudokuCellData>,
-		createGroupType: (Int) -> GroupType,
+		createGroupType: (Int) -> Hint.GroupType,
 	): Hint? {
 		// Check if all candidate cells are in the same row/column.
 		val groupId = candidateCells
@@ -89,14 +87,9 @@ internal class PointingCandidateStrategy : HintStrategy {
 
 		if (affectedCells.isEmpty()) return null
 
-		// Use the first affected cell as the hint's location
-		val anchor = affectedCells.first()
-		return Hint(
-			row = anchor.row,
-			col = anchor.col,
-			value = digit,
-			type = HintType.PointingCandidate(createGroupType(groupId)),
-			explanationStrategy = PointingCandidateExplanation(),
+		return Hint.PointingCandidate(
+			number = digit,
+			groupType = createGroupType(groupId),
 			affectedCells = affectedCells.toPersistentSet(),
 			enforcingCells = candidateCells.toPersistentSet(),
 		)

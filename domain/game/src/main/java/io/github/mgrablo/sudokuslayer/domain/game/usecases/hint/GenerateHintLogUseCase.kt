@@ -1,7 +1,6 @@
 package io.github.mgrablo.sudokuslayer.domain.game.usecases.hint
 
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintExplanationFactory
 import io.github.mgrablo.sudokucore.hints.HintStringProvider
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
@@ -14,8 +13,7 @@ class GenerateHintLogUseCase {
 		grid: SudokuGrid,
 		stringProvider: HintStringProvider = HintStringProvider.DEFAULT,
 	): HintLog {
-		val explanationStrategy =
-			hint.explanationStrategy ?: HintExplanationFactory.createStrategyFor(hint.type)
+		val explanationStrategy = hint.explanationStrategy
 		val explanationSteps =
 			explanationStrategy
 				.generateStructuredHintExplanation(
