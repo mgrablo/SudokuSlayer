@@ -1,5 +1,7 @@
 package io.github.mgrablo.sudokuslayer.feature.settings
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
@@ -190,6 +192,13 @@ internal class SettingsViewModel(private val settingsRepository: SettingsReposit
 	private fun setLanguage(language: Language) {
 		viewModelScope.launch {
 			settingsRepository.setLanguage(language)
+
+			val locales = if (language == Language.SYSTEM) {
+				LocaleListCompat.getEmptyLocaleList()
+			} else {
+				LocaleListCompat.forLanguageTags(language.tag)
+			}
+			AppCompatDelegate.setApplicationLocales(locales)
 		}
 	}
 

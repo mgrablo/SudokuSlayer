@@ -7,37 +7,45 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.domain.settings.models.Language
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
-	private val settingsRepository: SettingsRepository by inject()
+	val settingsRepository: SettingsRepository by inject()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
+		runBlocking {
+			val storedLanguage = settingsRepository.language.first()
+			val storedTag = storedLanguage.tag
+
+			if (storedTag.isNotEmpty()) {
+				val locale = LocaleListCompat.forLanguageTags(storedTag)
+				AppCompatDelegate.setApplicationLocales(locale)
+			}
+		}
+
 		super.onCreate(savedInstanceState)
 		enableEdgeToEdge()
 		WindowCompat.setDecorFitsSystemWindows(window, false)
 
+		val systemLocales = AppCompatDelegate.getApplicationLocales()
+		val systemTag = systemLocales.toLanguageTags()
 		lifecycleScope.launch {
-			repeatOnLifecycle(Lifecycle.State.STARTED) {
-				settingsRepository.language.collect { language ->
-					val tag = if (language == Language.SYSTEM) "" else language.tag
-					val localeList = if (tag.isEmpty()) {
-						LocaleListCompat.getEmptyLocaleList()
-					} else {
-						LocaleListCompat.forLanguageTags(tag)
-					}
+			val storedLanguage = settingsRepository.language.first()
+			val storedTag = storedLanguage.tag
 
-					if (AppCompatDelegate.getApplicationLocales() != localeList) {
-						AppCompatDelegate.setApplicationLocales(localeList)
-					}
-				}
+			// If the system value is different from stored value,
+			// it means user changed language from system app settings,
+			// so update value in datastore
+			if (systemTag != storedTag) {
+				val newLang = Language.fromTag(systemTag)
+				settingsRepository.setLanguage(newLang)
 			}
 		}
 
