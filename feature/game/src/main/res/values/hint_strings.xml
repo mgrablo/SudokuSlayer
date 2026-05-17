@@ -24,6 +24,16 @@
 	<string name="hint_hidden_single_step_2">We need to place a {0} somewhere in {1}, but only one cell is empty and valid: {2}.</string>
 	<string name="hint_hidden_single_step_3">Therefore, the cell at {0} has to be {1}.</string>
 
+	<string name="hint_hidden_single_instruction_row">Look at <annotation type="row">row ^1</annotation>!</string>
+	<string name="hint_hidden_single_instruction_column">Look at <annotation type="column">column ^1</annotation>!</string>
+	<string name="hint_hidden_single_instruction_block">Look at <annotation type="block">block ^1</annotation>!</string>
+	<string name="hint_hidden_single_description_row">We need to place a <annotation type="digit">^1</annotation> somewhere in <annotation type="row">row ^2</annotation>, but only one cell is empty and valid: <annotation type="cell">^3</annotation>. Therefore, the cell at <annotation type="cell">^3</annotation> has to be <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_description_column">We need to place a <annotation type="digit">^1</annotation> somewhere in <annotation type="column">column ^2</annotation>, but only one cell is empty and valid: <annotation type="cell">^3</annotation>. Therefore, the cell at <annotation type="cell">^3</annotation> has to be <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_description_block">We need to place a <annotation type="digit">^1</annotation> somewhere in <annotation type="block">block ^2</annotation>, but only one cell is empty and valid: <annotation type="cell">^3</annotation>. Therefore, the cell at <annotation type="cell">^3</annotation> has to be <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_action">Placed <annotation type="digit">^1</annotation> in <annotation type="cell">^2</annotation></string>
+	<string name="hint_hidden_single_name"><annotation type="technique">Hidden Single</annotation></string>
+
+
 	<!-- Claiming Candidate Explanation -->
 	<string name="hint_claiming_candidate_step_1">Check {0}!</string>
 	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} is forced to be in one of these specific cells: {2}.</string>

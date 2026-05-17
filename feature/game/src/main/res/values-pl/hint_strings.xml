@@ -23,6 +23,14 @@
 	<string name="hint_hidden_single_step_1">Spójrz na obszar {0}!</string>
 	<string name="hint_hidden_single_step_2">Musimy wpisać {0} gdzieś w obszarze {1}, ale tylko dla jednej komórki jest to możliwe: {2}.</string>
 	<string name="hint_hidden_single_step_3">W związku z tym, w komórce {0} musi znajdować się {1}.</string>
+	<string name="hint_hidden_single_instruction_row">Spójrz na <annotation type="row">wiersz ^1</annotation>!</string>
+	<string name="hint_hidden_single_instruction_column">Spójrz na <annotation type="column">kolumnę ^1</annotation>!</string>
+	<string name="hint_hidden_single_instruction_block">Spójrz na <annotation type="block">blok ^1</annotation>!</string>
+	<string name="hint_hidden_single_description_row">Musimy wpisać <annotation type="digit">^1</annotation> gdzieś w <annotation type="row">wierszu ^2</annotation>, ale tylko jedna komórka jest pusta i poprawna: <annotation type="cell">^3</annotation>. Dlatego komórka <annotation type="cell">^3</annotation> musi zawierać <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_description_column">Musimy wpisać <annotation type="digit">^1</annotation> gdzieś w <annotation type="column">kolumnie ^2</annotation>, ale tylko jedna komórka jest pusta i poprawna: <annotation type="cell">^3</annotation>. Dlatego komórka <annotation type="cell">^3</annotation> musi zawierać <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_description_block">Musimy wpisać <annotation type="digit">^1</annotation> gdzieś w <annotation type="block">bloku ^2</annotation>, ale tylko jedna komórka jest pusta i poprawna: <annotation type="cell">^3</annotation>. Dlatego komórka <annotation type="cell">^3</annotation> musi zawierać <annotation type="digit">^1</annotation>.</string>
+	<string name="hint_hidden_single_action">Wpisano <annotation type="digit">^1</annotation> w <annotation type="cell">^2</annotation></string>
+	<string name="hint_hidden_single_name"><annotation type="technique">Hidden Single</annotation></string>
 
 	<!-- Claiming Candidate Explanation -->
 	<string name="hint_claiming_candidate_step_1">Sprawdź obszar {0}!</string>
