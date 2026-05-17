@@ -14,6 +14,10 @@
 	<string name="hint_naked_single_step_1">Zbadaj komórkę {0}!</string>
 	<string name="hint_naked_single_step_2">Jeśli przeanalizujesz liczby już umieszczone w tym wierszu, kolumnie i bloku, zauważysz, że wszystkie inne możliwości zostały wykluczone.</string>
 	<string name="hint_naked_single_step_3">Jedyną prawidłową wartością jest liczba {0}, więc możesz ją wpisać!</string>
+	<string name="hint_naked_single_instruction">Zbadaj komórkę <annotation type="cell">^1</annotation>!</string>
+	<string name="hint_naked_single_description">Jeśli przeanalizujesz liczby już umieszczone w tym wierszu, kolumnie i bloku, zauważysz, że wszystkie inne możliwości zostały wykluczone. Jedyną prawidłową wartością jest liczba <annotation type="digit">^1</annotation>, więc możesz ją wpisać!</string>
+	<string name="hint_naked_single_action">Wpisano <annotation type="digit">^1</annotation> w <annotation type="cell">^2</annotation></string>
+	<string name="hint_naked_single_name"><annotation type="technique">Naked Single</annotation></string>
 
 	<!-- Hidden Single Explanation -->
 	<string name="hint_hidden_single_step_1">Spójrz na obszar {0}!</string>
@@ -32,4 +36,3 @@
 	<string name="hint_pointing_candidate_step_3">Skoro {0} musi być w tej linii, możesz ją usunąć z notatek w pozostałej części {1}.</string>
 	<string name="hint_pointing_candidate_step_4">Zaktualizuj notatki w: {0}.</string>
 </resources>
-
