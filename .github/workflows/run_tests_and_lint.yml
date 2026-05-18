@@ -12,11 +12,11 @@ jobs:
         steps:
             -   uses: actions/checkout@v4
 
-            -   name: Setup JDK 17
+            -   name: Setup JDK 21
                 uses: actions/setup-java@v4
                 with:
                     distribution: "temurin"
-                    java-version: "17"
+                    java-version: "21"
 
             -   name: Setup Android
                 if: ${{ env.ACT }} # Only run on local act setups
@@ -49,11 +49,11 @@ jobs:
         steps:
             -   uses: actions/checkout@v4
 
-            -   name: Setup JDK 17
+            -   name: Setup JDK 21
                 uses: actions/setup-java@v4
                 with:
                     distribution: "temurin"
-                    java-version: "17"
+                    java-version: "21"
 
             -   name: Setup Android
                 if: ${{ env.ACT }} # Only run on local act setups
