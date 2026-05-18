@@ -18,6 +18,10 @@ android {
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
 
+	testOptions {
+		unitTests.isIncludeAndroidResources = true
+	}
+
 	buildTypes {
 		release {
 			isMinifyEnabled = false

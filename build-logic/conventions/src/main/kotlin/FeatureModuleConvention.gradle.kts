@@ -1,4 +1,3 @@
-
 plugins {
 	id("AndroidLibraryConvention")
 	id("KtlintConvention")
@@ -6,6 +5,7 @@ plugins {
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.android.junit5)
+	alias(libs.plugins.robolectric.junit5)
 }
 
 tasks.withType<Test> {
@@ -39,6 +39,7 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.test.junit5)
+	testImplementation(libs.robolectric)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 }
