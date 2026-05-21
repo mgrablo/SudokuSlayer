@@ -19,8 +19,8 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 		require(hint is Hint.ClaimingCandidate)
 
 		// Organize enforcing cells by row or column
-		val groupType = hint.groupType
-		val scopeType = if (groupType is Hint.GroupType.Row) ScopeType.ROW else ScopeType.COLUMN
+		val groupType = hint.houseType
+		val scopeType = if (groupType is Hint.HouseType.Row) ScopeType.ROW else ScopeType.COLUMN
 
 		// Get affected cells coordinates (1-indexed)
 		val affectedCells = hint.affectedCells
@@ -29,7 +29,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 
 		// Group enforcing cells by row/column
 		val enforcingCellsByScope = hint.enforcingCells
-			.groupBy { if (groupType is Hint.GroupType.Row) it.row else it.col }
+			.groupBy { if (groupType is Hint.HouseType.Row) it.row else it.col }
 			.map { (scopeIndex, cells) ->
 				scopeIndex to cells.map { Pair(it.row + 1, it.col + 1) }
 			}
@@ -41,7 +41,7 @@ class ClaimingCandidateExplanation : HintExplanationStrategy {
 		val blockPart = HintExplanationPart.ScopeReference(ScopeType.BLOCK, 0)
 		val valuePart = HintExplanationPart.Value(hint.number)
 		val lineScopePart = HintExplanationPart.Text(
-			if (groupType is Hint.GroupType.Row) {
+			if (groupType is Hint.HouseType.Row) {
 				stringProvider.getString(HintStringKey.ROW)
 			} else {
 				stringProvider.getString(HintStringKey.COLUMN)

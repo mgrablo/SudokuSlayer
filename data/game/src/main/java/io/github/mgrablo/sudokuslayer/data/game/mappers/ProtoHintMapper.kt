@@ -23,14 +23,14 @@ fun ProtoHint.toHint(): Hint = when (hintType.type) {
 			row = row,
 			col = column,
 			number = value,
-			groupType = hintType.house.toGroupType(),
+			houseType = hintType.house.toGroupType(),
 		)
 	}
 
 	ProtoHintType.Type.ClaimingCandidate -> {
 		Hint.ClaimingCandidate(
 			number = value,
-			groupType = hintType.house.toGroupType(),
+			houseType = hintType.house.toGroupType(),
 			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 		)
@@ -39,7 +39,7 @@ fun ProtoHint.toHint(): Hint = when (hintType.type) {
 	ProtoHintType.Type.PointingCandidate -> {
 		Hint.PointingCandidate(
 			number = value,
-			groupType = hintType.house.toGroupType(),
+			houseType = hintType.house.toGroupType(),
 			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 		)
@@ -82,30 +82,30 @@ fun Hint.toProtoHintType(): ProtoHintType = protoHintType {
 
 	if (this@toProtoHintType !is Hint.NakedSingle) {
 		house = when (this@toProtoHintType) {
-			is Hint.HiddenSingle -> this@toProtoHintType.groupType.toProtoHintHouse()
-			is Hint.EliminationHint -> this@toProtoHintType.groupType.toProtoHintHouse()
+			is Hint.HiddenSingle -> this@toProtoHintType.houseType.toProtoHintHouse()
+			is Hint.EliminationHint -> this@toProtoHintType.houseType.toProtoHintHouse()
 			else -> throw IllegalArgumentException("Unknown hint type: $this")
 		}
 	}
 }
 
-fun Hint.GroupType.toProtoHintHouse() = protoHintHouse {
+fun Hint.HouseType.toProtoHintHouse() = protoHintHouse {
 	// Proto defaults to 0, so we need to increment it by 1
 	id = this@toProtoHintHouse.id + 1
 	houseType =
 		when (this@toProtoHintHouse) {
-			is Hint.GroupType.Row -> ProtoHintHouse.Type.Row
-			is Hint.GroupType.Column -> ProtoHintHouse.Type.Column
-			is Hint.GroupType.Block -> ProtoHintHouse.Type.Block
+			is Hint.HouseType.Row -> ProtoHintHouse.Type.Row
+			is Hint.HouseType.Column -> ProtoHintHouse.Type.Column
+			is Hint.HouseType.Block -> ProtoHintHouse.Type.Block
 		}
 }
 
-fun ProtoHintHouse.toGroupType(): Hint.GroupType = when (this.houseType) {
-	ProtoHintHouse.Type.Row -> Hint.GroupType.Row(id - 1)
+fun ProtoHintHouse.toGroupType(): Hint.HouseType = when (this.houseType) {
+	ProtoHintHouse.Type.Row -> Hint.HouseType.Row(id - 1)
 
-	ProtoHintHouse.Type.Column -> Hint.GroupType.Column(id - 1)
+	ProtoHintHouse.Type.Column -> Hint.HouseType.Column(id - 1)
 
-	ProtoHintHouse.Type.Block -> Hint.GroupType.Block(id - 1)
+	ProtoHintHouse.Type.Block -> Hint.HouseType.Block(id - 1)
 
 	ProtoHintHouse.Type.HouseType_UNSPECIFIED -> throw IllegalArgumentException(
 		"House type is unspecified",

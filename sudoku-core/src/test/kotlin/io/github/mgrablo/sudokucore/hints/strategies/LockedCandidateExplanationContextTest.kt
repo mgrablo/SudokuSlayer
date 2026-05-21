@@ -50,7 +50,7 @@ class LockedCandidateExplanationContextTest {
 		val hint =
 			Hint.PointingCandidate(
 				number = 3,
-				groupType = Hint.GroupType.Column(6),
+				houseType = Hint.HouseType.Column(6),
 				affectedCells =
 					persistentSetOf(
 						SudokuCellData(row = 4, col = 6),
@@ -83,7 +83,7 @@ class LockedCandidateExplanationContextTest {
 		val hint =
 			Hint.ClaimingCandidate(
 				number = 4,
-				groupType = Hint.GroupType.Row(0),
+				houseType = Hint.HouseType.Row(0),
 				affectedCells = persistentSetOf(SudokuCellData(row = 2, col = 0)),
 				enforcingCells =
 					persistentSetOf(

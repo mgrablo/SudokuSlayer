@@ -4,6 +4,7 @@ import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.containsCell
 import io.github.mgrablo.sudokucore.hints.getBlockCells
 import io.github.mgrablo.sudokucore.hints.getBlockId
+import io.github.mgrablo.sudokucore.hints.toHouseType
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import kotlinx.collections.immutable.toPersistentSet
@@ -59,16 +60,11 @@ internal class ClaimingCandidateStrategy : HintStrategy {
 
 			Hint.ClaimingCandidate(
 				number = digit,
-				groupType = house.toGroupType(),
+				lineHouseType = house.toHouseType(),
+				blockHouseType = Hint.HouseType.Block(blockId),
 				affectedCells = affectedCells.toPersistentSet(),
 				enforcingCells = cellsWithDigit.toPersistentSet(),
 			)
 		}
-	}
-
-	private fun House.toGroupType(): Hint.GroupType = when (this) {
-		is House.Row -> Hint.GroupType.Row(id)
-		is House.Column -> Hint.GroupType.Column(id)
-		is House.Block -> Hint.GroupType.Block(id)
 	}
 }

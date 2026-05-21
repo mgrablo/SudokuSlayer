@@ -24,7 +24,7 @@ class HiddenSingleStrategyTest {
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
 		val rowHint = hints.single {
-			it is Hint.HiddenSingle && it.groupType is Hint.GroupType.Row
+			it is Hint.HiddenSingle && it.houseType is Hint.HouseType.Row
 		}
 		assertInstanceOf<Hint.HiddenSingle>(rowHint)
 		assertEquals(0, rowHint.row)
@@ -45,7 +45,7 @@ class HiddenSingleStrategyTest {
 		val hints = hiddenSingleStrategy.findHints(grid.data, houses)
 
 		val colHint = hints.single {
-			it is Hint.HiddenSingle && it.groupType is Hint.GroupType.Column
+			it is Hint.HiddenSingle && it.houseType is Hint.HouseType.Column
 		}
 		assertInstanceOf<Hint.HiddenSingle>(colHint)
 		assertEquals(0, colHint.row)
@@ -67,7 +67,7 @@ class HiddenSingleStrategyTest {
 
 		val blockHint = hints.find {
 			it is Hint.HiddenSingle &&
-				it.groupType is Hint.GroupType.Block &&
+				it.houseType is Hint.HouseType.Block &&
 				it.number == 1 && it.row == 0 && it.col == 0
 		}
 		assertNotNull(blockHint)

@@ -39,19 +39,21 @@ internal class PointingCandidateStrategy : HintStrategy {
 					digit = digit,
 					candidateCells = cellsWithDigit,
 					blockCells = block.cells,
+					blockId = block.id,
 					fullGridData = data,
 					getGroupId = { it.row },
 					getGroupCells = ::getRowCells,
-					createGroupType = { Hint.GroupType.Row(it) },
+					createHouseType = { Hint.HouseType.Row(it) },
 				),
 				checkDirection(
 					digit = digit,
 					candidateCells = cellsWithDigit,
 					blockCells = block.cells,
+					blockId = block.id,
 					fullGridData = data,
 					getGroupId = { it.col },
 					getGroupCells = ::getColumnCells,
-					createGroupType = { Hint.GroupType.Column(it) },
+					createHouseType = { Hint.HouseType.Column(it) },
 				),
 			)
 		}
@@ -65,10 +67,11 @@ internal class PointingCandidateStrategy : HintStrategy {
 		digit: Int,
 		candidateCells: List<SudokuCellData>,
 		blockCells: List<SudokuCellData>,
+		blockId: Int,
 		fullGridData: List<SudokuCellData>,
 		getGroupId: (SudokuCellData) -> Int,
 		getGroupCells: (List<SudokuCellData>, Int) -> List<SudokuCellData>,
-		createGroupType: (Int) -> Hint.GroupType,
+		createHouseType: (Int) -> Hint.HouseType,
 	): Hint? {
 		// Check if all candidate cells are in the same row/column.
 		val groupId = candidateCells
@@ -89,7 +92,8 @@ internal class PointingCandidateStrategy : HintStrategy {
 
 		return Hint.PointingCandidate(
 			number = digit,
-			groupType = createGroupType(groupId),
+			lineHouseType = createHouseType(groupId),
+			blockHouseType = Hint.HouseType.Block(blockId),
 			affectedCells = affectedCells.toPersistentSet(),
 			enforcingCells = candidateCells.toPersistentSet(),
 		)

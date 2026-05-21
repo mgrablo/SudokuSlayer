@@ -19,12 +19,12 @@ class HiddenSingleExplanation : HintExplanationStrategy {
 		require(hint is Hint.HiddenSingle)
 
 		// Determine the scope type (row, column, or block)
-		val (scopeType, scopeIndex) = when (hint.groupType) {
-			is Hint.GroupType.Row -> ScopeType.ROW to hint.row + 1
+		val (scopeType, scopeIndex) = when (hint.houseType) {
+			is Hint.HouseType.Row -> ScopeType.ROW to hint.row + 1
 
-			is Hint.GroupType.Column -> ScopeType.COLUMN to hint.col + 1
+			is Hint.HouseType.Column -> ScopeType.COLUMN to hint.col + 1
 
-			is Hint.GroupType.Block -> {
+			is Hint.HouseType.Block -> {
 				val blockId =
 					(hint.row / grid.subgridSize) * grid.subgridSize + (hint.col / grid.subgridSize) + 1
 				ScopeType.BLOCK to blockId

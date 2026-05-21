@@ -2,6 +2,7 @@ package io.github.mgrablo.sudokucore.hints.strategies
 
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.hints.Hint.HiddenSingle
+import io.github.mgrablo.sudokucore.hints.toHouseType
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.symmetricDifference
@@ -27,15 +28,9 @@ internal class HiddenSingleStrategy : HintStrategy {
 					row = hintCell.row,
 					col = hintCell.col,
 					number = digit,
-					groupType = house.toGroupType(),
+					houseType = house.toHouseType(),
 				)
 			}
 		}
-	}
-
-	private fun House.toGroupType(): Hint.GroupType = when (this) {
-		is House.Row -> Hint.GroupType.Row(id)
-		is House.Column -> Hint.GroupType.Column(id)
-		is House.Block -> Hint.GroupType.Block(id)
 	}
 }

@@ -17,7 +17,7 @@ class PointingCandidateExplanation : HintExplanationStrategy {
 		stringProvider: HintStringProvider,
 	): List<HintExplanationStep> {
 		require(hint is Hint.PointingCandidate)
-		val isRow = hint.groupType is Hint.GroupType.Row
+		val isRow = hint.houseType is Hint.HouseType.Row
 		val subgridSize = grid.subgridSize
 
 		// 1. Identify the Line (Affected Scope - Row or Column)

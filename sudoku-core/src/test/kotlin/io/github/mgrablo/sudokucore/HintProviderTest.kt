@@ -116,12 +116,12 @@ class HintProviderTest {
 			assertTrue(
 				pointingCandidates.all { hint ->
 					val h = hint as Hint.PointingCandidate
-					when (val group = h.groupType) {
-						is Hint.GroupType.Row ->
+					when (val group = h.houseType) {
+						is Hint.HouseType.Row ->
 							hint.affectedCells.isNotEmpty() &&
 								hint.affectedCells.all { it.row == group.id }
 
-						is Hint.GroupType.Column ->
+						is Hint.HouseType.Column ->
 							hint.affectedCells.isNotEmpty() &&
 								hint.affectedCells.all { it.col == group.id }
 
@@ -136,7 +136,7 @@ class HintProviderTest {
 						val h = hint as Hint.PointingCandidate
 						Triple(
 							hint.number,
-							h.groupType,
+							h.houseType,
 							hint.enforcingCells.map { cell -> cell.row to cell.col }.toSet(),
 						)
 					}.distinct().size == pointingCandidates.size,
@@ -156,15 +156,15 @@ class HintProviderTest {
 			assertInstanceOf<Hint.PointingCandidate>(hint)
 			assertTrue(hint.affectedCells.isNotEmpty(), "Hint should contain affected cells")
 
-			when (val group = hint.groupType) {
-				is Hint.GroupType.Row -> {
+			when (val group = hint.houseType) {
+				is Hint.HouseType.Row -> {
 					assertTrue(
 						hint.affectedCells.all { it.row == group.id },
 						"All affected cells should belong to one row",
 					)
 				}
 
-				is Hint.GroupType.Column -> {
+				is Hint.HouseType.Column -> {
 					assertTrue(
 						hint.affectedCells.all { it.col == group.id },
 						"All affected cells should belong to one column",

@@ -26,11 +26,11 @@ class ClaimingCandidateStrategyTest {
 
 		val rowHint = hints.single {
 			it is Hint.ClaimingCandidate &&
-				it.groupType is Hint.GroupType.Row
+				it.houseType is Hint.HouseType.Row
 		}
 		assertInstanceOf<Hint.ClaimingCandidate>(rowHint)
 		assertEquals(1, rowHint.number)
-		assertEquals(Hint.GroupType.Row(0), rowHint.groupType)
+		assertEquals(Hint.HouseType.Row(0), rowHint.houseType)
 
 		assertTrue(rowHint.enforcingCells.all { it.row == 0 && it.col < 3 })
 		assertTrue(rowHint.affectedCells.all { it.row / 3 == 0 && it.col / 3 == 0 })
@@ -51,11 +51,11 @@ class ClaimingCandidateStrategyTest {
 
 		val colHint = hints.single {
 			it is Hint.ClaimingCandidate &&
-				it.groupType is Hint.GroupType.Column
+				it.houseType is Hint.HouseType.Column
 		}
 		assertInstanceOf<Hint.ClaimingCandidate>(colHint)
 		assertEquals(1, colHint.number)
-		assertEquals(Hint.GroupType.Column(0), colHint.groupType)
+		assertEquals(Hint.HouseType.Column(0), colHint.houseType)
 
 		assertTrue(colHint.enforcingCells.all { it.col == 0 && it.row < 3 })
 		assertTrue(colHint.affectedCells.all { it.row / 3 == 0 && it.col / 3 == 0 })
@@ -82,13 +82,13 @@ class ClaimingCandidateStrategyTest {
 		assertTrue(
 			hints.any {
 				it is Hint.ClaimingCandidate && it.number == 1 &&
-					it.groupType is Hint.GroupType.Row
+					it.houseType is Hint.HouseType.Row
 			},
 		)
 		assertTrue(
 			hints.any {
 				it is Hint.ClaimingCandidate && it.number == 9 &&
-					it.groupType is Hint.GroupType.Column
+					it.houseType is Hint.HouseType.Column
 			},
 		)
 	}

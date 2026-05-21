@@ -16,7 +16,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should replace placeholders with actual values`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 0, col = 1, number = 5, groupType = Hint.GroupType.Row(0))
+		val hint = Hint.HiddenSingle(row = 0, col = 1, number = 5, houseType = Hint.HouseType.Row(0))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val instructionText = result.instruction.annotatedString.text
@@ -43,7 +43,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should use 1-based row and coordinates`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 3, col = 4, number = 7, groupType = Hint.GroupType.Row(2))
+		val hint = Hint.HiddenSingle(row = 3, col = 4, number = 7, houseType = Hint.HouseType.Row(2))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 
@@ -56,7 +56,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should use 1-based column and coordinates`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, groupType = Hint.GroupType.Column(4))
+		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, houseType = Hint.HouseType.Column(4))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 
@@ -69,7 +69,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should use 1-based block and coordinates`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 7, col = 8, number = 9, groupType = Hint.GroupType.Block(6))
+		val hint = Hint.HiddenSingle(row = 7, col = 8, number = 9, houseType = Hint.HouseType.Block(6))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 
@@ -82,7 +82,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate row in instruction`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, groupType = Hint.GroupType.Row(1))
+		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, houseType = Hint.HouseType.Row(1))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val instruction = result.instruction.annotatedString
@@ -98,7 +98,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate column in instruction`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, groupType = Hint.GroupType.Column(1))
+		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, houseType = Hint.HouseType.Column(1))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val instruction = result.instruction.annotatedString
@@ -114,7 +114,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate block in instruction`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, groupType = Hint.GroupType.Block(1))
+		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, houseType = Hint.HouseType.Block(1))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val instruction = result.instruction.annotatedString
@@ -130,7 +130,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate digit group and coordinates in description`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, groupType = Hint.GroupType.Row(1))
+		val hint = Hint.HiddenSingle(row = 2, col = 3, number = 9, houseType = Hint.HouseType.Row(1))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val description = result.description.annotatedString
@@ -158,7 +158,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate coordinates and digit in action text`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, groupType = Hint.GroupType.Block(4))
+		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, houseType = Hint.HouseType.Block(4))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val actionText = result.actionText.annotatedString
@@ -180,7 +180,7 @@ class HiddenSingleExplainerTest {
 	@Test
 	fun `explains should annotate technique in hintTypeName`() {
 		val context = ApplicationProvider.getApplicationContext<Context>()
-		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, groupType = Hint.GroupType.Block(4))
+		val hint = Hint.HiddenSingle(row = 5, col = 6, number = 3, houseType = Hint.HouseType.Block(4))
 
 		val result = HiddenSingleExplainer.explain(context, hint)
 		val hintTypeName = result.hintTypeName.annotatedString
