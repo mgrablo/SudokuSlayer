@@ -37,6 +37,18 @@
 	<string name="hint_claiming_candidate_step_2">W {0}, liczba {1} jest zmuszona znajdować się w jednej z tych komórek: {2}.</string>
 	<string name="hint_claiming_candidate_step_3">Oznacza to, że {0} jest "zarezerwowany" przez kandydata {1}. Możesz usunąć {0} z notatek w pozostałych komórkach tego bloku.</string>
 	<string name="hint_claiming_candidate_step_4">Zaktualizuj notatki w: {0}.</string>
+	<string name="hint_claiming_candidate_instruction_row">Sprawdź <annotation type="row">wiersz ^1</annotation>!</string>
+	<string name="hint_claiming_candidate_instruction_column">Sprawdź <annotation type="column">kolumnę ^1</annotation>!</string>
+	<string name="hint_claiming_candidate_description_row">
+		W <annotation type="row">wierszu ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\n
+		To oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tego <annotation type="row">wiersza</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.
+	</string>
+	<string name="hint_claiming_candidate_description_column">
+		W <annotation type="column">kolumnie ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\n
+		To oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tej <annotation type="column">kolumny</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.
+	</string>
+	<string name="hint_claiming_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_claiming_candidate_name"><annotation type="technique">Claiming Candidate</annotation></string>
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_step_1">Sprawdź {0}!</string>

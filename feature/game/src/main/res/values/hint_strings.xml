@@ -39,6 +39,19 @@
 	<string name="hint_claiming_candidate_step_2">In {0}, the number {1} is forced to be in one of these specific cells: {2}.</string>
 	<string name="hint_claiming_candidate_step_3">This means {0} is "claimed" by this {1}. You can erase {0} from the notes in the rest of the block.</string>
 	<string name="hint_claiming_candidate_step_4">Update notes in: {0}.</string>
+	<string name="hint_claiming_candidate_instruction_row">Check <annotation type="row">row ^1</annotation>!</string>
+	<string name="hint_claiming_candidate_instruction_column">Check <annotation type="column">column ^1</annotation>!</string>
+	<string name="hint_claiming_candidate_description_row">
+		In <annotation type="row">row ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\n
+		This means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="row">row</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.
+	</string>
+	<string name="hint_claiming_candidate_description_column">
+		In <annotation type="column">column ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\n
+		This means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="column">column</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.
+	</string>
+	<string name="hint_claiming_candidate_action">Updated notes in: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_claiming_candidate_name"><annotation type="technique">Claiming Candidate</annotation></string>
+
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_step_1">Check {0}!</string>
