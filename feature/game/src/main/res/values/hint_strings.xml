@@ -58,5 +58,16 @@
 	<string name="hint_pointing_candidate_step_2">In {0}, the number {1} points in a straight line. It must be in {2}.</string>
 	<string name="hint_pointing_candidate_step_3">Since {0} must be in this line, you can remove it from the notes in the rest of the {1}.</string>
 	<string name="hint_pointing_candidate_step_4">Update notes in: {0}.</string>
-</resources>
 
+	<string name="hint_pointing_candidate_instruction">Check <annotation type="block">block ^1</annotation>!</string>
+	<string name="hint_pointing_candidate_description_row">
+		In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="row">row ^3</annotation>.
+		You can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="row">row ^3</annotation> outside this block.
+	</string>
+	<string name="hint_pointing_candidate_description_column">
+		In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="column">column ^3</annotation>.
+		You can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="column">column ^3</annotation> outside this block.
+	</string>
+	<string name="hint_pointing_candidate_action">Updated notes in: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_pointing_candidate_name"><annotation type="technique">Pointing Candidate</annotation></string>
+</resources>

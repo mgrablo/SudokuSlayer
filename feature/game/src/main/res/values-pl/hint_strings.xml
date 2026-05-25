@@ -55,4 +55,16 @@
 	<string name="hint_pointing_candidate_step_2">W {0} liczba {1} wskazuje w prostej linii. Musi ona znajdować się w {2}.</string>
 	<string name="hint_pointing_candidate_step_3">Skoro {0} musi być w tej linii, możesz ją usunąć z notatek w pozostałej części {1}.</string>
 	<string name="hint_pointing_candidate_step_4">Zaktualizuj notatki w: {0}.</string>
+
+	<string name="hint_pointing_candidate_instruction">Sprawdź <annotation type="block">blok ^1</annotation>!</string>
+	<string name="hint_pointing_candidate_description_row">
+		W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="row">wierszu ^3</annotation>.
+		Możesz usunać <annotation type="digit">^2</annotation> z pozostałej części <annotation type="row">wiersza ^3</annotation> poza tym blokiem.
+	</string>
+	<string name="hint_pointing_candidate_description_column">
+		W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="column">kolumnie ^3</annotation>.
+		Możesz usunąć <annotation type="digit">^2</annotation> z pozostałej części <annotation type="column">kolumny ^3</annotation> poza tym blokiem.
+	</string>
+	<string name="hint_pointing_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_pointing_candidate_name"><annotation type="technique">Pointing Candidate</annotation></string>
 </resources>
