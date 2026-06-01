@@ -76,6 +76,9 @@ message ProtoHint {
 	repeated ProtoCell affected_cells = 5;
 	ProtoHintType hintType = 6;
 	string additionalInfo = 7;
+
+	optional ProtoHintType.ProtoHintHouse line_house = 8;
+	optional ProtoHintType.ProtoHintHouse block_house = 9;
 }
 
 message ProtoHintType {

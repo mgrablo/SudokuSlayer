@@ -23,25 +23,51 @@ fun ProtoHint.toHint(): Hint = when (hintType.type) {
 			row = row,
 			col = column,
 			number = value,
-			houseType = hintType.house.toGroupType(),
+			houseType = hintType.house.toHouseType(),
 		)
 	}
 
 	ProtoHintType.Type.ClaimingCandidate -> {
+		val line = if (hasLineHouse()) lineHouse.toHouseType() else hintType.house.toHouseType()
+		val block = if (hasBlockHouse()) {
+			blockHouse.toHouseType() as Hint.HouseType.Block
+		} else {
+			affectedCellsList.firstOrNull()?.let { cell ->
+				// Get block from the first affected cell for backward compatibility
+				val blockRow = cell.row / 3
+				val blockCol = cell.col / 3
+				Hint.HouseType.Block(blockRow * 3 + blockCol)
+			} ?: Hint.HouseType.Block(line.id - 1)
+		}
+
 		Hint.ClaimingCandidate(
 			number = value,
-			houseType = hintType.house.toGroupType(),
 			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+			lineHouseType = line,
+			blockHouseType = block,
 		)
 	}
 
 	ProtoHintType.Type.PointingCandidate -> {
+		val line = if (hasLineHouse()) lineHouse.toHouseType() else hintType.house.toHouseType()
+		val block = if (hasBlockHouse()) {
+			blockHouse.toHouseType() as Hint.HouseType.Block
+		} else {
+			enforcingCellsList.firstOrNull()?.let { cell ->
+				// Get block from the first enforcing cell for backward compatibility
+				val blockRow = cell.row / 3
+				val blockCol = cell.col / 3
+				Hint.HouseType.Block(blockRow * 3 + blockCol)
+			} ?: Hint.HouseType.Block(line.id - 1)
+		}
+
 		Hint.PointingCandidate(
 			number = value,
-			houseType = hintType.house.toGroupType(),
 			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
 			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+			lineHouseType = line,
+			blockHouseType = block,
 		)
 	}
 
@@ -58,7 +84,7 @@ fun Hint.toProtoHint(): ProtoHint = protoHint {
 			column = h.col
 		}
 
-		is Hint.EliminationHint -> {
+		is Hint.ClaimingCandidate -> {
 			// New elimination hint data classes do not have row/col fields,
 			// so using the first affected cell for backward compatibility
 			val anchor = h.affectedCells.firstOrNull()
@@ -67,6 +93,21 @@ fun Hint.toProtoHint(): ProtoHint = protoHint {
 
 			affectedCells += h.affectedCells.map { it.toProtoCell() }
 			enforcingCells += h.enforcingCells.map { it.toProtoCell() }
+			lineHouse = h.lineHouseType.toProtoHintHouse()
+			blockHouse = h.blockHouseType.toProtoHintHouse()
+		}
+
+		is Hint.PointingCandidate -> {
+			// New elimination hint data classes do not have row/col fields,
+			// so using the first affected cell for backward compatibility
+			val anchor = h.affectedCells.firstOrNull()
+			row = anchor?.row ?: 0
+			column = anchor?.col ?: 0
+
+			affectedCells += h.affectedCells.map { it.toProtoCell() }
+			enforcingCells += h.enforcingCells.map { it.toProtoCell() }
+			lineHouse = h.lineHouseType.toProtoHintHouse()
+			blockHouse = h.blockHouseType.toProtoHintHouse()
 		}
 	}
 }
@@ -100,7 +141,7 @@ fun Hint.HouseType.toProtoHintHouse() = protoHintHouse {
 		}
 }
 
-fun ProtoHintHouse.toGroupType(): Hint.HouseType = when (this.houseType) {
+fun ProtoHintHouse.toHouseType(): Hint.HouseType = when (this.houseType) {
 	ProtoHintHouse.Type.Row -> Hint.HouseType.Row(id - 1)
 
 	ProtoHintHouse.Type.Column -> Hint.HouseType.Column(id - 1)
