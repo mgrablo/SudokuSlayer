@@ -1,5 +1,12 @@
 package io.github.mgrablo.sudokuslayer.feature.game.hints
 
+import android.content.Context
+import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.ClaimingCandidateExplainer
+import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.HiddenSingleExplainer
+import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.NakedSingleExplainer
+import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.PointingCandidateExplainer
+
 /**
  * UI representation of an explanation for a hint.
  *
@@ -14,3 +21,10 @@ internal data class HintExplanation(
 	val actionText: HintMessage,
 	val hintTypeName: HintMessage,
 )
+
+internal fun Hint.toExplanation(context: Context) = when (this) {
+	is Hint.NakedSingle -> NakedSingleExplainer.explain(context, this)
+	is Hint.HiddenSingle -> HiddenSingleExplainer.explain(context, this)
+	is Hint.ClaimingCandidate -> ClaimingCandidateExplainer.explain(context, this)
+	is Hint.PointingCandidate -> PointingCandidateExplainer.explain(context, this)
+}

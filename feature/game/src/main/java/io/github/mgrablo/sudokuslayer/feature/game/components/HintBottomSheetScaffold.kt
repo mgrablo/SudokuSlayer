@@ -32,29 +32,42 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintExplanationStep
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.components.snackbar.GameSnackbar
 import io.github.mgrablo.sudokuslayer.feature.game.components.snackbar.GameSnackbarHost
+import io.github.mgrablo.sudokuslayer.feature.game.hints.toExplanation
 import io.github.mgrablo.sudokuslayer.feature.game.model.SnackbarState
 import io.github.mgrablo.sudokuslayer.feature.game.theme.SudokuGameTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+private fun HintLog.toHintLogCardState(isExpanded: Boolean) = HintLogCardState(
+	hintExplanation = hint.toExplanation(LocalContext.current),
+	isRevealed = isRevealed,
+	isUserGuessed = isUserGuessed,
+	isExpanded = isExpanded,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +132,7 @@ private fun SheetContent(
 	logs: PersistentList<HintLog> = persistentListOf(),
 ) {
 	val listState = rememberLazyListState()
-	val expandedItems = remember { mutableStateListOf<Int>() }
+	var expandedLogId by remember { mutableStateOf<Int?>(null) }
 	val interactionSources = remember { mutableStateListOf<MutableInteractionSource>() }
 	val coroutineScope = rememberCoroutineScope()
 
@@ -148,7 +161,7 @@ private fun SheetContent(
 					.fillMaxWidth()
 					.weight(1f),
 		) {
-			itemsIndexed(items = logs, key = { id, v -> id }) { index, hintLog ->
+			itemsIndexed(items = logs, key = { i, v -> v.id }) { index, hintLog ->
 				val interactionSource = remember { MutableInteractionSource() }
 				if (interactionSources.size <= index) {
 					interactionSources.add(interactionSource)
@@ -156,29 +169,24 @@ private fun SheetContent(
 					interactionSources[index] = interactionSource
 				}
 
-				HintStepCard(
-					title = HintExplanationStep(emptyList()),
-					cardContent = persistentListOf(),
+				val cardState = hintLog.toHintLogCardState(isExpanded = expandedLogId == hintLog.id)
+				HintLogCard(
+					state = cardState,
+					interactionSource = interactionSource,
 					onExplainClick = {
 						explainHintClick()
-						if (!expandedItems.contains(hintLog.id)) {
-							expandedItems.add(hintLog.id)
-						}
-					},
-					isExpanded = expandedItems.contains(hintLog.id),
-					onExpandToggle = {
-						if (expandedItems.contains(hintLog.id)) {
-							expandedItems.remove(hintLog.id)
-						} else {
-							expandedItems.add(hintLog.id)
-						}
+						expandedLogId = hintLog.id
 					},
 					onHighlightCellClick = { onHighlightCellClick(hintLog.hint) },
-					isRevealed = hintLog.isRevealed,
-					isUserGuessed = hintLog.isUserGuessed,
-					interactionSource = interactionSource,
+					onExpandToggle = {
+						expandedLogId = if (expandedLogId == hintLog.id) null else hintLog.id
+						coroutineScope.launch {
+							listState.animateScrollToItem(index)
+						}
+					},
 					modifier = Modifier.animateItem(),
 				)
+
 				Spacer(Modifier.height(8.dp))
 			}
 		}
@@ -193,15 +201,7 @@ private fun SheetContent(
 					if (interactionSources.isNotEmpty()) {
 						coroutineScope.launch {
 							val lastInteractionSource = interactionSources.last()
-							lastInteractionSource.tryEmit(PressInteraction.Press(Offset.Zero))
-							delay(100)
-							lastInteractionSource.tryEmit(
-								PressInteraction.Release(
-									PressInteraction.Press(
-										Offset.Zero,
-									),
-								),
-							)
+							triggerRippleAnimation(lastInteractionSource)
 						}
 					}
 				}
@@ -209,6 +209,18 @@ private fun SheetContent(
 			contentColor = MaterialTheme.colorScheme.secondary,
 		)
 	}
+}
+
+private suspend fun triggerRippleAnimation(interactionSource: MutableInteractionSource) {
+	interactionSource.tryEmit(PressInteraction.Press(Offset.Zero))
+	delay(200.milliseconds)
+	interactionSource.tryEmit(
+		PressInteraction.Release(
+			PressInteraction.Press(
+				Offset.Zero,
+			),
+		),
+	)
 }
 
 @Composable

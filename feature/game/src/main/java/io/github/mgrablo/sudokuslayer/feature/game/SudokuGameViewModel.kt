@@ -1,7 +1,6 @@
 package io.github.mgrablo.sudokuslayer.feature.game
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.CellAttributes
@@ -29,7 +28,6 @@ import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.feature.game.model.GameState
 import io.github.mgrablo.sudokuslayer.feature.game.model.SnackbarState
 import io.github.mgrablo.sudokuslayer.feature.game.model.SudokuGameUiState
-import io.github.mgrablo.sudokuslayer.feature.game.util.AndroidHintStringProvider
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
@@ -62,7 +60,6 @@ import kotlin.time.ExperimentalTime
 
 internal class SudokuGameViewModel(
 	private val sudokuGridSize: SudokuGridSize,
-	private val application: Application,
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
 	private val gameManagementUseCases: GameManagementUseCases,
@@ -74,7 +71,7 @@ internal class SudokuGameViewModel(
 	private val gameResultWriter: GameResultWriter,
 	private val getElapsedTimeUseCase: GetElapsedTimeUseCase,
 	private val saveElapsedTimeUseCase: SaveElapsedTimeUseCase,
-) : AndroidViewModel(application) {
+) : ViewModel() {
 	private val elapsedTimerManager = ElapsedTimerManager(
 		scope = viewModelScope,
 		getElapsedTimeUseCase = getElapsedTimeUseCase,
@@ -111,10 +108,6 @@ internal class SudokuGameViewModel(
 		started = SharingStarted.WhileSubscribed(5000L),
 		initialValue = persistentMapOf(),
 	)
-
-	private val stringProvider by lazy {
-		AndroidHintStringProvider(application)
-	}
 
 	init {
 		_uiState.update {
@@ -482,42 +475,37 @@ internal class SudokuGameViewModel(
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			game.value?.let { g ->
 				g.hintLogs.lastOrNull()?.isRevealed?.let { if (!it) return@launch }
-				val hint: Hint? = hintUseCases.provideHint(g)
+				val hint: Hint = hintUseCases.provideHint(g) ?: return@launch
 
 				updateGame { currentGame ->
-					if (hint != null) {
-						val grid = if (hint is Hint.ResolutionHint) {
-							gameManagementUseCases.selectCell(
-								sudoku = currentGame.grid,
-								selectedCell = hint.row to hint.col,
-							)
-						} else {
-							currentGame.grid
-						}
-
-						hintFocus(hint)
-						val hintLog =
-							hintUseCases.generateLog(
-								id = currentGame.hintLogs.size,
-								hint = hint,
-								grid = grid,
-								stringProvider = stringProvider,
-							)
-
-						_uiState.update {
-							it.copy(
-								lastHint = hint,
-							)
-						}
-
-						currentGame.copy(
-							grid = grid,
-							hintLogs = currentGame.hintLogs + hintLog,
-							hintsUsed = currentGame.hintsUsed + 1,
+					val grid = if (hint is Hint.ResolutionHint) {
+						gameManagementUseCases.selectCell(
+							sudoku = currentGame.grid,
+							selectedCell = hint.row to hint.col,
 						)
 					} else {
-						currentGame
+						currentGame.grid
 					}
+
+					hintFocus(hint)
+					val hintLog = HintLog(
+						id = currentGame.hintLogs.size,
+						hint = hint,
+						isRevealed = false,
+						isUserGuessed = false,
+					)
+
+					_uiState.update {
+						it.copy(
+							lastHint = hint,
+						)
+					}
+
+					currentGame.copy(
+						grid = grid,
+						hintLogs = currentGame.hintLogs + hintLog,
+						hintsUsed = currentGame.hintsUsed + 1,
+					)
 				}
 			}
 		}
