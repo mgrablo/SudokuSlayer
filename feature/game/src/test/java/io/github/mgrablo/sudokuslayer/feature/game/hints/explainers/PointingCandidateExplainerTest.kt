@@ -5,6 +5,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.test.core.app.ApplicationProvider
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.SudokuCellData
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinate
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.Test
@@ -42,8 +43,8 @@ class PointingCandidateExplainerTest {
 		assertTrue(descriptionText.contains("block 2"))
 		assertTrue(descriptionText.contains("row 3"))
 		assertTrue(descriptionText.contains("5"))
-		assertTrue(actionText.contains("[1, 5]"))
-		assertTrue(actionText.contains("[1, 7]"))
+		assertTrue(actionText.contains(formatCellCoordinate(0, 4)))
+		assertTrue(actionText.contains(formatCellCoordinate(0, 6)))
 
 		assertFalse(instructionText.contains("^1"))
 		assertFalse(descriptionText.contains("^1"))
@@ -78,7 +79,7 @@ class PointingCandidateExplainerTest {
 		assertTrue(descriptionText.contains("block 5"))
 		assertTrue(descriptionText.contains("column 4"))
 		assertTrue(descriptionText.contains("7"))
-		assertTrue(actionText.contains("[5, 4]"))
+		assertTrue(actionText.contains(formatCellCoordinate(4, 3)))
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplainer
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplanation
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintMessage
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinates
 import io.github.mgrablo.sudokuslayer.feature.game.hints.getHintMessage
 
 internal object ClaimingCandidateExplainer : HintExplainer<Hint.ClaimingCandidate> {
@@ -47,7 +48,7 @@ internal object ClaimingCandidateExplainer : HintExplainer<Hint.ClaimingCandidat
 			)
 		}
 		val lineHouseId = hint.lineHouseType.id + 1
-		val enforcingCells = hint.enforcingCells.joinToString { "[${it.row + 1}, ${it.col + 1}]" }
+		val enforcingCells = formatCellCoordinates(hint.enforcingCells)
 		return getHintMessage(
 			context,
 			descriptionId,
@@ -60,7 +61,7 @@ internal object ClaimingCandidateExplainer : HintExplainer<Hint.ClaimingCandidat
 
 	private fun getActionText(hint: Hint.ClaimingCandidate, context: Context): HintMessage {
 		val actionTextId = R.string.hint_claiming_candidate_action
-		val affectedCells = hint.affectedCells.joinToString { "[${it.row + 1}, ${it.col + 1}]" }
+		val affectedCells = formatCellCoordinates(hint.affectedCells)
 		return getHintMessage(context, actionTextId, affectedCells)
 	}
 

@@ -5,6 +5,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.test.core.app.ApplicationProvider
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokucore.model.SudokuCellData
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinate
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.Test
@@ -42,11 +43,11 @@ class ClaimingCandidateExplainerTest {
 		assertTrue(instructionText.contains("row 3"))
 		assertTrue(descriptionText.contains("row 3"))
 		assertTrue(descriptionText.contains("5"))
-		assertTrue(descriptionText.contains("[3, 4]"))
-		assertTrue(descriptionText.contains("[3, 5]"))
+		assertTrue(descriptionText.contains(formatCellCoordinate(2, 3)))
+		assertTrue(descriptionText.contains(formatCellCoordinate(2, 4)))
 		assertTrue(descriptionText.contains("block 2"))
-		assertTrue(actionText.contains("[1, 4]"))
-		assertTrue(actionText.contains("[2, 5]"))
+		assertTrue(actionText.contains(formatCellCoordinate(0, 3)))
+		assertTrue(actionText.contains(formatCellCoordinate(1, 4)))
 
 		assertFalse(instructionText.contains("^1"))
 		assertFalse(descriptionText.contains("^1"))
@@ -83,11 +84,11 @@ class ClaimingCandidateExplainerTest {
 		assertTrue(instructionText.contains("column 4"))
 		assertTrue(descriptionText.contains("column 4"))
 		assertTrue(descriptionText.contains("7"))
-		assertTrue(descriptionText.contains("[1, 4]"))
-		assertTrue(descriptionText.contains("[2, 4]"))
+		assertTrue(descriptionText.contains(formatCellCoordinate(0, 3)))
+		assertTrue(descriptionText.contains(formatCellCoordinate(1, 3)))
 		assertTrue(descriptionText.contains("block 2"))
-		assertTrue(actionText.contains("[1, 5]"))
-		assertTrue(actionText.contains("[2, 6]"))
+		assertTrue(actionText.contains(formatCellCoordinate(0, 4)))
+		assertTrue(actionText.contains(formatCellCoordinate(1, 5)))
 
 		assertFalse(instructionText.contains("^1"))
 		assertFalse(descriptionText.contains("^1"))
@@ -284,3 +285,4 @@ class ClaimingCandidateExplainerTest {
 		this.getStringAnnotations(tag = tag, start = 0, end = this.length)
 			.any { it.item == value }
 }
+

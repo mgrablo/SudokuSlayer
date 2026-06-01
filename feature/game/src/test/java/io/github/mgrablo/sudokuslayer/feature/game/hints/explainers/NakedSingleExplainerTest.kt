@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.text.AnnotatedString
 import androidx.test.core.app.ApplicationProvider
 import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinate
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import tech.apter.junit.jupiter.robolectric.RobolectricExtension
@@ -24,9 +25,9 @@ class NakedSingleExplainerTest {
 		val actionText = result.actionText.annotatedString.text
 		val hintTypeNameText = result.hintTypeName.annotatedString.text
 
-		assertTrue(instructionText.contains("[1, 2]"))
+		assertTrue(instructionText.contains(formatCellCoordinate(0, 1)))
 		assertTrue(descriptionText.contains("5"))
-		assertTrue(actionText.contains("[1, 2]"))
+		assertTrue(actionText.contains(formatCellCoordinate(0, 1)))
 
 		assertFalse(instructionText.contains("^1"))
 		assertFalse(descriptionText.contains("^1"))
@@ -42,8 +43,11 @@ class NakedSingleExplainerTest {
 
 		val result = NakedSingleExplainer.explain(context, hint)
 
-		assertEquals("Inspect cell [4, 5]!", result.instruction.annotatedString.text)
-		assertTrue(result.actionText.annotatedString.text.contains("[4, 5]"))
+		assertEquals(
+			"Inspect cell ${formatCellCoordinate(3, 4)}!",
+			result.instruction.annotatedString.text,
+		)
+		assertTrue(result.actionText.annotatedString.text.contains(formatCellCoordinate(3, 4)))
 	}
 
 	@Test

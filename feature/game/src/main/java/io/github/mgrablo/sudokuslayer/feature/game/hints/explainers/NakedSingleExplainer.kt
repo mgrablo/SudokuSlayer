@@ -5,13 +5,18 @@ import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplainer
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplanation
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinate
 import io.github.mgrablo.sudokuslayer.feature.game.hints.getHintMessage
 
 internal object NakedSingleExplainer : HintExplainer<Hint.NakedSingle> {
 	override fun explain(context: Context, hint: Hint.NakedSingle): HintExplanation {
 		val (row, column, number) = hint
 		val instruction =
-			getHintMessage(context, R.string.hint_naked_single_instruction, hint.cellCoordinateString())
+			getHintMessage(
+				context,
+				R.string.hint_naked_single_instruction,
+				formatCellCoordinate(row, column),
+			)
 		val description =
 			getHintMessage(context, R.string.hint_naked_single_description, number)
 		val actionText =
@@ -19,7 +24,7 @@ internal object NakedSingleExplainer : HintExplainer<Hint.NakedSingle> {
 				context,
 				R.string.hint_naked_single_action,
 				number,
-				hint.cellCoordinateString(),
+				formatCellCoordinate(row, column),
 			)
 		val hintTypeName = getHintMessage(context, R.string.hint_naked_single_name)
 
@@ -30,6 +35,4 @@ internal object NakedSingleExplainer : HintExplainer<Hint.NakedSingle> {
 			hintTypeName = hintTypeName,
 		)
 	}
-
-	private fun Hint.NakedSingle.cellCoordinateString(): String = "[${row + 1}, ${col + 1}]"
 }

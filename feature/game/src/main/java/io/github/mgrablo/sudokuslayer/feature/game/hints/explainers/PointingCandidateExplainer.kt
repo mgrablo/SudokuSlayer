@@ -6,6 +6,7 @@ import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplainer
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintExplanation
 import io.github.mgrablo.sudokuslayer.feature.game.hints.HintMessage
+import io.github.mgrablo.sudokuslayer.feature.game.hints.formatCellCoordinates
 import io.github.mgrablo.sudokuslayer.feature.game.hints.getHintMessage
 
 internal object PointingCandidateExplainer : HintExplainer<Hint.PointingCandidate> {
@@ -49,7 +50,7 @@ internal object PointingCandidateExplainer : HintExplainer<Hint.PointingCandidat
 
 	private fun getActionText(context: Context, hint: Hint.PointingCandidate): HintMessage {
 		val actionTextId = R.string.hint_pointing_candidate_action
-		val affectedCells = hint.affectedCells.joinToString { "[${it.row + 1}, ${it.col + 1}]" }
+		val affectedCells = formatCellCoordinates(hint.affectedCells)
 		return getHintMessage(context, actionTextId, affectedCells)
 	}
 
