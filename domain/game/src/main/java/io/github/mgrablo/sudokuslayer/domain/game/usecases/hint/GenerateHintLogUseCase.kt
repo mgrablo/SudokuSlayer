@@ -26,7 +26,6 @@ class GenerateHintLogUseCase {
 			hint = hint,
 			isUserGuessed = false,
 			isRevealed = false,
-			structuredExplanation = explanationSteps,
 		)
 	}
 }

@@ -9,9 +9,8 @@ message ProtoHintLog {
 	bool is_user_guessed = 3;
 	bool is_revealed = 4;
 	ProtoHint hint = 5;
-	repeated ProtoHintExplanationStep structured_explanation = 6;
 
-	reserved 2;
+	reserved 2, 6;
 }
 
 message ProtoHintExplanationStep {

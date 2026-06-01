@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.HintExplanationStep
 import io.github.mgrablo.sudokuslayer.domain.core.HintLog
 import io.github.mgrablo.sudokuslayer.feature.game.R
 import io.github.mgrablo.sudokuslayer.feature.game.components.snackbar.GameSnackbar
@@ -52,7 +53,6 @@ import io.github.mgrablo.sudokuslayer.feature.game.model.SnackbarState
 import io.github.mgrablo.sudokuslayer.feature.game.theme.SudokuGameTheme
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -157,8 +157,8 @@ private fun SheetContent(
 				}
 
 				HintStepCard(
-					title = hintLog.structuredExplanation.first(),
-					cardContent = hintLog.structuredExplanation.drop(1).toPersistentList(),
+					title = HintExplanationStep(emptyList()),
+					cardContent = persistentListOf(),
 					onExplainClick = {
 						explainHintClick()
 						if (!expandedItems.contains(hintLog.id)) {
@@ -267,7 +267,6 @@ private fun HintBottomSheetScaffoldPreview() {
 							),
 						isUserGuessed = false,
 						isRevealed = false,
-						structuredExplanation = persistentListOf(),
 					),
 				),
 			explainHintClick = { },

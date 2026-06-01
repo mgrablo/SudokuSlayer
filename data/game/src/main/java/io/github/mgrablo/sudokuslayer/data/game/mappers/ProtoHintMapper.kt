@@ -1,6 +1,7 @@
 package io.github.mgrablo.sudokuslayer.data.game.mappers
 
 import io.github.mgrablo.sudokucore.hints.Hint
+import io.github.mgrablo.sudokucore.hints.Hint.HouseType
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHint
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType
 import io.github.mgrablo.sudokuslayer.data.game.ProtoHintType.ProtoHintHouse
@@ -9,69 +10,82 @@ import io.github.mgrablo.sudokuslayer.data.game.protoHint
 import io.github.mgrablo.sudokuslayer.data.game.protoHintType
 import kotlinx.collections.immutable.toPersistentSet
 
-fun ProtoHint.toHint(): Hint = when (hintType.type) {
+fun ProtoHint.toHint(): Result<Hint> = when (hintType.type) {
 	ProtoHintType.Type.NakedSingle -> {
-		Hint.NakedSingle(
-			row = row,
-			col = column,
-			number = value,
+		Result.success(
+			Hint.NakedSingle(
+				row = row,
+				col = column,
+				number = value,
+			),
 		)
 	}
 
 	ProtoHintType.Type.HiddenSingle -> {
-		Hint.HiddenSingle(
-			row = row,
-			col = column,
-			number = value,
-			houseType = hintType.house.toHouseType(),
+		Result.success(
+			Hint.HiddenSingle(
+				row = row,
+				col = column,
+				number = value,
+				houseType = hintType.house.toHouseType(),
+			),
 		)
 	}
 
 	ProtoHintType.Type.ClaimingCandidate -> {
 		val line = if (hasLineHouse()) lineHouse.toHouseType() else hintType.house.toHouseType()
 		val block = if (hasBlockHouse()) {
-			blockHouse.toHouseType() as Hint.HouseType.Block
+			blockHouse.toHouseType() as HouseType.Block
 		} else {
 			affectedCellsList.firstOrNull()?.let { cell ->
 				// Get block from the first affected cell for backward compatibility
 				val blockRow = cell.row / 3
 				val blockCol = cell.col / 3
-				Hint.HouseType.Block(blockRow * 3 + blockCol)
-			} ?: Hint.HouseType.Block(line.id - 1)
+				HouseType.Block(blockRow * 3 + blockCol)
+			} ?: HouseType.Block(line.id - 1)
 		}
 
-		Hint.ClaimingCandidate(
-			number = value,
-			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
-			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
-			lineHouseType = line,
-			blockHouseType = block,
+		Result.success(
+			Hint.ClaimingCandidate(
+				number = value,
+				affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+				enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+				lineHouseType = line,
+				blockHouseType = block,
+			),
 		)
 	}
 
 	ProtoHintType.Type.PointingCandidate -> {
 		val line = if (hasLineHouse()) lineHouse.toHouseType() else hintType.house.toHouseType()
 		val block = if (hasBlockHouse()) {
-			blockHouse.toHouseType() as Hint.HouseType.Block
+			blockHouse.toHouseType() as HouseType.Block
 		} else {
 			enforcingCellsList.firstOrNull()?.let { cell ->
 				// Get block from the first enforcing cell for backward compatibility
 				val blockRow = cell.row / 3
 				val blockCol = cell.col / 3
-				Hint.HouseType.Block(blockRow * 3 + blockCol)
-			} ?: Hint.HouseType.Block(line.id - 1)
+				HouseType.Block(blockRow * 3 + blockCol)
+			} ?: HouseType.Block(line.id - 1)
 		}
 
-		Hint.PointingCandidate(
-			number = value,
-			affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
-			enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
-			lineHouseType = line,
-			blockHouseType = block,
+		Result.success(
+			Hint.PointingCandidate(
+				number = value,
+				affectedCells = affectedCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+				enforcingCells = enforcingCellsList.map { it.toSudokuCellData() }.toPersistentSet(),
+				lineHouseType = line,
+				blockHouseType = block,
+			),
 		)
 	}
 
-	else -> throw IllegalArgumentException("Unkown hint type: $hintType")
+	ProtoHintType.Type.UNRECOGNIZED,
+	ProtoHintType.Type.HintType_UNSPECIFIED,
+	->
+		Result.failure(
+			IllegalArgumentException("Unrecognized or unspecified hint type: ${hintType.type}"),
+		)
 }
 
 fun Hint.toProtoHint(): ProtoHint = protoHint {
@@ -130,23 +144,23 @@ fun Hint.toProtoHintType(): ProtoHintType = protoHintType {
 	}
 }
 
-fun Hint.HouseType.toProtoHintHouse() = protoHintHouse {
+fun HouseType.toProtoHintHouse() = protoHintHouse {
 	// Proto defaults to 0, so we need to increment it by 1
 	id = this@toProtoHintHouse.id + 1
 	houseType =
 		when (this@toProtoHintHouse) {
-			is Hint.HouseType.Row -> ProtoHintHouse.Type.Row
-			is Hint.HouseType.Column -> ProtoHintHouse.Type.Column
-			is Hint.HouseType.Block -> ProtoHintHouse.Type.Block
+			is HouseType.Row -> ProtoHintHouse.Type.Row
+			is HouseType.Column -> ProtoHintHouse.Type.Column
+			is HouseType.Block -> ProtoHintHouse.Type.Block
 		}
 }
 
-fun ProtoHintHouse.toHouseType(): Hint.HouseType = when (this.houseType) {
-	ProtoHintHouse.Type.Row -> Hint.HouseType.Row(id - 1)
+fun ProtoHintHouse.toHouseType(): HouseType = when (this.houseType) {
+	ProtoHintHouse.Type.Row -> HouseType.Row(id - 1)
 
-	ProtoHintHouse.Type.Column -> Hint.HouseType.Column(id - 1)
+	ProtoHintHouse.Type.Column -> HouseType.Column(id - 1)
 
-	ProtoHintHouse.Type.Block -> Hint.HouseType.Block(id - 1)
+	ProtoHintHouse.Type.Block -> HouseType.Block(id - 1)
 
 	ProtoHintHouse.Type.HouseType_UNSPECIFIED -> throw IllegalArgumentException(
 		"House type is unspecified",
