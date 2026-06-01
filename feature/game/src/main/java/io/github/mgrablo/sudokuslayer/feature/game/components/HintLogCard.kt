@@ -186,6 +186,11 @@ private fun Content(
 					modifier = Modifier.padding(bottom = 4.dp),
 				)
 				Text(
+					text = explanation.actionText.applyStyles(),
+					style = MaterialTheme.typography.bodyMedium,
+					modifier = Modifier.padding(bottom = 4.dp),
+				)
+				Text(
 					text = explanation.hintTypeName.applyStyles(),
 					style = MaterialTheme.typography.bodyMedium,
 				)
