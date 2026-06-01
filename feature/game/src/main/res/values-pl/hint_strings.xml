@@ -19,27 +19,13 @@
 	<!-- Claiming Candidate Explanation -->
 	<string name="hint_claiming_candidate_instruction_row">Sprawdź <annotation type="row">wiersz ^1</annotation>!</string>
 	<string name="hint_claiming_candidate_instruction_column">Sprawdź <annotation type="column">kolumnę ^1</annotation>!</string>
-	<string name="hint_claiming_candidate_description_row">
-		W <annotation type="row">wierszu ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\n
-		To oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tego <annotation type="row">wiersza</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.
-	</string>
-	<string name="hint_claiming_candidate_description_column">
-		W <annotation type="column">kolumnie ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\n
-		To oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tej <annotation type="column">kolumny</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.
-	</string>
-	<string name="hint_claiming_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_claiming_candidate_description_row">W <annotation type="row">wierszu ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\nTo oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tego <annotation type="row">wiersza</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.</string>
+	<string name="hint_claiming_candidate_description_column">W <annotation type="column">kolumnie ^1</annotation> liczba <annotation type="digit">^2</annotation> jest zmuszona znajdować się w jednej z tych komórek: <annotation type="cell">^3</annotation>.\nTo oznacza, że <annotation type="digit">^2</annotation> jest "zarezerwowana" dla tej <annotation type="column">kolumny</annotation>. Możesz usunąć <annotation type="digit">^2</annotation> z notatek w pozostałych komórkach <annotation type="block">bloku ^4</annotation>.</string><string name="hint_claiming_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
 	<string name="hint_claiming_candidate_name"><annotation type="technique">Claiming Candidate</annotation></string>
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_instruction">Sprawdź <annotation type="block">blok ^1</annotation>!</string>
-	<string name="hint_pointing_candidate_description_row">
-		W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="row">wierszu ^3</annotation>.
-		Możesz usunać <annotation type="digit">^2</annotation> z pozostałej części <annotation type="row">wiersza ^3</annotation> poza tym blokiem.
-	</string>
-	<string name="hint_pointing_candidate_description_column">
-		W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="column">kolumnie ^3</annotation>.
-		Możesz usunąć <annotation type="digit">^2</annotation> z pozostałej części <annotation type="column">kolumny ^3</annotation> poza tym blokiem.
-	</string>
-	<string name="hint_pointing_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
+	<string name="hint_pointing_candidate_description_row">W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="row">wierszu ^3</annotation>.\nMożesz usunać <annotation type="digit">^2</annotation> z pozostałej części <annotation type="row">wiersza ^3</annotation> poza tym blokiem.</string>
+	<string name="hint_pointing_candidate_description_column">W <annotation type="block">bloku ^1</annotation> liczba <annotation type="digit">^2</annotation> może występować tylko w <annotation type="column">kolumnie ^3</annotation>.\nMożesz usunąć <annotation type="digit">^2</annotation> z pozostałej części <annotation type="column">kolumny ^3</annotation> poza tym blokiem.</string><string name="hint_pointing_candidate_action">Zaktualizowano notatki w: <annotation type="cell">^1</annotation>.</string>
 	<string name="hint_pointing_candidate_name"><annotation type="technique">Pointing Candidate</annotation></string>
 </resources>

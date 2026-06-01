@@ -20,28 +20,16 @@
 	<!-- Claiming Candidate Explanation -->
 	<string name="hint_claiming_candidate_instruction_row">Check <annotation type="row">row ^1</annotation>!</string>
 	<string name="hint_claiming_candidate_instruction_column">Check <annotation type="column">column ^1</annotation>!</string>
-	<string name="hint_claiming_candidate_description_row">
-		In <annotation type="row">row ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\n
-		This means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="row">row</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.
-	</string>
-	<string name="hint_claiming_candidate_description_column">
-		In <annotation type="column">column ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\n
-		This means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="column">column</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.
-	</string>
+	<string name="hint_claiming_candidate_description_row">In <annotation type="row">row ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\nThis means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="row">row</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.</string>
+	<string name="hint_claiming_candidate_description_column">In <annotation type="column">column ^1</annotation>, the number <annotation type="digit">^2</annotation> is forced to be in one of these specific cells: <annotation type="cell">^3</annotation>.\nThis means <annotation type="digit">^2</annotation> is "claimed" by this <annotation type="column">column</annotation>. You can erase <annotation type="digit">^2</annotation> from the notes in the rest of the <annotation type="block">block ^4</annotation>.</string>
 	<string name="hint_claiming_candidate_action">Updated notes in: <annotation type="cell">^1</annotation>.</string>
 	<string name="hint_claiming_candidate_name"><annotation type="technique">Claiming Candidate</annotation></string>
 
 
 	<!-- Pointing Candidate Explanation -->
 	<string name="hint_pointing_candidate_instruction">Check <annotation type="block">block ^1</annotation>!</string>
-	<string name="hint_pointing_candidate_description_row">
-		In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="row">row ^3</annotation>.
-		You can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="row">row ^3</annotation> outside this block.
-	</string>
-	<string name="hint_pointing_candidate_description_column">
-		In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="column">column ^3</annotation>.
-		You can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="column">column ^3</annotation> outside this block.
-	</string>
+	<string name="hint_pointing_candidate_description_row">In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="row">row ^3</annotation>.\nYou can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="row">row ^3</annotation> outside this block.</string>
+	<string name="hint_pointing_candidate_description_column">In <annotation type="block">block ^1</annotation>, the number <annotation type="digit">^2</annotation> can only appear in <annotation type="column">column ^3</annotation>.\nYou can remove <annotation type="digit">^2</annotation> from the rest of <annotation type="column">column ^3</annotation> outside this block.</string>
 	<string name="hint_pointing_candidate_action">Updated notes in: <annotation type="cell">^1</annotation>.</string>
 	<string name="hint_pointing_candidate_name"><annotation type="technique">Pointing Candidate</annotation></string>
 </resources>
