@@ -1,10 +1,8 @@
 package io.github.mgrablo.sudokuslayer.feature.game
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.model.CellAttributes
 import io.github.mgrablo.sudokucore.model.SudokuGrid
 import io.github.mgrablo.sudokucore.model.clearAllCornerNotes
@@ -30,7 +28,6 @@ import io.github.mgrablo.sudokuslayer.domain.settings.SettingsRepository
 import io.github.mgrablo.sudokuslayer.feature.game.model.GameState
 import io.github.mgrablo.sudokuslayer.feature.game.model.SnackbarState
 import io.github.mgrablo.sudokuslayer.feature.game.model.SudokuGameUiState
-import io.github.mgrablo.sudokuslayer.feature.game.util.AndroidHintStringProvider
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
@@ -58,11 +55,11 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
 internal class SudokuGameViewModel(
 	private val sudokuGridSize: SudokuGridSize,
-	private val application: Application,
 	private val settingsRepository: SettingsRepository,
 	private val operationRepository: OperationRepository,
 	private val gameManagementUseCases: GameManagementUseCases,
@@ -74,7 +71,7 @@ internal class SudokuGameViewModel(
 	private val gameResultWriter: GameResultWriter,
 	private val getElapsedTimeUseCase: GetElapsedTimeUseCase,
 	private val saveElapsedTimeUseCase: SaveElapsedTimeUseCase,
-) : AndroidViewModel(application) {
+) : ViewModel() {
 	private val elapsedTimerManager = ElapsedTimerManager(
 		scope = viewModelScope,
 		getElapsedTimeUseCase = getElapsedTimeUseCase,
@@ -111,10 +108,6 @@ internal class SudokuGameViewModel(
 		started = SharingStarted.WhileSubscribed(5000L),
 		initialValue = persistentMapOf(),
 	)
-
-	private val stringProvider by lazy {
-		AndroidHintStringProvider(application)
-	}
 
 	init {
 		_uiState.update {
@@ -265,7 +258,7 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			game.filterNotNull().distinctUntilChangedBy(Game::toStateKey)
 				.collect { g ->
-					delay(1100)
+					delay(1100.milliseconds)
 					val bestTime = getBestTimeUseCase(
 						g.difficulty,
 						SudokuGridSize.fromIntSize(g.grid.gridSize),
@@ -363,8 +356,9 @@ internal class SudokuGameViewModel(
 
 	private fun handleHintGuess(row: Int, column: Int, number: Int): PersistentList<HintLog> {
 		val lastHint = _uiState.value.lastHint
-		val isCorrectGuess =
-			lastHint != null && lastHint.row == row && lastHint.col == column && lastHint.value == number
+		if (lastHint !is Hint.ResolutionHint) return persistentListOf()
+
+		val isCorrectGuess = lastHint.row == row && lastHint.col == column && lastHint.number == number
 
 		val hintLogs = game.value?.hintLogs
 		if (!isCorrectGuess) {
@@ -372,13 +366,7 @@ internal class SudokuGameViewModel(
 		}
 
 		val updatedLogs = hintLogs?.toMutableList() ?: mutableListOf()
-		val hintLogIndex =
-			updatedLogs.indexOfLast {
-				it.hint.row == lastHint.row &&
-					it.hint.col == lastHint.col &&
-					it.hint.value == lastHint.value &&
-					it.hint.type == lastHint.type
-			}
+		val hintLogIndex = updatedLogs.indexOfLast { it.hint == lastHint }
 
 		if (hintLogIndex != -1) {
 			val log = updatedLogs[hintLogIndex]
@@ -487,37 +475,37 @@ internal class SudokuGameViewModel(
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			game.value?.let { g ->
 				g.hintLogs.lastOrNull()?.isRevealed?.let { if (!it) return@launch }
-				val hint: Hint? = hintUseCases.provideHint(g)
+				val hint: Hint = hintUseCases.provideHint(g) ?: return@launch
 
 				updateGame { currentGame ->
-					if (hint != null) {
-						val grid = gameManagementUseCases.selectCell(
+					val grid = if (hint is Hint.ResolutionHint) {
+						gameManagementUseCases.selectCell(
 							sudoku = currentGame.grid,
 							selectedCell = hint.row to hint.col,
 						)
-						hintFocus(hint)
-						val hintLog =
-							hintUseCases.generateLog(
-								id = currentGame.hintLogs.size,
-								hint = hint,
-								grid = grid,
-								stringProvider = stringProvider,
-							)
-
-						_uiState.update {
-							it.copy(
-								lastHint = hint,
-							)
-						}
-
-						currentGame.copy(
-							grid = grid,
-							hintLogs = currentGame.hintLogs + hintLog,
-							hintsUsed = currentGame.hintsUsed + 1,
-						)
 					} else {
-						currentGame
+						currentGame.grid
 					}
+
+					hintFocus(hint)
+					val hintLog = HintLog(
+						id = currentGame.hintLogs.size,
+						hint = hint,
+						isRevealed = false,
+						isUserGuessed = false,
+					)
+
+					_uiState.update {
+						it.copy(
+							lastHint = hint,
+						)
+					}
+
+					currentGame.copy(
+						grid = grid,
+						hintLogs = currentGame.hintLogs + hintLog,
+						hintsUsed = currentGame.hintsUsed + 1,
+					)
 				}
 			}
 		}
@@ -528,12 +516,12 @@ internal class SudokuGameViewModel(
 		hintFocusJob = viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 
-			val cellsToFocus = when (hint.type) {
-				is HintType.HiddenSingle, is HintType.NakedSingle -> {
-					listOf(Pair(hint.row, hint.col))
+			val cellsToFocus = when (hint) {
+				is Hint.ResolutionHint -> {
+					listOf(hint.row to hint.col)
 				}
 
-				is HintType.ClaimingCandidate, is HintType.PointingCandidate -> {
+				is Hint.EliminationHint -> {
 					hint.enforcingCells.map { it.row to it.col }
 				}
 			}
@@ -546,7 +534,7 @@ internal class SudokuGameViewModel(
 				)
 			}
 
-			delay(3000)
+			delay(3000.milliseconds)
 
 			_uiState.update { state ->
 				state.copy(
@@ -560,13 +548,16 @@ internal class SudokuGameViewModel(
 		viewModelScope.launch {
 			if (_uiState.value.gameState == GameState.VICTORY) return@launch
 			val hint: Hint = _uiState.value.lastHint ?: return@launch
-			if (game.value?.grid
-					?.getCellAt(hint.row, hint.col)
-					?.number != 0
-			) {
-				return@launch
+			if (hint is Hint.ResolutionHint) {
+				if (game.value?.grid
+						?.getCellAt(hint.row, hint.col)
+						?.number != 0
+				) {
+					return@launch
+				}
+				selectCell(hint.row, hint.col)
 			}
-			selectCell(hint.row, hint.col)
+
 			updateGame { currentGame ->
 				val (updatedGrid, changes) = hintUseCases.revealOnGrid(hint, currentGame.grid)
 				val updatedLogs = hintUseCases.revealLastLog(currentGame.hintLogs)

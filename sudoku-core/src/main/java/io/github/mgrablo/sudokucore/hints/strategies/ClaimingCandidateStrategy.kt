@@ -1,11 +1,10 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
 import io.github.mgrablo.sudokucore.hints.containsCell
 import io.github.mgrablo.sudokucore.hints.getBlockCells
 import io.github.mgrablo.sudokucore.hints.getBlockId
+import io.github.mgrablo.sudokucore.hints.toHouseType
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import kotlinx.collections.immutable.toPersistentSet
@@ -59,23 +58,13 @@ internal class ClaimingCandidateStrategy : HintStrategy {
 
 			if (affectedCells.isEmpty()) return@mapNotNull null
 
-			// Use the first affected cell as the hint's location
-			val anchor = affectedCells.first()
-			Hint(
-				row = anchor.row,
-				col = anchor.col,
-				value = digit,
-				type = HintType.ClaimingCandidate(house.toGroupType()),
-				explanationStrategy = ClaimingCandidateExplanation(),
+			Hint.ClaimingCandidate(
+				number = digit,
+				lineHouseType = house.toHouseType(),
+				blockHouseType = Hint.HouseType.Block(blockId),
 				affectedCells = affectedCells.toPersistentSet(),
 				enforcingCells = cellsWithDigit.toPersistentSet(),
 			)
 		}
-	}
-
-	private fun House.toGroupType(): GroupType = when (this) {
-		is House.Row -> GroupType.Row(id)
-		is House.Column -> GroupType.Column(id)
-		is House.Block -> GroupType.Block(id)
 	}
 }

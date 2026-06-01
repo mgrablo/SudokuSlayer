@@ -9,9 +9,8 @@ message ProtoHintLog {
 	bool is_user_guessed = 3;
 	bool is_revealed = 4;
 	ProtoHint hint = 5;
-	repeated ProtoHintExplanationStep structured_explanation = 6;
 
-	reserved 2;
+	reserved 2, 6;
 }
 
 message ProtoHintExplanationStep {
@@ -76,6 +75,9 @@ message ProtoHint {
 	repeated ProtoCell affected_cells = 5;
 	ProtoHintType hintType = 6;
 	string additionalInfo = 7;
+
+	optional ProtoHintType.ProtoHintHouse line_house = 8;
+	optional ProtoHintType.ProtoHintHouse block_house = 9;
 }
 
 message ProtoHintType {

@@ -6,7 +6,6 @@ import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.FindMistakesUseC
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.GetGameUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.ResetGameUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.SaveGameUseCase
-import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.GenerateHintLogUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.ProvideHintUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.RevealHintOnGridUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.RevealLastHintLogUseCase
@@ -26,5 +25,4 @@ data class HintUseCases(
 	val provideHint: ProvideHintUseCase,
 	val revealOnGrid: RevealHintOnGridUseCase,
 	val revealLastLog: RevealLastHintLogUseCase,
-	val generateLog: GenerateHintLogUseCase,
 )

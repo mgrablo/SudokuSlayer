@@ -40,6 +40,7 @@ dependencies {
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.test.junit5)
 	testImplementation(libs.robolectric)
+	testImplementation(libs.androidx.test.core.ktx)
 
 	ktlintRuleset(libs.ktlint.ruleset.compose)
 }

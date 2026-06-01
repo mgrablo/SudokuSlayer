@@ -3,6 +3,8 @@ package io.github.mgrablo.sudokuslayer.data.game.mappers
 import io.github.mgrablo.sudokuslayer.data.game.ProtoGame
 import io.github.mgrablo.sudokuslayer.domain.core.Game
 import io.github.mgrablo.sudokuslayer.domain.core.GameDifficulty
+import io.github.mgrablo.sudokuslayer.domain.core.HintLog
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 
 fun Game.toProtoGame(): ProtoGame = ProtoGame
@@ -16,15 +18,20 @@ fun Game.toProtoGame(): ProtoGame = ProtoGame
 	.addAllHintLogs(hintLogs.map { it.toProtoHintLog() })
 	.build()
 
-fun ProtoGame.toGame(): Game = Game(
-	grid = grid.toSudokuGrid(),
-	difficulty = difficulty.toGameDifficulty(),
-	elapsedTime = elapsedTime,
-	hintsUsed = hintsUsed,
-	hintLogs = hintLogsList.map { it.toHintLog() }.toPersistentList(),
-	completed = completed,
-	solution = solution.toSolutionGrid(),
-)
+fun ProtoGame.toGame(): Game {
+	val hintLogs: PersistentList<HintLog> =
+		hintLogsList.mapNotNull { log -> log.toHintLog().getOrNull() }.toPersistentList()
+
+	return Game(
+		grid = grid.toSudokuGrid(),
+		difficulty = difficulty.toGameDifficulty(),
+		elapsedTime = elapsedTime,
+		hintsUsed = hintsUsed,
+		hintLogs = hintLogs,
+		completed = completed,
+		solution = solution.toSolutionGrid(),
+	)
+}
 
 fun GameDifficulty.toProtoDifficulty(): ProtoGame.Difficulty = when (this) {
 	GameDifficulty.Easy -> ProtoGame.Difficulty.EASY

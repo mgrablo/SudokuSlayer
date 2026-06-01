@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokucore.hints
 
+import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import kotlin.math.sqrt
 
@@ -29,3 +30,9 @@ internal fun getBlockId(row: Int, col: Int, blockSize: Int): Int =
 
 internal fun Collection<SudokuCellData>.containsCell(cell: SudokuCellData): Boolean =
 	this.any { it.row == cell.row && it.col == cell.col }
+
+internal fun House.toHouseType(): Hint.HouseType = when (this) {
+	is House.Row -> Hint.HouseType.Row(id)
+	is House.Column -> Hint.HouseType.Column(id)
+	is House.Block -> Hint.HouseType.Block(id)
+}

@@ -8,7 +8,6 @@ import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.FindMistakesUseC
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.GetGameUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.ResetGameUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.game.SaveGameUseCase
-import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.GenerateHintLogUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.ProvideHintUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.RevealHintOnGridUseCase
 import io.github.mgrablo.sudokuslayer.domain.game.usecases.hint.RevealLastHintLogUseCase
@@ -69,7 +68,6 @@ val domainGameModule =
 		}
 
 		factory { ProvideHintUseCase(get()) }
-		factory { GenerateHintLogUseCase() }
 		factory { RevealHintOnGridUseCase(get()) }
 		factory { RevealLastHintLogUseCase() }
 
@@ -94,7 +92,6 @@ val domainGameModule =
 				provideHint = get(),
 				revealOnGrid = get(),
 				revealLastLog = get(),
-				generateLog = get(),
 			)
 		}
 

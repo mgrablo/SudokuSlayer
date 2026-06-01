@@ -1,12 +1,11 @@
 package io.github.mgrablo.sudokucore.hints.strategies
 
-import io.github.mgrablo.sudokucore.hints.GroupType
 import io.github.mgrablo.sudokucore.hints.Hint
-import io.github.mgrablo.sudokucore.hints.HintType
+import io.github.mgrablo.sudokucore.hints.Hint.HiddenSingle
+import io.github.mgrablo.sudokucore.hints.toHouseType
 import io.github.mgrablo.sudokucore.model.House
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import io.github.mgrablo.sudokucore.symmetricDifference
-import kotlinx.collections.immutable.toPersistentSet
 
 /**
  * Hidden Single strategy.
@@ -25,22 +24,13 @@ internal class HiddenSingleStrategy : HintStrategy {
 
 			uniqueCandidates.map { digit ->
 				val hintCell = emptyCells.first { digit in it.candidates }
-				Hint(
+				HiddenSingle(
 					row = hintCell.row,
 					col = hintCell.col,
-					value = digit,
-					type = HintType.HiddenSingle(house.toGroupType()),
-					explanationStrategy = HiddenSingleExplanation(),
-					// The other cells in the house are enforcing this cell to have this digit
-					enforcingCells = house.cells.toPersistentSet(),
+					number = digit,
+					houseType = house.toHouseType(),
 				)
 			}
 		}
-	}
-
-	private fun House.toGroupType(): GroupType = when (this) {
-		is House.Row -> GroupType.Row(id)
-		is House.Column -> GroupType.Column(id)
-		is House.Block -> GroupType.Block(id)
 	}
 }
