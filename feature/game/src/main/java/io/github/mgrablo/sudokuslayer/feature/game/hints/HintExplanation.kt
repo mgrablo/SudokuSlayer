@@ -1,6 +1,7 @@
 package io.github.mgrablo.sudokuslayer.feature.game.hints
 
 import android.content.Context
+import androidx.compose.runtime.Immutable
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.ClaimingCandidateExplainer
 import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.HiddenSingleExplainer
@@ -15,6 +16,7 @@ import io.github.mgrablo.sudokuslayer.feature.game.hints.explainers.PointingCand
  * @property actionText Text describing what cells were updated when the user clicks "reveal hint".
  * @property hintTypeName Simple name of the hint type ("Hidden Single", "Pointing Candidate").
  */
+@Immutable
 internal data class HintExplanation(
 	val instruction: HintMessage,
 	val description: HintMessage,

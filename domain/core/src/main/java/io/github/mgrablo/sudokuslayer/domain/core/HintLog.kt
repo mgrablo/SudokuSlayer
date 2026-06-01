@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokuslayer.domain.core
 
+import androidx.compose.runtime.Stable
 import io.github.mgrablo.sudokucore.hints.Hint
 
 /**
@@ -10,6 +11,7 @@ import io.github.mgrablo.sudokucore.hints.Hint
  * @property isUserGuessed Whether the user guessed the hint without revealing it
  * @property isRevealed Whether the hint has been revealed to the user
  */
+@Stable
 data class HintLog(
 	val id: Int,
 	val hint: Hint,

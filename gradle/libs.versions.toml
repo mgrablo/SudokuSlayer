@@ -13,6 +13,7 @@ android-targetSdk = "35"
 coreKtx = "1.17.0"
 lifecycleRuntimeKtx = "2.9.4"
 composeBom = "2025.10.00"
+composeAnnotation = "1.11.2"
 annotations = "1.9.1"
 activityCompose = "1.11.0"
 nav3core = "1.0.0-alpha11"
@@ -64,6 +65,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom-alpha", version.ref = "composeBom" }
+androidx-compose-runtime-annotation = { group = "androidx.compose.runtime", name = "runtime-annotation", version.ref = "composeAnnotation" }
 androidx-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

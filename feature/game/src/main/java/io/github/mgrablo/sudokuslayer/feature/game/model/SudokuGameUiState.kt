@@ -1,5 +1,6 @@
 package io.github.mgrablo.sudokuslayer.feature.game.model
 
+import androidx.compose.runtime.Stable
 import io.github.mgrablo.sudokucore.hints.Hint
 import io.github.mgrablo.sudokuslayer.domain.core.SudokuGridSize
 import kotlinx.collections.immutable.PersistentList
@@ -7,6 +8,7 @@ import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
+@Stable
 internal data class SudokuGameUiState(
 	val sudokuGridSize: SudokuGridSize = SudokuGridSize.NINE,
 	val selectedCell: Pair<Int, Int>? = null,
