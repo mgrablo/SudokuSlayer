@@ -1,9 +1,5 @@
 package io.github.mgrablo.sudokucore.hints
 
-import io.github.mgrablo.sudokucore.hints.strategies.ClaimingCandidateExplanation
-import io.github.mgrablo.sudokucore.hints.strategies.HiddenSingleExplanation
-import io.github.mgrablo.sudokucore.hints.strategies.NakedSingleExplanation
-import io.github.mgrablo.sudokucore.hints.strategies.PointingCandidateExplanation
 import io.github.mgrablo.sudokucore.model.SudokuCellData
 import kotlinx.collections.immutable.PersistentSet
 
@@ -123,12 +119,5 @@ sealed interface Hint {
 				"lineHouseType must be either Row or Column"
 			}
 		}
-	}
-
-	val explanationStrategy get() = when (this) {
-		is NakedSingle -> NakedSingleExplanation()
-		is HiddenSingle -> HiddenSingleExplanation()
-		is PointingCandidate -> PointingCandidateExplanation()
-		is ClaimingCandidate -> ClaimingCandidateExplanation()
 	}
 }
